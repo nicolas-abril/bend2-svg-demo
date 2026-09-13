@@ -1200,22 +1200,69 @@ def outline.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSett
     _ => U.branch(List<&2, Point>, F32.is_lt(point.dot(u, v), 0.0), _ => outline.join.back(p, u, r, settings, scale, acc), _ => acc),
     _ => U.branch(List<&2, Point>, F32.is_lt(turn, 0.0), _ => outline.join.outer(p, u, v, r, settings, scale, acc), _ => acc))
 
-def outline.join.if(previous: Maybe<&2, Point>, +p: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+# The previous segment along a side: its direction, the end of its offset
+# (not yet emitted, since an inner join replaces it) and its length.
+type Prev is Data:
+  Prev{dir: Point, end: Point, len: F32}
+
+def prev.of(+seg: Segment, +r: F32) -> Prev:
+  Segment{p, q, dir, len, distance} = seg
+  +u = dir
+  Prev{u, point.add(q, point.scale(point.normal(u), r)), len}
+
+# On the inner side the two offset lines cross; when they cross within both
+# segments that point replaces both offset ends, so the outline has no loop
+# there. Otherwise (a segment shorter than the offset) the ends stay and the
+# loop they make still fills under nonzero winding.
+def outline.inner(+p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b0: Point, +lenNext: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  +den = point.cross(u, v)
+  +t = (point.cross(point.sub(b0, a1), v) / den : F32)
+  +s = (point.cross(point.sub(b0, a1), u) / den : F32)
+  U.choose(List<&2, Point>, F32.is_le(t, 0.0) && F32.is_ge(t, F32.neg(lenPrev)) && F32.is_ge(s, 0.0) && F32.is_le(s, lenNext),
+    Con{point.add(a1, point.scale(u, t)), acc}, Con{b0, Con{a1, acc}})
+
+def outline.back.if(reversal: Bool, +p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match reversal:
+    case True{}: outline.join.back(p, u, r, settings, scale, acc)
+    case False{}: acc
+
+# The points at vertex p between the previous segment (direction u, offset
+# end a1) and the next (direction v, offset start b0).
+def outline.vertex.join(+p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b0: Point, +lenNext: F32, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  +turn = point.cross(u, v)
+  U.branch(List<&2, Point>, F32.is_lt(F32.abs(turn), 0.000001),
+    _ => Con{b0, outline.back.if(F32.is_lt(point.dot(u, v), 0.0), p, u, r, settings, scale, Con{a1, acc})},
+    _ => U.branch(List<&2, Point>, F32.is_lt(turn, 0.0),
+      _ => Con{b0, outline.join.outer(p, u, v, r, settings, scale, Con{a1, acc})},
+      _ => outline.inner(p, u, a1, lenPrev, v, b0, lenNext, acc)))
+
+def outline.vertex(previous: Maybe<&2, Prev>, +p: Point, +v: Point, +lenNext: F32, +b0: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match previous:
+    case None{}: Con{b0, acc}
+    case Some{Prev{u, a1, lenPrev}}: outline.vertex.join(p, u, a1, lenPrev, v, b0, lenNext, r, settings, scale, acc)
+
+# At the end of an open side the last offset end is emitted; a closed loop
+# emitted it through its first vertex.
+def outline.side.end(previous: Maybe<&2, Prev>, closed: Bool, acc: List<&2, Point>) -> List<&2, Point>:
   match previous:
     case None{}: acc
-    case Some{u}: outline.join(p, u, v, r, settings, scale, acc)
+    case Some{Prev{u, e, l}}:
+      match closed:
+        case True{}: acc
+        case False{}: Con{e, acc}
 
-# The left side of a polyline: each segment's two offset endpoints, with the
-# outer joins between segments. `previous` carries the direction arriving at
-# the first vertex (the last segment's, for a closed subpath).
-def outline.side(xs: List<&2, Segment>, previous: Maybe<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+# The left side of a polyline: each segment's offset endpoints with the
+# joins between segments. `previous` carries the segment arriving at the
+# first vertex (the last one, for a closed subpath).
+def outline.side(xs: List<&2, Segment>, previous: Maybe<&2, Prev>, +closed: Bool, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match xs:
-    case Nil{}: acc
+    case Nil{}: outline.side.end(previous, closed, acc)
     case Con{Segment{p, q, dir, len, distance}, rest}:
       +u = dir
       +pp = p
+      +ln = len
       +n = point.scale(point.normal(u), r)
-      outline.side(rest, Some{u}, r, settings, scale, Con{point.add(q, n), Con{point.add(pp, n), outline.join.if(previous, pp, u, r, settings, scale, acc)}})
+      outline.side(rest, Some{Prev{u, point.add(q, n), ln}}, closed, r, settings, scale, outline.vertex(previous, pp, u, ln, point.add(pp, n), r, settings, scale, acc))
 
 # The cap at point p leaving in direction u, between the offsets p + r n and
 # p - r n (which the sides push): nothing for butt.
@@ -1260,9 +1307,9 @@ def outline.open.go(forward: List<&2, Segment>, back: List<&2, Segment>, +r: F32
       +last = segments.last(tt, first)
       +cap = settings.cap(settings)
       outline.edges(outline.cap(segment.start(first), point.scale(segment.dir(first), F32.neg(1.0)), r, cap, scale,
-        outline.side(back, None{}, r, settings, scale,
+        outline.side(back, None{}, False{}, r, settings, scale,
           outline.cap(segment.end(last), segment.dir(last), r, cap, scale,
-            outline.side(Con{first, tt}, None{}, r, settings, scale, Nil{})))), acc)
+            outline.side(Con{first, tt}, None{}, False{}, r, settings, scale, Nil{})))), acc)
 
 def outline.open(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   outline.open.go(segments(pts, 0.0), segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, acc)
@@ -1273,7 +1320,7 @@ def outline.loop(+xs: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +sc
     case Nil{}: acc
     case Con{h, t}:
       +first = h
-      outline.edges(outline.side(Con{h, t}, Some{segment.dir(segments.last(t, first))}, r, settings, scale, Nil{}), acc)
+      outline.edges(outline.side(Con{h, t}, Some{prev.of(segments.last(t, first), r)}, True{}, r, settings, scale, Nil{}), acc)
 
 def outline.closed(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   outline.loop(segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, outline.loop(segments(pts, 0.0), r, settings, scale, acc))

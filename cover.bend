@@ -660,12 +660,39 @@ def piece.keep(keep: Bool, p: Piece, active: List<&2, Piece>) -> List<&2, Piece>
     case False{}: active
 
 @unsafe
+# The row's pieces all go into the buffer and come back as a list (in any
+# order); those the next row no longer reaches are retired afterwards.
 def pieces.row(xs: List<&2, Piece>, +y: F32, +w: U32, active: List<&2, Piece>, b: (Array<F32> & Array<U32>) & (U32 & U32)) -> List<&2, Piece> & ((Array<F32> & Array<U32>) & (U32 & U32)):
   match xs:
     case Nil{}: (active, b)
     case Con{p, rest}:
       +pp = p
-      pieces.row(rest, y, w, piece.keep(F32.is_gt(piece.bottom(pp), (y + 1.0 : F32)), pp, active), piece.events(pp, y, w, b))
+      pieces.row(rest, y, w, Con{pp, active}, piece.events(pp, y, w, b))
+
+def pieces.retire(xs: List<&2, Piece>, +bottom: F32, acc: List<&2, Piece>) -> List<&2, Piece>:
+  match xs:
+    case Nil{}: acc
+    case Con{p, rest}:
+      +pp = p
+      pieces.retire(rest, bottom, piece.keep(F32.is_gt(piece.bottom(pp), bottom), pp, acc))
+
+# A piece as a line shifted so the row starts at zero, for the sub-scanline
+# scan of a row whose exact areas showed an overlap.
+def piece.line(+p: Piece, +y: F32) -> CovLine:
+  Piece{x0, y0, slope, top, bottom, dir} = p
+  +xx0 = x0
+  +yy0 = y0
+  +s = slope
+  +t = top
+  +b = bottom
+  +xt = (xx0 + (t - yy0) * s : F32)
+  +xb = (xx0 + (b - yy0) * s : F32)
+  U.choose(CovLine, F32.is_gt(dir, 0.0), CovLine{xt, (t - y : F32), xb, (b - y : F32)}, CovLine{xb, (b - y : F32), xt, (t - y : F32)})
+
+def pieces.lines(xs: List<&2, Piece>, +y: F32, acc: List<&2, CovLine>) -> List<&2, CovLine>:
+  match xs:
+    case Nil{}: acc
+    case Con{p, rest}: pieces.lines(rest, y, Con{piece.line(p, y), acc})
 
 def line.bottom(+l: CovLine) -> F32:
   CovLine{x0, y0, x1, y1} = l
@@ -924,26 +951,46 @@ def xrow.runs(b: (Array<F32> & Array<U32>) & (U32 & U32), +w: U32) -> (List<&2, 
 
 # The scan state: the row buffer, the line arrays, and the rest as a record.
 type XData is Data:
-  XData{lo: U32, hi: U32, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, k: U32, n: U32, bad: Bool}
+  XData{lo: U32, hi: U32, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, k: U32, n: U32, sub: U32}
 
-def xscan.push(r: (List<&2, Run> & Bool) & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, +k: U32, +n: U32, +bad: Bool) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
-  ((runs, worse), (buf, (lo, hi))) = r
-  ((buf, lines), XData{lo, hi, Con{runs, rows}, active, k, n, bad || worse})
+def rows.head(rows: List<&2, List<&2, Run>>) -> List<&2, Run>:
+  match rows:
+    case Nil{}: Nil{}
+    case Con{r, rest}: r
 
-def xscan.rowed(s: List<&2, Piece> & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, +k: U32, +n: U32, +bad: Bool, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+# A row whose exact areas showed an overlap is scanned again with the
+# sub-scanlines over its own pieces; other rows keep their runs. Either way
+# the pieces the next row no longer reaches are retired.
+def xscan.fix(bad: Bool, runs: List<&2, Run>, active: List<&2, Piece>, +y: F32, +sub: U32, +w: U32) -> List<&2, Run> & List<&2, Piece>:
+  match bad:
+    case False{}: (runs, pieces.retire(active, (y + 1.0 : F32), Nil{}))
+    case True{}:
+      +act = active
+      (rows.head(scan.rows(1, sub, lines.sort(pieces.lines(act, y, Nil{})), False{}, w)), pieces.retire(act, (y + 1.0 : F32), Nil{}))
+
+def xscan.push(fixed: List<&2, Run> & List<&2, Piece>, buf: (Array<F32> & Array<U32>) & (U32 & U32), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, +k: U32, +n: U32, +sub: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+  (runs, active) = fixed
+  (buf, (lo, hi)) = buf
+  ((buf, lines), XData{lo, hi, Con{runs, rows}, active, k, n, sub})
+
+def xscan.swept(r: (List<&2, Run> & Bool) & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, +y: F32, +k: U32, +n: U32, +sub: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+  ((runs, bad), buf) = r
+  xscan.push(xscan.fix(bad, runs, active, y, sub, w), buf, lines, rows, k, n, sub)
+
+def xscan.rowed(s: List<&2, Piece> & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, +y: F32, +k: U32, +n: U32, +sub: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
   (active, b) = s
-  xscan.push(xrow.runs(b, w), lines, rows, active, k, n, bad)
+  xscan.swept(xrow.runs(b, w), lines, rows, active, y, k, n, sub, w)
 
-def xscan.taken(t: (Array<F32> & Array<U32>) & PieceTake, buf: (Array<F32> & Array<U32>) & (U32 & U32), rows: List<&2, List<&2, Run>>, +y: F32, +bad: Bool, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+def xscan.taken(t: (Array<F32> & Array<U32>) & PieceTake, buf: (Array<F32> & Array<U32>) & (U32 & U32), rows: List<&2, List<&2, Run>>, +y: F32, +sub: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
   (lines, take) = t
   PieceTake{done, k, n, active} = take
-  xscan.rowed(pieces.row(active, y, w, Nil{}, buf), lines, rows, k, n, bad, w)
+  xscan.rowed(pieces.row(active, y, w, Nil{}, buf), lines, rows, y, k, n, sub, w)
 
 def xscan.row(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData, +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
   ((buf, lines), data) = st
-  XData{lo, hi, rows, active, k, n, bad} = data
+  XData{lo, hi, rows, active, k, n, sub} = data
   +yf = U32.to_f32(y)
-  xscan.taken(piece.take((lines, PieceTake{False{}, k, n, active}), (yf + 1.0 : F32)), (buf, (lo, hi)), rows, yf, bad, w)
+  xscan.taken(piece.take((lines, PieceTake{False{}, k, n, active}), (yf + 1.0 : F32)), (buf, (lo, hi)), rows, yf, sub, w)
 
 @unsafe
 def xscan.rows.go(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData, n: Nat, +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
@@ -951,19 +998,16 @@ def xscan.rows.go(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & 
     case 0n: st
     case 1n+d: xscan.rows.go(xscan.row(st, y, w), d, (y + 1 : U32), w)
 
-# The rows of runs, whether an overlap showed, and the line arrays back.
-type Rows is Data:
-  Rows{rows: List<&2, List<&2, Run>>, bad: Bool}
-
-def xscan.done(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData) -> (Array<F32> & Array<U32>) & Rows:
+def xscan.done(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData) -> List<&2, List<&2, Run>>:
   ((buf, lines), data) = st
-  XData{lo, hi, rows, active, k, n, bad} = data
-  (lines, Rows{rows.reverse(rows, Nil{}), bad})
+  XData{lo, hi, rows, active, k, n, sub} = data
+  rows.reverse(rows, Nil{})
 
-# The rows of runs of the lines (in their arrays, n of them) by exact areas.
-def xscan.rows(+h: U32, lines: Array<F32> & Array<U32>, +n: U32, +w: U32) -> (Array<F32> & Array<U32>) & Rows:
+# The rows of runs of the lines (in their arrays, n of them) by exact areas,
+# rows with an overlap done with `sub` scanlines.
+def xscan.rows(+h: U32, lines: Array<F32> & Array<U32>, +n: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
   xscan.done(xscan.rows.go((((Array.new(F32, depth.for((w * 2 + 4 : U32), 1, 0n), 0.0), Array.new(U32, depth.for((U32.div(w, 32) + 2 : U32), 1, 0n), 0)), lines),
-    XData{(w + 1 : U32), 0, {Nil{} : List<&2, List<&2, Run>>}, {Nil{} : List<&2, Piece>}, 0, n, False{}}), U32.to_nat(h), 0, w))
+    XData{(w + 1 : U32), 0, {Nil{} : List<&2, List<&2, Run>>}, {Nil{} : List<&2, Piece>}, 0, n, sub}), U32.to_nat(h), 0, w))
 
 # ---- the tree ----
 # A node is built top-down from the rows of runs that lie inside it, clipped
@@ -1071,20 +1115,8 @@ def mask.data(trees: Bool, rows: List<&2, List<&2, Run>>, +size: U32, +depth: Na
     case True{}: CovTreed{tree.node(node.of(rows, size, 0), depth, 0, size)}
     case False{}: CovRows{rows}
 
-# Exact areas unless an overlap showed, then the sub-scanline scan over the
-# lines read back from their arrays (sorted by top, as that scan takes them).
-def mask.exact.go(r: Rows, lines: Array<F32> & Array<U32>, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
-  Rows{rows, bad} = r
-  match bad:
-    case True{}: scan.rows(h, sub, lines.sort(soa.lines(lines, n)), False{}, w)
-    case False{}: rows
-
-def mask.exact(got: (Array<F32> & Array<U32>) & Rows, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
-  (lines, r) = got
-  mask.exact.go(r, lines, n, h, sub, w)
-
 def mask.arrays(xs: List<&2, CovLine>, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
-  mask.exact(xscan.rows(h, soa.build(xs, n, h), n, w), n, h, sub, w)
+  xscan.rows(h, soa.build(xs, n, h), n, sub, w)
 
 # Even-odd fills rely on the winding parity, which only the sub-scanline scan follows.
 def mask.scan(clipped: List<&2, CovLine> & U32, even: Bool, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
