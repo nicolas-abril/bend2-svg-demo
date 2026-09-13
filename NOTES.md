@@ -1300,3 +1300,31 @@ Stage times for the tiger at 256 px, cumulative: parse 1.5 ms, compile
 part, and its profile is still dominated by freeing: the element's
 remaining attribute strings, the styles copied per element and the edge
 lists after their covers are built.
+
+**A second round.** The profile of the committed build still put a third
+of the time in freeing and a sixth in walking copies, so the remaining
+closure loops went: the path command dispatcher (nine branch closures per
+command, every argument read by index up front) is a match on the command
+code reading exactly the numbers it takes by pattern; the subpath builder
+and the point cleaner decide each step ahead; an attribute lookup stops at
+its first hit instead of walking the whole list and building a result per
+entry. A fill keeps only its bounds and cover, the scene alone holds the
+edges, and the cover build consumes them outright (the covered scene keeps
+none; picking walks the compiled scene). Tiger 256 px went 24.7 to 22.8 ms
+whole process (about 15 ms in-process, 5.8 times resvg), 1024 px 43.7 to
+39.9 ms.
+
+Two structural attempts measured neutral and were left out: handing the
+edges back from the cover build instead of walking a copy, and having the
+path builder gather the stroke polylines and bounds itself so the edge
+list is built once and stored with one owner (it added a point per edge
+for every shape, stroked or not, and cost what it saved). A calibration
+shows why the rest is hard to move: building and freeing 400,000 heap
+nodes costs under a millisecond, so the remaining freeing time is many
+small drops of records and copies spread over the whole compile, not one
+large structure. The one large lever left is the text itself: every
+character is materialized from the read, copied into an attribute value,
+and freed again; a parser over the bytes as an array would remove three
+node operations per character at the cost of rewriting the XML, number and
+path scanners.
+
