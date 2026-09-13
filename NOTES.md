@@ -961,22 +961,26 @@ shared, indexable form.
 The headless renderer writes its matrix through `effs/pixels_write`, a foreign
 effect that formats the packed `Array<U32>` as P3 text in C or JavaScript.
 
-Timings, whole process, compiled renderer (the empty document is the process
-floor):
+Timings, whole process, compiled renderer, best of three with the shell's own
+clock. The tables in the earlier sections were taken with a stopwatch that
+added about 14 ms of interpreter start-up to every figure, so their relative
+gains hold but their absolute values are that much too high; these are exact.
 
-| Fixture | 64x64, before | after | 256x256, before | after | 1024x1024 after |
-| --- | --- | --- | --- | --- | --- |
-| empty document | 20 ms | 21 ms | 20 ms | 21 ms | 21 ms |
-| basic | 30 ms | 24 ms | 150 ms | 38 ms | 256 ms |
-| stroke-vector | 34 ms | 24 ms | 193 ms | 39 ms | 268 ms |
-| markers-compositing | 57 ms | 40 ms | 399 ms | 106 ms | 1128 ms |
-| text-path-styles | 70 ms | 43 ms | 184 ms | 58 ms | 247 ms |
+| Fixture | 64x64 | 256x256 | 1024x1024 |
+| --- | --- | --- | --- |
+| empty document | 6.5 ms | 6.5 ms | 6.5 ms |
+| basic | 8.6 ms | 22 ms | 227 ms |
+| text-path-styles | 26 ms | 41 ms | 224 ms |
+| markers-compositing | 24 ms | 87 ms | 1062 ms |
 
-Render time now grows roughly linearly with the pixel count from 256x256 up
-(basic: 17 ms to 235 ms for 16 times the pixels), and against resvg's 0.6 ms
-and 1.6 ms for basic at the two sizes the gap is about 5x at 64x64 and 10x at
-256x256 once the 20 ms process floor is set aside. What remains is the per-pixel
-blend through linear array reads and writes, the layers that opacity groups
-and masks allocate at frame size (markers-compositing has four), and the
-process floor itself, which resvg avoids by staying in-process.
+The empty document is the process floor: runtime start, the heap, the worker
+threads and the header write. Render time grows about linearly with the pixel
+count from 256x256 up (basic: 15 ms to 220 ms for 16 times the pixels), and
+against resvg's 0.6 ms and 1.6 ms for basic the render itself is now about
+3x slower at 64x64 and 10x at 256x256. A profile of markers-compositing at
+1024x1024 puts half the samples in closure application (the branch lambdas in
+paint.sample and clip.cover, created per pixel), a fifth in dropping the
+per-pixel Point and Color terms, a tenth in the blend arithmetic, and a
+twentieth each in the clip mask reads and the printf of the output; the four
+frame-sized layers its opacity groups and masks allocate are the rest.
 
