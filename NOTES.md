@@ -1020,3 +1020,49 @@ each opacity group or mask allocates and composites (markers-compositing has
 four, hence its 5x over basic). Beyond that the gap to resvg is the runtime's
 per-call cost, not the renderer.
 
+## Block clips, box-sized layers and cheaper masks
+
+Stage timings showed where a plain document's time went: the coverage pass on
+an empty 1024x1024 document took 88 ms, and each full-frame shape added 150
+ms, while the blend loop for that shape ran in about a millisecond. Two things
+caused it. Every `<svg>` clips to its viewport, so every shape had a clip and
+took the per-pixel path (a point, a quadtree read and a repack per pixel),
+and coverage masks were scanned densely and folded cell by cell even for the
+viewport rectangle and for fills and strokes that never paint.
+
+The painter now evaluates clips per mask block: `Cov.mask.uniform` reports a
+clip's coverage over a block when it is the same everywhere in it, the block
+takes the constant-front fill with that limit folded in (or is skipped when
+it is zero), and a block a clip edge crosses is split in four down to eight
+pixels before its pixels read the clips one by one. Layers for opacity
+groups, masks and filters are sized to the node's coverage box: a `Target`
+rectangle threads through the loops and indexes each layer relative to its
+own origin. In the coverage pass, masks are built only for fills and strokes
+that paint; a closed path of four axis-aligned edges on whole pixels (the
+viewport clip and the common rect) becomes a tree of full and empty leaves
+without a scan; and the scan itself records interior runs as deltas, four
+writes per span however wide, summed back into coverage in one pass per row.
+Outputs are byte-identical to the recorded matrices.
+
+Timings, whole process, best of three; synthetic documents are a full-frame
+rect, the same at half opacity, a rect under a circular clip, a filled circle
+and a stroked circle:
+
+| Document | 64x64 | 256x256 | 1024x1024 | 1024 before |
+| --- | --- | --- | --- | --- |
+| empty | 12 ms | 8 ms | 14 ms | 99 ms |
+| rect | 7 ms | 7 ms | 14 ms | 259 ms |
+| rect, opacity .5 | 7 ms | 8 ms | 19 ms | 264 ms |
+| rect, circle clip | 9 ms | 16 ms | 112 ms | 502 ms |
+| circle | 8 ms | 14 ms | 95 ms | |
+| circle stroke | 32 ms | 106 ms | 466 ms | 571 ms |
+| basic | 8 ms | 11 ms | 49 ms | 227 ms |
+| stroke-vector | 8 ms | 12 ms | 66 ms | 242 ms |
+| text-path-styles | 27 ms | 33 ms | 81 ms | 224 ms |
+| markers-compositing | 21 ms | 42 ms | 347 ms | 1062 ms |
+
+basic at 256x256 is now 11 ms against resvg's 1.6 ms in-process, and 4 ms of
+that is the process. The stroked circle shows the next cost: a stroke's mask
+comes from its parts (bands, joins, caps) as polygons, hundreds of lines for a
+smooth curve, and a curved mask still takes the dense scan and fold, which is
+what the filled circle (95 ms) and the stroke (466 ms) are paying for.
