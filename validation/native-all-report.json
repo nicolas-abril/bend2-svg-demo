@@ -2,7 +2,7 @@
   "passed": true,
   "check": "Saved C backend versus the JavaScript-produced 64x64 AA8 matrices for every fixture",
   "sourceSHA256": {
-    "svg.bend": "efaa0e9a29fa9c19bbc6e71cd6b0431c750f24dabdbe099da544ff89e2c00793",
+    "svg.bend": "ce7778d9d7535206e2b23347b31421b5ff6059fb89d864f3d180866a259e909f",
     "state.bend": "7e3a37708598526629bb777e0fd26df5bed1065cf7d2d31d2372f50fd8b915f6",
     "render.bend": "0767d280e4f1b2d72c62ea913e243866ccd2858460982fb21ed40755fc24fed0",
     "fonts/NotoSans-Regular.ttf": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
@@ -10,825 +10,825 @@
     "fonts/NotoSans-Italic.ttf": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
     "fonts/NotoSans-BoldItalic.ttf": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
   },
-  "binarySHA256": "19ff02cbe4c08fb828dcad6793aed1674bdbc5afe81a6f62bc4315dba22122d7",
+  "binarySHA256": "22f68f21d91b9d5178bd836f7c32e774e3816568763cd54916d855f9a951b35d",
   "results": [
     {
       "fixture": "basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0084445,
+      "durationSeconds": 0.009806917,
       "sha256": "2c278e5d4fe0db7cc2dd2cbbc03371a0be2b76da03e95fb31790fb01489a5d61"
     },
     {
       "fixture": "clipping-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008043959000000002,
+      "durationSeconds": 0.008793125,
       "sha256": "5dcf0b395e87445ce7064dfb7ef6e39167939c637fd110bccd14eb32b140ea34"
     },
     {
       "fixture": "clipping.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009457875000000001,
+      "durationSeconds": 0.009679042000000002,
       "sha256": "9d92ac8b235fa6c06817af3593125e8e491bc7a11521c2688670a5202b835b8d"
     },
     {
       "fixture": "colors-hsl.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007771415999999995,
+      "durationSeconds": 0.008259916000000004,
       "sha256": "78b4b50bf234a00786c5e5b65c5e155997afd7b4e5e61e8779378c22b59e57d5"
     },
     {
       "fixture": "colors-hwb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00784075,
+      "durationSeconds": 0.008241375000000006,
       "sha256": "96587609cf9dd0e0fde8494f31a1203467ac631799c8ede3459a68d53f790c8d"
     },
     {
       "fixture": "colors-named.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.016129541999999993,
+      "durationSeconds": 0.016652375,
       "sha256": "ba084526a4d9d4febef010b30ff140f0ec89916c7babed95ed828fd55d81692f"
     },
     {
       "fixture": "colors-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008622375000000005,
+      "durationSeconds": 0.009071166000000006,
       "sha256": "c507a19f0aa52ad38cfa46eee90efc7bc72de45486689adf29e063a99ef3e95c"
     },
     {
       "fixture": "colors-rgb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00775,
+      "durationSeconds": 0.008243042000000003,
       "sha256": "cb249360659cbe454faf1466e9bff8b1fe9ff015f0ffda062466812559bc3d36"
     },
     {
       "fixture": "compact-paths.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007827167000000003,
-      "sha256": "421973403bef04b13ef622da9c08b1140733265c821790f31888a7c8e8bfda8e"
+      "durationSeconds": 0.007709249999999997,
+      "sha256": "99284a649077b0e58829ca99f080f081f9220a2f0788f191ec269c6842d2832b"
     },
     {
       "fixture": "convolve-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.017214917,
+      "durationSeconds": 0.017482709,
       "sha256": "6e1e4e76d29cdaedf16ea7024b3bedf04d1663fc660ed7e4b025e57d8c86f3b6"
     },
     {
       "fixture": "convolve-edges.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02378995900000001,
+      "durationSeconds": 0.023958416999999996,
       "sha256": "8d7bdb741174f3fa06765978934a5a838dc02b1eeda499d1dd893961a0d1834f"
     },
     {
       "fixture": "convolve-graph.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.023345416999999997,
+      "durationSeconds": 0.023623291999999994,
       "sha256": "0fd6e05a989363194e2d1afa7b50d1041dd57defb650a9f6dbc2466362f10a0c"
     },
     {
       "fixture": "convolve-kernels.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02522020900000001,
+      "durationSeconds": 0.025571042000000006,
       "sha256": "4ef26d3289381cb689116261c1388073dce6e1d39720517732456d2fbc6d5bae"
     },
     {
       "fixture": "convolve-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.023492999999999997,
+      "durationSeconds": 0.024208459000000005,
       "sha256": "069b5e13a1fe3b7218c6f024e2bd1fc55672637c3ed1c1ed285b5d9ef4018830"
     },
     {
       "fixture": "css-cascade.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007508499999999998,
+      "durationSeconds": 0.007699916000000002,
       "sha256": "e14b75ce2950f9d6281e38f3e2440c986c69ccde62ad2bab71cb774618d711d5"
     },
     {
       "fixture": "css-media.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007911624999999986,
+      "durationSeconds": 0.008252459000000016,
       "sha256": "b554e5aeb25890dec6c1554451c9bbc0df6d7f6f1bb4459a643b92cc7273fd19"
     },
     {
       "fixture": "css-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009672499999999985,
+      "durationSeconds": 0.010408125000000013,
       "sha256": "f201285c2a97d9edc403986d3826ffd99dbd5666f4bedd59563e702477b8e391"
     },
     {
       "fixture": "css-selectors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009543582999999984,
+      "durationSeconds": 0.010166750000000007,
       "sha256": "4239b1ebf385a74fa569e25d7bd36e2b27e9f13bbe04a2f3d58e525ade673cde"
     },
     {
       "fixture": "css-structural.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009851124999999995,
-      "sha256": "92df163566ddd67391ba0baa3f103c6c62159d52ea37c8c200ce3a3b779dfdd8"
+      "durationSeconds": 0.010438499999999976,
+      "sha256": "800f759349a18ada0b27153256fbe280656ab4e0300d0f28f0c551ec9fb95e90"
     },
     {
       "fixture": "filters-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015412082999999995,
+      "durationSeconds": 0.016152999999999963,
       "sha256": "c20c6b7ab425dd66b2759b809487f35bdc7b0d1e01a5a4396eaea3c35e3c21e7"
     },
     {
       "fixture": "filters-blend-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.22875654200000003,
+      "durationSeconds": 0.229485166,
       "sha256": "e059bd04255804d3ac6b37a9ff33c6903a184a3ee8158ffc89208f9f8c1dae89"
     },
     {
       "fixture": "filters-blend-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.020704791999999996,
+      "durationSeconds": 0.018334375000000024,
       "sha256": "d6f4d91b2a95cb5eec265d52b4541d94955c17e0ee747e882d4573def65925a9"
     },
     {
       "fixture": "filters-blend-linear.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.2297013750000001,
+      "durationSeconds": 0.23179891699999997,
       "sha256": "69b88199d98dd39f71e28c38ffd146aed656cb05979fb8962fe81cd5eecea3b5"
     },
     {
       "fixture": "filters-blend-opaque.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.229939209,
+      "durationSeconds": 0.23269912499999998,
       "sha256": "6a499fee03589aea5429078f506880e800f478a3e0c6b2c18235cac682429abf"
     },
     {
       "fixture": "filters-blend.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.014831416999999987,
+      "durationSeconds": 0.015537875000000098,
       "sha256": "4a90a0094c8d82f6db82d613bff13f698dc91be69646910d95a74add07336321"
     },
     {
       "fixture": "filters-blur.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.06822345799999993,
+      "durationSeconds": 0.069859334,
       "sha256": "97b6913daf995821f9cafe1fb360e7435a8833ea0452fb8a30b690c25e17151c"
     },
     {
       "fixture": "filters-composite.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.021985292000000073,
+      "durationSeconds": 0.023239083000000164,
       "sha256": "8e749ceb11d882413d008f270f9f3aea7ebd356f385dd26074f229eb814b9046"
     },
     {
       "fixture": "filters-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04197366699999998,
+      "durationSeconds": 0.04296795800000018,
       "sha256": "5fdef39efa5f4346a321a8e186a35903ce1b991540b1856b9bcd1a2fd2bff052"
     },
     {
       "fixture": "filters-regions.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015781291999999895,
+      "durationSeconds": 0.01628300000000013,
       "sha256": "53b22c683c7555b1802a51ddfc09bbbbde544dc56aeb8b03ed72ba7324c27944"
     },
     {
       "fixture": "filters-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.08679304200000001,
+      "durationSeconds": 0.08894591700000001,
       "sha256": "43cadea6f5ab7e7508996c21279d42d271453cda363c2d7bf1de8df21f34c192"
     },
     {
       "fixture": "gradient-linear.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008332042000000001,
+      "durationSeconds": 0.00840920899999992,
       "sha256": "0c9ff860b391d3dee26b1bc1b99b49bad347bfd581cf2da8840dc00ed56417f3"
     },
     {
       "fixture": "gradient-radial.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008269624999999906,
+      "durationSeconds": 0.008264832999999954,
       "sha256": "19747a72ba5363e2017116684337c690ecb05df4964086cf11d6c286a21ae8b3"
     },
     {
       "fixture": "gradient-stops.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008157791999999973,
+      "durationSeconds": 0.007914375000000064,
       "sha256": "252786e92ba15bb61a231127fb837f7be0663d1419da08b53ee788e41f01e454"
     },
     {
       "fixture": "gradient-strokes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00811204100000009,
-      "sha256": "0a29569084dcda8a9f5e658f2aab60721b2a8da311ad65221061e2c1a6717c46"
+      "durationSeconds": 0.007837208000000146,
+      "sha256": "1d2d6027e726fb58dc6dd87d220dd13535b9041d02a663390cf4bbf4e699fdb2"
     },
     {
       "fixture": "gradient-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008401042000000188,
+      "durationSeconds": 0.008365749999999934,
       "sha256": "e1f876f7584b06c555becf6bca152745e2f8b47f7644256f211ed438a3cc6459"
     },
     {
       "fixture": "images-aspect.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015504958999999872,
+      "durationSeconds": 0.014942583999999898,
       "sha256": "2b760f8733475aa88c765b243d0e77d005651eb73cea76b83280af0d557d4329"
     },
     {
       "fixture": "images-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012138875000000098,
+      "durationSeconds": 0.011804665999999997,
       "sha256": "5d34aede0e36168bc70daa6093583e18aa647cc33354192924a470d376c72d52"
     },
     {
       "fixture": "images-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015542582999999922,
+      "durationSeconds": 0.015122166000000107,
       "sha256": "470a6e14aca4113354ad84ad5ff203f7e26a580e87b5fe22a29c76512ffafb5b"
     },
     {
       "fixture": "images-compression.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04454141700000014,
+      "durationSeconds": 0.04447095899999999,
       "sha256": "0284eae815fc62e642aeb29b069ba9030d4ac86314fc4eec05008f50543dbfca"
     },
     {
       "fixture": "images-png-formats.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04039337499999988,
+      "durationSeconds": 0.0400311670000001,
       "sha256": "b506d698068ed9ebb1dbc5d06331ee836da80bcc5d9595de7bd83695c816d942"
     },
     {
       "fixture": "images-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012639083000000028,
+      "durationSeconds": 0.012340708999999834,
       "sha256": "a22734bb5e0a842b5c28d5c10e9d05c0924ca0e8121a25505ce380501867b247"
     },
     {
       "fixture": "images-uris.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01201691699999992,
+      "durationSeconds": 0.012208834000000024,
       "sha256": "4788e70a8a4b8577283e33446559140e817057201ab56d70641e01944c05939a"
     },
     {
       "fixture": "jpeg-color.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0437934580000001,
+      "durationSeconds": 0.043417958,
       "sha256": "2f78d23264cb1f3c528d8ba2925f9b37915ba79fe3d809d81fe8f1cf2a95cfd7"
     },
     {
       "fixture": "jpeg-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.039233667000000194,
+      "durationSeconds": 0.03968858300000011,
       "sha256": "220ea56f6a46860abaef081b693c663c4bd93e5fe5d8aa12a3dfeacfbc280ae1"
     },
     {
       "fixture": "jpeg-encoding.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0317896659999999,
+      "durationSeconds": 0.03180204100000014,
       "sha256": "56a30ba1581a171a54a455ccfa9c53410f0f9df18cef4f365ebb944b3134f4c2"
     },
     {
       "fixture": "jpeg-progressive.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03179937500000005,
+      "durationSeconds": 0.031623250000000096,
       "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
     },
     {
       "fixture": "jpeg-sequential.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03037745800000016,
+      "durationSeconds": 0.030112332999999807,
       "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
     },
     {
       "fixture": "jpeg-uris.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03407383299999992,
+      "durationSeconds": 0.03372995900000001,
       "sha256": "9dac9761f33ccd68f26420d4a6b32f7d958ee7c00dbc76eaa49ea4fc66b4a061"
     },
     {
       "fixture": "markers-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009222834000000148,
+      "durationSeconds": 0.008841750000000047,
       "sha256": "dd6434e1b0b60e1adb6f0611cd2c30439b87238c1ac4b99c38c102031c8afc7f"
     },
     {
       "fixture": "markers-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.014405500000000074,
+      "durationSeconds": 0.01445316600000001,
       "sha256": "08ac0eb215e5a6af4bee18a183cb97cd2ba688511b08794d72c236e3c690bb3d"
     },
     {
       "fixture": "markers-context.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.011254042000000027,
+      "durationSeconds": 0.011526583000000073,
       "sha256": "862cf3c2254c986dbdf40f9fe9e3533c1d1dc61ad1cf4f6877fc6b3065a99e78"
     },
     {
       "fixture": "markers-recursive.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008641334000000143,
+      "durationSeconds": 0.008812250000000176,
       "sha256": "69a4e9fc93b11b39890c937782f39b7030399a9dd705d38c463486bc61b7eaf0"
     },
     {
       "fixture": "markers-styles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01010962500000005,
+      "durationSeconds": 0.010235832999999956,
       "sha256": "6755050d3af9660be52ed53693b58ff70bf9e9b02a3d54b6575bc10897119f31"
     },
     {
       "fixture": "markers-vertices.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012020541999999978,
+      "durationSeconds": 0.01166337499999986,
       "sha256": "9785dd6dcf79c0bd64a33a0a82e8309181306f6915182bdc895520f9d31be783"
     },
     {
       "fixture": "markers-viewports.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.010308792000000039,
+      "durationSeconds": 0.010370333999999957,
       "sha256": "b60b7f4fab3bf51e63b152a2040c4dd0e6e3256d83b091ae8f775a186d9f42e4"
     },
     {
       "fixture": "markers-zero.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.011044875000000048,
+      "durationSeconds": 0.010984750000000076,
       "sha256": "5651c594c0c566591864755adb47aa8fc3d42824318648199b316eec19bdde39"
     },
     {
       "fixture": "mask-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0083287499999999,
+      "durationSeconds": 0.008200874999999996,
       "sha256": "0cd693d5cdfae30613a1f2435fc352f0e9a8a7f6d71014def6e671e499680db2"
     },
     {
       "fixture": "mask-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008038665999999922,
+      "durationSeconds": 0.008008583000000045,
       "sha256": "08e60153308fb662a09992f8e580a6389c2a7ccd20439248505a829b39b1f55b"
     },
     {
       "fixture": "mask-errors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008621415999999953,
+      "durationSeconds": 0.008637042000000065,
       "sha256": "b740b612877e52fb64b0844ebb5e1d1f566435020887040905d074c021115830"
     },
     {
       "fixture": "mask-gradients.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008897666999999956,
+      "durationSeconds": 0.008884582999999793,
       "sha256": "505076501beb8769c53f46a381133ebc9c55e99d1ac448d3dde86281cae3efe6"
     },
     {
       "fixture": "mask-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007761625000000095,
+      "durationSeconds": 0.008244583000000147,
       "sha256": "18cf24d704b74b3d9e52ffd504fbf121325247bf7e74dd1e0bec1143103580ae"
     },
     {
       "fixture": "mask-linear-rgb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007526166999999986,
+      "durationSeconds": 0.0077837079999999335,
       "sha256": "4b6a3d8982cc58d726d689fe815bb5b97b82ca7a1eeb8424d100503dcc733d90"
     },
     {
       "fixture": "mask-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009393458999999894,
+      "durationSeconds": 0.009680207999999994,
       "sha256": "2362c48f523060a91a7b8c74fd88cf9014052bf23298d0786b7ec888d24c0da1"
     },
     {
       "fixture": "mask-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008344042000000173,
+      "durationSeconds": 0.00858199999999988,
       "sha256": "b33162a4548699b35ab23d79a754f8f157c93b044d2a9a95f24480d56f8482a2"
     },
     {
       "fixture": "masks.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008541208000000097,
+      "durationSeconds": 0.008700207999999975,
       "sha256": "49390ba029e869738cf499958c42f8121e92544db2f3252913f3f559cb56b519"
     },
     {
       "fixture": "morphology-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03792908399999988,
+      "durationSeconds": 0.03991033299999981,
       "sha256": "9c762f57c85c5d436aff3b5aa34bc2a0230d82a6642852e75d3b2092ac32f36f"
     },
     {
       "fixture": "morphology-graph.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.036349417000000134,
+      "durationSeconds": 0.03797900000000004,
       "sha256": "fa5a75bec94284ebb1950469e196945bdfb85317446b24c0d1e2a480d7e9cef8"
     },
     {
       "fixture": "morphology-radius.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.033859208999999967,
+      "durationSeconds": 0.035047125000000054,
       "sha256": "5d596b7a7ebf7ede2a139577e11f4be4f9f900b95ad35e04de06b9b9b994d651"
     },
     {
       "fixture": "morphology-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04014920800000005,
+      "durationSeconds": 0.04150625000000013,
       "sha256": "e80c1d2c368a2b69de5cb207dc39c8386f76ea3a7e05cee3fb43b78dcad5f195"
     },
     {
       "fixture": "opacity.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008387665999999855,
+      "durationSeconds": 0.007746707999999899,
       "sha256": "d99cb45874f69684dfd072628ba717f22a98e49b3b66e3b775cbff7375c43328"
     },
     {
       "fixture": "paint-order-markers.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.010749250000000075,
-      "sha256": "e64e862d17960211e3e888538fe94458428e6e68c44c098c26f869d2a1af746d"
+      "durationSeconds": 0.010819375000000036,
+      "sha256": "302f49ff8621bc72bb9ddabc8ffec33921781e748f0b94f2fff342390a4229d8"
     },
     {
       "fixture": "paint-order-shapes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008582625000000007,
+      "durationSeconds": 0.008358042000000069,
       "sha256": "8e10d47cdcd9b221f6d0372570a21fd8ec1500afe7e72dd593a9f5640c36c222"
     },
     {
       "fixture": "paths.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00733445800000004,
+      "durationSeconds": 0.007456667000000152,
       "sha256": "d53eeec9d8325e3c134c2bf55065b7f9cec10b793bb0f7050bd4a51994c386af"
     },
     {
       "fixture": "pattern-errors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00939304200000015,
+      "durationSeconds": 0.00926991699999985,
       "sha256": "5d30c21adeaeae443299920306f4630a8a069e5c71987bc9d19e1e995b8eb594"
     },
     {
       "fixture": "pattern-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00935262499999999,
+      "durationSeconds": 0.00934045900000001,
       "sha256": "238adbbee9afa8f5061a05cd933f4fac669ce6a7ec1cfb7048cb4e354c22ff8a"
     },
     {
       "fixture": "pattern-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.010963541999999962,
+      "durationSeconds": 0.010825416000000133,
       "sha256": "b8c3a840aad790c1cb9789b69d342ea0fc767bdb9b5efe406aad6813c79493e2"
     },
     {
       "fixture": "pattern-reference.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008945541999999931,
+      "durationSeconds": 0.009173958000000312,
       "sha256": "d7f10e48db70a7dab20374b296516794c0420e195e24c147da342cc6560fae6b"
     },
     {
       "fixture": "pattern-transform.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.030855332999999974,
-      "sha256": "9abe458bdb7f21c836986d9387866760d7a72686caa716d82222b29e21af5847"
+      "durationSeconds": 0.03195574999999962,
+      "sha256": "f54827e4d259f4336b5d9c6342c42f4799c6d0710b52b3c3fc5a0e3c93abdb20"
     },
     {
       "fixture": "pattern-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009152625000000171,
+      "durationSeconds": 0.009047583000000031,
       "sha256": "593a0691842dabf1a42e650b4b84f3c10258156f3100accf14f87d4072917bbd"
     },
     {
       "fixture": "pattern-viewbox.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009880959000000075,
+      "durationSeconds": 0.009556082999999944,
       "sha256": "6d8a0281f3a74ad1a62f24afe9f5b35fcf0ba930b5c577ab6a45cff6f981579c"
     },
     {
       "fixture": "stroke-calibration.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007616541999999754,
-      "sha256": "fbc6071a1cfbfe6a9d234c81e36d1f0b2620097b8be4cc14d3a7455fcc358e03"
+      "durationSeconds": 0.007638584000000265,
+      "sha256": "d99a36454a911ad0a2db3c44f2a30192eefa29e0b395d8000f82ba482683d855"
     },
     {
       "fixture": "stroke-caps.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007777165999999852,
-      "sha256": "180661aa9ed409a1c05b662d921da66e84f76c8d13026513506a95f7e4fa8942"
+      "durationSeconds": 0.00710958299999993,
+      "sha256": "a4af34589412c3f0f2a36e3872dd81cd8037c96542ec226abb06cfb18221332c"
     },
     {
       "fixture": "stroke-dash-curves.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009390333000000282,
-      "sha256": "6474622a8a4555d1a733f7450c0cc71f520fe4b2bd2adb7b0d5a60d70160571a"
+      "durationSeconds": 0.008311583000000155,
+      "sha256": "b72bcf93fe5f253500a72b19f26d0633c7071a282f87d684c49c130dcec36f09"
     },
     {
       "fixture": "stroke-dash-zero.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007827208000000155,
-      "sha256": "97030b736fba0fbb140d95c70b372cfd97e3277fe6c43d4b262e02426d91a910"
+      "durationSeconds": 0.007576874999999745,
+      "sha256": "bc44adc13075164142331bb20bfcce9612301f2e8b22fc86a9610252bca7110a"
     },
     {
       "fixture": "stroke-dashes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008569250000000011,
-      "sha256": "e9fbd5304e9fe6fd6f0df35d4ba4a5436cd3c3127362abb692b80ea7d9211e58"
+      "durationSeconds": 0.007674125000000004,
+      "sha256": "67e7a462b3af284b3f4b9fbb6b8c93ed317e950660ff4c368cc9129a754a201b"
     },
     {
       "fixture": "stroke-joins.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00792337499999985,
-      "sha256": "6e65ed8707545497ccfd952169cfcc0dbb4de663b3fdc3cdd266fcf527375c6d"
+      "durationSeconds": 0.007904540999999881,
+      "sha256": "23f261a721e585875638e8a671830297f78c4b9b58b45530d6ca06f6038dee34"
     },
     {
       "fixture": "stroke-vector.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007340790999999626,
-      "sha256": "8dc2d32f6745fb38219f347ef0f30189801f0317109f725759fcdc48023daef5"
+      "durationSeconds": 0.007396124999999756,
+      "sha256": "0c0041e75a050dfcaa1953916ab802bdb1e68539afd1882c9af94555560893c1"
     },
     {
       "fixture": "svg-image-auto.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01997933299999977,
+      "durationSeconds": 0.01909979099999964,
       "sha256": "e8dccd3a49b3a32f3d419238a67b7f36009c6d7799272970ad8904db43c402ab"
     },
     {
       "fixture": "svg-image-contexts.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0255346669999999,
+      "durationSeconds": 0.024952999999999975,
       "sha256": "a0f3f4e891a67dfeef540b407ff99ce71e44f422fc7ae98e26e8605bc8e0cee4"
     },
     {
       "fixture": "svg-image-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.021914666000000124,
+      "durationSeconds": 0.020263374999999997,
       "sha256": "08e6a73a5703c7bd93b7ee55dc1938c7949cf822bf9e1864992b1ee38a43c3c2"
     },
     {
       "fixture": "svg-image-percent.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019291125000000194,
+      "durationSeconds": 0.017614000000000032,
       "sha256": "fef0c1c90b768207796a4aaffa4fc25e9a2392842af5c903a9170a77add60f6c"
     },
     {
       "fixture": "svg-image-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019759666999999807,
+      "durationSeconds": 0.018359291999999642,
       "sha256": "fd6269192093321962b1feafc70b93b0dc3b39fd54e51e4f48147259315ab230"
     },
     {
       "fixture": "svg-image-sizing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018134541000000354,
+      "durationSeconds": 0.017870042000000013,
       "sha256": "5b6d0dbd823ba42d8433a8b0380a296d37ca64cd7f7a9c81a0d20e882dec91ed"
     },
     {
       "fixture": "svg-image-text.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.042207082999999784,
+      "durationSeconds": 0.04174954100000013,
       "sha256": "3155058c798325eceafed0dc9741fb26030f36e8d53354ef83f64960c376d98f"
     },
     {
       "fixture": "symbols.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008621000000000094,
+      "durationSeconds": 0.008401749999999993,
       "sha256": "977b016dc12c0a3729d43ffad326cf698b08267dc13e34a9098ebdb4661fa49d"
     },
     {
       "fixture": "text-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019367666999999984,
+      "durationSeconds": 0.019281500000000052,
       "sha256": "9403c79f099984a64c0ad003dc89e18ccdbbb9c8ea951c50c88e0d692ea55db7"
     },
     {
       "fixture": "text-length-spans.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.021258708999999727,
+      "durationSeconds": 0.02126245800000015,
       "sha256": "b81d0c7f41e9fae941f6dfa09778d23a220705f30ea48955caa43c33cb69ff62"
     },
     {
       "fixture": "text-length.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.020747375000000373,
+      "durationSeconds": 0.020977832999999918,
       "sha256": "3703f34f2820b61b126315753e0956a020eb5413de98dae57f450cb83826fb8c"
     },
     {
       "fixture": "text-paint-order.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.027932624999999916,
+      "durationSeconds": 0.02471820800000023,
       "sha256": "0a8bff5e03fe9f9bf0e0ad29477b8d8c501fad1e195d074cb1c7f91a474798f6"
     },
     {
       "fixture": "text-paints.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.021799790999999912,
-      "sha256": "c9f7079e6ea1459176551631810f930e04065e3733cf205e9defab5a24b600f7"
+      "durationSeconds": 0.020496416999999836,
+      "sha256": "c4d5a2ce44113efd6c125d878cd68ca300c6eac8167e08aad84e7238c4e09bf2"
     },
     {
       "fixture": "text-path-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02376283299999977,
+      "durationSeconds": 0.02360641600000008,
       "sha256": "de34691352b6b0ee6cbfcb729ca5af3716a8b8ab63afca64031a16aee41381f5"
     },
     {
       "fixture": "text-path-positions.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019728416999999807,
+      "durationSeconds": 0.019647375000000012,
       "sha256": "8376b15a3a5b0eff0a5a5cdc3bc73bc9e020356858957fd713dd13e03a026481"
     },
     {
       "fixture": "text-path-references.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02344370799999979,
+      "durationSeconds": 0.02359737499999983,
       "sha256": "e39a4a4974d06cb5d2dd1ec73b82db136045d3153a165704a45f3b661e226af0"
     },
     {
       "fixture": "text-path-shapes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01878695800000014,
+      "durationSeconds": 0.01905158399999982,
       "sha256": "38e946041a105b580a83d7c8fee55cf61ccb9e9fae86ca8f4492b8194e254db1"
     },
     {
       "fixture": "text-path-styles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019645750000000135,
+      "durationSeconds": 0.0197507499999997,
       "sha256": "4a274eae05fb92e09f61b807756abf3982f77f19c8073659f06033d706dbe595"
     },
     {
       "fixture": "text-position.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02061979199999996,
+      "durationSeconds": 0.020635749999999918,
       "sha256": "843211d252709a692569356255a0e6f8611f8980ee48aaaeea6c0fa5464b38bb"
     },
     {
       "fixture": "text-spans.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019757540999999948,
+      "durationSeconds": 0.02006537500000013,
       "sha256": "cd918ddc41cc5e93c10d1872e5fe06b7bfbb750355ca8ca3e8fa144793928e53"
     },
     {
       "fixture": "text-style.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.023082875000000058,
+      "durationSeconds": 0.02371324999999979,
       "sha256": "eda52563a91a3ff1ece9aaf1fb3af9f394e37a38e5cf77b6bdb324daa0094c54"
     },
     {
       "fixture": "text-unicode.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.020383332999999768,
+      "durationSeconds": 0.020856541000000107,
       "sha256": "2ab1678add8a32dd99adc685b5712c08d7b6cc2effd65175262e65595d6aa0a4"
     },
     {
       "fixture": "text-whitespace.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019254417000000103,
+      "durationSeconds": 0.018786874999999783,
       "sha256": "57485e4d16b0f46ffecc51fcf4bffabd45fe31ada83439ac0a4e19c80db4894a"
     },
     {
       "fixture": "transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007484542000000147,
+      "durationSeconds": 0.007312665999999808,
       "sha256": "2f2b59ed625603eab0cbd6009e8da03ad26e85d9a8f2c9328f9f930fb9c039bf"
     },
     {
       "fixture": "use-clips.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008300458000000163,
+      "durationSeconds": 0.008397874999999657,
       "sha256": "650df610458558759b8e30bb99371c2b8fcd9b50e6de254b5d119389f16e3465"
     },
     {
       "fixture": "use-cycles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007820999999999913,
+      "durationSeconds": 0.007629832999999963,
       "sha256": "7f54684d5fa66e7a1b2f2882418657682d8a46a7d262d5d2f73d1f133f3406e1"
     },
     {
       "fixture": "use-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008115791000000172,
-      "sha256": "02ea3c3b666235ddcc44f1bb351929090728687ff6bc527fbc52931e5ab2e020"
+      "durationSeconds": 0.007758332999999766,
+      "sha256": "d9269683d01d3e719b131c5124f323220cca4ed1f2db0f3c99c6d96ea70369bd"
     },
     {
       "fixture": "use.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007795999999999822,
+      "durationSeconds": 0.008094583999999941,
       "sha256": "b9e2a318716c304fef6a48a11169c285e2a4a67f89048f0ed2cc3d5f0491d824"
     },
     {
       "fixture": "viewports-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008123583000000054,
+      "durationSeconds": 0.008014624999999796,
       "sha256": "2436df75cae0631b187ffd183bafa53e4ee8e223ec3c8cf1c9d032a134f9b24a"
     },
     {
       "fixture": "viewports.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007857124999999996,
+      "durationSeconds": 0.007964916000000358,
       "sha256": "58ba7e934d0cd7e904855983821cd234277de61b6f79687b0c184f6593e9cf4c"
     }
   ]

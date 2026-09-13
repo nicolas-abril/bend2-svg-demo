@@ -927,12 +927,6 @@ def stroke.inherit(s: StrokeSettings, +as: List<&2, XML.Attr>) -> StrokeSettings
     style.value(as, "stroke-dasharray", dash, "none", True{}), style.value(as, "stroke-dashoffset", offset, "0", True{}),
     style.value(as, "vector-effect", vector, "none", False{})}
 
-type StrokePart is Data:
-  StrokeBand{origin: Point, direction: Point, length: F32, radius: F32}
-  StrokeCircle{center: Point, radius: F32}
-  StrokeTriangle{a: Point, b: Point, c: Point}
-  StrokeSector{center: Point, radius: F32, a: Point, b: Point, sign: F32}
-
 def point.cross(p: Point, q: Point) -> F32:
   Point{x, y} = p
   Point{u, v} = q
@@ -944,87 +938,6 @@ def point.normal(p: Point) -> Point:
 
 def point.unit(+p: Point) -> Point:
   point.scale(p, (1.0 / U.max(0.0000001, F32.sqrt(point.dot(p, p))) : F32))
-
-def stroke.triangle(+a: Point, +b: Point, +c: Point, +p: Point) -> Bool:
-  +x = point.cross(point.sub(b, a), point.sub(p, a))
-  +y = point.cross(point.sub(c, b), point.sub(p, b))
-  +z = point.cross(point.sub(a, c), point.sub(p, c))
-  ((F32.is_ge(x, 0.0) && F32.is_ge(y, 0.0) && F32.is_ge(z, 0.0))
-    || (F32.is_le(x, 0.0) && F32.is_le(y, 0.0) && F32.is_le(z, 0.0)))
-    && F32.is_gt(F32.abs(point.cross(point.sub(b, a), point.sub(c, a))), 0.00000001)
-
-def stroke.part(part: StrokePart, +p: Point) -> Bool:
-  match part:
-    case StrokeBand{origin, dir, len, r}:
-      +q = point.sub(p, origin)
-      +u = dir
-      +along = point.dot(q, u)
-      F32.is_ge(along, 0.0) && F32.is_le(along, len) && F32.is_le(F32.abs(point.cross(q, u)), r)
-    case StrokeCircle{center, radius}:
-      +q = point.sub(p, center)
-      +r = radius
-      F32.is_le(point.dot(q, q), (r * r : F32))
-    case StrokeTriangle{a, b, c}: stroke.triangle(a, b, c, p)
-    case StrokeSector{center, radius, a, b, sign}:
-      +q = point.sub(p, center)
-      +r = radius
-      +sgn = sign
-      F32.is_le(point.dot(q, q), (r * r : F32))
-        && F32.is_ge((sgn * point.cross(a, q) : F32), 0.0)
-        && F32.is_ge((sgn * point.cross(q, b) : F32), 0.0)
-
-def stroke.contains(parts: List<&2, StrokePart>, +p: Point) -> Bool:
-  match parts:
-    case Nil{}: False{}
-    case Con{h, t}: U.branch(Bool, stroke.part(h, p), _ => True{}, _ => stroke.contains(t, p))
-
-def stroke.append(xs: List<&2, StrokePart>, ys: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match xs:
-    case Nil{}: ys
-    case Con{h, t}: Con{h, stroke.append(t, ys)}
-
-def stroke.cap(+p: Point, +dir: Point, +r: F32, +cap: String, parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  +rest = parts
-  U.branch(List<&2, StrokePart>, U.string.equal(cap, "round"), _ => Con{StrokeSector{p, r, point.scale(point.normal(dir), F32.neg(1.0)), point.normal(dir), 1.0}, rest},
-    _ => U.branch(List<&2, StrokePart>, U.string.equal(cap, "square"), _ => Con{StrokeBand{p, dir, r, r}, rest}, _ => rest))
-
-def stroke.miter.clipped(+p: Point, +a: Point, +b: Point, +m: Point, +limit: F32,
-  parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  +n = point.unit(point.sub(m, p))
-  +distance = point.distance(m, p)
-  +da = point.dot(point.sub(a, p), n)
-  +db = point.dot(point.sub(b, p), n)
-  +ca = point.add(a, point.scale(point.sub(m, a), U.clamp(((limit - da) / (distance - da) : F32), 0.0, 1.0)))
-  +cb = point.add(b, point.scale(point.sub(m, b), U.clamp(((limit - db) / (distance - db) : F32), 0.0, 1.0)))
-  Con{StrokeTriangle{p, a, ca}, Con{StrokeTriangle{p, ca, cb}, Con{StrokeTriangle{p, cb, b}, parts}}}
-
-def stroke.miter(+p: Point, +a: Point, +b: Point, +u: Point, +v: Point, +r: F32, +limit: F32,
-  +join: String, +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  +m = point.add(a, point.scale(u, (point.cross(point.sub(b, a), v) / point.cross(u, v) : F32)))
-  +distance = point.distance(p, m)
-  +bevel = {Con{StrokeTriangle{p, a, b}, parts} : List<&2, StrokePart>}
-  U.branch(List<&2, StrokePart>, F32.is_le(distance, (limit * r : F32)),
-    _ => Con{StrokeTriangle{p, a, m}, Con{StrokeTriangle{p, m, b}, parts}},
-    _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "miter-clip"),
-      _ => stroke.miter.clipped(p, a, b, m, (r * limit : F32), parts), _ => bevel))
-
-def stroke.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings,
-  +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-  +turn = point.cross(u, v)
-  +sign = U.choose(F32, F32.is_ge(turn, 0.0), 1.0, F32.neg(1.0))
-  +n1 = point.scale(point.normal(u), F32.neg(sign))
-  +n2 = point.scale(point.normal(v), F32.neg(sign))
-  +a = point.add(p, point.scale(n1, r))
-  +b = point.add(p, point.scale(n2, r))
-  U.branch(List<&2, StrokePart>, F32.is_lt(F32.abs(turn), 0.000001),
-    _ => U.choose(List<&2, StrokePart>, U.string.equal(join, "round") && F32.is_lt(point.dot(u, v), 0.0),
-      Con{StrokeSector{p, r, point.scale(point.normal(u), F32.neg(1.0)), point.normal(u), 1.0}, parts}, parts),
-    _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "round"),
-      _ => Con{StrokeSector{p, r, n1, n2, sign}, parts},
-      _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "bevel"),
-        _ => Con{StrokeTriangle{p, a, b}, parts},
-        _ => stroke.miter(p, a, b, u, v, r, limit, join, parts))))
 
 type Subpath is Data:
   Subpath{points: List<&2, Point>, closed: Bool}
@@ -1084,52 +997,6 @@ def segments.length(xs: List<&2, Segment>) -> F32:
   match xs:
     case Nil{}: 0.0
     case Con{Segment{p, q, dir, len, distance}, rest}: (len + segments.length(rest) : F32)
-
-def stroke.previous(previous: Maybe<&2, Segment>, p: Point, dir: Point, r: F32,
-  settings: StrokeSettings, parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match previous:
-    case None{}: parts
-    case Some{Segment{a, b, u, len, distance}}: stroke.join(p, u, dir, r, settings, parts)
-
-def stroke.solid.parts(+xs: List<&2, Segment>, previous: Maybe<&2, Segment>, +r: F32,
-  +settings: StrokeSettings, parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match xs:
-    case Nil{}: parts
-    case Con{Segment{p, q, dir, len, distance}, rest}:
-      stroke.solid.parts(rest, Some{Segment{p, q, dir, len, distance}}, r, settings,
-        stroke.previous(previous, p, dir, r, settings, Con{StrokeBand{p, dir, len, r}, parts}))
-
-def stroke.ends(+first: Segment, last: Segment, +closed: Bool, +r: F32, +settings: StrokeSettings,
-  +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  Segment{a, b, u, flen, fdist} = first
-  Segment{p, q, v, len, distance} = last
-  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-  +end = q
-  +dir = v
-  U.branch(List<&2, StrokePart>, closed, _ => stroke.join(a, dir, u, r, settings, parts),
-    _ => stroke.cap(end, dir, r, cap, stroke.cap(a, point.scale(u, F32.neg(1.0)), r, cap, parts)))
-
-def segments.last(xs: List<&2, Segment>, fallback: Segment) -> Segment:
-  match xs:
-    case Nil{}: fallback
-    case Con{h, t}: segments.last(t, h)
-
-def stroke.solid.path(+xs: List<&2, Segment>, point: Point, closed: Bool, +r: F32,
-  +settings: StrokeSettings, +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match xs:
-    case Nil{}:
-      StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-      +p = point
-      stroke.cap(p, Point{1.0, 0.0}, r, cap, stroke.cap(p, Point{F32.neg(1.0), 0.0}, r, cap, parts))
-    case Con{h, t}: stroke.ends(h, segments.last(t, h), closed, r, settings, stroke.solid.parts(xs, None{}, r, settings, parts))
-
-def stroke.paths(paths: List<&2, Subpath>, +r: F32, +settings: StrokeSettings, parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match paths:
-    case Nil{}: parts
-    case Con{Subpath{Nil{}, closed}, rest}: stroke.paths(rest, r, settings, parts)
-    case Con{Subpath{Con{p, ps}, closed}, rest}:
-      +first = p
-      stroke.paths(rest, r, settings, stroke.solid.path(segments(Con{first, ps}, 0.0), first, closed, r, settings, parts))
 
 # Dash intervals are measured along each flattened subpath. A dash crossing a
 # vertex gets a join; a dash ending there gets a cap instead.
@@ -1235,82 +1102,322 @@ def dash.end(xs: List<&2, DashRun>, +total: F32) -> Bool:
     case Con{DashRun{a, b}, rest}:
       (F32.is_lt(a, total) && F32.is_ge(b, total)) || dash.end(rest, total)
 
-def stroke.run(+seg: Segment, +run: DashRun, +total: F32, +seam: Bool, +r: F32, +cap: String,
-  +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  Segment{p, q, dir, len, distance} = seg
-  DashRun{start, end} = run
-  +segEnd = (distance + len : F32)
-  +left = U.max(distance, start)
-  +right = U.min(segEnd, end)
-  +a = point.add(p, point.scale(dir, (left - distance : F32)))
-  +b = point.add(p, point.scale(dir, (right - distance : F32)))
-  +body = U.choose(List<&2, StrokePart>, F32.is_gt(right, left), Con{StrokeBand{a, dir, (right - left : F32), r}, parts}, parts)
-  +withStart = U.choose(List<&2, StrokePart>, F32.is_ge(start, distance) && F32.is_lt(start, segEnd)
-    && Bool.not(seam && F32.is_eq(start, 0.0)), stroke.cap(a, point.scale(dir, F32.neg(1.0)), r, cap, body), body)
-  U.branch(List<&2, StrokePart>, F32.is_ge(right, left),
-    _ => U.choose(List<&2, StrokePart>, (F32.is_gt(end, distance) || (F32.is_eq(start, end) && F32.is_eq(start, distance))) && F32.is_le(end, segEnd)
-      && Bool.not(seam && F32.is_eq(end, total)), stroke.cap(b, dir, r, cap, withStart), withStart), _ => parts)
+def segment.dir(+s: Segment) -> Point:
+  Segment{p, q, dir, len, distance} = s
+  dir
 
-def stroke.runs(xs: List<&2, DashRun>, +seg: Segment, +total: F32, +seam: Bool, +r: F32, +cap: String,
-  parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match xs:
-    case Nil{}: parts
-    case Con{h, t}: stroke.runs(t, seg, total, seam, r, cap, stroke.run(seg, h, total, seam, r, cap, parts))
+def segment.start(+s: Segment) -> Point:
+  Segment{p, q, dir, len, distance} = s
+  p
 
-def stroke.dashed.parts(+xs: List<&2, Segment>, previous: Maybe<&2, Segment>, +runs: List<&2, DashRun>,
-  +total: F32, +seam: Bool, +r: F32, +settings: StrokeSettings, +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
+def segment.end(+s: Segment) -> Point:
+  Segment{p, q, dir, len, distance} = s
+  q
+
+# ---- outline stroker ----
+# A stroke is filled as an outline with nonzero winding: for an open subpath
+# one polygon (the left offsets forward, the end cap, the right offsets
+# backward, the start cap), for a closed one two (the left and the right
+# offsets, each closed, running opposite ways so the band between them has
+# winding one). Joins are built on the outer side of a vertex only; on the
+# inner side the two offsets cross, and the small loop that makes still
+# fills under nonzero winding. Round parts are flattened to the device
+# tolerance through `scale`, the device pixels per local unit.
+
+def outline.tolerance(+scale: F32) -> F32:
+  (flat.tolerance() / U.max(scale, 0.000001) : F32)
+
+# Steps for an arc of `sweep` radians at radius r within the tolerance.
+def outline.steps(+sweep: F32, +r: F32, +scale: F32) -> U32:
+  +tol = outline.tolerance(scale)
+  +step = U.max(0.001, (2.0 * F32.sqrt((2.0 * U.max(tol, 0.000001) / U.max(r, 0.000001) : F32)) : F32))
+  F32.to_u32(U.min(4096.0, U.max(1.0, F32.ceil((F32.abs(sweep) / step : F32)))))
+
+def point.angle(+p: Point) -> F32:
+  Point{x, y} = p
+  F32.atan2(y, x)
+
+# n points from `angle` on, `step` apart, prepended in order.
+def outline.arc(n: Nat, +c: Point, +r: F32, +angle: F32, +step: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match n:
+    case 0n: acc
+    case 1n+d: outline.arc(d, c, r, (angle + step : F32), step, Con{point.add(c, Point{(r * F32.cos(angle) : F32), (r * F32.sin(angle) : F32)}), acc})
+
+# The points strictly between the start and end of an arc around c from the
+# direction `from` sweeping `sweep` radians (signed).
+def outline.sweep(+c: Point, +r: F32, +from: Point, +sweep: F32, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  +n = outline.steps(sweep, r, scale)
+  +step = (sweep / U32.to_f32(n) : F32)
+  outline.arc(U32.to_nat((n - 1 : U32)), c, r, (point.angle(from) + step : F32), step, acc)
+
+# The signed angle from u to v, both unit vectors.
+def point.turn(+u: Point, +v: Point) -> F32:
+  F32.atan2(point.cross(u, v), point.dot(u, v))
+
+# The join on the left side at vertex p, from the incoming direction u to the
+# outgoing v, when that side is the outer one (the path turns right). Both
+# offset endpoints a = p + r n(u) and b = p + r n(v) are pushed by the
+# segments; only what lies between them is added here.
+def outline.miter(+p: Point, +a: Point, +b: Point, +u: Point, +v: Point, +r: F32, +limit: F32, +join: String, +acc: List<&2, Point>) -> List<&2, Point>:
+  +m = point.add(a, point.scale(u, (point.cross(point.sub(b, a), v) / point.cross(u, v) : F32)))
+  +distance = point.distance(p, m)
+  +n = point.unit(point.sub(m, p))
+  +da = point.dot(point.sub(a, p), n)
+  +db = point.dot(point.sub(b, p), n)
+  +reach = (limit * r : F32)
+  U.branch(List<&2, Point>, F32.is_le(distance, reach), _ => Con{m, acc},
+    _ => U.branch(List<&2, Point>, U.string.equal(join, "miter-clip"),
+      _ => Con{point.add(b, point.scale(point.sub(m, b), U.clamp(((reach - db) / (distance - db) : F32), 0.0, 1.0))),
+        Con{point.add(a, point.scale(point.sub(m, a), U.clamp(((reach - da) / (distance - da) : F32), 0.0, 1.0))), acc}},
+      _ => acc))
+
+def outline.join.outer(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
+  +nu = point.normal(u)
+  U.branch(List<&2, Point>, U.string.equal(join, "round"), _ => outline.sweep(p, r, nu, point.turn(u, v), scale, acc),
+    _ => U.branch(List<&2, Point>, U.string.equal(join, "bevel"), _ => acc,
+      _ => outline.miter(p, point.add(p, point.scale(nu, r)), point.add(p, point.scale(point.normal(v), r)), u, v, r, limit, join, acc)))
+
+# A reversal (v = -u) gets the half circle through p + r u when joins are round.
+def outline.join.back(+p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
+  U.branch(List<&2, Point>, U.string.equal(join, "round"), _ => outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc), _ => acc)
+
+def outline.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  +turn = point.cross(u, v)
+  U.branch(List<&2, Point>, F32.is_lt(F32.abs(turn), 0.000001),
+    _ => U.branch(List<&2, Point>, F32.is_lt(point.dot(u, v), 0.0), _ => outline.join.back(p, u, r, settings, scale, acc), _ => acc),
+    _ => U.branch(List<&2, Point>, F32.is_lt(turn, 0.0), _ => outline.join.outer(p, u, v, r, settings, scale, acc), _ => acc))
+
+def outline.join.if(previous: Maybe<&2, Point>, +p: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match previous:
+    case None{}: acc
+    case Some{u}: outline.join(p, u, v, r, settings, scale, acc)
+
+# The left side of a polyline: each segment's two offset endpoints, with the
+# outer joins between segments. `previous` carries the direction arriving at
+# the first vertex (the last segment's, for a closed subpath).
+def outline.side(xs: List<&2, Segment>, previous: Maybe<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match xs:
-    case Nil{}: parts
+    case Nil{}: acc
     case Con{Segment{p, q, dir, len, distance}, rest}:
-      StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-      +joins = U.choose(List<&2, StrokePart>, dash.crosses(runs, distance),
-        stroke.previous(previous, p, dir, r, settings, parts), parts)
-      stroke.dashed.parts(rest, Some{Segment{p, q, dir, len, distance}}, runs, total, seam, r, settings,
-        stroke.runs(runs, Segment{p, q, dir, len, distance}, total, seam, r, cap, joins))
+      +u = dir
+      +pp = p
+      +n = point.scale(point.normal(u), r)
+      outline.side(rest, Some{u}, r, settings, scale, Con{point.add(q, n), Con{point.add(pp, n), outline.join.if(previous, pp, u, r, settings, scale, acc)}})
+
+# The cap at point p leaving in direction u, between the offsets p + r n and
+# p - r n (which the sides push): nothing for butt.
+def outline.cap(+p: Point, +u: Point, +r: F32, +cap: String, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
+  +n = point.scale(point.normal(u), r)
+  +ahead = point.scale(u, r)
+  U.branch(List<&2, Point>, U.string.equal(cap, "round"), _ => outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc),
+    _ => U.branch(List<&2, Point>, U.string.equal(cap, "square"), _ => Con{point.sub(point.add(p, ahead), n), Con{point.add(point.add(p, ahead), n), acc}}, _ => acc))
+
+def outline.edges.go(+first: Point, pts: List<&2, Point>, +prev: Point, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match pts:
+    case Nil{}: Con{Edge{prev, first, True{}, True{}}, acc}
+    case Con{p, rest}:
+      +pp = p
+      outline.edges.go(first, rest, pp, Con{Edge{prev, pp, True{}, False{}}, acc})
+
+# The closed polygon through the points, as edges.
+def outline.edges(pts: List<&2, Point>, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match pts:
+    case Nil{}: acc
+    case Con{p, rest}:
+      +pp = p
+      outline.edges.go(pp, rest, pp, acc)
+
+def segments.last(xs: List<&2, Segment>, fallback: Segment) -> Segment:
+  match xs:
+    case Nil{}: fallback
+    case Con{h, t}: segments.last(t, h)
+
+# The outline of an open polyline: the left side, the end cap, the right side
+# (the left side of the reversed points) and the start cap.
+def settings.cap(+s: StrokeSettings) -> String:
+  StrokeSettings{cap, join, limit, dash, offset, vector} = s
+  cap
+
+def outline.open.go(forward: List<&2, Segment>, back: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match forward:
+    case Nil{}: acc
+    case Con{h, t}:
+      +first = h
+      +tt = t
+      +last = segments.last(tt, first)
+      +cap = settings.cap(settings)
+      outline.edges(outline.cap(segment.start(first), point.scale(segment.dir(first), F32.neg(1.0)), r, cap, scale,
+        outline.side(back, None{}, r, settings, scale,
+          outline.cap(segment.end(last), segment.dir(last), r, cap, scale,
+            outline.side(Con{first, tt}, None{}, r, settings, scale, Nil{})))), acc)
+
+def outline.open(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.open.go(segments(pts, 0.0), segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, acc)
+
+# A closed subpath: one closed loop per side, each joined at the start vertex.
+def outline.loop(+xs: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match xs:
+    case Nil{}: acc
+    case Con{h, t}:
+      +first = h
+      outline.edges(outline.side(Con{h, t}, Some{segment.dir(segments.last(t, first))}, r, settings, scale, Nil{}), acc)
+
+def outline.closed(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.loop(segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, outline.loop(segments(pts, 0.0), r, settings, scale, acc))
+
+# A zero-length piece: a dot for round caps, a square for square caps.
+def outline.dot(+p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
+  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
+  +n = point.scale(point.normal(u), r)
+  U.branch(List<&2, Edge>, U.string.equal(cap, "butt"), _ => acc,
+    _ => outline.edges(outline.cap(p, point.scale(u, F32.neg(1.0)), r, cap, scale, Con{point.sub(p, n), outline.cap(p, u, r, cap, scale, Con{point.add(p, n), Nil{}})}), acc))
+
+# ---- dashes as polylines ----
+# The point at distance d along the segments, and the direction there.
+def segment.at(+s: Segment, +d: F32) -> Point:
+  Segment{p, q, dir, len, distance} = s
+  point.add(p, point.scale(dir, U.clamp((d - distance : F32), 0.0, len)))
+
+def segment.reaches(+s: Segment, +d: F32) -> Bool:
+  Segment{p, q, dir, len, distance} = s
+  F32.is_le(d, (distance + len : F32))
+
+@unsafe
+def segments.at(xs: List<&2, Segment>, +d: F32, +fallback: Point) -> Point:
+  match xs:
+    case Nil{}: fallback
+    case Con{h, Nil{}}: segment.at(h, d)
+    case Con{h, Con{g, t}}:
+      +hh = h
+      U.branch(Point, segment.reaches(hh, d), _ => segment.at(hh, d), _ => segments.at(Con{g, t}, d, fallback))
+
+@unsafe
+def segments.dir.at(xs: List<&2, Segment>, +d: F32, +fallback: Point) -> Point:
+  match xs:
+    case Nil{}: fallback
+    case Con{h, Nil{}}: segment.dir(h)
+    case Con{h, Con{g, t}}:
+      +hh = h
+      U.branch(Point, segment.reaches(hh, d), _ => segment.dir(hh), _ => segments.dir.at(Con{g, t}, d, fallback))
+
+def points.push.if(hit: Bool, +p: Point, tail: List<&2, Point>) -> List<&2, Point>:
+  match hit:
+    case True{}: Con{p, tail}
+    case False{}: tail
+
+# The vertices strictly inside (s, e), in order, prepended before `acc`.
+def segments.between(xs: List<&2, Segment>, +s: F32, +e: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match xs:
+    case Nil{}: acc
+    case Con{Segment{p, q, dir, len, distance}, rest}:
+      +at = (distance + len : F32)
+      points.push.if(F32.is_gt(at, s) && F32.is_lt(at, e), q, segments.between(rest, s, e, acc))
+
+# The polyline of the run [s, e] along the segments.
+def dash.points(+xs: List<&2, Segment>, +s: F32, +e: F32) -> List<&2, Point>:
+  Con{segments.at(xs, s, Point{0.0, 0.0}), segments.between(xs, s, e, Con{segments.at(xs, e, Point{0.0, 0.0}), Nil{}})}
+
+def outline.run(+xs: List<&2, Segment>, +s: F32, +e: F32, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
+  U.branch(List<&2, Edge>, F32.is_le((e - s : F32), 0.000001),
+    _ => outline.dot(segments.at(xs, s, Point{0.0, 0.0}), segments.dir.at(xs, s, Point{1.0, 0.0}), r, settings, scale, acc),
+    _ => outline.open(dash.points(xs, s, e), r, settings, scale, acc))
+
+# The runs of an open subpath, or of a closed one whose dashes do not meet at
+# the seam. A closed subpath painted along its whole length is a closed loop.
+def outline.runs(runs: List<&2, DashRun>, +xs: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match runs:
+    case Nil{}: acc
+    case Con{DashRun{s, e}, rest}: outline.runs(rest, xs, r, settings, scale, outline.run(xs, s, e, r, settings, scale, acc))
+
+def dash.first.end(xs: List<&2, DashRun>) -> F32:
+  match xs:
+    case Nil{}: 0.0
+    case Con{DashRun{s, e}, rest}: e
+
+def dash.last.start(xs: List<&2, DashRun>, +fallback: F32) -> F32:
+  match xs:
+    case Nil{}: fallback
+    case Con{DashRun{s, e}, rest}: dash.last.start(rest, s)
+
+def dash.drop.first(xs: List<&2, DashRun>) -> List<&2, DashRun>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{h, t}: t
+
+def dash.drop.last(xs: List<&2, DashRun>) -> List<&2, DashRun>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{h, Nil{}}: Nil{}
+    case Con{h, Con{g, t}}: Con{h, dash.drop.last(Con{g, t})}
+
+def dash.whole(xs: List<&2, DashRun>, +total: F32) -> Bool:
+  match xs:
+    case Nil{}: False{}
+    case Con{DashRun{s, e}, Nil{}}: F32.is_le(s, 0.0) && F32.is_ge(e, total)
+    case Con{DashRun{s, e}, Con{g, t}}: False{}
+
+def dash.points.tail(+xs: List<&2, Segment>, +s: F32, +e: F32) -> List<&2, Point>:
+  segments.between(xs, s, e, Con{segments.at(xs, e, Point{0.0, 0.0}), Nil{}})
+
+def points.append(xs: List<&2, Point>, ys: List<&2, Point>) -> List<&2, Point>:
+  match xs:
+    case Nil{}: ys
+    case Con{h, t}: Con{h, points.append(t, ys)}
+
+# The dashes of a closed subpath crossing the seam merge into one polyline:
+# the last run's points followed by the first run's, minus the shared point.
+def outline.seam(+xs: List<&2, Segment>, +runs: List<&2, DashRun>, +total: F32, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  +s = dash.last.start(runs, 0.0)
+  +e = dash.first.end(runs)
+  outline.runs(dash.drop.last(dash.drop.first(runs)), xs, r, settings, scale,
+    outline.open(points.append(dash.points(xs, s, total), dash.points.tail(xs, 0.0, e)), r, settings, scale, acc))
+
+def outline.dashed(+pts: List<&2, Point>, +closed: Bool, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
+  +xs = segments(pts, 0.0)
+  +total = segments.length(xs)
+  +runs = dash.runs(pattern, total)
+  U.branch(List<&2, Edge>, closed && dash.whole(runs, total), _ => outline.closed(pts, r, settings, scale, acc),
+    _ => U.branch(List<&2, Edge>, closed && dash.start(runs) && dash.end(runs, total) && Bool.not(dash.whole(runs, total)),
+      _ => outline.seam(xs, runs, total, r, settings, scale, acc),
+      _ => outline.runs(runs, xs, r, settings, scale, acc)))
 
 def dash.any(xs: List<&2, DashRun>) -> Bool:
   match xs:
     case Nil{}: False{}
     case Con{h, t}: True{}
 
-def stroke.dashed.path(+xs: List<&2, Segment>, point: Point, closed: Bool, +r: F32,
-  +settings: StrokeSettings, +pattern: DashPattern, +parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match xs:
-    case Nil{}: U.branch(List<&2, StrokePart>, dash.any(dash.runs(pattern, 0.0)),
-      _ => stroke.solid.path(xs, point, closed, r, settings, parts), _ => parts)
-    case Con{h, t}:
-      +total = segments.length(xs)
-      +runs = dash.runs(pattern, total)
-      +seam = closed && dash.start(runs) && dash.end(runs, total)
-      +body = stroke.dashed.parts(xs, None{}, runs, total, seam, r, settings, parts)
-      U.branch(List<&2, StrokePart>, seam, _ => stroke.ends(h, segments.last(t, h), True{}, r, settings, body), _ => body)
+def outline.dot.if(paint: Bool, +p: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match paint:
+    case True{}: outline.dot(p, Point{1.0, 0.0}, r, settings, scale, acc)
+    case False{}: acc
 
-def stroke.dashed.paths(paths: List<&2, Subpath>, +r: F32, +settings: StrokeSettings, +pattern: DashPattern,
-  parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
+# A subpath of one point: caps only, as a dot in the x direction, when the
+# dash pattern paints at its start.
+def outline.subpath(+pts: List<&2, Point>, +closed: Bool, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match pts:
+    case Nil{}: acc
+    case Con{p, Nil{}}: outline.dot.if(dash.any(dash.runs(pattern, 0.0)), p, r, settings, scale, acc)
+    case Con{p, Con{q, rest}}: outline.dashed(Con{p, Con{q, rest}}, closed, r, settings, pattern, scale, acc)
+
+def outline.subpaths(paths: List<&2, Subpath>, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match paths:
-    case Nil{}: parts
-    case Con{Subpath{Nil{}, closed}, rest}: stroke.dashed.paths(rest, r, settings, pattern, parts)
-    case Con{Subpath{Con{p, ps}, closed}, rest}:
-      +first = p
-      stroke.dashed.paths(rest, r, settings, pattern, stroke.dashed.path(segments(Con{first, ps}, 0.0), first, closed, r, settings, pattern, parts))
+    case Nil{}: acc
+    case Con{Subpath{points, closed}, rest}: outline.subpaths(rest, r, settings, pattern, scale, outline.subpath(points, closed, r, settings, pattern, scale, acc))
 
 def subpaths.length(paths: List<&2, Subpath>) -> F32:
   match paths:
     case Nil{}: 0.0
     case Con{Subpath{points, closed}, rest}: (segments.length(segments(points, 0.0)) + subpaths.length(rest) : F32)
 
-def stroke.compile.paths(+paths: List<&2, Subpath>, r: F32, +settings: StrokeSettings, ref: F32, +declared: F32) -> List<&2, StrokePart>:
+def stroke.compile.paths(+paths: List<&2, Subpath>, r: F32, +settings: StrokeSettings, ref: F32, +declared: F32, +scale: F32) -> List<&2, Edge>:
   +factor = U.choose(F32, F32.is_gt(declared, 0.0), (subpaths.length(paths) / declared : F32), 1.0)
-  stroke.dashed.paths(paths, r, settings, dash.pattern(settings, ref, factor), Nil{})
+  outline.subpaths(paths, r, settings, dash.pattern(settings, ref, factor), scale, Nil{})
 
-def stroke.compile(es: List<&2, Edge>, r: F32, settings: StrokeSettings, ref: F32, declared: F32) -> List<&2, StrokePart>:
-  stroke.compile.paths(subpaths(edges.rev(es, Nil{}), Nil{}, Nil{}), r, settings, ref, declared)
-
-# Balanced bounds hierarchy skips stroke pieces outside the sample's neighborhood.
-type StrokeTree is Data:
-  StrokeEmpty{}
-  StrokeLeaf{box: Bounds, part: StrokePart}
-  StrokeFork{box: Bounds, left: StrokeTree, right: StrokeTree}
+# The stroke outline edges of a shape's edges, in the same units.
+def stroke.compile(es: List<&2, Edge>, r: F32, settings: StrokeSettings, ref: F32, declared: F32, +scale: F32) -> List<&2, Edge>:
+  stroke.compile.paths(subpaths(edges.rev(es, Nil{}), Nil{}, Nil{}), r, settings, ref, declared, scale)
 
 def bounds.empty() -> Bounds:
   Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)}
@@ -1418,88 +1525,22 @@ def bounds.disk(p: Point, +r: F32) -> Bounds:
   +py = y
   Bounds{(px - r : F32), (py - r : F32), (px + r : F32), (py + r : F32)}
 
-def stroke.bounds(+part: StrokePart) -> Bounds:
-  match part:
-    case StrokeBand{origin, dir, len, r}:
-      +p = origin
-      +q = point.add(p, point.scale(dir, len))
-      +n = point.scale(point.normal(dir), r)
-      bounds.point(bounds.point(bounds.point(bounds.point(bounds.empty(), point.add(p, n)), point.sub(p, n)), point.add(q, n)), point.sub(q, n))
-    case StrokeCircle{p, r}: bounds.disk(p, r)
-    case StrokeSector{p, r, a, b, sign}: bounds.disk(p, r)
-    case StrokeTriangle{a, b, c}: bounds.point(bounds.point(bounds.point(bounds.empty(), a), b), c)
-
-def stroke.tree.bounds(t: StrokeTree) -> Bounds:
-  match t:
-    case StrokeEmpty{}: bounds.empty()
-    case StrokeLeaf{box, part}: box
-    case StrokeFork{box, left, right}: box
-
-def stroke.tree.fork(+a: StrokeTree, +b: StrokeTree) -> StrokeTree:
-  StrokeFork{bounds.merge(stroke.tree.bounds(a), stroke.tree.bounds(b)), a, b}
-
-def stroke.count(xs: List<&2, StrokePart>) -> U32:
-  match xs:
-    case Nil{}: 0
-    case Con{h, t}: U32.inc(stroke.count(t))
-
-def stroke.take(n: Nat, xs: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match n xs:
-    case 0n _: Nil{}
-    case 1n+d Nil{}: Nil{}
-    case 1n+d Con{h, t}: Con{h, stroke.take(d, t)}
-
-def stroke.drop(n: Nat, xs: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match n xs:
-    case 0n _: xs
-    case 1n+d Nil{}: Nil{}
-    case 1n+d Con{h, t}: stroke.drop(d, t)
-
-def stroke.leaves(xs: List<&2, StrokePart>) -> List<&2, StrokeTree>:
-  match xs:
-    case Nil{}: Nil{}
-    case Con{part, rest}:
-      +pp = part
-      Con{StrokeLeaf{stroke.bounds(pp), pp}, stroke.leaves(rest)}
-
-def stroke.pairs(ts: List<&2, StrokeTree>) -> List<&2, StrokeTree>:
-  match ts:
-    case Nil{}: Nil{}
-    case Con{a, Nil{}}: Con{a, Nil{}}
-    case Con{a, Con{b, rest}}: Con{stroke.tree.fork(a, b), stroke.pairs(rest)}
-
-@unsafe
-def stroke.reduce(ts: List<&2, StrokeTree>) -> StrokeTree:
-  match ts:
-    case Nil{}: StrokeEmpty{}
-    case Con{a, Nil{}}: a
-    case Con{a, Con{b, rest}}: stroke.reduce(stroke.pairs(Con{a, Con{b, rest}}))
-
-# Built bottom-up by pairing, like edge.tree; the count argument is kept for callers.
-def stroke.tree(+xs: List<&2, StrokePart>, +count: U32) -> StrokeTree:
-  stroke.reduce(stroke.leaves(xs))
-
-def stroke.tree.inside(t: StrokeTree, +p: Point) -> Bool:
-  match t:
-    case StrokeEmpty{}: False{}
-    case StrokeLeaf{box, part}: U.branch(Bool, bounds.inside(box, p, 0.00001), _ => stroke.part(part, p), _ => False{})
-    case StrokeFork{box, left, right}: U.branch(Bool, bounds.inside(box, p, 0.00001),
-      _ => U.branch(Bool, stroke.tree.inside(left, p), _ => True{}, _ => stroke.tree.inside(right, p)), _ => False{})
-
+# The stroke outline as an edge tree in local units, with its inverse matrix
+# (device to local) and, after the cover pass, its coverage.
 type StrokeMesh is Data:
-  StrokeMesh{tree: StrokeTree, inverse: Matrix, cover: Cover}
+  StrokeMesh{tree: EdgeTree, inverse: Matrix, cover: Cover}
 
-def stroke.mesh(+parts: List<&2, StrokePart>, inverse: Matrix) -> StrokeMesh:
-  StrokeMesh{stroke.tree(parts, stroke.count(parts)), inverse, cover.none()}
+def stroke.mesh(+edges: List<&2, Edge>, inverse: Matrix) -> StrokeMesh:
+  StrokeMesh{edge.tree(edges), inverse, cover.none()}
 
 def stroke.mesh.inside(mesh: StrokeMesh, p: Point) -> Bool:
-  StrokeMesh{stree, inv, cover} = mesh
-  stroke.tree.inside(stree, matrix.point(inv, p))
+  StrokeMesh{tree, inv, cover} = mesh
+  edge.tree.inside(tree, matrix.point(inv, p), False{})
 
 def stroke.coverage(mesh: StrokeMesh, +p: Point) -> F32:
   StrokeMesh{stree, inv, cover} = mesh
   +cov = cover
-  U.branch(F32, cover.present(cov), _ => cover.at(cov, p), _ => U.choose(F32, stroke.tree.inside(stree, matrix.point(inv, p)), 1.0, 0.0))
+  U.branch(F32, cover.present(cov), _ => cover.at(cov, p), _ => U.choose(F32, edge.tree.inside(stree, matrix.point(inv, p), False{}), 1.0, 0.0))
 
 type MarkerStyle is Data:
   MarkerStyle{start: String, middle: String, end: String}
@@ -2073,8 +2114,8 @@ def style.nonScaling(s: Style) -> Bool:
 def style.outline(+s: Style, +es: List<&2, Edge>, +m: Matrix, ref: F32, declared: F32) -> StrokeMesh:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   +screen = style.nonScaling(s)
-  stroke.mesh(U.branch(List<&2, StrokePart>, U.string.equal(stroke, "none") || F32.is_le(width, 0.0), _ => Nil{},
-    _ => stroke.compile(U.choose(List<&2, Edge>, screen, edges.transform(es, m), es), (width / 2.0 : F32), ss, ref, declared)),
+  stroke.mesh(U.branch(List<&2, Edge>, U.string.equal(stroke, "none") || F32.is_le(width, 0.0), _ => Nil{},
+    _ => stroke.compile(U.choose(List<&2, Edge>, screen, edges.transform(es, m), es), (width / 2.0 : F32), ss, ref, declared, U.choose(F32, screen, 1.0, matrix.norm(m)))),
     U.choose(Matrix, screen, identity(), matrix.inverse(m)))
 
 def bounds.transformed(es: List<&2, Edge>, +m: Matrix, box: Bounds) -> Bounds:
@@ -3193,7 +3234,7 @@ def bounds.transform(box: Bounds, +mat: Matrix) -> Bounds:
 
 def stroke.mesh.bounds(mesh: StrokeMesh) -> Bounds:
   StrokeMesh{stree, inv, cover} = mesh
-  bounds.transform(stroke.tree.bounds(stree), matrix.inverse(inv))
+  bounds.transform(edge.tree.bounds(stree), matrix.inverse(inv))
 
 def scene.count(xs: List<&2, Scene<Brush>>) -> U32:
   match xs:
@@ -3588,12 +3629,6 @@ def cover.tree.edges(t: EdgeTree, acc: List<&2, Edge>) -> List<&2, Edge>:
     case EdgeLeaf{box, edge}: Con{edge, acc}
     case EdgeFork{box, left, right}: cover.tree.edges(left, cover.tree.edges(right, acc))
 
-def cover.parts(t: StrokeTree, acc: List<&2, StrokePart>) -> List<&2, StrokePart>:
-  match t:
-    case StrokeEmpty{}: acc
-    case StrokeLeaf{box, part}: Con{part, acc}
-    case StrokeFork{box, left, right}: cover.parts(left, cover.parts(right, acc))
-
 def cover.reverse(pts: List<&2, Point>, acc: List<&2, Point>) -> List<&2, Point>:
   match pts:
     case Nil{}: acc
@@ -3646,34 +3681,6 @@ def cover.angle(p: Point) -> F32:
   Point{x, y} = p
   F32.atan2(y, x)
 
-# The polygon of one stroke part; `scale` is device pixels per mesh unit for arcs.
-def cover.part.points(part: StrokePart, +scale: F32) -> List<&2, Point>:
-  match part:
-    case StrokeBand{origin, dir, len, r}:
-      +dirDup = dir
-      +p = origin
-      +q = point.add(p, point.scale(dirDup, len))
-      +n = point.scale(point.normal(dirDup), r)
-      Con{point.add(p, n), Con{point.add(q, n), Con{point.sub(q, n), Con{point.sub(p, n), Nil{}}}}}
-    case StrokeTriangle{a, b, c}: Con{a, Con{b, Con{c, Nil{}}}}
-    case StrokeCircle{center, radius}:
-      +r = radius
-      +n = cover.segments(6.283185307179586, (r * scale : F32))
-      cover.arc(U32.to_nat((n - 1 : U32)), center, r, 0.0, (6.283185307179586 / U32.to_f32(n) : F32), Nil{})
-    case StrokeSector{center, radius, a, b, sign}:
-      +bDup = b
-      +r = radius
-      +start = cover.angle(a)
-      +sweep = U.choose(F32, F32.is_gt(sign, 0.0), cover.wrap((cover.angle(bDup) - start : F32)), F32.neg(cover.wrap((start - cover.angle(bDup) : F32))))
-      +n = cover.segments(F32.abs(sweep), (r * scale : F32))
-      +c = center
-      Con{c, cover.arc(U32.to_nat(n), c, r, start, (sweep / U32.to_f32(n) : F32), Nil{})}
-
-def cover.parts.edges(parts: List<&2, StrokePart>, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
-  match parts:
-    case Nil{}: acc
-    case Con{part, rest}: cover.parts.edges(rest, scale, cover.polygon(cover.oriented(cover.part.points(part, scale)), acc))
-
 def cover.scale(+m: Matrix, +frame: Raster) -> F32:
   Matrix{a, b, c, d, e, f} = m
   Raster{origin, step, width, height, depth, linear, pixels} = frame
@@ -3683,8 +3690,7 @@ def cover.stroke(mesh: StrokeMesh, +frame: Raster, +sub: U32, +trees: Bool) -> S
   StrokeMesh{stree, inv, old} = mesh
   +tree = stree
   +iv = inv
-  +m = matrix.inverse(iv)
-  StrokeMesh{tree, iv, cover.build(cover.lines(edges.transform(cover.parts.edges(cover.parts(tree, Nil{}), cover.scale(m, frame), Nil{}), m), frame), False{}, frame, sub, trees)}
+  StrokeMesh{tree, iv, cover.edges(cover.tree.edges(tree, Nil{}), matrix.inverse(iv), False{}, frame, sub, trees)}
 
 def cover.clip(c: Clip, +frame: Raster, +sub: U32) -> Clip:
   match c:
