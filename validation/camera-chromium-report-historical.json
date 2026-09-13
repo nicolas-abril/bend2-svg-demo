@@ -1,0 +1,789 @@
+{
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "fixture": "pattern-errors.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "use.svg",
+      "meanAbsoluteError": 0.20540364583333334,
+      "rootMeanSquareError": 1.6476288992316606,
+      "maxChannelError": 54,
+      "pixelsAbove32": 2
+    },
+    {
+      "fixture": "clipping.svg",
+      "meanAbsoluteError": 0.364990234375,
+      "rootMeanSquareError": 2.5517910121700145,
+      "maxChannelError": 60,
+      "pixelsAbove32": 7
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "viewports.svg",
+      "meanAbsoluteError": 0.19189453125,
+      "rootMeanSquareError": 1.9216844417723737,
+      "maxChannelError": 43,
+      "pixelsAbove32": 6
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "meanAbsoluteError": 1.3951822916666667,
+      "rootMeanSquareError": 4.040485222511442,
+      "maxChannelError": 37,
+      "pixelsAbove32": 12
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "meanAbsoluteError": 2.3838704427083335,
+      "rootMeanSquareError": 20.90950981997087,
+      "maxChannelError": 255,
+      "pixelsAbove32": 36
+    },
+    {
+      "fixture": "symbols.svg",
+      "meanAbsoluteError": 0.3260904947916667,
+      "rootMeanSquareError": 1.9762382392123172,
+      "maxChannelError": 43,
+      "pixelsAbove32": 4
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "meanAbsoluteError": 0.10091145833333333,
+      "rootMeanSquareError": 0.3176656392078522,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "meanAbsoluteError": 1.0283203125,
+      "rootMeanSquareError": 6.068483945421075,
+      "maxChannelError": 76,
+      "pixelsAbove32": 60
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "meanAbsoluteError": 0.3238118489583333,
+      "rootMeanSquareError": 2.4207658750641294,
+      "maxChannelError": 81,
+      "pixelsAbove32": 3
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "meanAbsoluteError": 0.14982096354166666,
+      "rootMeanSquareError": 0.38706713053637953,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "meanAbsoluteError": 0.03125,
+      "rootMeanSquareError": 0.1767766952966369,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "meanAbsoluteError": 0.3401692708333333,
+      "rootMeanSquareError": 1.0702839868464817,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "meanAbsoluteError": 0.26904296875,
+      "rootMeanSquareError": 2.0356522808017417,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "meanAbsoluteError": 0.392578125,
+      "rootMeanSquareError": 1.4860462083439174,
+      "maxChannelError": 12,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "paths.svg",
+      "meanAbsoluteError": 0.3193359375,
+      "rootMeanSquareError": 2.088223427541539,
+      "maxChannelError": 50,
+      "pixelsAbove32": 6
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "meanAbsoluteError": 0.09781901041666667,
+      "rootMeanSquareError": 0.3127603082500506,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "meanAbsoluteError": 24.18212890625,
+      "rootMeanSquareError": 54.48912681816667,
+      "maxChannelError": 217,
+      "pixelsAbove32": 1056
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "meanAbsoluteError": 0.599609375,
+      "rootMeanSquareError": 3.15692030835961,
+      "maxChannelError": 68,
+      "pixelsAbove32": 13
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "meanAbsoluteError": 0.4166666666666667,
+      "rootMeanSquareError": 0.6454972243679028,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "css-structural.svg",
+      "meanAbsoluteError": 0.11653645833333333,
+      "rootMeanSquareError": 0.5119025989710673,
+      "maxChannelError": 15,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "opacity.svg",
+      "meanAbsoluteError": 0.463134765625,
+      "rootMeanSquareError": 1.1072456089511789,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "meanAbsoluteError": 42.5,
+      "rootMeanSquareError": 104.10331406828507,
+      "maxChannelError": 255,
+      "pixelsAbove32": 1024
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "meanAbsoluteError": 0.04541015625,
+      "rootMeanSquareError": 0.213096589015404,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "basic.svg",
+      "meanAbsoluteError": 0.2828776041666667,
+      "rootMeanSquareError": 2.0001627537944673,
+      "maxChannelError": 59,
+      "pixelsAbove32": 4
+    },
+    {
+      "fixture": "use-clips.svg",
+      "meanAbsoluteError": 0.2945963541666667,
+      "rootMeanSquareError": 2.0486434790286636,
+      "maxChannelError": 27,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "meanAbsoluteError": 1.07421875,
+      "rootMeanSquareError": 4.4874499474924505,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "meanAbsoluteError": 0.18619791666666666,
+      "rootMeanSquareError": 1.8883207376749676,
+      "maxChannelError": 37,
+      "pixelsAbove32": 4
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "meanAbsoluteError": 0.025390625,
+      "rootMeanSquareError": 0.5851904960495058,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "meanAbsoluteError": 0.15104166666666666,
+      "rootMeanSquareError": 1.0618870781145548,
+      "maxChannelError": 39,
+      "pixelsAbove32": 3
+    },
+    {
+      "fixture": "css-resources.svg",
+      "meanAbsoluteError": 0.12556966145833334,
+      "rootMeanSquareError": 0.9265418596633038,
+      "maxChannelError": 24,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "meanAbsoluteError": 2.0936686197916665,
+      "rootMeanSquareError": 6.231946582178397,
+      "maxChannelError": 58,
+      "pixelsAbove32": 95
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "meanAbsoluteError": 0.11458333333333333,
+      "rootMeanSquareError": 0.9485460364860175,
+      "maxChannelError": 13,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "meanAbsoluteError": 0.822265625,
+      "rootMeanSquareError": 6.544618495374654,
+      "maxChannelError": 78,
+      "pixelsAbove32": 68
+    },
+    {
+      "fixture": "css-media.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "transforms.svg",
+      "meanAbsoluteError": 0.3504231770833333,
+      "rootMeanSquareError": 2.5868381802566107,
+      "maxChannelError": 58,
+      "pixelsAbove32": 19
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "meanAbsoluteError": 0.3323567708333333,
+      "rootMeanSquareError": 2.023864779532796,
+      "maxChannelError": 29,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "mask-units.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "meanAbsoluteError": 0.14949544270833334,
+      "rootMeanSquareError": 1.3931975268993027,
+      "maxChannelError": 37,
+      "pixelsAbove32": 2
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "meanAbsoluteError": 0.4097493489583333,
+      "rootMeanSquareError": 1.673820908069817,
+      "maxChannelError": 38,
+      "pixelsAbove32": 2
+    },
+    {
+      "fixture": "masks.svg",
+      "meanAbsoluteError": 0.3452962239583333,
+      "rootMeanSquareError": 1.9109189747671145,
+      "maxChannelError": 43,
+      "pixelsAbove32": 3
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "meanAbsoluteError": 1.064453125,
+      "rootMeanSquareError": 4.923404193661807,
+      "maxChannelError": 92,
+      "pixelsAbove32": 51
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "meanAbsoluteError": 0.3937174479166667,
+      "rootMeanSquareError": 2.3888371582738746,
+      "maxChannelError": 28,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "meanAbsoluteError": 0.171630859375,
+      "rootMeanSquareError": 0.4142835494863391,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "colors-named.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "meanAbsoluteError": 0.020833333333333332,
+      "rootMeanSquareError": 0.14433756729740643,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "meanAbsoluteError": 0.125,
+      "rootMeanSquareError": 0.3535533905932738,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "meanAbsoluteError": 0.20882161458333334,
+      "rootMeanSquareError": 0.4569700368550802,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "markers-compositing.svg",
+      "meanAbsoluteError": 0.9136555989583334,
+      "rootMeanSquareError": 5.943082627710274,
+      "maxChannelError": 96,
+      "pixelsAbove32": 58
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "meanAbsoluteError": 1.1587727864583333,
+      "rootMeanSquareError": 7.009590481901089,
+      "maxChannelError": 107,
+      "pixelsAbove32": 91
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "meanAbsoluteError": 0.4212239583333333,
+      "rootMeanSquareError": 1.9929073454378154,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "meanAbsoluteError": 0.009765625,
+      "rootMeanSquareError": 0.10364452469860624,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "meanAbsoluteError": 0.2294921875,
+      "rootMeanSquareError": 2.610949500022294,
+      "maxChannelError": 48,
+      "pixelsAbove32": 14
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "meanAbsoluteError": 0.57275390625,
+      "rootMeanSquareError": 3.592481660240824,
+      "maxChannelError": 71,
+      "pixelsAbove32": 13
+    },
+    {
+      "fixture": "markers-context.svg",
+      "meanAbsoluteError": 0.6703287760416666,
+      "rootMeanSquareError": 3.4312561665093346,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "meanAbsoluteError": 0.9568684895833334,
+      "rootMeanSquareError": 7.104411041740195,
+      "maxChannelError": 153,
+      "pixelsAbove32": 60
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "meanAbsoluteError": 0.6798502604166666,
+      "rootMeanSquareError": 3.762890172183699,
+      "maxChannelError": 58,
+      "pixelsAbove32": 28
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "meanAbsoluteError": 0.9534505208333334,
+      "rootMeanSquareError": 3.2734530379503943,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "meanAbsoluteError": 1.2207845052083333,
+      "rootMeanSquareError": 3.672960832358775,
+      "maxChannelError": 48,
+      "pixelsAbove32": 21
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "meanAbsoluteError": 0.10921223958333333,
+      "rootMeanSquareError": 0.33047275165031886,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "meanAbsoluteError": 0.4728190104166667,
+      "rootMeanSquareError": 4.122375269742352,
+      "maxChannelError": 79,
+      "pixelsAbove32": 38
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "meanAbsoluteError": 1.81103515625,
+      "rootMeanSquareError": 6.488371007682385,
+      "maxChannelError": 67,
+      "pixelsAbove32": 73
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "meanAbsoluteError": 0.0546875,
+      "rootMeanSquareError": 0.23454854685828547,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "meanAbsoluteError": 0.029134114583333332,
+      "rootMeanSquareError": 0.1711632992203644,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "meanAbsoluteError": 0.6067708333333334,
+      "rootMeanSquareError": 2.80456055306947,
+      "maxChannelError": 53,
+      "pixelsAbove32": 10
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "meanAbsoluteError": 0.0011393229166666667,
+      "rootMeanSquareError": 0.03375385780420761,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "meanAbsoluteError": 0.450439453125,
+      "rootMeanSquareError": 2.5395472293714745,
+      "maxChannelError": 49,
+      "pixelsAbove32": 20
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "meanAbsoluteError": 0.018229166666666668,
+      "rootMeanSquareError": 0.15095184110614,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-basic.svg",
+      "meanAbsoluteError": 0.31982421875,
+      "rootMeanSquareError": 1.1015347957509105,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-uris.svg",
+      "meanAbsoluteError": 0.4833984375,
+      "rootMeanSquareError": 1.4161687237637564,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-compression.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "meanAbsoluteError": 0.5968424479166666,
+      "rootMeanSquareError": 1.8824504752228322,
+      "maxChannelError": 22,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "text-spans.svg",
+      "meanAbsoluteError": 3.6193033854166665,
+      "rootMeanSquareError": 14.292243671539701,
+      "maxChannelError": 202,
+      "pixelsAbove32": 232
+    },
+    {
+      "fixture": "text-length.svg",
+      "meanAbsoluteError": 3.6172688802083335,
+      "rootMeanSquareError": 11.218274856465602,
+      "maxChannelError": 101,
+      "pixelsAbove32": 240
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "meanAbsoluteError": 10.38916015625,
+      "rootMeanSquareError": 33.4135184640264,
+      "maxChannelError": 215,
+      "pixelsAbove32": 433
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "meanAbsoluteError": 2.5796712239583335,
+      "rootMeanSquareError": 8.280311464112224,
+      "maxChannelError": 100,
+      "pixelsAbove32": 141
+    },
+    {
+      "fixture": "text-paints.svg",
+      "meanAbsoluteError": 3.7456868489583335,
+      "rootMeanSquareError": 11.73800848095444,
+      "maxChannelError": 95,
+      "pixelsAbove32": 254
+    },
+    {
+      "fixture": "text-position.svg",
+      "meanAbsoluteError": 2.7928059895833335,
+      "rootMeanSquareError": 10.12133421293853,
+      "maxChannelError": 114,
+      "pixelsAbove32": 174
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "meanAbsoluteError": 1.71484375,
+      "rootMeanSquareError": 8.1373703906729,
+      "maxChannelError": 115,
+      "pixelsAbove32": 112
+    },
+    {
+      "fixture": "text-basic.svg",
+      "meanAbsoluteError": 2.6276041666666665,
+      "rootMeanSquareError": 8.88068333284851,
+      "maxChannelError": 84,
+      "pixelsAbove32": 164
+    },
+    {
+      "fixture": "text-style.svg",
+      "meanAbsoluteError": 5.255696614583333,
+      "rootMeanSquareError": 15.245111067431859,
+      "maxChannelError": 128,
+      "pixelsAbove32": 284
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "meanAbsoluteError": 0.5419108072916666,
+      "rootMeanSquareError": 2.317368889000699,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "meanAbsoluteError": 0.01171875,
+      "rootMeanSquareError": 0.10825317547305482,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "meanAbsoluteError": 0.2903645833333333,
+      "rootMeanSquareError": 0.8108958523345235,
+      "maxChannelError": 5,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "meanAbsoluteError": 0.07552083333333333,
+      "rootMeanSquareError": 0.27481054079735245,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "meanAbsoluteError": 0.4393717447916667,
+      "rootMeanSquareError": 2.0774983390988147,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "svg-image-resources.svg",
+      "meanAbsoluteError": 0.3138020833333333,
+      "rootMeanSquareError": 1.7051545628867002,
+      "maxChannelError": 14,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "svg-image-contexts.svg",
+      "meanAbsoluteError": 1.687744140625,
+      "rootMeanSquareError": 6.867390438317284,
+      "maxChannelError": 44,
+      "pixelsAbove32": 143
+    },
+    {
+      "fixture": "svg-image-nested.svg",
+      "meanAbsoluteError": 0.482421875,
+      "rootMeanSquareError": 3.383909921107042,
+      "maxChannelError": 69,
+      "pixelsAbove32": 25
+    },
+    {
+      "fixture": "svg-image-auto.svg",
+      "meanAbsoluteError": 7.669921875,
+      "rootMeanSquareError": 34.941552761361365,
+      "maxChannelError": 187,
+      "pixelsAbove32": 252
+    },
+    {
+      "fixture": "svg-image-sizing.svg",
+      "meanAbsoluteError": 11.622233072916666,
+      "rootMeanSquareError": 44.085130122487634,
+      "maxChannelError": 255,
+      "pixelsAbove32": 375
+    },
+    {
+      "fixture": "svg-image-percent.svg",
+      "meanAbsoluteError": 0.147216796875,
+      "rootMeanSquareError": 1.0841468299812222,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "svg-image-text.svg",
+      "meanAbsoluteError": 2.0204264322916665,
+      "rootMeanSquareError": 7.372323622777173,
+      "maxChannelError": 99,
+      "pixelsAbove32": 115
+    },
+    {
+      "fixture": "text-path-styles.svg",
+      "meanAbsoluteError": 1.656494140625,
+      "rootMeanSquareError": 7.2621519476983085,
+      "maxChannelError": 109,
+      "pixelsAbove32": 129
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "meanAbsoluteError": 2.8985188802083335,
+      "rootMeanSquareError": 16.933163170948255,
+      "maxChannelError": 201,
+      "pixelsAbove32": 139
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "meanAbsoluteError": 1.658935546875,
+      "rootMeanSquareError": 7.231067008272362,
+      "maxChannelError": 88,
+      "pixelsAbove32": 57
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "meanAbsoluteError": 1.8882649739583333,
+      "rootMeanSquareError": 6.558971025355908,
+      "maxChannelError": 66,
+      "pixelsAbove32": 64
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "meanAbsoluteError": 3.1241048177083335,
+      "rootMeanSquareError": 10.274816724592139,
+      "maxChannelError": 117,
+      "pixelsAbove32": 182
+    },
+    {
+      "fixture": "paint-order-markers.svg",
+      "meanAbsoluteError": 0.4642740885416667,
+      "rootMeanSquareError": 1.0462529246275332,
+      "maxChannelError": 14,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "paint-order-shapes.svg",
+      "meanAbsoluteError": 0.041015625,
+      "rootMeanSquareError": 0.20252314682524564,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "text-paint-order.svg",
+      "meanAbsoluteError": 4.106770833333333,
+      "rootMeanSquareError": 9.249199360057244,
+      "maxChannelError": 52,
+      "pixelsAbove32": 143
+    },
+    {
+      "fixture": "morphology-graph.svg",
+      "meanAbsoluteError": 0.03515625,
+      "rootMeanSquareError": 0.1875,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "morphology-units.svg",
+      "meanAbsoluteError": 0.888916015625,
+      "rootMeanSquareError": 4.116616718025252,
+      "maxChannelError": 49,
+      "pixelsAbove32": 24
+    },
+    {
+      "fixture": "morphology-basic.svg",
+      "meanAbsoluteError": 0.11018880208333333,
+      "rootMeanSquareError": 0.3319469868568373,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "morphology-radius.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0
+    }
+  ]
+}

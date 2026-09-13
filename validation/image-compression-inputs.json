@@ -1,0 +1,22 @@
+[
+  {
+    "name": "dynamic",
+    "firstBlockType": 2,
+    "compressedBytes": 1244
+  },
+  {
+    "name": "stored",
+    "firstBlockType": 0,
+    "compressedBytes": 2339
+  },
+  {
+    "name": "fixed",
+    "firstBlockType": 1,
+    "compressedBytes": 1902
+  },
+  {
+    "name": "multiple-blocks",
+    "firstBlockType": 2,
+    "compressedBytes": 1266
+  }
+]

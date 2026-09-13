@@ -1,0 +1,11 @@
+// Isolate reference limitations instead of interpreting large mixed-fixture errors.
+import{chromium}from'playwright';import{Resvg}from'@resvg/resvg-js';import{PNG}from'pngjs';import{writeFileSync}from'node:fs';import{dirname,resolve}from'node:path';
+const here=dirname(import.meta.filename),browser=await chromium.launch({headless:true});
+const cases=[
+ ['important precedence',"<style>rect{fill:red!important}</style><rect width='32' height='32' style='fill:blue'/>","<style>rect{fill:red}</style><rect width='32' height='32' style='fill:blue'/>"],
+ ['CSS geometry',"<style>circle{r:12px}</style><circle cx='16' cy='16' r='1' fill='blue'/>","<circle cx='16' cy='16' r='1' fill='blue'/>"],
+ ['media query',"<style>rect{fill:red}@media screen and (min-width:60px){rect{fill:blue}}</style><rect width='32' height='32'/>","<style>rect{fill:red}</style><rect width='32' height='32'/>"],
+ ['nth-child',"<style>rect{fill:red}rect:nth-child(2){fill:blue}</style><g><rect width='8' height='32'/><rect x='16' width='8' height='32'/></g>","<style>rect{fill:red}</style><g><rect width='8' height='32'/><rect x='16' width='8' height='32'/></g>"],
+ ['attribute case flag',"<style>rect{fill:red}rect[data-x='RED' i]{fill:blue}</style><rect data-x='red' width='32' height='32'/>","<style>rect{fill:red}</style><rect data-x='red' width='32' height='32'/>"]
+];
+try{const page=await browser.newPage({viewport:{width:64,height:64}}),results=[];for(const[feature,a,b]of cases){const engines={chromium:[],resvg:[]};for(const body of[a,b]){const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">${body}</svg>`;engines.resvg.push(new Resvg(svg,{background:'white'}).render().pixels);await page.goto('data:image/svg+xml,'+encodeURIComponent(svg));engines.chromium.push(PNG.sync.read(await page.screenshot()).data);}const changedPixels={};for(const[name,[x,y]]of Object.entries(engines)){let changed=0;for(let i=0;i<4096;i++)changed+=x.slice(i*4,i*4+3).some((v,c)=>v!==y[i*4+c]);changedPixels[name]=changed;}results.push({feature,changedPixels});}writeFileSync(resolve(here,'css-reference-probe.json'),JSON.stringify({description:'Pixels changed when removing the named feature',results},null,2)+'\n');console.log(results);}finally{await browser.close();}

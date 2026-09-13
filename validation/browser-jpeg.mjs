@@ -1,0 +1,19 @@
+import{chromium}from'playwright';import{writeFileSync,readFileSync}from'node:fs';import{resolve,dirname}from'node:path';import{createHash}from'node:crypto';
+const here=dirname(import.meta.filename),root=process.env.SVG_APP_ROOT||resolve(here,'..'),browser=await chromium.launch({headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1180,height:850}});page.setDefaultTimeout(240000);const errors=[];page.on('pageerror',e=>errors.push(e.message));const start=performance.now();
+ await page.goto('http://127.0.0.1:8088');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Ready');
+ await page.locator('#file').setInputFiles(resolve(root,'fixtures/jpeg-sequential.svg'));await page.waitForFunction(()=>document.querySelector('#source').value.includes('data:image/jpeg;base64,'));
+ const before=await page.locator('#source').inputValue(),box=await page.locator('canvas').boundingBox();
+ const pixel=(x,y)=>page.locator('canvas').evaluate((c,[x,y])=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data).slice(0,3),[x,y]);
+ const matrix=async()=>createHash('sha256').update(Buffer.from(await page.locator('canvas').evaluate(c=>Array.from(c.getContext('2d').getImageData(0,0,c.width,c.height).data)))).digest('hex');
+ const original=await matrix(),a=await pixel(32,32),b=await pixel(80,32);if(String(a)==='255,255,255'||String(b)==='255,255,255')throw Error('JPEG not painted');
+ const undo=async()=>{await page.locator('#undo').click();await page.waitForFunction(s=>document.querySelector('#source').value===s,before);if(await matrix()!==original)throw Error('Undo did not restore the exact JPEG matrix');};
+ await page.mouse.click(box.x+32*box.width/256,box.y+32*box.height/256);
+ await page.locator('#property').selectOption('width');await page.locator('#value').fill('12');await page.locator('#set').click();await page.waitForFunction(()=>document.querySelector('#source').value.includes('width:12'));if(String(await pixel(80,32))!=='255,255,255')throw Error('JPEG width did not change');await undo();
+ await page.locator('#property').selectOption('opacity');await page.locator('#value').fill('0.5');await page.locator('#set').click();await page.waitForFunction(()=>document.querySelector('#source').value.includes('opacity:0.5'));const translucent=await pixel(32,32);if(translucent.some((v,i)=>Math.abs(v-(a[i]+255)/2)>1))throw Error('JPEG opacity differs: '+translucent);await undo();
+ await page.mouse.move(box.x+32*box.width/256,box.y+32*box.height/256);await page.mouse.down();await page.mouse.move(box.x+48*box.width/256,box.y+48*box.height/256);await page.mouse.up();await page.waitForFunction(s=>document.querySelector('#source').value!==s,before);if(String(await pixel(48,48))!==String(a))throw Error('Dragged JPEG differs');await undo();
+ const downloading=page.waitForEvent('download');await page.locator('#download').click();const download=await downloading;const saved=resolve(here,'jpeg-editor-saved.svg');await download.saveAs(saved);if(readFileSync(saved,'utf8')!==before)throw Error('Save changed the embedded JPEG data URI');
+ if(errors.length)throw Error(errors.join('\n'));await page.screenshot({path:resolve(here,'web-jpeg-editor.png'),fullPage:true});
+ const sourceSHA256=Object.fromEntries(['svg.bend','state.bend','web.bend','web.html'].map(f=>[f,createHash('sha256').update(readFileSync(resolve(root,f))).digest('hex')]));writeFileSync(resolve(here,process.env.SVG_SERVER_BACKEND==='javascript'?'browser-jpeg-js-report.json':'browser-jpeg-report.json'),JSON.stringify({passed:true,serverBackend:process.env.SVG_SERVER_BACKEND||'native',durationSeconds:(performance.now()-start)/1000,checks:['load JPEG decoded by Bend','resize JPEG','JPEG opacity','drag JPEG','exact source and full-matrix undo','save preserves embedded JPEG data URI','no browser errors'],sourceSHA256},null,2)+'\n');console.log('JPEG browser flow passed');
+}finally{await browser.close();}

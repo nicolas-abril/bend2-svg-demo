@@ -1,0 +1,303 @@
+--- svg.bend
++++ svg.bend
+@@ -1486,7 +1486,7 @@
+ 
+ def shape.data(+name: String, +as: List<&2, Attr>, +vw: F32, +vh: F32) -> String:
+   branch(String, String.eq(name, "path"), _ => attr.get(as, "d", ""),
+-    _ => branch(String, String.eq(name, "rect") || String.eq(name, "image"), _ => shape.rect(as, vw, vh),
++    _ => branch(String, String.eq(name, "rect") || String.eq(name, "image") || String.eq(name, "#svg-image"), _ => shape.rect(as, vw, vh),
+       _ => branch(String, String.eq(name, "circle"),
+         _ => shape.ellipse.path(dimension(as, "cx", vw, "0"), dimension(as, "cy", vh, "0"),
+           dimension(as, "r", F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32)), "0"),
+@@ -2218,7 +2218,7 @@
+     case Con{Element{n, as, kids, txt}, rest}:
+       branch(Maybe<&2, Element>, String.eq(attr.get(as, "id", ""), id),
+         _ => Some{Element{n, as, kids, txt}},
+-        _ => element.prefer(element.find(kids, id), element.find(rest, id)))
++        _ => element.prefer(branch(Maybe<&2, Element>, String.eq(n, "#svg-image"), _ => None{}, _ => element.find(kids, id)), element.find(rest, id)))
+ 
+ def gradient.has.stops(xs: List<&2, Element>) -> Bool:
+   match xs:
+@@ -3686,6 +3686,14 @@
+     case NoImage{}: style
+     case EmbeddedImage{raster, attrs, inv, nearest}: style.image(style)
+ 
++def style.is.visible(s: Style) -> Bool:
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  visible
++
++def style.embedded(s: Style) -> Style:
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{"none", "none", col, 1.0, 1.0, 0.0, False{}, visible, ss, MarkerStyle{"none", "none", "none"}, rendering}
++
+ def bitmap.paint(image: EmbeddedImage, ink: Paint<Brush>) -> Paint<Brush>:
+   match image:
+     case NoImage{}: ink
+@@ -3767,7 +3775,7 @@
+     _ => instance.anonymous(expand(instance.root(element.find(all, id), as))), _ => Nil{})
+ 
+ @unsafe
+-def use.expand(+fuel: Nat, xs: List<&2, Element>, +all: List<&2, Element>, +ancestors: List<&2, String>) -> List<&2, Element>:
++def use.expand(+fuel: Nat, +xs: List<&2, Element>, +all: List<&2, Element>, +ancestors: List<&2, String>) -> List<&2, Element>:
+   match fuel xs:
+     case 0n _: Nil{}
+     case 1n+d Nil{}: Nil{}
+@@ -3777,7 +3785,7 @@
+       +parents = {Con{attr.get(as, "id", ""), ancestors} : List<&2, String>}
+       Con{Element{tagname, as, branch(List<&2, Element>, String.eq(tagname, "use"),
+         _ => use.children(properties(as), all, parents, nodes => use.expand(d, nodes, all, parents)),
+-        _ => use.expand(fuel, kids, all, parents)), txt}, use.expand(fuel, rest, all, ancestors)}
++        _ => use.expand(fuel, kids, choose(List<&2, Element>, String.eq(tagname, "#svg-image"), kids, all), choose(List<&2, String>, String.eq(tagname, "#svg-image"), Nil{}, parents))), txt}, use.expand(fuel, rest, all, ancestors)}
+ 
+ def scenes.append(xs: List<&2, Scene<Brush>>, ys: List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
+   match xs:
+@@ -4050,8 +4058,8 @@
+   +baseStyle = style.inherit(inherited, as, F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32)))
+   +embedded = bitmap.element(n, Con{Attr{"image-rendering", style.image.rendering(baseStyle)}, as}, vw, vh)
+   +attrs = bitmap.attrs(embedded, as)
+-  +style = bitmap.style(embedded, baseStyle)
+-  branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid), _ => Nil{},
++  +style = choose(Style, String.eq(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
++  branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (String.eq(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
+     _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape(n, attrs, vw, vh), matrix, style,
+       color.opacity(attr.get(attrs, "opacity", "1"), 1.0), children(style)(matrix)(vw)(vh),
+       attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
+@@ -4059,7 +4067,7 @@
+         node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes)), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
+ 
+ @unsafe
+-def compile(+fuel: Nat, xs: List<&2, Element>, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
++def compile(+fuel: Nat, +xs: List<&2, Element>, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
+   +all: List<&2, Element>, +root: Bool, +active: List<&2, String>) -> List<&2, Scene<Brush>>:
+   match fuel xs:
+     case 0n _: Nil{}
+@@ -4072,7 +4080,7 @@
+         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
+         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
+         nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, active),
+-        style => mat => vw => vh => compile(choose(Nat, String.eq(attr.get(as, "#marker-source", ""), ""), fuel, d), kids, style, mat, vw, vh, all, False{}, choose(List<&2, String>, String.eq(attr.get(as, "#marker-source", ""), ""), active, Con{attr.get(as, "#marker-source", ""), active}))),
++        style => mat => vw => vh => compile(choose(Nat, String.eq(attr.get(as, "#marker-source", ""), ""), fuel, d), kids, choose(Style, String.eq(n, "#svg-image"), style.default(), style), mat, vw, vh, choose(List<&2, Element>, String.eq(n, "#svg-image"), resources(kids, Nil{}), all), False{}, choose(List<&2, String>, String.eq(n, "#svg-image"), Nil{}, choose(List<&2, String>, String.eq(attr.get(as, "#marker-source", ""), ""), active, Con{attr.get(as, "#marker-source", ""), active})))),
+         compile(fuel, rest, inherited, m, w, h, all, root, active))
+ 
+ # Stylesheets are applied to a rendering copy; authored XML stays unchanged.
+@@ -4922,10 +4930,14 @@
+   TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, chunks} = cursor
+   text.finished.nodes(text.anchor.nodes(nodes, text.chunk(cursor), choose(String, F32.is_gt(trailing, 0.0), U32.show((index - 1 : U32)), "#none")), as)
+ 
++def text.font.reset(font: TextFont) -> TextFont:
++  TextFont{size, face, weight, slant, anchor, letter, word, shift, baseline, kern, preserve, book} = font
++  text.font.default(book)
++
+ def text.expand.node(+n: String, +as: List<&2, Attr>, +kids: List<&2, Element>, txt: String, +font: TextFont, +vp: Viewport,
+   expand: List<&2, Element> -> TextFont -> F32 -> F32 -> List<&2, Element>) -> Element:
+   Viewport{matrix, w, h, clip, valid} = vp
+-  +f = text.font.inherit(font, as)
++  +f = choose(TextFont, String.eq(n, "#svg-image"), text.font.reset(font), text.font.inherit(font, as))
+   branch(Element, String.eq(n, "text"),
+     _ => text.finish(text.length(text.layout(kids, f, Con{text.frame(as, 0, w, h, text.font.em(f)), Nil{}}, text.cursor(), w, h), as, w, text.font.em(f), True{}), as),
+     _ => Element{n, as, expand(kids)(f)(w)(h), txt})
+@@ -5035,10 +5047,157 @@
+         context.scenes(kids, paint, parent), context.scenes(maskNodes, context.empty(), identity()),
+         source => context.scenes(markerNodes, source, inv)), context.scenes(rest, paint, parent)}
+ 
++# Decode XML entities before interpreting attributes or exposing source editing.
++def entity(+s: String) -> String:
++  branch(String, String.eq(s, "amp"), _ => "&",
++    _ => branch(String, String.eq(s, "lt"), _ => "<",
++      _ => branch(String, String.eq(s, "gt"), _ => ">",
++        _ => branch(String, String.eq(s, "quot"), _ => "\"",
++          _ => branch(String, String.eq(s, "apos"), _ => "'",
++            _ => branch(String, prefix(s, "#x"), _ => SCon{Chr{hex(drop(s, "#x"), 0)}, ""},
++              _ => branch(String, prefix(s, "#"), _ => SCon{Chr{F32.to_u32(scalar(drop(s, "#"), 65533.0))}, ""},
++                _ => "&" ++ s ++ ";")))))))
++
++def entities.more(scan: Scan, acc: String, next: String -> String -> String) -> String:
++  Scan{h, t} = scan
++  next(t)(rev(entity(h), acc))
++
++@unsafe
++def entities.loop(s: String, +acc: String) -> String:
++  match s:
++    case SNil{}: rev(acc, "")
++    case SCon{Chr{c}, t}:
++      +ch = c
++      +tail = t
++      branch(String, U32.is_eq(ch, 38),
++        _ => entities.more(until(tail, 59, ""), acc, rest => text => entities.loop(rest, text)),
++        _ => entities.loop(tail, SCon{Chr{ch}, acc}))
++
++def entities(s: String) -> String:
++  entities.loop(s, "")
++
++def decode.attrs(as: List<&2, Attr>) -> List<&2, Attr>:
++  match as:
++    case Nil{}: Nil{}
++    case Con{Attr{k, v}, rest}: Con{Attr{k, entities(v)}, decode.attrs(rest)}
++
++def decode.nodes(xs: List<&2, Element>) -> List<&2, Element>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}:
++      Con{Element{n, decode.attrs(as), decode.nodes(kids), entities(txt)}, decode.nodes(rest)}
++
++def parse(s: String) -> Element:
++  tree.root(decode.nodes(tree(annotate(tokenize(s), 1), Con{Element{"#document", Nil{}, Nil{}, ""}, Nil{}})))
++
++# Expand data-URI SVG images into isolated vector subdocuments.
++type ImageCodepoint is Data:
++  ImageCodepoint{point: U32, step: U32}
++
++@unsafe
++def image.svg.utf8.tail(+data: Bytes, +at: U32, left: Nat, +acc: U32, +minimum: U32, +step: U32) -> ImageCodepoint:
++  match left:
++    case Zero{}: choose(ImageCodepoint, U32.is_ge(acc, minimum) && U32.is_le(acc, 1114111) && Bool.not(U32.is_ge(acc, 55296) && U32.is_le(acc, 57343)), ImageCodepoint{acc, step}, ImageCodepoint{65533, 1})
++    case Succ{rest}:
++      +v = bytes.get(data, at)
++      branch(ImageCodepoint, U32.is_ge(v, 128) && U32.is_le(v, 191), _ => image.svg.utf8.tail(data, U32.inc(at), rest, (acc * 64 + v % 64 : U32), minimum, step), _ => ImageCodepoint{65533, 1})
++
++def image.svg.utf8(+data: Bytes, +at: U32) -> ImageCodepoint:
++  +v = bytes.get(data, at)
++  branch(ImageCodepoint, U32.is_lt(v, 128), _ => ImageCodepoint{v, 1},
++    _ => branch(ImageCodepoint, U32.is_ge(v, 194) && U32.is_le(v, 223), _ => image.svg.utf8.tail(data, U32.inc(at), 1n, (v % 32 : U32), 128, 2),
++      _ => branch(ImageCodepoint, U32.is_ge(v, 224) && U32.is_le(v, 239), _ => image.svg.utf8.tail(data, U32.inc(at), 2n, (v % 16 : U32), 2048, 3),
++        _ => branch(ImageCodepoint, U32.is_ge(v, 240) && U32.is_le(v, 244), _ => image.svg.utf8.tail(data, U32.inc(at), 3n, (v % 8 : U32), 65536, 4), _ => ImageCodepoint{65533, 1}))))
++
++def image.svg.utf8.more(decoded: ImageCodepoint, acc: String, next: U32 -> String -> String) -> String:
++  ImageCodepoint{point, step} = decoded
++  next(step)(SCon{Chr{point}, acc})
++
++@unsafe
++def image.svg.byte.text(+data: Bytes, +at: U32, +acc: String) -> String:
++  branch(String, U32.is_ge(at, bytes.size(data)), _ => rev(acc, ""), _ => image.svg.utf8.more(image.svg.utf8(data, at), acc, step => text => image.svg.byte.text(data, (at + step : U32), text)))
++
++def image.svg.utf8.push(+out: Bytes, +c: U32) -> Bytes:
++  branch(Bytes, U32.is_lt(c, 128), _ => bytes.push(out, c),
++    _ => branch(Bytes, U32.is_lt(c, 2048), _ => bytes.push(bytes.push(out, (192 + c / 64 : U32)), (128 + c % 64 : U32)),
++      _ => branch(Bytes, U32.is_lt(c, 65536), _ => bytes.push(bytes.push(bytes.push(out, (224 + c / 4096 : U32)), (128 + (c / 64) % 64 : U32)), (128 + c % 64 : U32)),
++        _ => bytes.push(bytes.push(bytes.push(bytes.push(out, (240 + c / 262144 : U32)), (128 + (c / 4096) % 64 : U32)), (128 + (c / 64) % 64 : U32)), (128 + c % 64 : U32)))))
++
++def image.svg.uri.bytes(+s: String, +out: Bytes) -> Bytes:
++  match s:
++    case SNil{}: out
++    case SCon{Chr{37}, SCon{Chr{a}, SCon{Chr{b}, rest}}}:
++      branch(Bytes, uri.hex.valid(a) && uri.hex.valid(b), _ => image.svg.uri.bytes(rest, bytes.push(out, (hex.digit(a) * 16 + hex.digit(b) : U32))), _ => bytes.empty())
++    case SCon{Chr{c}, rest}:
++      branch(Bytes, Bool.not(U32.is_eq(c, 37)), _ => image.svg.uri.bytes(rest, image.svg.utf8.push(out, c)), _ => bytes.empty())
++
++def image.svg.source(+scan: Scan) -> String:
++  Scan{mime, data} = scan
++  +body = branch(Bytes, string.contains(mime, ";base64"), _ => base64(data), _ => image.svg.uri.bytes(data, bytes.empty()))
++  image.svg.byte.text(body, 0, "")
++
++def image.svg.root(+xs: List<&2, Element>) -> Element:
++  match xs:
++    case Nil{}: Element{"#empty", Nil{}, Nil{}, ""}
++    case Con{Element{n, as, kids, txt}, rest}:
++      branch(Element, String.eq(n, "svg"), _ => Element{n, as, kids, txt}, _ => image.svg.root(rest))
++
++def image.svg.document(root: Element) -> Element:
++  Element{n, as, kids, txt} = root
++  image.svg.root(kids)
++
++def image.svg.attrs(root: Element) -> List<&2, Attr>:
++  Element{n, as, kids, txt} = root
++  properties(as)
++
++def image.svg.size(+as: List<&2, Attr>) -> Point:
++  +vb = numbers(attr.get(as, "viewBox", ""))
++  +vw = nth(vb, 2n, 300.0)
++  +vh = nth(vb, 3n, 150.0)
++  +w = dimension(as, "width", vw, F32.show(vw))
++  +h = dimension(as, "height", vh, F32.show(vh))
++  Point{w, h}
++
++def image.svg.fit(+as: List<&2, Attr>, +size: Point, +vw: F32, +vh: F32) -> Point:
++  Point{iw, ih} = size
++  +aw = String.eq(attr.get(as, "width", "auto"), "auto")
++  +ah = String.eq(attr.get(as, "height", "auto"), "auto")
++  +rw = dimension(as, "width", vw, "0")
++  +rh = dimension(as, "height", vh, "0")
++  Point{choose(F32, aw, choose(F32, ah, iw, (rh * iw / max(ih, 0.000001) : F32)), rw), choose(F32, ah, choose(F32, aw, ih, (rw * ih / max(iw, 0.000001) : F32)), rh)}
++
++def image.svg.place(+as: List<&2, Attr>, +size: Point, +target: Point, +root: Element, +vw: F32, +vh: F32,
++  expand: List<&2, Element> -> F32 -> F32 -> List<&2, Element>) -> Element:
++  Point{iw, ih} = size
++  Point{ow, oh} = target
++  +widthText = choose(String, String.eq(attr.get(as, "width", "auto"), "auto"), F32.show(ow), attr.get(as, "width", "0"))
++  +heightText = choose(String, String.eq(attr.get(as, "height", "auto"), "auto"), F32.show(oh), attr.get(as, "height", "0"))
++  +inside = {Con{root, Nil{}} : List<&2, Element>}
++  +styled = css.tree(inside, css.rules(css.sheets(inside, iw, ih), iw, ih), Nil{}, Nil{}, 1, 1)
++  +frame = {Con{Attr{"x", attr.get(as, "x", "0")}, Con{Attr{"y", attr.get(as, "y", "0")}, Con{Attr{"width", widthText}, Con{Attr{"height", heightText}, Con{Attr{"viewBox", "0 0 " ++ F32.show(iw) ++ " " ++ F32.show(ih)}, Con{Attr{"preserveAspectRatio", attr.get(as, "preserveAspectRatio", "xMidYMid meet")}, Con{Attr{"overflow", attr.get(as, "overflow", "hidden")}, Nil{}}}}}}}} : List<&2, Attr>}
++  Element{"#svg-image", Con{Attr{"width", widthText}, Con{Attr{"height", heightText}, as}}, Con{Element{"svg", frame, instance.anonymous(expand(styled)(iw)(ih)), ""}, Nil{}}, ""}
++
++def image.svg.node(+as: List<&2, Attr>, +vw: F32, +vh: F32, +root: Element,
++  expand: List<&2, Element> -> F32 -> F32 -> List<&2, Element>) -> Element:
++  image.svg.place(as, image.svg.size(image.svg.attrs(root)), image.svg.fit(as, image.svg.size(image.svg.attrs(root)), vw, vh), root, vw, vh, expand)
++
++@unsafe
++def image.svg.expand(+fuel: Nat, +xs: List<&2, Element>, +w: F32, +h: F32) -> List<&2, Element>:
++  match fuel xs:
++    case Zero{} _: Nil{}
++    case Succ{d} Nil{}: Nil{}
++    case Succ{d} Con{Element{n, attrs, kids, txt}, rest}:
++      +as = properties(attrs)
++      +href = attr.get(as, "href", attr.get(as, "xlink:href", ""))
++      Con{branch(Element, String.eq(n, "image") && prefix(href, "data:image/svg+xml"),
++        _ => image.svg.node(as, w, h, image.svg.document(parse(image.svg.source(until(drop(href, "data:"), 44, "")))), nodes => iw => ih => image.svg.expand(d, nodes, iw, ih)),
++        _ => Element{n, attrs, image.svg.expand(fuel, kids, w, h), txt}), image.svg.expand(fuel, rest, w, h)}
++
+ def document.fonts(+root: Element, +w: F32, +h: F32, book: FontBook) -> List<&2, Scene<Brush>>:
+   Element{n, a, kids, txt} = root
+   +styled = css.tree(kids, css.rules(css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, css.element.count(kids))
+-  +nodes = text.expand(use.expand(64n, styled, styled, Nil{}), text.font.default(book), w, h, True{})
++  +embedded = image.svg.expand(16n, styled, w, h)
++  +nodes = text.expand(use.expand(64n, embedded, embedded, Nil{}), text.font.default(book), w, h, True{})
+   context.scenes(compile(64n, nodes, style.default(), identity(), w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
+ 
+ def document(root: Element, w: F32, h: F32) -> List<&2, Scene<Brush>>:
+@@ -5746,45 +5905,3 @@
+       pick.prefer(pick(rest, p), branch(Pick, bounds.inside(coverage, p, 0.01) && clip.inside(mask, p) && F32.is_gt(mask.factor(maskMode, _ => sample(maskNodes, p, p, clear(), U32.is_eq(maskMode, 3))), 0.0), _ => pick.prefer(pick.instance(pick(kids, p), id, inv),
+         pick.node(sample(markerNodes, p, p, scene.local(node, p, p, False{}, nodes => q => center => sample(nodes, q, center, clear(), False{}), nodes => q => center => sample(nodes, q, center, clear(), False{})), False{}), id, inv)), _ => Pick{False{}, "", identity()}))
+ 
+-# Decode XML entities before interpreting attributes or exposing source editing.
+-def entity(+s: String) -> String:
+-  branch(String, String.eq(s, "amp"), _ => "&",
+-    _ => branch(String, String.eq(s, "lt"), _ => "<",
+-      _ => branch(String, String.eq(s, "gt"), _ => ">",
+-        _ => branch(String, String.eq(s, "quot"), _ => "\"",
+-          _ => branch(String, String.eq(s, "apos"), _ => "'",
+-            _ => branch(String, prefix(s, "#x"), _ => SCon{Chr{hex(drop(s, "#x"), 0)}, ""},
+-              _ => branch(String, prefix(s, "#"), _ => SCon{Chr{F32.to_u32(scalar(drop(s, "#"), 65533.0))}, ""},
+-                _ => "&" ++ s ++ ";")))))))
+-
+-def entities.more(scan: Scan, acc: String, next: String -> String -> String) -> String:
+-  Scan{h, t} = scan
+-  next(t)(rev(entity(h), acc))
+-
+-@unsafe
+-def entities.loop(s: String, +acc: String) -> String:
+-  match s:
+-    case SNil{}: rev(acc, "")
+-    case SCon{Chr{c}, t}:
+-      +ch = c
+-      +tail = t
+-      branch(String, U32.is_eq(ch, 38),
+-        _ => entities.more(until(tail, 59, ""), acc, rest => text => entities.loop(rest, text)),
+-        _ => entities.loop(tail, SCon{Chr{ch}, acc}))
+-
+-def entities(s: String) -> String:
+-  entities.loop(s, "")
+-
+-def decode.attrs(as: List<&2, Attr>) -> List<&2, Attr>:
+-  match as:
+-    case Nil{}: Nil{}
+-    case Con{Attr{k, v}, rest}: Con{Attr{k, entities(v)}, decode.attrs(rest)}
+-
+-def decode.nodes(xs: List<&2, Element>) -> List<&2, Element>:
+-  match xs:
+-    case Nil{}: Nil{}
+-    case Con{Element{n, as, kids, txt}, rest}:
+-      Con{Element{n, decode.attrs(as), decode.nodes(kids), entities(txt)}, decode.nodes(rest)}
+-
+-def parse(s: String) -> Element:
+-  tree.root(decode.nodes(tree(annotate(tokenize(s), 1), Con{Element{"#document", Nil{}, Nil{}, ""}, Nil{}})))

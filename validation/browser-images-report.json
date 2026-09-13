@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 18.226792042,
+  "checks": [
+    "load PNG decoded by Bend",
+    "resize image",
+    "image opacity",
+    "exact source and pixel undo",
+    "drag image and undo",
+    "save preserves embedded PNG data URI",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "3eca300e0528681080b0f1d7e2127800d4692fcee23f6354ec92465c3e5e24b1",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056"
+  }
+}

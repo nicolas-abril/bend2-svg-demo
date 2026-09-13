@@ -1,0 +1,204 @@
+{
+  "sourceSHA256": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+  "changesPrimaryReferencePolicy": false,
+  "specification": "https://www.w3.org/TR/SVG2/painting.html#LineCaps",
+  "versions": {
+    "chromium": "153.0.8010.12",
+    "firefox": "155.0",
+    "resvg": "@resvg/resvg-js 2.6.2"
+  },
+  "results": [
+    {
+      "name": "zero-dash-probe-close-solid",
+      "path": "M40 49Z",
+      "dashed": false,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49Z\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "chromium": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 42,
+          "maxAgainstExpectedSquare": 3
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-close-dashed",
+      "path": "M40 49Z",
+      "dashed": true,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49Z\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\" stroke-dasharray=\"0 4\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 255
+        },
+        "chromium": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 255
+        },
+        "firefox": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-closedLine-solid",
+      "path": "M40 49L40 49Z",
+      "dashed": false,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49L40 49Z\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "chromium": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 42,
+          "maxAgainstExpectedSquare": 3
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-closedLine-dashed",
+      "path": "M40 49L40 49Z",
+      "dashed": true,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49L40 49Z\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\" stroke-dasharray=\"0 4\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 255
+        },
+        "chromium": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 255
+        },
+        "firefox": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-openLine-solid",
+      "path": "M40 49L40 49",
+      "dashed": false,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49L40 49\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "chromium": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-openLine-dashed",
+      "path": "M40 49L40 49",
+      "dashed": true,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49L40 49\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\" stroke-dasharray=\"0 4\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 255
+        },
+        "chromium": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 36,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-move-solid",
+      "path": "M40 49",
+      "dashed": false,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "chromium": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    },
+    {
+      "name": "zero-dash-probe-move-dashed",
+      "path": "M40 49",
+      "dashed": true,
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><path d=\"M40 49\" fill=\"none\" stroke=\"navy\" stroke-width=\"6\" stroke-linecap=\"square\" stroke-dasharray=\"0 4\"/></svg>",
+      "metrics": {
+        "bend": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "resvg": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "chromium": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        },
+        "firefox": {
+          "paintedPixels": 0,
+          "maxAgainstExpectedSquare": 0
+        }
+      }
+    }
+  ]
+}

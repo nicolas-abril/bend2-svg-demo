@@ -1,0 +1,1508 @@
+{
+  "passed": false,
+  "referencePolicy": "Use resvg for the basic geometry, opacity, clipping and cap/join/dash fixtures. Use Chromium for gradients, use/symbol/nested viewports, pathLength, non-scaling strokes and isolated dashed subpaths. The installed resvg binding omits fr, linearRGB, pathLength, vector-effect and symbol default dimensions; it also differs on quoted/empty gradient paint, zero-sized nested viewports and cyclic references. Keep all raw errors and alternate comparisons, including disagreements at clipped edges and the unresolved zero-length closed dash. Classic mask fixtures use resvg; mask-mode and linearRGB fixtures use Chromium because the resvg probes show those properties are ignored. Invalid/cyclic masks use Chromium for comparison but remain a failure: Bend applies transparent black to invalid mask sources per CSS Masking, while reference engines render some of those targets unmasked. Patterns use resvg except transformed patterns, where Chromium is selected. Removing the descriptive title from pattern-reference changes 1056 Chromium pixels but no resvg pixels; SVG2 explicitly permits descriptive children in templates. Transformed patterns retain a failure against Chromium; resvg also differs more substantially on the skewed tile. CSS fixtures use Chromium, with isolated CSS reference probes and all raw resvg results retained; the resvg binding omits several tested cascade, selector, media-query and geometry behaviors. Text fixtures use resvg with the exact bundled Noto Sans font files; Chromium uses those same font files via FontFace. Browser glyph hinting and antialiasing produce additional differences. All initial text errors remain recorded, including baseline/anchored-spacing disagreements; neither reference is treated as an exact font-rasterization oracle. Fitted-text comparisons remain failures. Nested fitting differs substantially across engines; Bend preserves independently fitted descendants as fixed units per the SVG2 resolve-text-length procedure. Following-character advancement and combinations with explicit positions remain under investigation. Expanded color fixtures use Chromium. All148 named values match the official CSS table and Chromium exactly; functional/resource color fixtures differ by at most one channel level. Isolated colors-reference-probe.json records older resvg color-syntax limitations; all alternate results are retained. Marker fixtures use Chromium: the resvg binding treats auto-start-reverse as zero orientation, omits context paints, and differs on shorthand priority and subpath tangents. Keep all resvg results. Transformed marker viewport edges and composited context-paint edges remain failed comparisons with the original thresholds. Filter fixtures use Chromium consistently. Keep resvg alternate comparisons, including its shifted offset subregions and missing context paints in filtered markers. Gaussian kernels, transformed filter buffers and nested patterned filtering differ between reference engines; transformed and nested filter failures remain recorded without changing thresholds. Embedded PNG fixtures use Chromium. Isolated image-reference-probe.json shows resvg 2.6.2 ignores image-rendering:pixelated (optimizeSpeed gives exact nearest-neighbor pixels) and omits intrinsically sized image elements. Both complete raw comparisons are retained. The image aspect-ratio fixture now passes after stabilizing F32 texel-boundary ties; prior and corrected measurements are recorded in sampling.md. Embedded JPEG fixtures use Chromium, retaining resvg alternate comparisons. Standalone JPEG decoder probes also compare every pixel against Pillow/libjpeg. Extended feBlend fixtures use Chromium consistently with the other filter fixtures. All sixteen modes are compared on sixteen color pairs in opaque sRGB, varying-alpha sRGB and linearRGB. Raw resvg comparisons are retained, including nonseparable-mode and boundary differences.",
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "results": [
+    {
+      "fixture": "markers-compositing.svg",
+      "meanAbsoluteError": 0.9136555989583334,
+      "rootMeanSquareError": 5.943082627710274,
+      "maxChannelError": 96,
+      "pixelsAbove32": 58,
+      "reference": "chromium",
+      "features": [
+        "group opacity includes markers",
+        "objectBoundingBox excludes markers",
+        "clipping and masking marker paint",
+        "transformed context gradient"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "differingPixels": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "zero/negative tile dimensions",
+        "template cycles",
+        "paint recursion"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "use.svg",
+      "meanAbsoluteError": 0.20540364583333334,
+      "rootMeanSquareError": 1.6476288992316606,
+      "maxChannelError": 54,
+      "pixelsAbove32": 2,
+      "reference": "chromium",
+      "features": [
+        "local href/xlink references",
+        "instance styles",
+        "reference chains",
+        "use positioning"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "meanAbsoluteError": 0.6798502604166666,
+      "rootMeanSquareError": 3.762890172183699,
+      "maxChannelError": 58,
+      "pixelsAbove32": 28,
+      "reference": "chromium",
+      "features": [
+        "feComposite in/out/xor/arithmetic",
+        "named results",
+        "premultiplied alpha"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "clipping.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.2503255208333333,
+      "rootMeanSquareError": 1.757054234602146,
+      "maxChannelError": 27,
+      "differingPixels": 200,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "clip union",
+        "clip-rule",
+        "objectBoundingBox clips",
+        "group clipping",
+        "nested intersection"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-spans.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.8011067708333334,
+      "rootMeanSquareError": 3.332731065382664,
+      "maxChannelError": 35,
+      "differingPixels": 447,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "reference": "resvg",
+      "features": [
+        "tspan paint and size",
+        "mixed-font anchors",
+        "baseline shifts"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "meanAbsoluteError": 1.1587727864583333,
+      "rootMeanSquareError": 7.009590481901089,
+      "maxChannelError": 107,
+      "pixelsAbove32": 91,
+      "reference": "chromium",
+      "features": [
+        "marker viewBox",
+        "refX/refY",
+        "meet/slice/none",
+        "overflow clips",
+        "nonuniform transforms"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "meanAbsoluteError": 0.9534505208333334,
+      "rootMeanSquareError": 3.2734530379503943,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "feGaussianBlur",
+        "anisotropic blur",
+        "linearRGB versus sRGB",
+        "SourceAlpha shadow chain",
+        "feMerge"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "linearRGB mask luminance"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "viewports.svg",
+      "meanAbsoluteError": 0.19189453125,
+      "rootMeanSquareError": 1.9216844417723737,
+      "maxChannelError": 43,
+      "pixelsAbove32": 6,
+      "reference": "chromium",
+      "features": [
+        "nested viewport dimensions",
+        "percentage geometry",
+        "meet/slice/none",
+        "overflow clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG gray",
+        "embedded JPEG 444",
+        "embedded JPEG 422",
+        "embedded JPEG 420"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "meanAbsoluteError": 0.5419108072916666,
+      "rootMeanSquareError": 2.317368889000699,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "nonseparable hue",
+        "soft-light and color-burn",
+        "overlay",
+        "partial alpha and curved coverage",
+        "post-filter clip, mask and group opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "type/id/class selectors",
+        "specificity",
+        "source order",
+        "inline priority",
+        "important declarations"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG rgb",
+        "embedded JPEG cmyk",
+        "embedded JPEG ycck",
+        "embedded JPEG progressive-cmyk"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.4293619791666667,
+      "rootMeanSquareError": 1.3069077291454052,
+      "maxChannelError": 10,
+      "differingPixels": 640,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "nested patterns",
+        "gradients inside patterns",
+        "mask inside pattern",
+        "use inside pattern"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "meanAbsoluteError": 0.0011393229166666667,
+      "rootMeanSquareError": 0.03375385780420761,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "all legal PNG color types and bit depths",
+        "Adam7 interlacing",
+        "tRNS transparency",
+        "all PNG row filters",
+        "multiple IDAT chunks"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "meanAbsoluteError": 2.3838704427083335,
+      "rootMeanSquareError": 20.90950981997087,
+      "maxChannelError": 255,
+      "pixelsAbove32": 36,
+      "reference": "chromium",
+      "features": [
+        "zero-length dash caps",
+        "zero-length subpaths",
+        "all-zero arrays"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "symbols.svg",
+      "meanAbsoluteError": 0.3260904947916667,
+      "rootMeanSquareError": 1.9762382392123172,
+      "maxChannelError": 43,
+      "pixelsAbove32": 4,
+      "reference": "chromium",
+      "features": [
+        "symbol viewBox",
+        "instance dimensions",
+        "SVG references",
+        "symbol clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "meanAbsoluteError": 0.10091145833333333,
+      "rootMeanSquareError": 0.3176656392078522,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "linear gradients",
+        "alpha interpolation",
+        "duplicate stops"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "colors-named.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "all 148 CSS named colors",
+        "ASCII case folding",
+        "transparent"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "meanAbsoluteError": 0.4212239583333333,
+      "rootMeanSquareError": 1.9929073454378154,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "closed-path angle bisectors",
+        "subpath endpoints",
+        "quadratic/smooth/arc tangents",
+        "polyline markers"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.82861328125,
+      "rootMeanSquareError": 4.673973539273979,
+      "maxChannelError": 60,
+      "differingPixels": 324,
+      "pixelsAbove32": 37,
+      "fractionAbove32": 0.009033203125,
+      "reference": "resvg",
+      "features": [
+        "adjacent decimals",
+        "compact arc flags",
+        "exponents"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "legacy/modern HSL",
+        "deg/rad/grad/turn hue",
+        "hue wrapping",
+        "numeric/percentage saturation and lightness",
+        "missing components",
+        "alpha"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.19645182291666666,
+      "rootMeanSquareError": 1.2466099864566036,
+      "maxChannelError": 14,
+      "differingPixels": 171,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "even/odd dash arrays",
+        "offsets",
+        "percentages",
+        "zero dashes"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "meanAbsoluteError": 0.14982096354166666,
+      "rootMeanSquareError": 0.38706713053637953,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "radial gradients",
+        "focal point",
+        "focal radius",
+        "gradient transform"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "meanAbsoluteError": 1.2207845052083333,
+      "rootMeanSquareError": 3.672960832358775,
+      "maxChannelError": 48,
+      "pixelsAbove32": 21,
+      "reference": "chromium",
+      "features": [
+        "rotated/skewed filters",
+        "objectBoundingBox blur",
+        "feDropShadow"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "meanAbsoluteError": 0.0546875,
+      "rootMeanSquareError": 0.23454854685828547,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG restart",
+        "embedded JPEG progressive-restart",
+        "embedded JPEG quant16",
+        "embedded JPEG huffman16"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-length.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 1.8749186197916667,
+      "rootMeanSquareError": 6.962481999901927,
+      "maxChannelError": 69,
+      "differingPixels": 622,
+      "pixelsAbove32": 69,
+      "fractionAbove32": 0.016845703125,
+      "reference": "resvg",
+      "features": [
+        "textLength",
+        "spacing",
+        "spacingAndGlyphs",
+        "middle/end anchors"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "meanAbsoluteError": 0.03125,
+      "rootMeanSquareError": 0.1767766952966369,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "descendant/child/adjacent/general sibling combinators",
+        "attribute operators",
+        "case-insensitive attribute flag"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "meanAbsoluteError": 0.020833333333333332,
+      "rootMeanSquareError": 0.14433756729740643,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "HWB conversion",
+        "gray normalization",
+        "hue units",
+        "numeric/percentage whiteness and blackness",
+        "missing components",
+        "alpha"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "meanAbsoluteError": 0.3401692708333333,
+      "rootMeanSquareError": 1.0702839868464817,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "alpha mask type",
+        "mask-mode override"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "meanAbsoluteError": 0.450439453125,
+      "rootMeanSquareError": 2.5395472293714745,
+      "maxChannelError": 49,
+      "pixelsAbove32": 20,
+      "reference": "chromium",
+      "features": [
+        "image clipping",
+        "image masks",
+        "image filters",
+        "images in patterns"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "differingPixels": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "template definition inheritance",
+        "explicit inherited paint",
+        "local pattern override"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "meanAbsoluteError": 0.009765625,
+      "rootMeanSquareError": 0.10364452469860624,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "inherited marker properties",
+        "marker shorthand source order",
+        "important marker declarations",
+        "marker definition styles"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "meanAbsoluteError": 0.018229166666666668,
+      "rootMeanSquareError": 0.15095184110614,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "preserveAspectRatio meet/slice/none",
+        "alignment",
+        "intrinsic dimensions",
+        "one automatic dimension"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "meanAbsoluteError": 0.26904296875,
+      "rootMeanSquareError": 2.0356522808017417,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "pathLength",
+        "multiple subpath dash resets"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.4814453125,
+      "rootMeanSquareError": 2.3644915547533683,
+      "maxChannelError": 17,
+      "differingPixels": 340,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "pattern viewBox",
+        "meet/slice/none",
+        "tile clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "paths.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.21419270833333334,
+      "rootMeanSquareError": 1.3761240670508843,
+      "maxChannelError": 26,
+      "differingPixels": 224,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "path commands",
+        "arcs",
+        "fill rules"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-basic.svg",
+      "meanAbsoluteError": 0.31982421875,
+      "rootMeanSquareError": 1.1015347957509105,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "embedded PNG",
+        "bilinear and nearest sampling",
+        "opacity",
+        "image ignores fill/stroke styles",
+        "href/xlink:href"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.06298828125,
+      "rootMeanSquareError": 0.2509746625657658,
+      "maxChannelError": 1,
+      "differingPixels": 354,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "gradient masks",
+        "bbox mask content",
+        "masking groups"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "meanAbsoluteError": 0.2294921875,
+      "rootMeanSquareError": 2.610949500022294,
+      "maxChannelError": 48,
+      "pixelsAbove32": 14,
+      "reference": "chromium",
+      "features": [
+        "direct and indirect recursive markers",
+        "invalid references",
+        "zero-size marker viewport"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.3175455729166667,
+      "rootMeanSquareError": 1.6908724017993393,
+      "maxChannelError": 16,
+      "differingPixels": 887,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "href/xlink pattern templates",
+        "descriptive children",
+        "geometry overrides",
+        "fill opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "meanAbsoluteError": 0.599609375,
+      "rootMeanSquareError": 3.15692030835961,
+      "maxChannelError": 68,
+      "pixelsAbove32": 13,
+      "reference": "chromium",
+      "features": [
+        "recursive viewports",
+        "percentage dimensions",
+        "transformed viewport",
+        "visible overflow",
+        "zero viewport"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "meanAbsoluteError": 0.4166666666666667,
+      "rootMeanSquareError": 0.6454972243679028,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "overlapping translucent mask shapes",
+        "sRGB/linearRGB luminance"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "css-structural.svg",
+      "meanAbsoluteError": 0.11653645833333333,
+      "rootMeanSquareError": 0.5119025989710673,
+      "maxChannelError": 15,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "root",
+        "first/last/only child",
+        "nth-child formulas",
+        "nth-last-child",
+        "not",
+        "empty"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 15.023193359375,
+      "rootMeanSquareError": 41.50970075971951,
+      "maxChannelError": 215,
+      "differingPixels": 907,
+      "pixelsAbove32": 631,
+      "fractionAbove32": 0.154052734375,
+      "reference": "resvg",
+      "features": [
+        "nested textLength",
+        "fixed descendant lengths",
+        "percent textLength",
+        "mixed fonts and whitespace"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "opacity.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.3465169270833333,
+      "rootMeanSquareError": 0.8395923800174304,
+      "maxChannelError": 10,
+      "differingPixels": 1680,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "group opacity",
+        "fill opacity",
+        "inline styles",
+        "inheritance"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "meanAbsoluteError": 0.10921223958333333,
+      "rootMeanSquareError": 0.33047275165031886,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "feFlood",
+        "feOffset",
+        "feColorMatrix",
+        "feComponentTransfer",
+        "sRGB filter processing"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "meanAbsoluteError": 42.5,
+      "rootMeanSquareError": 104.10331406828507,
+      "maxChannelError": 255,
+      "pixelsAbove32": 1024,
+      "reference": "chromium",
+      "features": [
+        "missing/wrong mask references",
+        "empty and zero masks",
+        "direct/indirect cycles"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "meanAbsoluteError": 0.04541015625,
+      "rootMeanSquareError": 0.213096589015404,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "currentColor",
+        "explicit inheritance",
+        "quoted URLs",
+        "single/empty stops",
+        "URL fallback"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "basic.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.2942708333333333,
+      "rootMeanSquareError": 1.7911366706414857,
+      "maxChannelError": 40,
+      "differingPixels": 210,
+      "pixelsAbove32": 3,
+      "fractionAbove32": 0.000732421875,
+      "reference": "resvg",
+      "features": [
+        "rect",
+        "circle",
+        "quadratic paths"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "meanAbsoluteError": 0.57275390625,
+      "rootMeanSquareError": 3.592481660240824,
+      "maxChannelError": 71,
+      "pixelsAbove32": 13,
+      "reference": "chromium",
+      "features": [
+        "marker-start/mid/end",
+        "auto-start-reverse",
+        "strokeWidth/userSpaceOnUse units",
+        "curve endpoint tangents"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "use-clips.svg",
+      "meanAbsoluteError": 0.2945963541666667,
+      "rootMeanSquareError": 2.0486434790286636,
+      "maxChannelError": 27,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "use inside clips",
+        "userSpaceOnUse clip positioning",
+        "instance opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "meanAbsoluteError": 1.07421875,
+      "rootMeanSquareError": 4.4874499474924505,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "non-scaling-stroke",
+        "nonuniform transforms"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "meanAbsoluteError": 0.18619791666666666,
+      "rootMeanSquareError": 1.8883207376749676,
+      "maxChannelError": 37,
+      "pixelsAbove32": 4,
+      "reference": "chromium",
+      "features": [
+        "direct self reference",
+        "indirect reference cycles",
+        "independent instances"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "meanAbsoluteError": 0.025390625,
+      "rootMeanSquareError": 0.5851904960495058,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "explicit inheritance",
+        "currentColor in instances",
+        "symbol default size"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.119140625,
+      "rootMeanSquareError": 1.0525731120687056,
+      "maxChannelError": 23,
+      "differingPixels": 124,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "nested masks",
+        "clipping plus masking",
+        "use in masks"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "css-resources.svg",
+      "meanAbsoluteError": 0.12556966145833334,
+      "rootMeanSquareError": 0.9265418596633038,
+      "maxChannelError": 24,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "CSS paint servers",
+        "CSS clip geometry",
+        "CSS pattern content",
+        "CSS use inheritance",
+        "CSS mask"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 1.0100911458333333,
+      "rootMeanSquareError": 3.718925065907262,
+      "maxChannelError": 42,
+      "differingPixels": 594,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "reference": "resvg",
+      "features": [
+        "accented Latin",
+        "Greek",
+        "Cyrillic"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "text-paints.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 1.4347330729166667,
+      "rootMeanSquareError": 4.864271046364501,
+      "maxChannelError": 60,
+      "differingPixels": 637,
+      "pixelsAbove32": 31,
+      "fractionAbove32": 0.007568359375,
+      "reference": "resvg",
+      "features": [
+        "gradient text",
+        "stroked glyph outlines",
+        "clipped text"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "meanAbsoluteError": 2.0936686197916665,
+      "rootMeanSquareError": 6.231946582178397,
+      "maxChannelError": 58,
+      "pixelsAbove32": 95,
+      "reference": "chromium",
+      "features": [
+        "pattern transforms",
+        "bounding-box transforms",
+        "pattern stroke",
+        "negative tile origin"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "images-uris.svg",
+      "meanAbsoluteError": 0.4833984375,
+      "rootMeanSquareError": 1.4161687237637564,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "base64 PNG data URI",
+        "percent-encoded PNG data URI",
+        "xlink:href fallback",
+        "href precedence"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-position.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 2.901123046875,
+      "rootMeanSquareError": 14.940727619392403,
+      "maxChannelError": 183,
+      "differingPixels": 521,
+      "pixelsAbove32": 114,
+      "fractionAbove32": 0.02783203125,
+      "reference": "resvg",
+      "features": [
+        "per-character x",
+        "text anchors",
+        "letter spacing",
+        "repeated rotation"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "meanAbsoluteError": 0.029134114583333332,
+      "rootMeanSquareError": 0.1711632992203644,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "JPEG base64 and percent data URIs",
+        "xlink:href JPEG",
+        "separate sequential scans"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.03857421875,
+      "rootMeanSquareError": 0.19640320453088336,
+      "maxChannelError": 1,
+      "differingPixels": 202,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "patternUnits",
+        "patternContentUnits",
+        "tile origin",
+        "percentage tile dimensions"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "meanAbsoluteError": 0.01171875,
+      "rootMeanSquareError": 0.10825317547305482,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "opaque sRGB color pairs",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-compression.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "stored DEFLATE",
+        "fixed Huffman DEFLATE",
+        "dynamic Huffman DEFLATE",
+        "multiple compression blocks"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.0966796875,
+      "rootMeanSquareError": 0.7726611212771958,
+      "maxChannelError": 12,
+      "differingPixels": 144,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "transformed clipping",
+        "group bounding boxes",
+        "empty clips",
+        "invalid clip references"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "css-media.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "CDATA stylesheet",
+        "media type",
+        "viewport media queries",
+        "nested media rules",
+        "style media/type attributes",
+        "at-rule skipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "meanAbsoluteError": 0.125,
+      "rootMeanSquareError": 0.3535533905932738,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "legacy percentage RGB",
+        "space-separated RGB",
+        "mixed modern number/percent channels",
+        "slash alpha",
+        "percentage alpha",
+        "clamping",
+        "missing components",
+        "hex alpha"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "transforms.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.193359375,
+      "rootMeanSquareError": 1.3423563509428733,
+      "maxChannelError": 35,
+      "differingPixels": 191,
+      "pixelsAbove32": 1,
+      "fractionAbove32": 0.000244140625,
+      "reference": "resvg",
+      "features": [
+        "transforms",
+        "viewBox",
+        "rounded rect",
+        "ellipse"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "meanAbsoluteError": 0.6067708333333334,
+      "rootMeanSquareError": 2.80456055306947,
+      "maxChannelError": 53,
+      "pixelsAbove32": 10,
+      "reference": "chromium",
+      "features": [
+        "JPEG scaling and intrinsic aspect ratio",
+        "JPEG clipping and mask",
+        "JPEG filtering",
+        "JPEG inside pattern"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.15079752604166666,
+      "rootMeanSquareError": 0.8516700046819777,
+      "maxChannelError": 12,
+      "differingPixels": 211,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "butt/round/square caps",
+        "zero-length subpaths",
+        "moveto-only"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "meanAbsoluteError": 0.2903645833333333,
+      "rootMeanSquareError": 0.8108958523345235,
+      "maxChannelError": 5,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "linearRGB blending",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-units.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "differingPixels": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "maskUnits",
+        "maskContentUnits",
+        "group bounding boxes",
+        "transformed masks"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.11539713541666667,
+      "rootMeanSquareError": 1.1491193412420952,
+      "maxChannelError": 24,
+      "differingPixels": 60,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "mask definition inheritance",
+        "explicit mask paint override"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "meanAbsoluteError": 0.4728190104166667,
+      "rootMeanSquareError": 4.122375269742352,
+      "maxChannelError": 79,
+      "pixelsAbove32": 38,
+      "reference": "chromium",
+      "features": [
+        "filterUnits",
+        "primitiveUnits",
+        "numeric and percentage bounding-box units",
+        "primitive subregions",
+        "post-filter clip/mask/opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.59521484375,
+      "rootMeanSquareError": 2.1380192473603534,
+      "maxChannelError": 33,
+      "differingPixels": 508,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "reference": "resvg",
+      "features": [
+        "miter/round/bevel joins",
+        "miter limits",
+        "explicit closure"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "meanAbsoluteError": 0.20882161458333334,
+      "rootMeanSquareError": 0.4569700368550802,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "functional gradient stops",
+        "functional mask colors",
+        "named pattern colors",
+        "case-insensitive currentColor",
+        "group/fill/stroke percentage opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "masks.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.3684895833333333,
+      "rootMeanSquareError": 1.4132925505122191,
+      "maxChannelError": 24,
+      "differingPixels": 1950,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "luminance masks",
+        "mask opacity",
+        "group masking"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "meanAbsoluteError": 0.9568684895833334,
+      "rootMeanSquareError": 7.104411041740195,
+      "maxChannelError": 153,
+      "pixelsAbove32": 60,
+      "reference": "chromium",
+      "features": [
+        "moveto-only paths",
+        "zero-length segments",
+        "omitted equal-endpoint arcs",
+        "degenerate curve tangents"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "meanAbsoluteError": 1.81103515625,
+      "rootMeanSquareError": 6.488371007682385,
+      "maxChannelError": 67,
+      "pixelsAbove32": 73,
+      "reference": "chromium",
+      "features": [
+        "nested group filters",
+        "filters inside patterns",
+        "filtered context-paint markers",
+        "filtered mask content"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "meanAbsoluteError": 0.07552083333333333,
+      "rootMeanSquareError": 0.27481054079735245,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "independent source and backdrop alpha",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-context.svg",
+      "meanAbsoluteError": 0.6703287760416666,
+      "rootMeanSquareError": 3.4312561665093346,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "context-fill/context-stroke",
+        "solid/gradient/pattern context paint",
+        "independent paint opacity"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "meanAbsoluteError": 0.5968424479166666,
+      "rootMeanSquareError": 1.8824504752228322,
+      "maxChannelError": 22,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "rotated/skewed images",
+        "inherited CSS image-rendering",
+        "percentage dimensions"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.880615234375,
+      "rootMeanSquareError": 4.074072060118926,
+      "maxChannelError": 67,
+      "differingPixels": 482,
+      "pixelsAbove32": 40,
+      "fractionAbove32": 0.009765625,
+      "reference": "resvg",
+      "features": [
+        "curved dashes",
+        "closed dash seam",
+        "square caps"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG progressive-gray",
+        "embedded JPEG progressive-444",
+        "embedded JPEG progressive-422",
+        "embedded JPEG progressive-420"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "meanAbsoluteError": 0.3937174479166667,
+      "rootMeanSquareError": 2.3888371582738746,
+      "maxChannelError": 28,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "gradient strokes",
+        "linearRGB",
+        "stop offset clamping"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.4388020833333333,
+      "rootMeanSquareError": 2.3686524276298258,
+      "maxChannelError": 26,
+      "differingPixels": 275,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "reference": "resvg",
+      "features": [
+        "collapsed whitespace",
+        "tspan whitespace",
+        "xml:space preservation"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-basic.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.7022298177083334,
+      "rootMeanSquareError": 2.8475964142661905,
+      "maxChannelError": 36,
+      "differingPixels": 504,
+      "pixelsAbove32": 1,
+      "fractionAbove32": 0.000244140625,
+      "reference": "resvg",
+      "features": [
+        "glyph outlines",
+        "kerning",
+        "font sizes"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "meanAbsoluteError": 0.171630859375,
+      "rootMeanSquareError": 0.4142835494863391,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "gradient references",
+        "gradient units",
+        "repeat",
+        "reflect",
+        "gradient transform"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "text-style.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 1.5077311197916667,
+      "rootMeanSquareError": 5.149861888823654,
+      "maxChannelError": 43,
+      "differingPixels": 816,
+      "pixelsAbove32": 8,
+      "fractionAbove32": 0.001953125,
+      "reference": "resvg",
+      "features": [
+        "regular/bold/italic/bold italic",
+        "CSS font inheritance"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "meanAbsoluteError": 0.4393717447916667,
+      "rootMeanSquareError": 2.0774983390988147,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "feBlend multiply/screen/darken/lighten",
+        "translucent blending",
+        "default linearRGB"
+      ],
+      "passed": true
+    }
+  ]
+}

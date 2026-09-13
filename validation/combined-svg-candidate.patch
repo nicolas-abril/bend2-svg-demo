@@ -1,0 +1,382 @@
+--- a/svg.bend
++++ b/svg.bend
+@@ -29,6 +29,18 @@
+   match s:
+     case SNil{}: acc
+     case SCon{c, t}: rev(t, SCon{c, acc})
++
++# Consume equality inputs without rebuilding borrowed strings on the host stack.
++@unsafe
++def string.equal.go(same: Bool, a: String, b: String) -> Bool:
++  match same a b:
++    case False{} _ _: False{}
++    case True{} SNil{} SNil{}: True{}
++    case True{} SCon{Chr{x}, xs} SCon{Chr{y}, ys}: string.equal.go(U32.is_eq(x, y), xs, ys)
++    case True{} _ _: False{}
++
++def string.equal(a: String, b: String) -> Bool:
++  string.equal.go(True{}, a, b)
+ 
+ def length.go(s: String, acc: U32) -> U32:
+   match s:
+@@ -4709,6 +4721,77 @@
+   TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, chunks} = cursor
+   index
+ 
++# Text paths use the same flattened geometry as fills and strokes.
++def text.path.target(target: Maybe<&2, Element>, +w: F32, +h: F32) -> List<&2, Attr>:
++  match target:
++    case None{}: Nil{}
++    case Some{Element{n, as, kids, txt}}:
++      +attrs = properties(as)
++      Con{Attr{"#text-path-data", shape.data(n, attrs, w, h)}, Con{Attr{"#text-path-transform", attr.get(attrs, "transform", "")}, Con{Attr{"#text-path-length", attr.get(attrs, "pathLength", "0")}, Nil{}}}}
++
++def text.path.attrs(+as: List<&2, Attr>, all: List<&2, Element>, +w: F32, +h: F32) -> List<&2, Attr>:
++  +direct = attr.get(as, "path", "")
++  +href = attr.get(as, "href", attr.get(as, "xlink:href", ""))
++  +found = text.path.target(branch(Maybe<&2, Element>, prefix(href, "#"), _ => element.find(all, drop(href, "#")), _ => None{}), w, h)
++  attrs.append(choose(List<&2, Attr>, String.eq(direct, ""), found, Con{Attr{"#text-path-data", direct}, Nil{}}), as)
++
++def text.path.resolve.node(+n: String, +as: List<&2, Attr>, +kids: List<&2, Element>, txt: String, +all: List<&2, Element>, w: F32, h: F32, vp: Viewport,
++  expand: List<&2, Element> -> List<&2, Element> -> F32 -> F32 -> List<&2, Element>) -> Element:
++  Viewport{mat, vw, vh, clip, valid} = vp
++  Element{n, choose(List<&2, Attr>, String.eq(n, "textPath"), text.path.attrs(as, all, w, h), as), expand(kids)(choose(List<&2, Element>, String.eq(n, "#svg-image"), kids, all))(vw)(vh), txt}
++
++@unsafe
++def text.path.resolve(xs: List<&2, Element>, +all: List<&2, Element>, +w: F32, +h: F32, +root: Bool) -> List<&2, Element>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, attrs, kids, txt}, rest}:
++      +as = properties(attrs)
++      +tagname = n
++      Con{text.path.resolve.node(tagname, as, kids, txt, all, w, h, element.viewport(tagname, as, identity(), w, h, root), nodes => scope => vw => vh => text.path.resolve(nodes, scope, vw, vh, False{})), text.path.resolve(rest, all, w, h, root)}
++
++def text.path.edges(+xs: List<&2, Edge>, +acc: List<&2, Edge>) -> List<&2, Edge>:
++  match xs:
++    case Nil{}: acc
++    case Con{Edge{p, q, stroked, closed}, rest}: text.path.edges(rest, choose(List<&2, Edge>, stroked && F32.is_gt(point.distance(p, q), 0.000001), Con{Edge{p, q, stroked, closed}, acc}, acc))
++
++def text.path.geometry(+as: List<&2, Attr>) -> List<&2, Edge>:
++  text.path.edges(edges.transform(path(attr.get(as, "#text-path-data", "")), transform(attr.get(as, "#text-path-transform", ""), identity())), Nil{})
++
++def text.path.total(xs: List<&2, Edge>) -> F32:
++  match xs:
++    case Nil{}: 0.0
++    case Con{Edge{p, q, stroked, closed}, rest}: (point.distance(p, q) + text.path.total(rest) : F32)
++
++def text.path.at(+xs: List<&2, Edge>, +distance: F32, fallback: Matrix) -> Matrix:
++  match xs:
++    case Nil{}: fallback
++    case Con{Edge{Point{x, y}, Point{u, v}, stroked, closed}, rest}:
++      +dx = (u - x : F32)
++      +dy = (v - y : F32)
++      +len = F32.sqrt((dx * dx + dy * dy : F32))
++      +tx = (dx / len : F32)
++      +ty = (dy / len : F32)
++      branch(Matrix, F32.is_le(distance, len), _ => Matrix{tx, ty, F32.neg(ty), tx, (x + tx * distance : F32), (y + ty * distance : F32)},
++        _ => text.path.at(rest, (distance - len : F32), Matrix{tx, ty, F32.neg(ty), tx, u, v}))
++
++def text.path.offset(+num: Number, +total: F32, +calibration: F32, em: F32) -> F32:
++  Number{x, suffix, valid} = num
++  (text.measure(num, total, em) * choose(F32, prefix(suffix, "%") || F32.is_le(calibration, 0.0), 1.0, (total / calibration : F32)) : F32)
++
++def text.path.begin(+cursor: TextCursor) -> TextCursor:
++  TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, chunks} = cursor
++  TextCursor{0.0, 0.0, index, chunk, 0.0, anchor, 0, 0, 99, 0.0, False{}, blankState, 0.0, text.chunk(cursor)}
++
++def text.path.end(+cursor: TextCursor, +matrix: Matrix) -> TextCursor:
++  TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, chunks} = cursor
++  Matrix{a, b, c, d, e, f} = matrix
++  TextCursor{e, f, index, U32.inc(chunk), e, "start", 0, 0, 99, 0.0, True{}, blankState, 0.0, text.chunk(cursor)}
++
++def text.path.frames(xs: List<&2, TextFrame>) -> List<&2, TextFrame>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{TextFrame{start, xx, yy, dx, dy, angles}, rest}: Con{TextFrame{start, xx, Nil{}, dx, dy, angles}, text.path.frames(rest)}
++
+ type TextLayout is Data:
+   TextLayout{nodes: List<&2, Element>, cursor: TextCursor}
+ 
+@@ -4883,18 +4966,25 @@
+   TextLayout{nodes, cursor} = result
+   TextLayout{Con{Element{"g", text.length.group.attrs(as, text.measure.nodes(nodes, "#none", text.measure.empty())), nodes, ""}, Nil{}}, cursor}
+ 
+-@unsafe
+-def text.layout(+xs: List<&2, Element>, +font: TextFont, +frames: List<&2, TextFrame>, +cursor: TextCursor, +w: F32, +h: F32) -> TextLayout:
++def text.path.layout(+as: List<&2, Attr>, result: TextLayout, em: F32) -> TextLayout:
++  TextLayout{nodes, cursor} = result
++  +edges = text.path.geometry(as)
++  TextLayout{instance.anonymous(Con{Element{"g", Con{Attr{"#text-path", "1"}, Con{Attr{"#text-path-em", F32.show(em)}, as}}, nodes, ""}, Nil{}}), text.path.end(cursor, text.path.at(edges, text.path.total(edges), identity()))}
++
++@unsafe
++def text.layout(+xs: List<&2, Element>, +font: TextFont, +frames: List<&2, TextFrame>, +cursor: TextCursor, +w: F32, +h: F32, +onPath: Bool) -> TextLayout:
+   match xs:
+     case Nil{}: TextLayout{Nil{}, cursor}
+     case Con{Element{n, attrs, kids, txt}, rest}:
+       +as = properties(attrs)
+       +childFont = text.font.inherit(font, as)
+-      text.layout.then(branch(TextLayout, String.eq(n, "#text"), _ => text.characters(txt, font, frames, cursor),
++      text.layout.then(branch(TextLayout, String.eq(n, "#text"), _ => text.characters(txt, font, choose(List<&2, TextFrame>, onPath, text.path.frames(frames), frames), cursor),
++        _ => branch(TextLayout, String.eq(n, "textPath") && Bool.not(String.eq(attr.get(as, "display", ""), "none")),
++          _ => text.path.layout(as, text.length(text.layout(kids, childFont, frames, text.path.begin(cursor), w, h, True{}), as, w, text.font.em(childFont), False{}), text.font.em(childFont)),
+         _ => branch(TextLayout, (String.eq(n, "tspan") || String.eq(n, "a")) && Bool.not(String.eq(attr.get(as, "display", ""), "none")),
+-          _ => text.layout.group(as, text.length(text.layout(kids, childFont, Con{text.frame(as, text.index(cursor), w, h, text.font.em(childFont)), frames}, cursor, w, h), as, w, text.font.em(childFont), False{})),
+-          _ => TextLayout{Nil{}, cursor})),
+-        next => text.layout(rest, font, frames, next, w, h))
++          _ => text.layout.group(as, text.length(text.layout(kids, childFont, Con{text.frame(as, text.index(cursor), w, h, text.font.em(childFont)), frames}, cursor, w, h, onPath), as, w, text.font.em(childFont), False{})),
++          _ => TextLayout{Nil{}, cursor}))),
++        next => text.layout(rest, font, frames, next, w, h, onPath))
+ 
+ def text.chunk.shift(xs: List<&2, TextChunk>, +key: U32) -> F32:
+   match xs:
+@@ -4915,6 +5005,38 @@
+         _ => Con{Element{tagname, choose(List<&2, Attr>, glyph, Con{Attr{"#glyph-transform", matrix.show(mat)}, as}, as),
+           text.anchor.nodes(kids, chunks, skip), txt}, text.anchor.nodes(rest, chunks, skip)})
+ 
++def text.path.glyph.matrix(+mat: Matrix, +position: Matrix, +advance: F32) -> Matrix:
++  Matrix{a, b, c, d, e, f} = mat
++  Matrix{tx, ty, nx, ny, px, py} = position
++  +aa = (tx * a + nx * b : F32)
++  +bb = (ty * a + ny * b : F32)
++  Matrix{aa, bb, (tx * c + nx * d : F32), (ty * c + ny * d : F32), (px + nx * f - aa * advance / 2.0 : F32), (py + ny * f - bb * advance / 2.0 : F32)}
++
++def text.path.glyph(+as: List<&2, Attr>, +edges: List<&2, Edge>, +total: F32, offset: F32, +mat: Matrix) -> List<&2, Element>:
++  Matrix{a, b, c, d, e, f} = mat
++  +advance = scalar(attr.get(as, "#glyph-advance", "0"), 0.0)
++  +mid = (e + advance * F32.sqrt((a * a + b * b : F32)) / 2.0 + offset : F32)
++  branch(List<&2, Element>, F32.is_lt(mid, 0.0) || F32.is_gt(mid, total) || F32.is_le(total, 0.0), _ => Nil{},
++    _ => Con{Element{"#glyph", Con{Attr{"#glyph-transform", matrix.show(text.path.glyph.matrix(mat, text.path.at(edges, mid, identity()), advance))}, as}, Nil{}, ""}, Nil{}})
++
++def text.path.map(+xs: List<&2, Element>, +edges: List<&2, Edge>, +total: F32, +offset: F32) -> List<&2, Element>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}:
++      text.nodes.append(branch(List<&2, Element>, String.eq(n, "#glyph"), _ => text.path.glyph(as, edges, total, offset, transform(attr.get(as, "#glyph-transform", ""), identity())),
++        _ => Con{Element{n, as, text.path.map(kids, edges, total, offset), txt}, Nil{}}), text.path.map(rest, edges, total, offset))
++
++def text.path.mapped(kids: List<&2, Element>, +as: List<&2, Attr>) -> List<&2, Element>:
++  +edges = text.path.geometry(as)
++  +total = text.path.total(edges)
++  text.path.map(kids, edges, total, text.path.offset(number(attr.get(as, "startOffset", "0")), total, scalar(attr.get(as, "#text-path-length", "0"), 0.0), scalar(attr.get(as, "#text-path-em", "16"), 16.0)))
++
++def text.path.finish(+xs: List<&2, Element>) -> List<&2, Element>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}:
++      Con{Element{n, as, branch(List<&2, Element>, String.eq(attr.get(as, "#text-path", ""), "1"), _ => text.path.mapped(kids, as), _ => text.path.finish(kids)), txt}, text.path.finish(rest)}
++
+ def text.cell(+mat: Matrix, +width: F32, box: Bounds) -> Bounds:
+   bounds.point(bounds.point(bounds.point(bounds.point(box, matrix.point(mat, Point{0.0, F32.neg(293.0)})),
+     matrix.point(mat, Point{width, F32.neg(293.0)})), matrix.point(mat, Point{width, 1069.0})), matrix.point(mat, Point{0.0, 1069.0}))
+@@ -4945,7 +5067,7 @@
+ def text.finish(+result: TextLayout, as: List<&2, Attr>) -> Element:
+   TextLayout{nodes, cursor} = result
+   TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, chunks} = cursor
+-  text.finished.nodes(text.anchor.nodes(nodes, text.chunk(cursor), choose(String, F32.is_gt(trailing, 0.0), U32.show((index - 1 : U32)), "#none")), as)
++  text.finished.nodes(text.path.finish(text.anchor.nodes(nodes, text.chunk(cursor), choose(String, F32.is_gt(trailing, 0.0), U32.show((index - 1 : U32)), "#none"))), as)
+ 
+ def text.font.reset(font: TextFont) -> TextFont:
+   TextFont{size, face, weight, slant, anchor, letter, word, shift, baseline, kern, preserve, book} = font
+@@ -4956,7 +5078,7 @@
+   Viewport{matrix, w, h, clip, valid} = vp
+   +f = choose(TextFont, String.eq(n, "#svg-image"), text.font.reset(font), text.font.inherit(font, as))
+   branch(Element, String.eq(n, "text"),
+-    _ => text.finish(text.length(text.layout(kids, f, Con{text.frame(as, 0, w, h, text.font.em(f)), Nil{}}, text.cursor(), w, h), as, w, text.font.em(f), True{}), as),
++    _ => text.finish(text.length(text.layout(kids, f, Con{text.frame(as, 0, w, h, text.font.em(f)), Nil{}}, text.cursor(), w, h, False{}), as, w, text.font.em(f), True{}), as),
+     _ => Element{n, as, expand(kids)(f)(w)(h), txt})
+ 
+ @unsafe
+@@ -5270,7 +5392,8 @@
+   Element{n, a, kids, txt} = root
+   +styled = css.tree(kids, css.rules(css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, css.element.count(kids))
+   +embedded = image.svg.expand(16n, styled, w, h)
+-  +nodes = text.expand(use.expand(64n, embedded, embedded, Nil{}), text.font.default(book), w, h, True{})
++  +used = use.expand(64n, embedded, embedded, Nil{})
++  +nodes = text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{})
+   context.scenes(compile(64n, nodes, style.default(), identity(), w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
+ 
+ def document(root: Element, w: F32, h: F32) -> List<&2, Scene<Brush>>:
+@@ -5922,32 +6045,49 @@
+ def attrs.set(as: List<&2, Attr>, +key: String, value: String) -> List<&2, Attr>:
+   Con{Attr{key, value}, attrs.remove(as, key)}
+ 
+-def escape(s: String) -> String:
++# Build escaped XML in reverse, so large data URIs do not grow the host stack.
++def escape.rev(s: String, acc: String) -> String:
+   match s:
+-    case SNil{}: ""
++    case SNil{}: acc
+     case SCon{Chr{c}, t}:
+       +ch = c
+-      choose(String, U32.is_eq(ch, 38), "&amp;",
++      escape.rev(t, rev(choose(String, U32.is_eq(ch, 38), "&amp;",
+         choose(String, U32.is_eq(ch, 60), "&lt;",
+           choose(String, U32.is_eq(ch, 62), "&gt;",
+-            choose(String, U32.is_eq(ch, 34), "&quot;", SCon{Chr{ch}, ""})))) ++ escape(t)
+-
+-def serialize.attrs(as: List<&2, Attr>) -> String:
++            choose(String, U32.is_eq(ch, 34), "&quot;", SCon{Chr{ch}, ""})))), acc))
++
++def escape(s: String) -> String:
++  rev(escape.rev(s, ""), "")
++
++def serialize.attrs.rev(as: List<&2, Attr>, +acc: String) -> String:
+   match as:
+-    case Nil{}: ""
++    case Nil{}: acc
+     case Con{Attr{k, v}, rest}:
+       +key = k
+-      branch(String, prefix(key, "#"), _ => "", _ => " " ++ key ++ "=\"" ++ escape(v) ++ "\"") ++ serialize.attrs(rest)
+-
+-def serialize.nodes(+xs: List<&2, Element>) -> String:
+-  match xs:
+-    case Nil{}: ""
++      serialize.attrs.rev(rest, branch(String, prefix(key, "#"), _ => acc,
++        _ => SCon{Chr{34}, escape.rev(v, SCon{Chr{34}, SCon{Chr{61}, rev(key, SCon{Chr{32}, acc})}})}))
++
++def serialize.attrs(as: List<&2, Attr>) -> String:
++  rev(serialize.attrs.rev(as, ""), "")
++
++def serialize.element(+n: String, as: List<&2, Attr>, kids: List<&2, Element>, txt: String, +acc: String,
++  children: List<&2, Element> -> String -> String) -> String:
++  +isDocument = String.eq(n, "#document")
++  +isText = String.eq(n, "#text")
++  +open = branch(String, isDocument || isText, _ => acc,
++    _ => SCon{Chr{62}, serialize.attrs.rev(as, rev(n, SCon{Chr{60}, acc}))})
++  +body = children(choose(List<&2, Element>, isText, Nil{}, kids))(choose(String, isDocument, open, escape.rev(txt, open)))
++  branch(String, isDocument || isText, _ => body, _ => SCon{Chr{62}, rev(n, SCon{Chr{47}, SCon{Chr{60}, body}})})
++
++@unsafe
++def serialize.nodes.rev(xs: List<&2, Element>, acc: String) -> String:
++  match xs:
++    case Nil{}: acc
+     case Con{Element{n, as, kids, txt}, rest}:
+-      +tagname = n
+-      branch(String, String.eq(tagname, "#document"), _ => serialize.nodes(kids),
+-        _ => branch(String, String.eq(tagname, "#text"), _ => escape(txt),
+-          _ => "<" ++ tagname ++ serialize.attrs(as) ++ ">" ++ escape(txt) ++ serialize.nodes(kids) ++ "</" ++ tagname ++ ">"))
+-        ++ serialize.nodes(rest)
++      serialize.nodes.rev(rest, serialize.element(n, as, kids, txt, acc, nodes => tail => serialize.nodes.rev(nodes, tail)))
++
++def serialize.nodes(xs: List<&2, Element>) -> String:
++  rev(serialize.nodes.rev(xs, ""), "")
+ 
+ def serialize(root: Element) -> String:
+   serialize.nodes(Con{root, Nil{}})
+--- a/state.bend
++++ b/state.bend
+@@ -94,7 +94,7 @@
+ # A gesture creates one undo entry only when its final document differs.
+ def release.history(+doc: SVG.Element, +base: SVG.Element, down: Bool, +history: List<&2, SVG.Element>) -> List<&2, SVG.Element>:
+   SVG.branch(List<&2, SVG.Element>, down,
+-    _ => SVG.choose(List<&2, SVG.Element>, String.eq(SVG.serialize(doc), SVG.serialize(base)), history, Con{base, history}),
++    _ => SVG.choose(List<&2, SVG.Element>, SVG.string.equal(SVG.serialize(doc), SVG.serialize(base)), history, Con{base, history}),
+     _ => history)
+ 
+ def release(+s: State) -> State:
+--- a/check-serialize-large.bend
++++ b/check-serialize-large.bend
+@@ -0,0 +1,30 @@
++import Base
++import ./svg.bend as SVG
++
++def many(n: Nat, +word: String, acc: String) -> String:
++  match n:
++    case Zero{}: acc
++    case Succ{d}: many(d, word, word ++ acc)
++
++def yes(b: Bool) -> IO(Unit):
++  IO.print(SVG.choose(String, b, "True", "False"))
++
++def main() -> IO(Unit):
++  +data = many(1024n, "0123456789abcdef0123456789abcdef", "")
++  +node = {SVG.Element{"svg", Con{SVG.Attr{"data", data}, Con{SVG.Attr{"tag", "&<>\"😀"}, Nil{}}}, Con{SVG.Element{"#text", Nil{}, Nil{}, data}, Nil{}}, ""} : SVG.Element}
++  +saved = SVG.serialize(node)
++  +suffix = SVG.drop(SVG.drop(saved, "<svg data=\""), data)
++  do IO<Unit>:
++    Unit <- IO.print(U32.show(SVG.length(saved)))
++    Unit <- yes(SVG.prefix(saved, "<svg data=\"0123456789abcdef"))
++    Unit <- yes(SVG.prefix(suffix, "\" tag=\"&amp;&lt;&gt;&quot;😀\">"))
++    Unit <- yes(SVG.string.equal(saved, saved))
++    Unit <- yes(Bool.not(SVG.string.equal(data, SVG.rev(SVG.rev(data, ""), "!"))))
++    yes(String.eq(SVG.drop(SVG.drop(suffix, "\" tag=\"&amp;&lt;&gt;&quot;😀\">"), data), "</svg>"))
++
++#|65582
++#|True
++#|True
++#|True
++#|True
++#|True
+--- a/check-text-path.bend
++++ b/check-text-path.bend
+@@ -0,0 +1,34 @@
++import Base
++import ./svg.bend as SVG
++import ./state.bend as Editor
++
++def yes(b: Bool) -> IO(Unit):
++  IO.print(SVG.choose(String, b, "True", "False"))
++
++def same.row(n: Nat, +x: U32, +y: U32, +a: List<&2, SVG.Scene<SVG.Brush>>, +b: List<&2, SVG.Scene<SVG.Brush>>) -> Bool:
++  match n:
++    case Zero{}: True{}
++    case Succ{d}: U32.is_eq(SVG.pixel(a, x, y, 1), SVG.pixel(b, x, y, 1)) && same.row(d, U32.inc(x), y, a, b)
++
++def same.rows(n: Nat, +y: U32, +a: List<&2, SVG.Scene<SVG.Brush>>, +b: List<&2, SVG.Scene<SVG.Brush>>) -> Bool:
++  match n:
++    case Zero{}: True{}
++    case Succ{d}: same.row(64n, 0, y, a, b) && same.rows(d, U32.inc(y), a, b)
++
++def main() -> IO(Unit):
++  +track = SVG.parse("<svg><defs><path id=\"p\" d=\"M2 16H62\"/></defs><text font-size=\"10\" fill=\"red\"><textPath href=\"#p\">Bend</textPath></text></svg>")
++  +plain = SVG.parse("<svg><text x=\"2\" y=\"16\" font-size=\"10\" fill=\"red\">Bend</text></svg>")
++  +offset = SVG.parse("<svg><defs><path id=\"p\" d=\"M2 16H62\" pathLength=\"30\"/></defs><text font-size=\"10\" fill=\"red\"><textPath href=\"#p\" startOffset=\"3\">Bend</textPath></text></svg>")
++  +shifted = SVG.parse("<svg><text x=\"8\" y=\"16\" font-size=\"10\" fill=\"red\">Bend</text></svg>")
++  +direct = SVG.parse("<svg><text font-size=\"10\" fill=\"red\"><textPath path=\"M2 16H62\">Bend</textPath></text></svg>")
++  +bad = SVG.parse("<svg><defs><path id=\"p\" d=\"M2 16H62\"/></defs><text font-size=\"10\"><textPath href=\"p\">Bend</textPath></text></svg>")
++  do IO<Unit>:
++    Unit <- yes(same.rows(32n, 0, SVG.document(track, 64.0, 32.0), SVG.document(plain, 64.0, 32.0)))
++    Unit <- yes(same.rows(32n, 0, SVG.document(offset, 64.0, 32.0), SVG.document(shifted, 64.0, 32.0)))
++    Unit <- yes(same.rows(32n, 0, SVG.document(direct, 64.0, 32.0), SVG.document(plain, 64.0, 32.0)))
++    IO.print(U32.show(SVG.pixel(SVG.document(bad, 64.0, 32.0), 4, 12, 1)))
++
++#|True
++#|True
++#|True
++#|16777215
+--- a/check-text-path-editor.bend
++++ b/check-text-path-editor.bend
+@@ -0,0 +1,33 @@
++import Base
++import ./svg.bend as SVG
++import ./state.bend as Editor
++
++def yes(b: Bool) -> IO(Unit):
++  IO.print(SVG.choose(String, b, "True", "False"))
++
++def owner(found: Maybe<&2, SVG.Element>) -> String:
++  match found:
++    case None{}: ""
++    case Some{SVG.Element{n, as, kids, txt}}: SVG.attr.get(as, "#editor-id", "")
++
++def main() -> IO(Unit):
++  +book = SVG.font.parse("g|0:65|600 1 1 0|M0 0H500V700H0Z\n", SVG.font.empty())
++  +source = {"<svg><defs><path id=\"p\" d=\"M2 16H62\"/></defs><text id=\"label\" font-size=\"10\" fill=\"red\"><textPath href=\"#p\">A</textPath></text></svg>" : String}
++  +expected = owner(SVG.element.find(Con{SVG.parse(source), Nil{}}, "label"))
++  +s = Editor.release(Editor.press(Editor.load.fonts(source, 64, 32, book), SVG.Point{4.0, 12.0}))
++  +moved = Editor.apply(s, Editor.Translate{4.0, 0.0})
++  +restored = Editor.apply(moved, Editor.Undo{})
++  do IO<Unit>:
++    Unit <- yes(String.eq(Editor.get.selected(s), expected))
++    Unit <- yes(SVG.string.contains(Editor.get.source(moved), "href=\"#p\""))
++    Unit <- IO.print(U32.show(SVG.pixel(Editor.get.scene(moved), 4, 12, 1)))
++    Unit <- IO.print(U32.show(SVG.pixel(Editor.get.scene(moved), 8, 12, 1)))
++    Unit <- yes(String.eq(Editor.get.source(s), Editor.get.source(restored)))
++    IO.print(U32.show(SVG.pixel(Editor.get.scene(restored), 4, 12, 1)))
++
++#|True
++#|True
++#|16777215
++#|16711680
++#|True
++#|16711680

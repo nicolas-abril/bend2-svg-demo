@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64">
+<defs fill="red"><g id="tile"><rect width="12" height="10"/><circle cx="6" cy="5" r="3" fill="currentColor"/></g><use id="nested" href="#tile" x="2" y="1"/></defs>
+<use href="#tile" x="4" y="4" fill="teal" color="yellow"/>
+<use xlink:href="#tile" x="28" y="5" transform="rotate(15 28 5)" fill="purple" color="orange"/>
+<use href="#nested" x="8" y="28" transform="scale(1.5)" fill="navy" color="lime" width="2" height="2"/>
+<use href="#missing" x="40" y="40"/>
+</svg>

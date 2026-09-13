@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" stroke="purple" stroke-width="6">
+<path d="M4 23L12 5L20 23"/>
+<path d="M25 23L33 5L41 23" stroke-linejoin="round"/>
+<path d="M46 23L54 5L62 23" stroke-linejoin="bevel"/>
+<path d="M4 56L12 35L20 56" stroke-miterlimit="1.5"/>
+<path d="M27 54L32 34L40 54Z" stroke-linejoin="miter"/>
+<path d="M46 54L53 34L60 54L46 54" stroke-linecap="round" stroke-linejoin="bevel"/>
+</svg>

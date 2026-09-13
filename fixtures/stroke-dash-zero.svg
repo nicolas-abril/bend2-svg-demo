@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" stroke="navy" stroke-width="6" fill="none">
+<path d="M4 8H60" stroke-linecap="round" stroke-dasharray="0 8"/>
+<path d="M4 22H60" stroke-linecap="square" stroke-dasharray="0 8"/>
+<path d="M4 35H60" stroke-dasharray="0 0"/>
+<path d="M8 49L8 49" stroke-linecap="round" stroke-dasharray="2 4" stroke-dashoffset="3"/>
+<path d="M24 49L24 49" stroke-linecap="round" stroke-dasharray="2 4" stroke-dashoffset="1"/>
+<path d="M40 49Z" stroke-linecap="square" stroke-dasharray="0 4"/>
+<path d="M56 49L56 49" stroke-linecap="butt"/>
+</svg>

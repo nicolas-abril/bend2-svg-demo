@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "9078af2d90a95e8de565217a320bf19e8c659ec8343fe3ab8a1606fbe477dcbd",
+    "state.bend": "a604ac987ef8a7607df05f015e437c965ad0577f7bfbcfd34fd84c91c2adab27",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": {
+    "native": "e623fb983b5c8fe45b2603ce8853426ee9d44a0de1509d6c46f7d079eb425535",
+    "web": "29c95a5993e06ebabed33369ffc4c23a66d3b1230f08f238669f4b593d297ad0",
+    "render": "c2ebe0b2d686f12a7502c61a6faf4e5e269075ee4c8b43aad31979309404e158"
+  },
+  "reusedFrontends": [
+    {
+      "frontend": "native",
+      "reason": "byte-identical emitted C",
+      "emittedCSHA256": "e727cf5438cfa24f6fda9f4c34366f86070f14589636977f230df63d39df4fe9",
+      "binarySHA256": "e623fb983b5c8fe45b2603ce8853426ee9d44a0de1509d6c46f7d079eb425535"
+    },
+    {
+      "frontend": "web",
+      "reason": "byte-identical emitted C",
+      "emittedCSHA256": "51548e7c37128c3f57cba559ede2831203c27d46a9bfe0b090a2c7bbb8214c89",
+      "binarySHA256": "29c95a5993e06ebabed33369ffc4c23a66d3b1230f08f238669f4b593d297ad0"
+    }
+  ],
+  "headlessBuild": "Fresh corrected C renderer, built by the Bend CLI with its default O3/Metal flags",
+  "backendParity": "100/100 exact C/JavaScript matrices",
+  "checks": 41,
+  "backendParityReport": "native-all-report.json",
+  "primaryComparisons": {
+    "passed": 82,
+    "total": 100,
+    "failed": 18
+  }
+}

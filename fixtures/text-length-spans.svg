@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" font-family="Noto Sans" font-size="11">
+<text x="3" y="14" fill="#2879a8">A<tspan textLength="30" fill="#a64975">BC</tspan>D</text>
+<text x="3" y="29" textLength="56" fill="#488b65">A<tspan textLength="22" lengthAdjust="spacingAndGlyphs" fill="#966d31">BC</tspan>D</text>
+<text x="3" y="44" textLength="56" lengthAdjust="spacingAndGlyphs" fill="#a64975">A<tspan textLength="22" fill="#2879a8">BC</tspan>D</text>
+<text x="32" y="59" text-anchor="middle" textLength="80%" fill="#488b65"> A<tspan font-weight="bold">B</tspan>C </text>
+</svg>

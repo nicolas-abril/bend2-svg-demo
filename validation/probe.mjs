@@ -1,0 +1,2 @@
+import{Resvg}from'@resvg/resvg-js';import{readFileSync}from'node:fs';
+for(const[f,pattern]of [['gradient-radial',/ fr="20%"/],['gradient-strokes',/ color-interpolation="linearRGB"/]]){const src=readFileSync(new URL('../fixtures/'+f+'.svg',import.meta.url),'utf8');const a=new Resvg(src,{background:'white'}).render().pixels,b=new Resvg(src.replace(pattern,''),{background:'white'}).render().pixels;let max=0;for(let i=0;i<a.length;i++)max=Math.max(max,Math.abs(a[i]-b[i]));console.log(f,'change in resvg pixels when removing property:',max);}

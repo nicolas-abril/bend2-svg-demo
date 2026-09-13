@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "open referenced SVG",
+    "drag use instance by10,10",
+    "recolor one instance",
+    "preserve definitions and href in saved source",
+    "undo instance property",
+    "no browser errors"
+  ],
+  "before": "<svg height=\"64\" width=\"64\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs fill=\"red\"><g id=\"tile\"><rect height=\"10\" width=\"12\"></rect><circle fill=\"currentColor\" r=\"3\" cy=\"5\" cx=\"6\"></circle></g><use y=\"1\" x=\"2\" href=\"#tile\" id=\"nested\"></use></defs>\n<use color=\"yellow\" fill=\"teal\" y=\"4\" x=\"4\" href=\"#tile\"></use>\n<use color=\"orange\" fill=\"purple\" transform=\"rotate(15 28 5)\" y=\"5\" x=\"28\" xlink:href=\"#tile\"></use>\n<use height=\"2\" width=\"2\" color=\"lime\" fill=\"navy\" transform=\"scale(1.5)\" y=\"28\" x=\"8\" href=\"#nested\"></use>\n<use y=\"40\" x=\"40\" href=\"#missing\"></use>\n</svg>\n",
+  "after": "<svg height=\"64\" width=\"64\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs fill=\"red\"><g id=\"tile\"><rect height=\"10\" width=\"12\"></rect><circle fill=\"currentColor\" r=\"3\" cy=\"5\" cx=\"6\"></circle></g><use y=\"1\" x=\"2\" href=\"#tile\" id=\"nested\"></use></defs>\n<use style=\";transform:matrix(1,0 0,1 10,10 );fill:#00ff00\" color=\"yellow\" fill=\"teal\" y=\"4\" x=\"4\" href=\"#tile\"></use>\n<use color=\"orange\" fill=\"purple\" transform=\"rotate(15 28 5)\" y=\"5\" x=\"28\" xlink:href=\"#tile\"></use>\n<use height=\"2\" width=\"2\" color=\"lime\" fill=\"navy\" transform=\"scale(1.5)\" y=\"28\" x=\"8\" href=\"#nested\"></use>\n<use y=\"40\" x=\"40\" href=\"#missing\"></use>\n</svg>\n"
+}

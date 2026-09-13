@@ -1,0 +1,12 @@
+{
+  "experimental": true,
+  "passed": true,
+  "sourceSHA256": "57add6a2f1312425f09f33a09796bba74a52c17cb90e32e41332611a0200890c",
+  "stateSHA256": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+  "regressions": "42 Bend files, including a 65582-character XML serialization and long-string equality check",
+  "sourceBytes": 27061,
+  "sourceMatchesOldCSerializer": true,
+  "largeRequestBytes": 81153,
+  "cause": "JavaScript host stack overflow in XML serialization and restoring string equality",
+  "browserReport": "browser-svg-images-js-serialization-candidate-report.json"
+}

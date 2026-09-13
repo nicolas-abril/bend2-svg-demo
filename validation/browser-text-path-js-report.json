@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "serverBackend": "javascript",
+  "binarySHA256": null,
+  "sourceSHA256": {
+    "svg.bend": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+    "state.bend": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "durationSeconds": 21.000742042000002,
+  "checks": [
+    "all65536 headless AA4 pixels match",
+    "no SVG presentation DOM",
+    "select owning text",
+    "recolor only selected text",
+    "font weight changes",
+    "drag only selected text",
+    "exact source/full-matrix undo",
+    "save retains textPath and path references",
+    "no browser errors"
+  ],
+  "before": "<svg font-family=\"Noto Sans\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><defs><path d=\"M2 16H62\" id=\"line\"></path><path d=\"M2 45Q32 12 62 45\" id=\"curve\"></path><path d=\"M3 62A40 28 0 0 1 61 62\" id=\"arc\"></path></defs><g font-size=\"10\"><text fill=\"#1b5276\"><textPath href=\"#line\">Bend SVG</textPath></text><text fill=\"#b03a2e\"><textPath startOffset=\"3\" href=\"#curve\">Curved text</textPath></text><text font-size=\"9\" fill=\"#196f3d\"><textPath text-anchor=\"middle\" startOffset=\"50%\" href=\"#arc\">Arc path</textPath></text></g></svg>\n"
+}

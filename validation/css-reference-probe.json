@@ -1,0 +1,40 @@
+{
+  "description": "Pixels changed when removing the named feature",
+  "results": [
+    {
+      "feature": "important precedence",
+      "changedPixels": {
+        "chromium": 1024,
+        "resvg": 0
+      }
+    },
+    {
+      "feature": "CSS geometry",
+      "changedPixels": {
+        "chromium": 486,
+        "resvg": 0
+      }
+    },
+    {
+      "feature": "media query",
+      "changedPixels": {
+        "chromium": 1024,
+        "resvg": 0
+      }
+    },
+    {
+      "feature": "nth-child",
+      "changedPixels": {
+        "chromium": 256,
+        "resvg": 0
+      }
+    },
+    {
+      "feature": "attribute case flag",
+      "changedPixels": {
+        "chromium": 1024,
+        "resvg": 0
+      }
+    }
+  ]
+}

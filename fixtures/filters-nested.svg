@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="blur" x="-.5" y="-.5" width="2" height="2"><feGaussianBlur stdDeviation="1"/></filter>
+ <filter id="swap" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 1 0 0  1 0 0 0 0  0 1 0 0 0  0 0 0 1 0"/></filter>
+ <filter id="tileblur" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation=".035"/></filter>
+ <pattern id="p" width=".5" height=".5" patternContentUnits="objectBoundingBox"><circle cx=".25" cy=".25" r=".12" fill="#e74" filter="url(#tileblur)"/></pattern>
+ <marker id="m" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" overflow="visible"><circle cx="5" cy="5" r="3" fill="context-stroke" filter="url(#blur)"/></marker>
+ <mask id="mask"><rect x="35" y="35" width="20" height="20" fill="white" filter="url(#blur)"/></mask>
+</defs>
+<g filter="url(#swap)" opacity=".75"><circle cx="15" cy="15" r="7" fill="red" filter="url(#blur)"/><circle cx="21" cy="17" r="6" fill="blue" filter="url(#blur)"/></g>
+<rect x="35" y="5" width="22" height="22" fill="url(#p)"/>
+<path d="M7 47L25 40" stroke="#46c" stroke-width="2" marker-start="url(#m)" marker-end="url(#m)"/>
+<rect x="33" y="33" width="26" height="26" fill="#c54" mask="url(#mask)"/>
+</svg>

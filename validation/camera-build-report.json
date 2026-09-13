@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "acbc0c3c9275fe6c0901244c2568c305fd619b89f1e06a717a89d8f1430d5b65",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "native.bend": "e758ea65eb9073da6c9a728cd8ea77237c690bf3f69652c0dbf4d0ef1c984e00",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 50,
+  "exactBackendFixtureCount": 112,
+  "additionalFittedBackendFixtureCount": 3,
+  "primaryPassing": 89,
+  "primaryTotal": 112,
+  "fittedReferencesPassing": 3,
+  "fittedReferencesTotal": 3,
+  "binaries": {
+    "native": {
+      "binarySHA256": "d67764a86c1fa1f57f7105b56913c98d099fc2d9d007759efa8d6cba40c47a91",
+      "generatedCSHA256": "3687436938246ef1f02038ea0eda51413a0acc3fc3e8b7775d547b6ae1df0aad",
+      "builtFrom": "Frozen camera sources; freshly compiled C"
+    },
+    "web": {
+      "binarySHA256": "070097a0d6e5c26f15b66f19cffe94f11d2566ad6b4983b2700ae7168f5c0c7d",
+      "generatedCSHA256": "c8034a98a5d89655e7d1af98788b10a038f784c90ad89193855210f15eec66ef",
+      "builtFrom": "Frozen camera sources; freshly compiled C"
+    },
+    "render": {
+      "binarySHA256": "12d5b75c6a4a6364cef4c2480f2bc4ee9c74678a726c638d97cc56694e2405fc",
+      "generatedCSHA256": "c8ddc1fbfb16e5a206c512c808f23d719087854032dbf3de57a14afba45cff55",
+      "builtFrom": "Frozen camera sources; freshly compiled C"
+    }
+  }
+}

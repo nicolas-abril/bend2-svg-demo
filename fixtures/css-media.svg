@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<style><![CDATA[
+@import url("unused.css");
+rect { fill:#df763e; }
+@media print { rect {fill:red;} }
+@media screen and (min-width:60px) {
+ .wide {fill:#317db2;}
+ @media (max-height:80px) { .nested {fill:#9559a3;} }
+}
+@media not screen { rect {fill:red;} }
+@media (max-width:50px), (orientation:landscape) {rect {fill:red;}}
+rect[data-note="a;b"] {stroke:#55a170;stroke-width:2;}
+]]></style>
+<style media="print">rect { fill:red!important; }</style>
+<style media="screen and (width:64px)">.sheet {fill:#54a071;}</style>
+<style type="text/plain">rect {fill:red!important;}</style>
+<rect class="wide" x="3" y="3" width="26" height="26"/>
+<rect class="nested" x="35" y="3" width="26" height="26"/>
+<rect class="sheet" x="3" y="35" width="26" height="26"/>
+<rect data-note="a;b" x="35" y="35" width="26" height="26"/>
+</svg>

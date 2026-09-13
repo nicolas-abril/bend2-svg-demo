@@ -1,0 +1,832 @@
+{
+  "passed": true,
+  "check": "Saved C backend versus the JavaScript-produced 64x64 AA8 matrices for every fixture",
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "ca0feb12b3d1680136df4200a06b2ba72bd57f281c438d30b206fc14bfc00b4d",
+  "results": [
+    {
+      "fixture": "basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.820912833,
+      "sha256": "bb4c3fa3a8789b9f0f6291b0e6839e25b30977bd66284953dfb00a97b4f8dbe5"
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.629748666,
+      "sha256": "f4ebc931fb48e157544452e76ff5223545fbfc61f6ddb112d36402634b388831"
+    },
+    {
+      "fixture": "clipping.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.793486625,
+      "sha256": "75d238d8d927e957bf106ceed6383bf480df0b99093998d1a1970ec399c65694"
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.3188505,
+      "sha256": "076a9dd8b8bdb5aa89c388c5b1a3d2357e81e9ef69d901a37f9cba4eba747c3b"
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.229824916,
+      "sha256": "39f41c3c99b2f89f701af569c73aa8ae7c8c808ff99d8be2a83f16a59f8e2819"
+    },
+    {
+      "fixture": "colors-named.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 6.487874417000001,
+      "sha256": "ba084526a4d9d4febef010b30ff140f0ec89916c7babed95ed828fd55d81692f"
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.0225604999999995,
+      "sha256": "976ba1b49b6da7d83e60a9ad233b03c6af2e54a3253121b07cacc47305e60468"
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.1898466659999996,
+      "sha256": "a4828f725f9665a96d8087fe7e001b9976693432bc4f2541840b65034968040d"
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5195838750000003,
+      "sha256": "6a30f033b05fa6393deeb976484c7577f96a0a641497bcf6dc61f04164625636"
+    },
+    {
+      "fixture": "convolve-alpha.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6744955420000006,
+      "sha256": "bcf8e8ea837e5750c6bb0dad7ce78eaeefda1eae602284b421b9ca9bc4c1e568"
+    },
+    {
+      "fixture": "convolve-edges.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.1246693329999997,
+      "sha256": "8d7bdb741174f3fa06765978934a5a838dc02b1eeda499d1dd893961a0d1834f"
+    },
+    {
+      "fixture": "convolve-graph.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6798177500000001,
+      "sha256": "c9022e5c48cc3fedaf37c1089a54149da7066483a1c63b89444b45a3bf88d8ef"
+    },
+    {
+      "fixture": "convolve-kernels.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.046095250000002,
+      "sha256": "24a4c41ea277c44b424c23c4ec9bdc1ec12939c78d99a14f941207f7738aaba5"
+    },
+    {
+      "fixture": "convolve-units.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.9624290000000001,
+      "sha256": "de4ba7eced61776d83860d27a621eaaf88adc9484a87d6dd3db5c55b11736186"
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6488236669999969,
+      "sha256": "e14b75ce2950f9d6281e38f3e2440c986c69ccde62ad2bab71cb774618d711d5"
+    },
+    {
+      "fixture": "css-media.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5510272919999989,
+      "sha256": "b554e5aeb25890dec6c1554451c9bbc0df6d7f6f1bb4459a643b92cc7273fd19"
+    },
+    {
+      "fixture": "css-resources.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6952730420000007,
+      "sha256": "855ab4fc01eddd87806e1dd16ebd376afa12ef128508d6924a5471328358187a"
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.834726832999997,
+      "sha256": "7bbc75b48d8081119e17ef59fad0720983aed36774ad85963653c0df65143fc0"
+    },
+    {
+      "fixture": "css-structural.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7314923330000019,
+      "sha256": "0ca540453186eea6bd64b20b8f82fcbd2fec9a95e2698d79e8846cf780f7750f"
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5559072500000002,
+      "sha256": "1f99fd1b89d52f56456a68bb17dfded23983de7672860a8d753749e80af1b8df"
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 12.457852791999997,
+      "sha256": "0d598b332997d1f829976f71454fba3d105281a82e9673203401bae82934e1f9"
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7012644170000057,
+      "sha256": "8751f8de46cd57cb8a1c936a588a8b347aedaf2991c7b03a460836e1ec55e15e"
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 12.285479833999998,
+      "sha256": "69b88199d98dd39f71e28c38ffd146aed656cb05979fb8962fe81cd5eecea3b5"
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 12.392098708000004,
+      "sha256": "6a499fee03589aea5429078f506880e800f478a3e0c6b2c18235cac682429abf"
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5151740829999981,
+      "sha256": "19cc665b2ff6fee736e45ccb272e238f7d3b883b99edef9d2ae6f9e0f51a7fd2"
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6847186660000006,
+      "sha256": "78a7f6e3aab19b6d960d4d3b40fbab117407e776ab8a8374b4b2b66561c149de"
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6179985830000005,
+      "sha256": "d51b714b7cb8a96854fbe314703db6ccfe70a022eaa0024e3beef80fa4c8b46d"
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7848576249999969,
+      "sha256": "a538ba571dd47e42dde890989451243ec65a1a40ba3b8ca0ac55f9b417e64414"
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6370015409999978,
+      "sha256": "619271c89a7cc5b89dbf6d3560a5fa8be1bf0fc9304ce752c3180dc5506ac875"
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.8617006249999977,
+      "sha256": "a7ec41474edf2dd6d7adff7d0142a799105c5daa69d541f0dfdd01af9849af76"
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5073707500000019,
+      "sha256": "f171befb7316578194c216b90618328c83fca00ba4befb01a96741f5e38ee709"
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5979204170000084,
+      "sha256": "19747a72ba5363e2017116684337c690ecb05df4964086cf11d6c286a21ae8b3"
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5224484170000069,
+      "sha256": "c0a36651503fed5d94ea750797f4f080565d34772d9c23b26d7be3a8842b1138"
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4711100000000006,
+      "sha256": "fa11fd74c3a713c67017526a343add80814796621a7e95761f027c93ce197eeb"
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5324522920000018,
+      "sha256": "e1f876f7584b06c555becf6bca152745e2f8b47f7644256f211ed438a3cc6459"
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.9110709579999966,
+      "sha256": "3c8dc088f9c75787c961a03677b44574b7ad3e967bb89e2dcc46bbfb06e94a13"
+    },
+    {
+      "fixture": "images-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4567409580000094,
+      "sha256": "5707bd0e1b9a03261a64f407cd3c7e49e4bc8dee1e1d445140ff777fac0c2a7d"
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6525692080000008,
+      "sha256": "81c6f1c8c6efe57071bc03edebabc0ef99c155726bc9ad8f459924b0a995a6dd"
+    },
+    {
+      "fixture": "images-compression.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5540039579999866,
+      "sha256": "0284eae815fc62e642aeb29b069ba9030d4ac86314fc4eec05008f50543dbfca"
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.5326534169999941,
+      "sha256": "b506d698068ed9ebb1dbc5d06331ee836da80bcc5d9595de7bd83695c816d942"
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.504586083000002,
+      "sha256": "506cbb3557d1b72370d8892dc8c0f717d7f2a0ed4c575f8bd72d2ee1b24d4cc8"
+    },
+    {
+      "fixture": "images-uris.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4550232499999984,
+      "sha256": "1f5acfde57977f331f09df28a70c21ce4817d44287ccc682b2ddaf0b3c64ef13"
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4043282080000063,
+      "sha256": "2f78d23264cb1f3c528d8ba2925f9b37915ba79fe3d809d81fe8f1cf2a95cfd7"
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6792643329999992,
+      "sha256": "2245c849083548e11237e5b64487bf2865ae63d7842fcc853a9c05265b0ae9d4"
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.40282554099999834,
+      "sha256": "56a30ba1581a171a54a455ccfa9c53410f0f9df18cef4f365ebb944b3134f4c2"
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4037875000000058,
+      "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.40360545800000547,
+      "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.39466749999999595,
+      "sha256": "9dac9761f33ccd68f26420d4a6b32f7d958ee7c00dbc76eaa49ea4fc66b4a061"
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4125810829999973,
+      "sha256": "68d9a05f5929dde229b8e5e8e2705c6a149b6b10e47f80690d01cc8d68a9b1ba"
+    },
+    {
+      "fixture": "markers-compositing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.1500219159999978,
+      "sha256": "88b075a5e3438b688eb844bedbeee70addb5d5bba58fd44632470549f350af6e"
+    },
+    {
+      "fixture": "markers-context.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.8107385829999985,
+      "sha256": "609d0d1ce8ed53e003fef1e6667e9491ceeb7a174e921f3a71fed5e9e501dab5"
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.45356574999999427,
+      "sha256": "9f78ad98eb10cb0005878998754e04fb08a192fb7c905296401a009d034fb5e9"
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7130123749999911,
+      "sha256": "f60c0d0c608d82a334ce26161e1276c25811b82cbd2679170b369bda2cb3f089"
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7822537920000031,
+      "sha256": "2293ca8748ef344b030e31ad2f67b51a20cd098b185241c1e2cb5d03e22779f9"
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.8704433330000029,
+      "sha256": "a759c35038af5854384b74e349807250d9c2c8dfb3255a756a2516c3ba3b7841"
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5883603329999896,
+      "sha256": "eff4109ee9b04e2f66e3aedad92784b35e01421d039a9d4f3259789ce1a22f0d"
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.1204330830000109,
+      "sha256": "2effc9c0b4e1e044c1d5f720a97e9d8fef4a5611e8ab8966f1c1691588c2454a"
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.2755887499999954,
+      "sha256": "501009410e0670f7740e71e32926627de3446e72111c1635f670cd894ae4d246"
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6489390419999982,
+      "sha256": "b740b612877e52fb64b0844ebb5e1d1f566435020887040905d074c021115830"
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.9719865419999988,
+      "sha256": "32a8ccde5717e98760c3c185f9430e6aac860112bdbb66bd2582af9f355d36d3"
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.101489957999991,
+      "sha256": "ad4b6cce0000128725dc2ca08a0cd06b73b94a479575553da21dc218937c7390"
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.142606958000004,
+      "sha256": "4b6a3d8982cc58d726d689fe815bb5b97b82ca7a1eeb8424d100503dcc733d90"
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.4657468749999971,
+      "sha256": "fbf927d814a2951da2194108b39e349d6ba60867763abf184afc3b80df86c172"
+    },
+    {
+      "fixture": "mask-units.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7418252920000087,
+      "sha256": "b33162a4548699b35ab23d79a754f8f157c93b044d2a9a95f24480d56f8482a2"
+    },
+    {
+      "fixture": "masks.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.128760958999992,
+      "sha256": "1cb5d0f092270a2d00f04afb08948bc3380ca3c3a0aa04a6f9fbe775a69cdfb0"
+    },
+    {
+      "fixture": "morphology-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.662854999999996,
+      "sha256": "6f4642b1f31adf0063e5906f385ba7f329c68e3dd4f519cfd09485c0188bcc65"
+    },
+    {
+      "fixture": "morphology-graph.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5826872909999947,
+      "sha256": "ec84e524927338380d27fd58221c4dcb1f5f7a545157f46894254e2b0bc9f9a3"
+    },
+    {
+      "fixture": "morphology-radius.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.1394108750000014,
+      "sha256": "5d596b7a7ebf7ede2a139577e11f4be4f9f900b95ad35e04de06b9b9b994d651"
+    },
+    {
+      "fixture": "morphology-units.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7991835830000055,
+      "sha256": "ff1d950b3c9e60a2c0a3c93c0f62748f58a3dc3177283889a3432403f4bdc930"
+    },
+    {
+      "fixture": "opacity.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.2998874589999905,
+      "sha256": "add613be1e8f11d233b6d3ae8345b860faaad543ea7fc5a604bc93b2a678e0b4"
+    },
+    {
+      "fixture": "paint-order-markers.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.9098196659999958,
+      "sha256": "880bfd12a234e46b9500e186e59033318238d50d05240dac298140e3185b9c66"
+    },
+    {
+      "fixture": "paint-order-shapes.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6241426249999932,
+      "sha256": "08192a3ec3d9c2b1841c4a4ed5588e9b95dfa9d6343177368823f8000a0272b7"
+    },
+    {
+      "fixture": "paths.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.589383290999991,
+      "sha256": "44be2fc65392032c1b7f1a97f6a71b1b111d9a09b7483115736d45e7ccea1714"
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.8167015829999873,
+      "sha256": "5d30c21adeaeae443299920306f4630a8a069e5c71987bc9d19e1e995b8eb594"
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.8687517079999961,
+      "sha256": "238adbbee9afa8f5061a05cd933f4fac669ce6a7ec1cfb7048cb4e354c22ff8a"
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.9684107079999957,
+      "sha256": "3ca61f7417b39a4fe500f6f79c25dcffed8882776c1082fb01fb562cadfdcc85"
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7427933750000084,
+      "sha256": "e672a7fd9c8283dad90ca0bd00dc5b72dfde17e809c8a60d737716dce78b0f0c"
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.705784249999997,
+      "sha256": "c85d7cb6590740c272e69e12b9556554f034eff6d476080e4fb87bcb70f83a4f"
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7186000420000055,
+      "sha256": "c19c61c55862b3e642f3a6d350fdb6cbc06a3d884beb1a63404e43cb81615a39"
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 1.0517789590000028,
+      "sha256": "21463a362613456f71c61f30e4a627a29ec5bc6eb5bf921cba2cb030ef3b4d4c"
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.45244795899999735,
+      "sha256": "6ce5f1ca84d38f63d21a0f678832a55e948af0e611d64f2707e60e73a5c36890"
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5539440409999952,
+      "sha256": "2f60f7006038e52020054f71d7795edc211be9ca40db9668868d0766e6b61441"
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.503067624999996,
+      "sha256": "d398a844cb4e069045e27fc1473037d0ffa5325f6276ee66f7d35f3113a01010"
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4750420000000013,
+      "sha256": "5fba595d6d7555ced2feec7d5ffa8c0dcc4c7ec3e8e4b9c917d428fa0445af64"
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.51731429200001,
+      "sha256": "a0ee36cbd1b1af2a7e5ddf533bb8a3d174a2e9f8ae3d0de1892e18f6651e4bb1"
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6207095410000039,
+      "sha256": "c679001019fbda1b7680729f48ef22157713055ecdfe72c587205c0410ee30f7"
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5777107079999987,
+      "sha256": "935542f4ef2040cd336ce4806479291df68557f205c06bef8d6819dcc9eb6305"
+    },
+    {
+      "fixture": "svg-image-auto.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.8764915000000038,
+      "sha256": "5a7badb0d6b0eab3bfe60651b70ae57a89205bcec7fca08eef1293ff32d441ac"
+    },
+    {
+      "fixture": "svg-image-contexts.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 3.0970754589999996,
+      "sha256": "ec28f6c5811c6978b52869b8f7bd7e7058ae18944f0ec54b14b16e0b62f31080"
+    },
+    {
+      "fixture": "svg-image-nested.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 3.2009223340000026,
+      "sha256": "bac7ff3f6523d90d25e180e5d5e3aca939654558004083b82e2190e219ae5667"
+    },
+    {
+      "fixture": "svg-image-percent.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.342918666999991,
+      "sha256": "9817900f7ae434aeea34b35aba0dc7408dab97fd38611fe1941d64b6612fea55"
+    },
+    {
+      "fixture": "svg-image-resources.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.832216125000006,
+      "sha256": "9f380f7dbf65cf42c2d537569256b66f375fb82148a7cdffea5258a967a3b20e"
+    },
+    {
+      "fixture": "svg-image-sizing.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.8939796659999995,
+      "sha256": "143d2c2a9ce2651c8e4e25c7a0566d4e3a2a8bf170b762e78068e18f6738a7fe"
+    },
+    {
+      "fixture": "svg-image-text.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 3.048658666000003,
+      "sha256": "12883ac9c73cce932b6997413aafc84c6e3c80d2bb36b8a06320076633d30f61"
+    },
+    {
+      "fixture": "symbols.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.7008650000000053,
+      "sha256": "fc314b6d903578642f6344b941485491b042ee21aec850735ae3bed72f8c5efd"
+    },
+    {
+      "fixture": "text-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.556934832999992,
+      "sha256": "da37242776b780c85de4c0e6e9e97f98365a2c9b8d4233fb4155681905e6c349"
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.691285124999995,
+      "sha256": "7dcb1eb799cc76be03e6c44f82f3e9d6bca605c34c070bc553d8815a6f04c921"
+    },
+    {
+      "fixture": "text-length.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.7812626670000027,
+      "sha256": "5ebcb14c80c34c58c7728a2223d340d6a63e7ba8fe1ddbbb6bb3a4609980aa04"
+    },
+    {
+      "fixture": "text-paint-order.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.889510666999995,
+      "sha256": "1320b362388c5bf45979686209eb6be77ce5397e13288caeef82f9c6aeb15dcd"
+    },
+    {
+      "fixture": "text-paints.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.6317000420000114,
+      "sha256": "238612973d92616500134d47cb1ba0df77b9309f112b8f3ee7a9300f1ae07ed5"
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.9978675420000216,
+      "sha256": "88d71f72d4d43d308c02a2dcb3abaed7419a6d438974374ccb531865da8c99f8"
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.5687639159999964,
+      "sha256": "2b4e20903527d15a0e7c48af132fb61f30af629eab4c7c4e2d41dfecf46e9b46"
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.8565828340000006,
+      "sha256": "2f54f45c2a0ed9bed6aa7ac27285f35e97015b64a7e856457fd709cccaa188c6"
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.3876567499999948,
+      "sha256": "6c42aa3a342acb02aba50f77e4a67606a07689f165ebb8d06dbaea0dbe53e3de"
+    },
+    {
+      "fixture": "text-path-styles.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.5258787089999823,
+      "sha256": "f9f9e69dbd4d5d6ff7b5b7a403170051e5f6d87d464893f737fa9fd0162b6273"
+    },
+    {
+      "fixture": "text-position.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.6690370410000033,
+      "sha256": "aeaffa7f7436e7eba80ea92cd861a318e8735c058431b85cd579799d6e9256f2"
+    },
+    {
+      "fixture": "text-spans.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.559877708999993,
+      "sha256": "34b19a6889762542052737e98f06c101b2eeea034970954daf7b4350528ebb20"
+    },
+    {
+      "fixture": "text-style.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.9036995420000165,
+      "sha256": "97e28f8bf461efd67e0ae2ac6d78eae5dd2411b1d479d9c719c376e846d75d57"
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.678541750000004,
+      "sha256": "81d01c6b66ecd6e81be6532dda75bba1f9bbf5438089b6fefbe4d800ffd344de"
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 2.4016362920000103,
+      "sha256": "e6abaa2d4ed482841809cdca8eef1e429e96d8da0a6310125e6957daf8261f8d"
+    },
+    {
+      "fixture": "transforms.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.3405374170000141,
+      "sha256": "494cba0041955cf6ef68881f4ee27d07dbb0151bd8f11a7113b86be5ee8facad"
+    },
+    {
+      "fixture": "use-clips.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.5038475829999952,
+      "sha256": "557f50b3261a3688a23b143b6fdca11b327d44768cb234bf3a027879b87a47c3"
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.31135483299999034,
+      "sha256": "210a33e02eff5a3ef4b2eff6f96a2aa9b3b2c89920f78f7bebea9af76baf4009"
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.4634910830000008,
+      "sha256": "5c860f043a8f8eae44503606cd750347d98614ba91da6d2e65caedd48c0b3199"
+    },
+    {
+      "fixture": "use.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.3646257500000065,
+      "sha256": "ae1aa1cc97f775c67bfdf441fd196ce81f0317f72fdcde5edece39023899657d"
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.64671783400001,
+      "sha256": "0870c6e092dd8ed1ef910d0cf339150c7b605ccbde22efe43496309ac567de7f"
+    },
+    {
+      "fixture": "viewports.svg",
+      "passed": true,
+      "maxChannelError": 0,
+      "durationSeconds": 0.6730817500000121,
+      "sha256": "f0c6c8b3ca3c8bef210a1e6334d60e1fb309a7186c7edc7cbd4f2c92639d55c8"
+    }
+  ]
+}

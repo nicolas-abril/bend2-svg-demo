@@ -1,0 +1,9 @@
+{
+  "requestBytes": 81153,
+  "framePassed": true,
+  "responseBytes": 786242,
+  "passed": true,
+  "sourceBytes": 27061,
+  "durationSeconds": 7.216592959000001,
+  "serverLog": "Bend SVG: http://127.0.0.1:8088\n"
+}

@@ -1,0 +1,20 @@
+{
+  "sourceSHA256": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+  "aa": 32,
+  "results": [
+    {
+      "reference": "reference",
+      "meanAbsoluteError": 1.445068359375,
+      "rootMeanSquareError": 4.4111324161385514,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0
+    },
+    {
+      "reference": "chromium",
+      "meanAbsoluteError": 5.208658854166667,
+      "rootMeanSquareError": 15.05914446544856,
+      "maxChannelError": 118,
+      "pixelsAbove32": 276
+    }
+  ]
+}

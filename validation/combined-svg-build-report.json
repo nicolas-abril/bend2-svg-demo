@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+    "state.bend": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 44,
+  "exactBackendFixtureCount": 105,
+  "binaries": {
+    "native": {
+      "binarySHA256": "43b63d5aed8e26073b6ed07d4fccc5d712eb02d42022d1a21c16112bd785b980",
+      "generatedCSHA256": "6d3d18ae2c61c59007183c1bc336e1d71f40c57146df76831701e77c988cc0ce",
+      "builtFrom": "combined-svg-investigation frozen sources; all three independently compiled"
+    },
+    "web": {
+      "binarySHA256": "309acecf61bfbaf9679e13e3d4c852ee9933c131215fd74695995c13216b4873",
+      "generatedCSHA256": "68197fa35f2a8cc1693c79ac4a9c1c476b1f2da3e783c6c67e208abf7a2a1d9f",
+      "builtFrom": "combined-svg-investigation frozen sources; all three independently compiled"
+    },
+    "render": {
+      "binarySHA256": "0ae5914685db998903b8e892394352935b792d1db981a350b0eec8bafc3d9168",
+      "generatedCSHA256": "e087962434a90d9fc7fb3f96d40a08e686d6b2d2370d6273bea10694a214aa4d",
+      "builtFrom": "combined-svg-investigation frozen sources; all three independently compiled"
+    }
+  }
+}

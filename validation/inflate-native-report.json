@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "check": "All eleven inflater regression cases on the compiled C backend",
+  "sourceSHA256": {
+    "svg.bend": "f26357fc97e72e0d84da551f87ed0d7cb393630d4660567cb971c0b09b9dd659",
+    "check-inflate.bend": "976bc9d5a3585ee477fb943f41d7e6d8e78efa297f049a227dc706c08efc7501"
+  },
+  "output": "empty: PASS\nstored: PASS\nfixed: PASS\noverlap: PASS\ndynamic: PASS\nblocks: PASS\ntruncated: PASS\ndistance: PASS\ninvalid-type: PASS\nstored-complement: PASS\noutput-limit: PASS\n"
+}

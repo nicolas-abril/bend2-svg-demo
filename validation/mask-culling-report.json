@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "unchangedFixtures": 34,
+  "changedFixture": "mask-compositing.svg",
+  "reason": "Corrected compositing in linear RGB; transparent-source culling leaves all other matrices unchanged"
+}

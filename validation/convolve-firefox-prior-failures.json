@@ -1,0 +1,306 @@
+{
+  "sourceCheckpoint": "Existing 112 saved Bend matrices; final source exact parity checked separately",
+  "reference": "155.0",
+  "changesPrimaryReferencePolicy": false,
+  "results": [
+    {
+      "fixture": "markers-compositing.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "markers-compositing.svg",
+        "meanAbsoluteError": 0.7842610677083334,
+        "rootMeanSquareError": 4.3458009996000735,
+        "maxChannelError": 66,
+        "pixelsAbove32": 49
+      }
+    },
+    {
+      "fixture": "text-path-styles.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-path-styles.svg",
+        "meanAbsoluteError": 4.667154947916667,
+        "rootMeanSquareError": 22.84011242697994,
+        "maxChannelError": 235,
+        "pixelsAbove32": 199
+      }
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "markers-viewports.svg",
+        "meanAbsoluteError": 1.52978515625,
+        "rootMeanSquareError": 11.119351328127614,
+        "maxChannelError": 187,
+        "pixelsAbove32": 93
+      }
+    },
+    {
+      "fixture": "svg-image-contexts.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "svg-image-contexts.svg",
+        "meanAbsoluteError": 1.55810546875,
+        "rootMeanSquareError": 6.5908489866316415,
+        "maxChannelError": 44,
+        "pixelsAbove32": 135
+      }
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": true,
+      "firefox": {
+        "fixture": "stroke-dash-zero.svg",
+        "meanAbsoluteError": 0.5176595052083334,
+        "rootMeanSquareError": 2.9914564761932163,
+        "maxChannelError": 25,
+        "pixelsAbove32": 0
+      }
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "filters-transforms.svg",
+        "meanAbsoluteError": 1.6588541666666667,
+        "rootMeanSquareError": 4.864706012014841,
+        "maxChannelError": 43,
+        "pixelsAbove32": 50
+      }
+    },
+    {
+      "fixture": "text-length.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-length.svg",
+        "meanAbsoluteError": 3.6215006510416665,
+        "rootMeanSquareError": 11.228977029552084,
+        "maxChannelError": 101,
+        "pixelsAbove32": 239
+      }
+    },
+    {
+      "fixture": "svg-image-auto.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "svg-image-auto.svg",
+        "meanAbsoluteError": 7.669921875,
+        "rootMeanSquareError": 34.941552761361365,
+        "maxChannelError": 187,
+        "pixelsAbove32": 252
+      }
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": true,
+      "firefox": {
+        "fixture": "text-path-shapes.svg",
+        "meanAbsoluteError": 0.5496419270833334,
+        "rootMeanSquareError": 3.250200314339615,
+        "maxChannelError": 66,
+        "pixelsAbove32": 14
+      }
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-length-spans.svg",
+        "meanAbsoluteError": 12.81005859375,
+        "rootMeanSquareError": 37.276873084086375,
+        "maxChannelError": 215,
+        "pixelsAbove32": 539
+      }
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-path-positions.svg",
+        "meanAbsoluteError": 7.23583984375,
+        "rootMeanSquareError": 30.509892094614166,
+        "maxChannelError": 251,
+        "pixelsAbove32": 234
+      }
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "mask-errors.svg",
+        "meanAbsoluteError": 31.875,
+        "rootMeanSquareError": 90.15611460128481,
+        "maxChannelError": 255,
+        "pixelsAbove32": 768
+      }
+    },
+    {
+      "fixture": "svg-image-text.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "svg-image-text.svg",
+        "meanAbsoluteError": 2.0204264322916665,
+        "rootMeanSquareError": 7.372323622777173,
+        "maxChannelError": 99,
+        "pixelsAbove32": 115
+      }
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "stroke-vector.svg",
+        "meanAbsoluteError": 1.0786946614583333,
+        "rootMeanSquareError": 4.502377482485411,
+        "maxChannelError": 32,
+        "pixelsAbove32": 0
+      }
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-unicode.svg",
+        "meanAbsoluteError": 2.5796712239583335,
+        "rootMeanSquareError": 8.280311464112224,
+        "maxChannelError": 100,
+        "pixelsAbove32": 141
+      }
+    },
+    {
+      "fixture": "text-paints.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-paints.svg",
+        "meanAbsoluteError": 1.8588053385416667,
+        "rootMeanSquareError": 6.1407045160246065,
+        "maxChannelError": 87,
+        "pixelsAbove32": 64
+      }
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "pattern-transform.svg",
+        "meanAbsoluteError": 1.9390462239583333,
+        "rootMeanSquareError": 5.976346333236693,
+        "maxChannelError": 50,
+        "pixelsAbove32": 83
+      }
+    },
+    {
+      "fixture": "text-position.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-position.svg",
+        "meanAbsoluteError": 2.7928059895833335,
+        "rootMeanSquareError": 10.12133421293853,
+        "maxChannelError": 114,
+        "pixelsAbove32": 174
+      }
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-path-references.svg",
+        "meanAbsoluteError": 2.6167805989583335,
+        "rootMeanSquareError": 11.379996184140031,
+        "maxChannelError": 198,
+        "pixelsAbove32": 97
+      }
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "markers-zero.svg",
+        "meanAbsoluteError": 0.7345377604166666,
+        "rootMeanSquareError": 6.422692314170125,
+        "maxChannelError": 153,
+        "pixelsAbove32": 33
+      }
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "primaryReference": "chromium",
+      "primaryPassed": false,
+      "firefoxPassed": true,
+      "firefox": {
+        "fixture": "filters-nested.svg",
+        "meanAbsoluteError": 0.2534993489583333,
+        "rootMeanSquareError": 0.9800666298565284,
+        "maxChannelError": 14,
+        "pixelsAbove32": 0
+      }
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-path-basic.svg",
+        "meanAbsoluteError": 2.5846354166666665,
+        "rootMeanSquareError": 8.889476163325561,
+        "maxChannelError": 117,
+        "pixelsAbove32": 122
+      }
+    },
+    {
+      "fixture": "text-style.svg",
+      "primaryReference": "resvg",
+      "primaryPassed": false,
+      "firefoxPassed": false,
+      "firefox": {
+        "fixture": "text-style.svg",
+        "meanAbsoluteError": 5.266276041666667,
+        "rootMeanSquareError": 15.265254494821455,
+        "maxChannelError": 128,
+        "pixelsAbove32": 289
+      }
+    }
+  ]
+}

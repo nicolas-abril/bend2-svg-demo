@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "images": [
+    {
+      "src": "convolve-alpha-actual.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-alpha-chromium.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-alpha-resvg.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-alpha-firefox.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-edges-actual.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-edges-chromium.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-edges-resvg.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-edges-firefox.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-graph-actual.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-graph-chromium.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-graph-resvg.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-graph-firefox.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-kernels-actual.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-kernels-chromium.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-kernels-resvg.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-kernels-firefox.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-units-actual.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-units-chromium.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-units-resvg.png",
+      "loaded": true
+    },
+    {
+      "src": "convolve-units-firefox.png",
+      "loaded": true
+    }
+  ]
+}

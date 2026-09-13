@@ -1,0 +1,215 @@
+{
+  "sourceSHA256": "3eca300e0528681080b0f1d7e2127800d4692fcee23f6354ec92465c3e5e24b1",
+  "reference": "Pillow 12.3.0 / libjpeg",
+  "cases": [
+    {
+      "nativeEqual": true,
+      "name": "gray",
+      "width": 19,
+      "height": 17,
+      "mae": 0.021671826625386997,
+      "rmse": 0.14721354090363767,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "444",
+      "width": 19,
+      "height": 17,
+      "mae": 0.011351909184726523,
+      "rmse": 0.10654533863443545,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "422",
+      "width": 19,
+      "height": 17,
+      "mae": 0.3684210526315789,
+      "rmse": 0.6154193448960144,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "420",
+      "width": 19,
+      "height": 17,
+      "mae": 0.34674922600619196,
+      "rmse": 0.5906041055515311,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "restart",
+      "width": 19,
+      "height": 17,
+      "mae": 0.34674922600619196,
+      "rmse": 0.5906041055515311,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-gray",
+      "width": 19,
+      "height": 17,
+      "mae": 0.021671826625386997,
+      "rmse": 0.14721354090363767,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-444",
+      "width": 19,
+      "height": 17,
+      "mae": 0.011351909184726523,
+      "rmse": 0.10654533863443545,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-422",
+      "width": 19,
+      "height": 17,
+      "mae": 0.3684210526315789,
+      "rmse": 0.6154193448960144,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-420",
+      "width": 19,
+      "height": 17,
+      "mae": 0.34674922600619196,
+      "rmse": 0.5906041055515311,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-restart",
+      "width": 19,
+      "height": 17,
+      "mae": 0.34674922600619196,
+      "rmse": 0.5906041055515311,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "rgb",
+      "width": 19,
+      "height": 17,
+      "mae": 0.0030959752321981426,
+      "rmse": 0.055641488407465724,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "cmyk",
+      "width": 19,
+      "height": 17,
+      "mae": 0.0020639834881320948,
+      "rmse": 0.04543108504242546,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "ycck",
+      "width": 19,
+      "height": 17,
+      "mae": 0.005159958720330237,
+      "rmse": 0.07183285265343593,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-cmyk",
+      "width": 19,
+      "height": 17,
+      "mae": 0.0020639834881320948,
+      "rmse": 0.04543108504242546,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "noise",
+      "width": 19,
+      "height": 17,
+      "mae": 0.36635706914344685,
+      "rmse": 0.6154193448960144,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-noise",
+      "width": 19,
+      "height": 17,
+      "mae": 0.36635706914344685,
+      "rmse": 0.6154193448960144,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "separate",
+      "width": 19,
+      "height": 17,
+      "mae": 0,
+      "rmse": 0,
+      "max": 0,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "quant16",
+      "width": 19,
+      "height": 17,
+      "mae": 0,
+      "rmse": 0,
+      "max": 0,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "huffman16",
+      "width": 19,
+      "height": 17,
+      "mae": 0,
+      "rmse": 0,
+      "max": 0,
+      "channelsAbove3": 0,
+      "pass": true
+    }
+  ]
+}

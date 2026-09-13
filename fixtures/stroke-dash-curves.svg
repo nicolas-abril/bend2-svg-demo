@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" stroke="purple" stroke-width="3">
+<path d="M4 15C10 -1 22 -1 29 15S49 33 60 14" stroke-dasharray="6 3" stroke-linecap="round"/>
+<rect x="5" y="33" width="20" height="24" stroke-dasharray="11 4" stroke-dashoffset="3" stroke-linejoin="miter"/>
+<circle cx="47" cy="46" r="12" stroke-dasharray="8 3" stroke-linecap="square"/>
+</svg>

@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "8049f793b502babb9461a25cd08f67cfbbbba86869baf4f26b252d67e60a6d98",
+    "state.bend": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "c53c3fa3c4ddb7c5670592ec3556be50c91277e6f432c923c07efc3a75ede2ba",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 46,
+  "exactBackendFixtureCount": 108,
+  "primaryPassing": 85,
+  "primaryTotal": 108,
+  "binaries": {
+    "native": {
+      "binarySHA256": "f7c78fdb4ae1778158690762b69ffb130ab8ae612b02806dfe23537f298b532d",
+      "generatedCSHA256": "0117c65d114cecd89b8a42d0a6653f985a58f01a62dbd8437ebf55ee0b513c58",
+      "builtFrom": "Frozen paint-order and glyph-run sources; independent C compilation"
+    },
+    "web": {
+      "binarySHA256": "294a98bff3fa6d0827373d44bf577c94417d11e40ea4487e4d52e3beae23cf4a",
+      "generatedCSHA256": "6a83b0f70ba243d9dd73980ecbb3f6ed2c3c4083c734ffd8feb426e54ad0dcbf",
+      "builtFrom": "Frozen paint-order and glyph-run sources; independent C compilation"
+    },
+    "render": {
+      "binarySHA256": "d75008489eff8ba74a76b34603c95cee0d35cf3b26537c301b0b1bdccbb37cdf",
+      "generatedCSHA256": "6f599d33f1a17dfce9918f8adfdcb81b0257e8217af9d49492037c23224dbd10",
+      "builtFrom": "Frozen paint-order and glyph-run sources; independent C compilation"
+    }
+  }
+}

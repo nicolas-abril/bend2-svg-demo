@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 25.473607625,
+  "checks": [
+    "open SVG pattern document",
+    "pick painted tile area",
+    "apply another pattern fill",
+    "preserve pattern definitions",
+    "undo pattern change",
+    "replace patterned fill with solid color",
+    "no browser errors"
+  ],
+  "before": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<pattern height=\"8\" width=\"8\" y=\"2\" x=\"3\" patternUnits=\"userSpaceOnUse\" id=\"user\"><rect fill=\"#2575bb\" height=\"5\" width=\"4\"></rect><circle fill=\"#e55735\" r=\"1\" cy=\"6\" cx=\"6\"></circle></pattern>\n<pattern height=\".5\" width=\".25\" id=\"bbox\"><rect fill=\"#49a367\" height=\"5\" width=\"3\"></rect></pattern>\n<pattern height=\"8\" width=\"8\" y=\"1\" x=\"1\" patternContentUnits=\"objectBoundingBox\" patternUnits=\"userSpaceOnUse\" id=\"content\"><rect fill=\"#9054b0\" height=\".125\" width=\".125\"></rect></pattern>\n<pattern patternContentUnits=\"objectBoundingBox\" height=\"25%\" width=\"25%\" id=\"both\"><rect fill=\"#b98424\" height=\".125\" width=\".125\"></rect></pattern>\n</defs>\n<rect fill=\"url(#user)\" height=\"28\" width=\"28\" y=\"2\" x=\"2\"></rect>\n<rect fill=\"url(#bbox)\" height=\"28\" width=\"28\" y=\"2\" x=\"34\"></rect>\n<rect fill=\"url(#content)\" height=\"28\" width=\"28\" y=\"34\" x=\"2\"></rect>\n<rect fill=\"url(#both)\" height=\"28\" width=\"28\" y=\"34\" x=\"34\"></rect>\n</svg>\n",
+  "patterned": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<pattern height=\"8\" width=\"8\" y=\"2\" x=\"3\" patternUnits=\"userSpaceOnUse\" id=\"user\"><rect fill=\"#2575bb\" height=\"5\" width=\"4\"></rect><circle fill=\"#e55735\" r=\"1\" cy=\"6\" cx=\"6\"></circle></pattern>\n<pattern height=\".5\" width=\".25\" id=\"bbox\"><rect fill=\"#49a367\" height=\"5\" width=\"3\"></rect></pattern>\n<pattern height=\"8\" width=\"8\" y=\"1\" x=\"1\" patternContentUnits=\"objectBoundingBox\" patternUnits=\"userSpaceOnUse\" id=\"content\"><rect fill=\"#9054b0\" height=\".125\" width=\".125\"></rect></pattern>\n<pattern patternContentUnits=\"objectBoundingBox\" height=\"25%\" width=\"25%\" id=\"both\"><rect fill=\"#b98424\" height=\".125\" width=\".125\"></rect></pattern>\n</defs>\n<rect style=\";fill:url(#both)\" fill=\"url(#user)\" height=\"28\" width=\"28\" y=\"2\" x=\"2\"></rect>\n<rect fill=\"url(#bbox)\" height=\"28\" width=\"28\" y=\"2\" x=\"34\"></rect>\n<rect fill=\"url(#content)\" height=\"28\" width=\"28\" y=\"34\" x=\"2\"></rect>\n<rect fill=\"url(#both)\" height=\"28\" width=\"28\" y=\"34\" x=\"34\"></rect>\n</svg>\n",
+  "after": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<pattern height=\"8\" width=\"8\" y=\"2\" x=\"3\" patternUnits=\"userSpaceOnUse\" id=\"user\"><rect fill=\"#2575bb\" height=\"5\" width=\"4\"></rect><circle fill=\"#e55735\" r=\"1\" cy=\"6\" cx=\"6\"></circle></pattern>\n<pattern height=\".5\" width=\".25\" id=\"bbox\"><rect fill=\"#49a367\" height=\"5\" width=\"3\"></rect></pattern>\n<pattern height=\"8\" width=\"8\" y=\"1\" x=\"1\" patternContentUnits=\"objectBoundingBox\" patternUnits=\"userSpaceOnUse\" id=\"content\"><rect fill=\"#9054b0\" height=\".125\" width=\".125\"></rect></pattern>\n<pattern patternContentUnits=\"objectBoundingBox\" height=\"25%\" width=\"25%\" id=\"both\"><rect fill=\"#b98424\" height=\".125\" width=\".125\"></rect></pattern>\n</defs>\n<rect style=\";fill:#ff0000\" fill=\"url(#user)\" height=\"28\" width=\"28\" y=\"2\" x=\"2\"></rect>\n<rect fill=\"url(#bbox)\" height=\"28\" width=\"28\" y=\"2\" x=\"34\"></rect>\n<rect fill=\"url(#content)\" height=\"28\" width=\"28\" y=\"34\" x=\"2\"></rect>\n<rect fill=\"url(#both)\" height=\"28\" width=\"28\" y=\"34\" x=\"34\"></rect>\n</svg>\n",
+  "sourceSHA256": {
+    "svg.bend": "00d7c49de1a0d77699586e364df37ba5ab1ce2fa74d11eedaf08f6cabfda0cb0",
+    "state.bend": "36e7f01037a11f2ae6eb87e097ab46428c460865d3a55fa6bed86845ed143ee9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6c791512a13c4bf19655191afc99683d20e04b8eef7c0b777d1a8b89eb5baaa2"
+  }
+}

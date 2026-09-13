@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<pattern id="zero" patternUnits="userSpaceOnUse" width="0" height="8"><rect width="8" height="8" fill="red"/></pattern>
+<pattern id="negative" patternUnits="userSpaceOnUse" width="8" height="-1"><rect width="8" height="8" fill="red"/></pattern>
+<pattern id="self" href="#self"/>
+<pattern id="first" href="#second"/><pattern id="second" href="#first"/>
+<pattern id="nested" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="url(#nested)"/><rect width="3" height="3" fill="#267abb"/></pattern>
+</defs>
+<rect x="2" y="2" width="12" height="20" fill="url(#zero)"/>
+<rect x="18" y="2" width="12" height="20" fill="url(#negative)"/>
+<rect x="34" y="2" width="12" height="20" fill="url(#self)"/>
+<rect x="50" y="2" width="12" height="20" fill="url(#first)"/>
+<rect x="2" y="34" width="60" height="28" fill="url(#nested)"/>
+</svg>

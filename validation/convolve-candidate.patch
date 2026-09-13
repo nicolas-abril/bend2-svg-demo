@@ -1,0 +1,256 @@
+--- a/svg.bend
++++ b/svg.bend
+@@ -5813,6 +5813,10 @@
+ type FilterTap is Data:
+   FilterTap{delta: Point, weight: F32}
+ 
++# Convolution kernels operate on a pixel grid; edge extension precedes interpolation.
++type Convolution is Data:
++  Convolution{kernel: List<&2, FilterTap>, divisor: F32, bias: F32, preserve: Bool, edge: U32, limits: Bounds}
++
+ type FilterOp is Data:
+   FilterCopy{}
+   FilterFlood{color: Color}
+@@ -5824,6 +5828,7 @@
+   FilterMerge{inputs: List<&2, FilterInput>}
+   FilterBlur{kernel: List<&2, FilterTap>}
+   FilterMorphology{dilate: Bool, radius: U32, direction: Point}
++  FilterConvolution{spec: Convolution}
+ 
+ def filter.merge(xs: List<&2, FilterInput>, +p: Point, +linear: Bool, back: Color) -> Color:
+   match xs:
+@@ -5847,6 +5852,61 @@
+     case 1n+rest:
+       filter.morphology.sample(rest, (index + 1.0 : F32), direction, dilate, input, p, linear,
+         filter.morphology.join(acc, filter.input.color(input, point.add(p, point.scale(direction, index)), linear), dilate))
++
++def filter.convolution.index(+n: F32, +low: F32, +high: F32, edge: U32) -> F32:
++  +length = max((high - low : F32), 1.0)
++  choose(F32, U32.is_eq(edge, 1), (low + (n - low) - F32.floor(((n - low) / length : F32)) * length : F32), clamp(n, low, (high - 1.0 : F32)))
++
++def filter.convolution.raw(+input: FilterInput, x: F32, y: F32, +linear: Bool) -> Color:
++  FilterInput{raster, region, alpha, standard} = input
++  +stored = raster.is.linear(raster)
++  +c = raster.pixel(raster, x, y)
++  +converted = branch(Color, choose(Bool, stored, linear, Bool.not(linear)), _ => c,
++    _ => branch(Color, stored, _ => color.from.linear(c), _ => color.space(c, True{})))
++  choose(Color, alpha, color.alpha.only(converted), converted)
++
++def filter.convolution.pixel(+input: FilterInput, +limits: Bounds, +edge: U32, +x: F32, +y: F32, linear: Bool) -> Color:
++  Bounds{x0, y0, x1, y1} = limits
++  branch(Color, bounds.nonempty(limits) && (Bool.not(U32.is_eq(edge, 2)) || (F32.is_ge(x, x0) && F32.is_lt(x, x1) && F32.is_ge(y, y0) && F32.is_lt(y, y1))),
++    _ => filter.convolution.raw(input, filter.convolution.index(x, x0, x1, edge), filter.convolution.index(y, y0, y1, edge), linear), _ => clear())
++
++def filter.convolution.horizontal(+input: FilterInput, +limits: Bounds, +edge: U32, +x: F32, +y: F32, +dx: F32, +linear: Bool) -> Color:
++  branch(Color, F32.is_eq(dx, 0.0), _ => filter.convolution.pixel(input, limits, edge, x, y, linear),
++    _ => color.mix(filter.convolution.pixel(input, limits, edge, x, y, linear), filter.convolution.pixel(input, limits, edge, (x + 1.0 : F32), y, linear), dx))
++
++def filter.convolution.at(+input: FilterInput, +limits: Bounds, +edge: U32, +raster: Raster, p: Point, +linear: Bool) -> Color:
++  Raster{Point{ox, oy}, step, width, height, depth, stored, pixels} = raster
++  Point{x, y} = p
++  +fx = ((x - ox) / step - 0.5 : F32)
++  +fy = ((y - oy) / step - 0.5 : F32)
++  +ix = F32.floor(fx)
++  +iy = F32.floor(fy)
++  +dx = (fx - ix : F32)
++  +dy = (fy - iy : F32)
++  branch(Color, F32.is_eq(dy, 0.0), _ => filter.convolution.horizontal(input, limits, edge, ix, iy, dx, linear),
++    _ => color.mix(filter.convolution.horizontal(input, limits, edge, ix, iy, dx, linear), filter.convolution.horizontal(input, limits, edge, ix, (iy + 1.0 : F32), dx, linear), dy))
++
++def filter.convolution.color(+input: FilterInput, limits: Bounds, edge: U32, p: Point, linear: Bool) -> Color:
++  filter.convolution.at(input, limits, edge, filter.input.raster(input), p, linear)
++
++def filter.convolution.sum(xs: List<&2, FilterTap>, +input: FilterInput, +limits: Bounds, +edge: U32, +preserve: Bool, +p: Point, +linear: Bool, acc: Color) -> Color:
++  match xs:
++    case Nil{}: acc
++    case Con{FilterTap{delta, weight}, rest}:
++      +sample = filter.convolution.color(input, limits, edge, point.add(p, delta), linear)
++      filter.convolution.sum(rest, input, limits, edge, preserve, p, linear, color.add(acc, color.fade(choose(Color, preserve, color.straight(sample), sample), weight)))
++
++def filter.convolution.finish(+c: Color, +divisor: F32, +bias: F32, +preserve: Bool, original: Color) -> Color:
++  Color{r, g, b, a} = c
++  Color{rr, gg, bb, aa} = original
++  +alpha = choose(F32, preserve, aa, (a / divisor + bias : F32))
++  branch(Color, preserve,
++    _ => color.premultiply(Color{(r / divisor + bias : F32), (g / divisor + bias : F32), (b / divisor + bias : F32), alpha}),
++    _ => color.premul.clamp(Color{(r / divisor + bias * alpha : F32), (g / divisor + bias * alpha : F32), (b / divisor + bias * alpha : F32), alpha}))
++
++def filter.convolution.sample(+spec: Convolution, +input: FilterInput, +p: Point, +linear: Bool) -> Color:
++  Convolution{kernel, divisor, bias, preserve, edge, limits} = spec
++  filter.convolution.finish(filter.convolution.sum(kernel, input, limits, edge, preserve, p, linear, clear()), divisor, bias, preserve, filter.input.color(input, p, linear))
+ 
+ def filter.op.sample(op: FilterOp, +a: FilterInput, +b: FilterInput, +p: Point, +linear: Bool) -> Color:
+   match op:
+@@ -5859,6 +5919,7 @@
+     case FilterBlend{kind}: filter.blend(filter.input.color(a, p, linear), filter.input.color(b, p, linear), kind)
+     case FilterMerge{inputs}: filter.merge(inputs, p, linear, clear())
+     case FilterBlur{kernel}: filter.convolve(kernel, a, p, linear, clear())
++    case FilterConvolution{spec}: filter.convolution.sample(spec, a, p, linear)
+     case FilterMorphology{dilate, radius, direction}:
+       +n = radius
+       +expand = dilate
+@@ -6052,6 +6113,57 @@
+   +shade = {FilterInput{filter.draw(format, FilterComposite{1, 0.0, 0.0, 0.0, 0.0}, flood, offset, window, linear, aa), region, False{}, False{}} : FilterInput}
+   filter.draw(format, FilterMerge{Con{shade, Con{input, Nil{}}}}, input, input, window, linear, aa)
+ 
++# The row-major kernel is rotated 180 degrees; target offsets refer to input cells.
++def filter.convolution.taps(+xs: List<&2, F32>, +index: U32, +width: U32, +height: U32, +tx: F32, +ty: F32, +dx: Point, +dy: Point) -> List<&2, FilterTap>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{weight, rest}:
++      +x = (U32.to_f32((width - 1 - U32.mod(index, width) : U32)) - tx : F32)
++      +y = (U32.to_f32((height - 1 - U32.div(index, width) : U32)) - ty : F32)
++      branch(List<&2, FilterTap>, F32.is_eq(weight, 0.0), _ => filter.convolution.taps(rest, U32.inc(index), width, height, tx, ty, dx, dy),
++        _ => Con{FilterTap{point.add(point.scale(dx, x), point.scale(dy, y)), weight}, filter.convolution.taps(rest, U32.inc(index), width, height, tx, ty, dx, dy)})
++
++def filter.convolution.limits.box(+raster: Raster, box: Bounds) -> Bounds:
++  Raster{Point{ox, oy}, step, width, height, depth, stored, pixels} = raster
++  Bounds{x0, y0, x1, y1} = box
++  Bounds{max(0.0, F32.floor(((x0 - ox) / step : F32))), max(0.0, F32.floor(((y0 - oy) / step : F32))), min(U32.to_f32(width), F32.ceil(((x1 - ox) / step : F32))), min(U32.to_f32(height), F32.ceil(((y1 - oy) / step : F32)))}
++
++# Resource domains need exact edges; geometric coverage bounds include a tolerance.
++def filter.convolution.bounds(box: Bounds, +units: Matrix) -> Bounds:
++  Bounds{x0, y0, x1, y1} = box
++  +left = x0
++  +top = y0
++  +right = x1
++  +bottom = y1
++  bounds.point(bounds.point(bounds.point(bounds.point(bounds.empty(), matrix.point(units, Point{left, top})), matrix.point(units, Point{right, top})), matrix.point(units, Point{left, bottom})), matrix.point(units, Point{right, bottom}))
++
++def filter.convolution.limits(input: FilterInput, units: Matrix) -> Bounds:
++  FilterInput{raster, region, alpha, standard} = input
++  filter.convolution.limits.box(raster, filter.convolution.bounds(region, units))
++
++def filter.convolution.parse(+as: List<&2, Attr>, +units: Matrix, +input: FilterInput, +format: Raster) -> FilterOp:
++  +order = numbers(attr.get(as, "order", "3"))
++  +ox = F32.floor(nth(order, 0n, 3.0))
++  +oy = F32.floor(nth(order, 1n, nth(order, 0n, 3.0)))
++  +width = F32.to_u32(clamp(ox, 1.0, 4096.0))
++  +height = F32.to_u32(clamp(oy, 1.0, 4096.0))
++  +tx = F32.floor(scalar(attr.get(as, "targetX", ""), F32.floor((ox * 0.5 : F32))))
++  +ty = F32.floor(scalar(attr.get(as, "targetY", ""), F32.floor((oy * 0.5 : F32))))
++  +vs = numbers(attr.get(as, "kernelMatrix", ""))
++  +sum = floats.sum(vs)
++  +defaultDivisor = choose(F32, F32.is_eq(sum, 0.0), 1.0, sum)
++  +divisor = scalar(attr.get(as, "divisor", ""), defaultDivisor)
++  +lengths = numbers(attr.get(as, "kernelUnitLength", ""))
++  +ux = nth(lengths, 0n, 0.0)
++  +uy = nth(lengths, 1n, ux)
++  +explicit = F32.is_gt(ux, 0.0) && F32.is_gt(uy, 0.0)
++  +step = raster.scale(format)
++  +dx = choose(Point, explicit, matrix.vector(units, Point{ux, 0.0}), Point{step, 0.0})
++  +dy = choose(Point, explicit, matrix.vector(units, Point{0.0, uy}), Point{0.0, step})
++  +edge = attr.get(as, "edgeMode", "duplicate")
++  +valid = F32.is_ge(ox, 1.0) && F32.is_ge(oy, 1.0) && F32.is_le(ox, 4096.0) && F32.is_le(oy, 4096.0) && F32.is_le((ox * oy : F32), 4096.0) && U32.is_eq(floats.count(vs), (width * height : U32)) && F32.is_ge(tx, 0.0) && F32.is_lt(tx, ox) && F32.is_ge(ty, 0.0) && F32.is_lt(ty, oy)
++  branch(FilterOp, valid, _ => FilterConvolution{Convolution{filter.convolution.taps(vs, 0, width, height, tx, ty, dx, dy), choose(F32, F32.is_eq(divisor, 0.0), defaultDivisor, divisor), scalar(attr.get(as, "bias", "0"), 0.0), String.eq(attr.get(as, "preserveAlpha", "false"), "true"), choose(U32, String.eq(edge, "wrap"), 1, choose(U32, String.eq(edge, "none"), 2, 0)), filter.convolution.limits(input, units)}}, _ => FilterCopy{})
++
+ def filter.primitive(+name: String, +as: List<&2, Attr>, +kids: List<&2, Element>, +format: Raster, +source: FilterInput, +previous: FilterInput, +results: List<&2, FilterResult>, +region: Bounds, +units: Matrix, +viewport: Point, +aa: U32) -> FilterInput:
+   +a = filter.resolve(attr.get(as, "in", ""), source, previous, results)
+   +b = filter.resolve(attr.get(as, "in2", ""), source, previous, results)
+@@ -6062,7 +6174,7 @@
+   +box = bounds.intersection(region, filter.subregion(as, defaultBox, viewport))
+   +window = {FilterWindow{box, matrix.inverse(units)} : FilterWindow}
+   +linear = branch(Bool, String.eq(name, "feFlood"), _ => False{}, _ => branch(Bool, String.eq(name, "feOffset"), _ => raster.is.linear(filter.input.raster(a)), _ => Bool.not(String.eq(attr.get(as, "color-interpolation-filters", "linearRGB"), "sRGB"))))
+-  FilterInput{branch(Raster, String.eq(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => branch(Raster, String.eq(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => branch(Raster, String.eq(name, "feMorphology"), _ => filter.morphology(as, format, a, units, window, linear, aa), _ => filter.draw(format, filter.op.parse(name, as, kids, units, viewport, merges), a, b, window, linear, aa)))), box, False{}, False{}}
++  FilterInput{branch(Raster, String.eq(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => branch(Raster, String.eq(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => branch(Raster, String.eq(name, "feMorphology"), _ => filter.morphology(as, format, a, units, window, linear, aa), _ => filter.draw(format, branch(FilterOp, String.eq(name, "feConvolveMatrix"), _ => filter.convolution.parse(as, units, a, format), _ => filter.op.parse(name, as, kids, units, viewport, merges)), a, b, window, linear, aa)))), box, False{}, False{}}
+ 
+ @unsafe
+ def filter.chain(+xs: List<&2, Element>, +format: Raster, +source: FilterInput, +previous: FilterInput, +results: List<&2, FilterResult>, +region: Bounds, +units: Matrix, +viewport: Point, +aa: U32) -> FilterInput:
+--- a/check-convolve.bend
++++ b/check-convolve.bend
+@@ -0,0 +1,81 @@
++# Independent matrix expectations for kernel direction, normalization, alpha and edges.
++import Base
++import ./svg.bend as SVG
++
++def doc(body: String) -> List<&2, SVG.Scene<SVG.Brush>>:
++  SVG.document(SVG.parse("<svg width='24' height='24'>" ++ body ++ "</svg>"), 24.0, 24.0)
++
++def rect(x: String, y: String, w: String, color: String, alpha: String) -> String:
++  "<rect x='" ++ x ++ "' y='" ++ y ++ "' width='" ++ w ++ "' height='8' fill='" ++ color ++ "' fill-opacity='" ++ alpha ++ "'/>"
++
++def filtered(attrs: String, source: String, region: String) -> String:
++  "<defs><filter id='c' filterUnits='userSpaceOnUse' " ++ region ++ " color-interpolation-filters='sRGB'><feConvolveMatrix " ++ attrs ++ "/></filter></defs><g filter='url(#c)'>" ++ source ++ "</g>"
++
++def equal(a: String, b: String) -> String:
++  SVG.choose(String, SVG.string.equal(SVG.ppm(24, 24, doc(a), 2), SVG.ppm(24, 24, doc(b), 2)), "PASS", "FAIL")
++
++def basic(attrs: String, expected: String) -> String:
++  equal(filtered(attrs, rect("6", "6", "8", "red", "1"), "x='0' y='0' width='24' height='24'"), expected)
++
++def alpha(attrs: String, expected: String) -> String:
++  equal(filtered(attrs, rect("6", "6", "8", "red", ".5"), "x='0' y='0' width='24' height='24'"), expected)
++
++def edges(mode: String, tail: String) -> String:
++  equal(filtered("order='3 1' kernelMatrix='1 0 0' targetX='0' edgeMode='" ++ mode ++ "'", rect("6", "6", "4", "red", "1") ++ rect("10", "6", "4", "blue", "1"), "x='6' y='6' width='8' height='8'"), rect("6", "6", "2", "red", "1") ++ rect("8", "6", "4", "blue", "1") ++ tail)
++
++def main() -> IO(Unit):
++  do IO<Unit>:
++    Unit <- IO.print(basic("order='1' kernelMatrix='1'", rect("6", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='1 0 0'", rect("5", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='1 0 0' targetX='0'", rect("4", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='0 0 1'", rect("7", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='1 3' kernelMatrix='1 0 0'", rect("6", "5", "8", "red", "1")))
++    Unit <- IO.print(basic("order='2 2' kernelMatrix='0 0 0 1'", rect("7", "7", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='2 0 0' divisor='0'", rect("5", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='-2 0 0'", rect("5", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='1 0'", rect("6", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='0' kernelMatrix='1'", rect("6", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='1' kernelMatrix='1' targetX='1'", rect("6", "6", "8", "red", "1")))
++    Unit <- IO.print(alpha("order='1' kernelMatrix='1' divisor='2'", rect("6", "6", "8", "red", ".25")))
++    Unit <- IO.print(alpha("order='1' kernelMatrix='1' divisor='2' preserveAlpha='true'", rect("6", "6", "8", "rgb(50% 0% 0%)", ".5")))
++    Unit <- IO.print(alpha("order='1' kernelMatrix='0' bias='.5' preserveAlpha='true'", rect("6", "6", "8", "rgb(50% 50% 50%)", ".5")))
++    Unit <- IO.print(equal(filtered("order='1' kernelMatrix='0' bias='.5'", rect("6", "6", "8", "red", ".5"), "x='0' y='0' width='24' height='24'"), "<rect width='24' height='24' fill='rgb(50% 50% 50%)' fill-opacity='.5'/>"))
++    Unit <- IO.print(edges("none", ""))
++    Unit <- IO.print(edges("duplicate", rect("12", "6", "2", "blue", "1")))
++    Unit <- IO.print(edges("wrap", rect("12", "6", "2", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='1 0 0' kernelUnitLength='2'", rect("4", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='3 1' kernelMatrix='1 0 0' kernelUnitLength='0'", rect("5", "6", "8", "red", "1")))
++    Unit <- IO.print(basic("order='1' kernelMatrix='1' in='SourceAlpha'", rect("6", "6", "8", "black", "1")))
++    Unit <- IO.print(equal("<g transform='scale(2)'>" ++ filtered("order='3 1' kernelMatrix='1 0 0' kernelUnitLength='1'", "<rect x='3' y='3' width='4' height='4' fill='red'/>", "x='0' y='0' width='12' height='12'") ++ "</g>", rect("4", "6", "8", "red", "1")))
++    Unit <- IO.print(equal("<g transform='scale(2)'>" ++ filtered("order='3 1' kernelMatrix='1 0 0'", "<rect x='3' y='3' width='4' height='4' fill='red'/>", "x='0' y='0' width='12' height='12'") ++ "</g>", rect("5", "6", "8", "red", "1")))
++    Unit <- IO.print(equal(filtered("order='3 1' kernelMatrix='1 0 0' edgeMode='wrap' kernelUnitLength='.5'", rect("6", "6", "4", "red", "1") ++ rect("10", "6", "4", "blue", "1"), "x='6' y='6' width='8' height='8'"), rect("6", "6", "3", "red", "1") ++ rect("9", "6", "1", "rgb(50% 0% 50%)", "1") ++ rect("10", "6", "3", "blue", "1") ++ rect("13", "6", "1", "rgb(50% 0% 50%)", "1")))
++    Unit <- IO.print(alpha("order='1' kernelMatrix='1' bias='.75'", "<rect width='24' height='24' fill='rgb(75% 75% 75%)' fill-opacity='.75'/>" ++ rect("6", "6", "8", "rgb(100% 93.75% 93.75%)", "1")))
++    IO.print(equal("<g transform='translate(24 0) rotate(90)'>" ++ filtered("order='3 1' kernelMatrix='1 0 0' kernelUnitLength='2'", rect("6", "6", "8", "red", "1"), "x='0' y='0' width='24' height='24'") ++ "</g>", rect("10", "4", "8", "red", "1")))
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
+--- a/Makefile
++++ b/Makefile
+@@ -30,9 +30,10 @@
+ 	BEND_MAIN=$(abspath $(BEND_MAIN)) bun validation/check.mjs
+ 
+ compare:
+-	cd validation && bun install --frozen-lockfile && bunx playwright install chromium
++	cd validation && bun install --frozen-lockfile && bunx playwright install chromium firefox
+ 	BEND_MAIN=$(abspath $(BEND_MAIN)) bun validation/compare.mjs
+ 	bun validation/compare-browser.mjs
++	bun validation/compare-convolve-firefox.mjs
+ 	bun validation/verify.mjs
+ 
+ clean:

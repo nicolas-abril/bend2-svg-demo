@@ -1,0 +1,10 @@
+{
+  "description": "Four unchanged fixtures nested as separate SVG data images in a 128-unit viewBox, displayed by the native 256px pixel canvas.",
+  "fixtures": [
+    "svg-image-sizing.svg",
+    "svg-image-resources.svg",
+    "svg-image-nested.svg",
+    "svg-image-contexts.svg"
+  ],
+  "inputSHA256": "d83a83e3e6cd10e563c5f46856197e73d05978ece327e5c6bf9c9c18ecd530d0"
+}

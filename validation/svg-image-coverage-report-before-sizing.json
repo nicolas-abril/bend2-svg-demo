@@ -1,0 +1,52 @@
+{
+  "experimental": true,
+  "sourceSHA256": "b1c681b4762eeb3b4a7f13165a990d9fa505b6a0137e4bcdb3a3956aee1dee15",
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "name": "auto",
+      "chromium": {
+        "meanAbsoluteError": 26.201822916666668,
+        "rootMeanSquareError": 64.95591954837526,
+        "maxChannelError": 217,
+        "pixelsAbove32": 812
+      },
+      "resvg": {
+        "meanAbsoluteError": 26.067057291666668,
+        "rootMeanSquareError": 64.99642918877673,
+        "maxChannelError": 217,
+        "pixelsAbove32": 798
+      }
+    },
+    {
+      "name": "percent",
+      "chromium": {
+        "meanAbsoluteError": 3.881103515625,
+        "rootMeanSquareError": 22.893728458562073,
+        "maxChannelError": 187,
+        "pixelsAbove32": 156
+      },
+      "resvg": {
+        "meanAbsoluteError": 3.79736328125,
+        "rootMeanSquareError": 22.277768983572315,
+        "maxChannelError": 187,
+        "pixelsAbove32": 164
+      }
+    },
+    {
+      "name": "contexts",
+      "chromium": {
+        "meanAbsoluteError": 1.687744140625,
+        "rootMeanSquareError": 6.867390438317284,
+        "maxChannelError": 44,
+        "pixelsAbove32": 143
+      },
+      "resvg": {
+        "meanAbsoluteError": 1.6669108072916667,
+        "rootMeanSquareError": 6.68873503977334,
+        "maxChannelError": 44,
+        "pixelsAbove32": 135
+      }
+    }
+  ]
+}

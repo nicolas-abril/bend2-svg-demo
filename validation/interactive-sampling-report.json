@@ -1,0 +1,2949 @@
+{
+  "sourceSHA256": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+  "binarySHA256": "0ae5914685db998903b8e892394352935b792d1db981a350b0eec8bafc3d9168",
+  "sampling": 4,
+  "dimensions": [
+    64,
+    64
+  ],
+  "policy": "Same fixtures, primary-reference assignments and thresholds; actual idle application sampling. The original8x8 suite is retained unchanged.",
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "results": [
+    {
+      "fixture": "basic.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.218017578125,
+      "rootMeanSquareError": 1.796557943042287,
+      "maxChannelError": 34,
+      "pixelsAbove32": 3,
+      "fractionAbove32": 0.000732421875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.218017578125,
+          "rootMeanSquareError": 1.796557943042287,
+          "maxChannelError": 34,
+          "pixelsAbove32": 3,
+          "fractionAbove32": 0.000732421875,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.347900390625,
+          "rootMeanSquareError": 2.1786091642662755,
+          "maxChannelError": 68,
+          "pixelsAbove32": 5,
+          "fractionAbove32": 0.001220703125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.024739583333333332,
+      "rootMeanSquareError": 0.49934853392528683,
+      "maxChannelError": 16,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.024739583333333332,
+          "rootMeanSquareError": 0.49934853392528683,
+          "maxChannelError": 16,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.8225911458333334,
+          "rootMeanSquareError": 6.556544917103825,
+          "maxChannelError": 78,
+          "pixelsAbove32": 71,
+          "fractionAbove32": 0.017333984375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "clipping.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.27197265625,
+      "rootMeanSquareError": 2.063919965744796,
+      "maxChannelError": 47,
+      "pixelsAbove32": 3,
+      "fractionAbove32": 0.000732421875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.27197265625,
+          "rootMeanSquareError": 2.063919965744796,
+          "maxChannelError": 47,
+          "pixelsAbove32": 3,
+          "fractionAbove32": 0.000732421875,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4330240885416667,
+          "rootMeanSquareError": 2.855587199720634,
+          "maxChannelError": 64,
+          "pixelsAbove32": 14,
+          "fractionAbove32": 0.00341796875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 100.3125,
+          "rootMeanSquareError": 151.3684109493567,
+          "maxChannelError": 255,
+          "pixelsAbove32": 2560,
+          "fractionAbove32": 0.625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.10416666666666667,
+          "rootMeanSquareError": 0.3227486121839514,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.08333333333333333,
+      "rootMeanSquareError": 0.28867513459481287,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 129.14583333333334,
+          "rootMeanSquareError": 167.03087289480348,
+          "maxChannelError": 255,
+          "pixelsAbove32": 3840,
+          "fractionAbove32": 0.9375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.08333333333333333,
+          "rootMeanSquareError": 0.28867513459481287,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "colors-named.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.59765625,
+          "rootMeanSquareError": 8.433332304018382,
+          "maxChannelError": 153,
+          "pixelsAbove32": 24,
+          "fractionAbove32": 0.005859375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.20882161458333334,
+      "rootMeanSquareError": 0.4569700368550802,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 46.759114583333336,
+          "rootMeanSquareError": 77.65665450934216,
+          "maxChannelError": 250,
+          "pixelsAbove32": 2240,
+          "fractionAbove32": 0.546875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.20882161458333334,
+          "rootMeanSquareError": 0.4569700368550802,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.125,
+      "rootMeanSquareError": 0.3535533905932738,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 85.04166666666667,
+          "rootMeanSquareError": 137.01809491207112,
+          "maxChannelError": 255,
+          "pixelsAbove32": 2048,
+          "fractionAbove32": 0.5,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.125,
+          "rootMeanSquareError": 0.3535533905932738,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.7183430989583334,
+      "rootMeanSquareError": 4.62027313349817,
+      "maxChannelError": 69,
+      "pixelsAbove32": 36,
+      "fractionAbove32": 0.0087890625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.7183430989583334,
+          "rootMeanSquareError": 4.62027313349817,
+          "maxChannelError": 69,
+          "pixelsAbove32": 36,
+          "fractionAbove32": 0.0087890625,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.1366373697916667,
+          "rootMeanSquareError": 6.35598292006896,
+          "maxChannelError": 88,
+          "pixelsAbove32": 53,
+          "fractionAbove32": 0.012939453125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 40.646484375,
+          "rootMeanSquareError": 83.96849995310741,
+          "maxChannelError": 215,
+          "pixelsAbove32": 1008,
+          "fractionAbove32": 0.24609375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "css-media.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 57.6337890625,
+          "rootMeanSquareError": 91.28824647955781,
+          "maxChannelError": 206,
+          "pixelsAbove32": 1928,
+          "fractionAbove32": 0.470703125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "css-resources.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.13924153645833334,
+      "rootMeanSquareError": 1.0471858991084948,
+      "maxChannelError": 24,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 12.555582682291666,
+          "rootMeanSquareError": 38.400677865721,
+          "maxChannelError": 182,
+          "pixelsAbove32": 464,
+          "fractionAbove32": 0.11328125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.13924153645833334,
+          "rootMeanSquareError": 1.0471858991084948,
+          "maxChannelError": 24,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.03125,
+      "rootMeanSquareError": 0.1767766952966369,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 32.0400390625,
+          "rootMeanSquareError": 64.70770869922815,
+          "maxChannelError": 178,
+          "pixelsAbove32": 1384,
+          "fractionAbove32": 0.337890625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.03125,
+          "rootMeanSquareError": 0.1767766952966369,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "css-structural.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.11653645833333333,
+      "rootMeanSquareError": 0.5119025989710673,
+      "maxChannelError": 15,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 77.32210286458333,
+          "rootMeanSquareError": 106.47130368843327,
+          "maxChannelError": 227,
+          "pixelsAbove32": 2500,
+          "fractionAbove32": 0.6103515625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.11653645833333333,
+          "rootMeanSquareError": 0.5119025989710673,
+          "maxChannelError": 15,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.10921223958333333,
+      "rootMeanSquareError": 0.33047275165031886,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.054036458333333336,
+          "rootMeanSquareError": 0.23245743337938957,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.10921223958333333,
+          "rootMeanSquareError": 0.33047275165031886,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.07552083333333333,
+      "rootMeanSquareError": 0.27481054079735245,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.2591145833333333,
+          "rootMeanSquareError": 2.250289333248801,
+          "maxChannelError": 40,
+          "pixelsAbove32": 32,
+          "fractionAbove32": 0.0078125,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.07552083333333333,
+          "rootMeanSquareError": 0.27481054079735245,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.552978515625,
+      "rootMeanSquareError": 2.3823385799199492,
+      "maxChannelError": 33,
+      "pixelsAbove32": 1,
+      "fractionAbove32": 0.000244140625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.2753092447916667,
+          "rootMeanSquareError": 0.902695976529012,
+          "maxChannelError": 13,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.552978515625,
+          "rootMeanSquareError": 2.3823385799199492,
+          "maxChannelError": 33,
+          "pixelsAbove32": 1,
+          "fractionAbove32": 0.000244140625,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.2903645833333333,
+      "rootMeanSquareError": 0.8108958523345235,
+      "maxChannelError": 5,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.5208333333333333,
+          "rootMeanSquareError": 8.943107215429471,
+          "maxChannelError": 136,
+          "pixelsAbove32": 112,
+          "fractionAbove32": 0.02734375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.2903645833333333,
+          "rootMeanSquareError": 0.8108958523345235,
+          "maxChannelError": 5,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.01171875,
+      "rootMeanSquareError": 0.10825317547305482,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.5169270833333334,
+          "rootMeanSquareError": 4.521505326400343,
+          "maxChannelError": 51,
+          "pixelsAbove32": 64,
+          "fractionAbove32": 0.015625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.01171875,
+          "rootMeanSquareError": 0.10825317547305482,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.409912109375,
+      "rootMeanSquareError": 1.9492461483545376,
+      "maxChannelError": 33,
+      "pixelsAbove32": 5,
+      "fractionAbove32": 0.001220703125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.17122395833333334,
+          "rootMeanSquareError": 0.5460559342533815,
+          "maxChannelError": 6,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.409912109375,
+          "rootMeanSquareError": 1.9492461483545376,
+          "maxChannelError": 33,
+          "pixelsAbove32": 5,
+          "fractionAbove32": 0.001220703125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.9544270833333334,
+      "rootMeanSquareError": 3.279587872672927,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.1966959635416667,
+          "rootMeanSquareError": 3.5110154966488447,
+          "maxChannelError": 37,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.9544270833333334,
+          "rootMeanSquareError": 3.279587872672927,
+          "maxChannelError": 31,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.628173828125,
+      "rootMeanSquareError": 3.5199972811601716,
+      "maxChannelError": 52,
+      "pixelsAbove32": 23,
+      "fractionAbove32": 0.005615234375,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.18538411458333334,
+          "rootMeanSquareError": 0.7939591259945313,
+          "maxChannelError": 13,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.628173828125,
+          "rootMeanSquareError": 3.5199972811601716,
+          "maxChannelError": 52,
+          "pixelsAbove32": 23,
+          "fractionAbove32": 0.005615234375,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 1.8094889322916667,
+      "rootMeanSquareError": 6.6365183380325,
+      "maxChannelError": 70,
+      "pixelsAbove32": 69,
+      "fractionAbove32": 0.016845703125,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.6927897135416667,
+          "rootMeanSquareError": 10.264396172013319,
+          "maxChannelError": 190,
+          "pixelsAbove32": 57,
+          "fractionAbove32": 0.013916015625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.8094889322916667,
+          "rootMeanSquareError": 6.6365183380325,
+          "maxChannelError": 70,
+          "pixelsAbove32": 69,
+          "fractionAbove32": 0.016845703125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.5701497395833334,
+      "rootMeanSquareError": 5.357453798019789,
+      "maxChannelError": 97,
+      "pixelsAbove32": 38,
+      "fractionAbove32": 0.00927734375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 3.3377278645833335,
+          "rootMeanSquareError": 21.458455956364848,
+          "maxChannelError": 186,
+          "pixelsAbove32": 120,
+          "fractionAbove32": 0.029296875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.5701497395833334,
+          "rootMeanSquareError": 5.357453798019789,
+          "maxChannelError": 97,
+          "pixelsAbove32": 38,
+          "fractionAbove32": 0.00927734375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 1.2325846354166667,
+      "rootMeanSquareError": 3.6774226708389124,
+      "maxChannelError": 48,
+      "pixelsAbove32": 22,
+      "fractionAbove32": 0.00537109375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 2.260009765625,
+          "rootMeanSquareError": 6.131938300220277,
+          "maxChannelError": 54,
+          "pixelsAbove32": 69,
+          "fractionAbove32": 0.016845703125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.2325846354166667,
+          "rootMeanSquareError": 3.6774226708389124,
+          "maxChannelError": 48,
+          "pixelsAbove32": 22,
+          "fractionAbove32": 0.00537109375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.10091145833333333,
+      "rootMeanSquareError": 0.3176656392078522,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.05078125,
+          "rootMeanSquareError": 0.22534695471649932,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.10091145833333333,
+          "rootMeanSquareError": 0.3176656392078522,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.14982096354166666,
+      "rootMeanSquareError": 0.38706713053637953,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 5.959309895833333,
+          "rootMeanSquareError": 18.757246863434766,
+          "maxChannelError": 101,
+          "pixelsAbove32": 380,
+          "fractionAbove32": 0.0927734375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.14982096354166666,
+          "rootMeanSquareError": 0.38706713053637953,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.04541015625,
+      "rootMeanSquareError": 0.213096589015404,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 17.4609375,
+          "rootMeanSquareError": 62.860652148555275,
+          "maxChannelError": 255,
+          "pixelsAbove32": 770,
+          "fractionAbove32": 0.18798828125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.04541015625,
+          "rootMeanSquareError": 0.213096589015404,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.402587890625,
+      "rootMeanSquareError": 2.5327766743816293,
+      "maxChannelError": 36,
+      "pixelsAbove32": 6,
+      "fractionAbove32": 0.00146484375,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 5.321695963541667,
+          "rootMeanSquareError": 17.60991569711153,
+          "maxChannelError": 74,
+          "pixelsAbove32": 648,
+          "fractionAbove32": 0.158203125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.402587890625,
+          "rootMeanSquareError": 2.5327766743816293,
+          "maxChannelError": 36,
+          "pixelsAbove32": 6,
+          "fractionAbove32": 0.00146484375,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.171630859375,
+      "rootMeanSquareError": 0.4142835494863391,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.171630859375,
+          "rootMeanSquareError": 0.4142835494863391,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.021647135416666668,
+      "rootMeanSquareError": 0.1753901900050285,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 10.724609375,
+          "rootMeanSquareError": 32.95121719821212,
+          "maxChannelError": 215,
+          "pixelsAbove32": 771,
+          "fractionAbove32": 0.188232421875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.021647135416666668,
+          "rootMeanSquareError": 0.1753901900050285,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-basic.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.31982421875,
+      "rootMeanSquareError": 1.1015347957509105,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 2.3414713541666665,
+          "rootMeanSquareError": 7.770344600359326,
+          "maxChannelError": 91,
+          "pixelsAbove32": 174,
+          "fractionAbove32": 0.04248046875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.31982421875,
+          "rootMeanSquareError": 1.1015347957509105,
+          "maxChannelError": 9,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4493001302083333,
+      "rootMeanSquareError": 2.5709812643149177,
+      "maxChannelError": 54,
+      "pixelsAbove32": 19,
+      "fractionAbove32": 0.004638671875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 3.13330078125,
+          "rootMeanSquareError": 10.635136096527711,
+          "maxChannelError": 89,
+          "pixelsAbove32": 242,
+          "fractionAbove32": 0.05908203125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4493001302083333,
+          "rootMeanSquareError": 2.5709812643149177,
+          "maxChannelError": 54,
+          "pixelsAbove32": 19,
+          "fractionAbove32": 0.004638671875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-compression.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.0011393229166666667,
+      "rootMeanSquareError": 0.03375385780420761,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.0011393229166666667,
+          "rootMeanSquareError": 0.03375385780420761,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.0011393229166666667,
+          "rootMeanSquareError": 0.03375385780420761,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.7216796875,
+      "rootMeanSquareError": 2.4182937231134685,
+      "maxChannelError": 24,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.77685546875,
+          "rootMeanSquareError": 6.877721999022157,
+          "maxChannelError": 97,
+          "pixelsAbove32": 119,
+          "fractionAbove32": 0.029052734375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.7216796875,
+          "rootMeanSquareError": 2.4182937231134685,
+          "maxChannelError": 24,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "images-uris.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4833984375,
+      "rootMeanSquareError": 1.4161687237637564,
+      "maxChannelError": 9,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.28515625,
+          "rootMeanSquareError": 2.9699010926291805,
+          "maxChannelError": 22,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4833984375,
+          "rootMeanSquareError": 1.4161687237637564,
+          "maxChannelError": 9,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.10416666666666667,
+      "rootMeanSquareError": 0.3227486121839514,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 35.912190755208336,
+          "rootMeanSquareError": 78.90833382149427,
+          "maxChannelError": 255,
+          "pixelsAbove32": 957,
+          "fractionAbove32": 0.233642578125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.10416666666666667,
+          "rootMeanSquareError": 0.3227486121839514,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.6060384114583334,
+      "rootMeanSquareError": 2.8471962862978613,
+      "maxChannelError": 57,
+      "pixelsAbove32": 13,
+      "fractionAbove32": 0.003173828125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.22981770833333334,
+          "rootMeanSquareError": 0.8575264208757652,
+          "maxChannelError": 16,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.6060384114583334,
+          "rootMeanSquareError": 2.8471962862978613,
+          "maxChannelError": 57,
+          "pixelsAbove32": 13,
+          "fractionAbove32": 0.003173828125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.0546875,
+      "rootMeanSquareError": 0.23454854685828547,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.056803385416666664,
+          "rootMeanSquareError": 0.24105075969596113,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.0546875,
+          "rootMeanSquareError": 0.23454854685828547,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.06103515625,
+          "rootMeanSquareError": 0.2503253091812066,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.059000651041666664,
+          "rootMeanSquareError": 0.2449024571980989,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.059000651041666664,
+      "rootMeanSquareError": 0.2449024571980989,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.06103515625,
+          "rootMeanSquareError": 0.2503253091812066,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.059000651041666664,
+          "rootMeanSquareError": 0.2449024571980989,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.029134114583333332,
+      "rootMeanSquareError": 0.1711632992203644,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.031168619791666668,
+          "rootMeanSquareError": 0.17838066447441364,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.029134114583333332,
+          "rootMeanSquareError": 0.1711632992203644,
+          "maxChannelError": 2,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.609375,
+      "rootMeanSquareError": 3.824902980795722,
+      "maxChannelError": 74,
+      "pixelsAbove32": 17,
+      "fractionAbove32": 0.004150390625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 6.523518880208333,
+          "rootMeanSquareError": 32.18801703670495,
+          "maxChannelError": 221,
+          "pixelsAbove32": 247,
+          "fractionAbove32": 0.060302734375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.609375,
+          "rootMeanSquareError": 3.824902980795722,
+          "maxChannelError": 74,
+          "pixelsAbove32": 17,
+          "fractionAbove32": 0.004150390625,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-compositing.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.9361979166666666,
+      "rootMeanSquareError": 6.067089113611238,
+      "maxChannelError": 102,
+      "pixelsAbove32": 62,
+      "fractionAbove32": 0.01513671875,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 45.055338541666664,
+          "rootMeanSquareError": 87.08301123843943,
+          "maxChannelError": 255,
+          "pixelsAbove32": 1640,
+          "fractionAbove32": 0.400390625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.9361979166666666,
+          "rootMeanSquareError": 6.067089113611238,
+          "maxChannelError": 102,
+          "pixelsAbove32": 62,
+          "fractionAbove32": 0.01513671875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "markers-context.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.7090657552083334,
+      "rootMeanSquareError": 3.262708027371588,
+      "maxChannelError": 26,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 16.6328125,
+          "rootMeanSquareError": 47.57093114059607,
+          "maxChannelError": 255,
+          "pixelsAbove32": 660,
+          "fractionAbove32": 0.1611328125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.7090657552083334,
+          "rootMeanSquareError": 3.262708027371588,
+          "maxChannelError": 26,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.2080078125,
+      "rootMeanSquareError": 2.2448218772135724,
+      "maxChannelError": 39,
+      "pixelsAbove32": 14,
+      "fractionAbove32": 0.00341796875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.23421223958333334,
+          "rootMeanSquareError": 2.244568095981942,
+          "maxChannelError": 38,
+          "pixelsAbove32": 14,
+          "fractionAbove32": 0.00341796875,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.2080078125,
+          "rootMeanSquareError": 2.2448218772135724,
+          "maxChannelError": 39,
+          "pixelsAbove32": 14,
+          "fractionAbove32": 0.00341796875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.009033203125,
+      "rootMeanSquareError": 0.09504316453590968,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 3.8363444010416665,
+          "rootMeanSquareError": 23.642590521948765,
+          "maxChannelError": 204,
+          "pixelsAbove32": 128,
+          "fractionAbove32": 0.03125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.009033203125,
+          "rootMeanSquareError": 0.09504316453590968,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4765625,
+      "rootMeanSquareError": 2.114980976569293,
+      "maxChannelError": 30,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.7488606770833334,
+          "rootMeanSquareError": 7.183841913309108,
+          "maxChannelError": 204,
+          "pixelsAbove32": 18,
+          "fractionAbove32": 0.00439453125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4765625,
+          "rootMeanSquareError": 2.114980976569293,
+          "maxChannelError": 30,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 1.2137044270833333,
+      "rootMeanSquareError": 7.938699466458596,
+      "maxChannelError": 119,
+      "pixelsAbove32": 96,
+      "fractionAbove32": 0.0234375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.263427734375,
+          "rootMeanSquareError": 10.764188643899656,
+          "maxChannelError": 187,
+          "pixelsAbove32": 95,
+          "fractionAbove32": 0.023193359375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.2137044270833333,
+          "rootMeanSquareError": 7.938699466458596,
+          "maxChannelError": 119,
+          "pixelsAbove32": 96,
+          "fractionAbove32": 0.0234375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.9694010416666666,
+      "rootMeanSquareError": 7.132967949656955,
+      "maxChannelError": 153,
+      "pixelsAbove32": 60,
+      "fractionAbove32": 0.0146484375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.0342610677083333,
+          "rootMeanSquareError": 9.115296103082718,
+          "maxChannelError": 153,
+          "pixelsAbove32": 54,
+          "fractionAbove32": 0.01318359375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.9694010416666666,
+          "rootMeanSquareError": 7.132967949656955,
+          "maxChannelError": 153,
+          "pixelsAbove32": 60,
+          "fractionAbove32": 0.0146484375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.3603515625,
+      "rootMeanSquareError": 1.1879111130467632,
+      "maxChannelError": 19,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 42.703125,
+          "rootMeanSquareError": 90.0437104503511,
+          "maxChannelError": 255,
+          "pixelsAbove32": 1024,
+          "fractionAbove32": 0.25,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.3603515625,
+          "rootMeanSquareError": 1.1879111130467632,
+          "maxChannelError": 19,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4166666666666667,
+      "rootMeanSquareError": 0.6454972243679028,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.8333333333333334,
+          "rootMeanSquareError": 0.9128709291752769,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4166666666666667,
+          "rootMeanSquareError": 0.6454972243679028,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 42.5,
+      "rootMeanSquareError": 104.10331406828507,
+      "maxChannelError": 255,
+      "pixelsAbove32": 1024,
+      "fractionAbove32": 0.25,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 31.875,
+          "rootMeanSquareError": 90.15611460128481,
+          "maxChannelError": 255,
+          "pixelsAbove32": 768,
+          "fractionAbove32": 0.1875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 42.5,
+          "rootMeanSquareError": 104.10331406828507,
+          "maxChannelError": 255,
+          "pixelsAbove32": 1024,
+          "fractionAbove32": 0.25,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.06298828125,
+      "rootMeanSquareError": 0.2509746625657658,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.06298828125,
+          "rootMeanSquareError": 0.2509746625657658,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.09781901041666667,
+          "rootMeanSquareError": 0.3127603082500506,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.08382161458333333,
+      "rootMeanSquareError": 1.196851881848098,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.08382161458333333,
+          "rootMeanSquareError": 1.196851881848098,
+          "maxChannelError": 32,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.16935221354166666,
+          "rootMeanSquareError": 1.5723388149372683,
+          "maxChannelError": 37,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 24.5,
+          "rootMeanSquareError": 36.66742423459821,
+          "maxChannelError": 73,
+          "pixelsAbove32": 2048,
+          "fractionAbove32": 0.5,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.12076822916666667,
+      "rootMeanSquareError": 1.2023468804106963,
+      "maxChannelError": 26,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.12076822916666667,
+          "rootMeanSquareError": 1.2023468804106963,
+          "maxChannelError": 26,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.15266927083333334,
+          "rootMeanSquareError": 1.059047700176909,
+          "maxChannelError": 39,
+          "pixelsAbove32": 1,
+          "fractionAbove32": 0.000244140625,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "mask-units.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "masks.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.3678385416666667,
+      "rootMeanSquareError": 1.6559551624364712,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.3678385416666667,
+          "rootMeanSquareError": 1.6559551624364712,
+          "maxChannelError": 32,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.3827311197916667,
+          "rootMeanSquareError": 2.1567594506863763,
+          "maxChannelError": 41,
+          "pixelsAbove32": 4,
+          "fractionAbove32": 0.0009765625,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "opacity.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.14990234375,
+      "rootMeanSquareError": 0.837165667097419,
+      "maxChannelError": 17,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.14990234375,
+          "rootMeanSquareError": 0.837165667097419,
+          "maxChannelError": 17,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.660400390625,
+          "rootMeanSquareError": 1.4099199796294588,
+          "maxChannelError": 21,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "paths.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.14705403645833334,
+      "rootMeanSquareError": 1.4541327151003103,
+      "maxChannelError": 38,
+      "pixelsAbove32": 1,
+      "fractionAbove32": 0.000244140625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.14705403645833334,
+          "rootMeanSquareError": 1.4541327151003103,
+          "maxChannelError": 38,
+          "pixelsAbove32": 1,
+          "fractionAbove32": 0.000244140625,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.3452962239583333,
+          "rootMeanSquareError": 2.1974291027148825,
+          "maxChannelError": 52,
+          "pixelsAbove32": 8,
+          "fractionAbove32": 0.001953125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.470703125,
+      "rootMeanSquareError": 2.0941386455215105,
+      "maxChannelError": 14,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.470703125,
+          "rootMeanSquareError": 2.0941386455215105,
+          "maxChannelError": 14,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.5393880208333333,
+          "rootMeanSquareError": 4.395969093480223,
+          "maxChannelError": 34,
+          "pixelsAbove32": 12,
+          "fractionAbove32": 0.0029296875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.2775065104166667,
+      "rootMeanSquareError": 1.4976109446938035,
+      "maxChannelError": 13,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.2775065104166667,
+          "rootMeanSquareError": 1.4976109446938035,
+          "maxChannelError": 13,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 24.17822265625,
+          "rootMeanSquareError": 54.491967405469495,
+          "maxChannelError": 217,
+          "pixelsAbove32": 1056,
+          "fractionAbove32": 0.2578125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 2.208740234375,
+      "rootMeanSquareError": 6.5200200005285005,
+      "maxChannelError": 57,
+      "pixelsAbove32": 106,
+      "fractionAbove32": 0.02587890625,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 8.8369140625,
+          "rootMeanSquareError": 26.40765220636025,
+          "maxChannelError": 178,
+          "pixelsAbove32": 472,
+          "fractionAbove32": 0.115234375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.208740234375,
+          "rootMeanSquareError": 6.5200200005285005,
+          "maxChannelError": 57,
+          "pixelsAbove32": 106,
+          "fractionAbove32": 0.02587890625,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.03857421875,
+      "rootMeanSquareError": 0.19640320453088336,
+      "maxChannelError": 1,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.03857421875,
+          "rootMeanSquareError": 0.19640320453088336,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.11165364583333333,
+          "rootMeanSquareError": 0.9155414495441118,
+          "maxChannelError": 13,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.5491536458333334,
+      "rootMeanSquareError": 3.019198551906339,
+      "maxChannelError": 22,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.5491536458333334,
+          "rootMeanSquareError": 3.019198551906339,
+          "maxChannelError": 22,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.5891927083333334,
+          "rootMeanSquareError": 2.2648525982206142,
+          "maxChannelError": 16,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4183756510416667,
+      "rootMeanSquareError": 2.8258796335167924,
+      "maxChannelError": 27,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 18.979654947916668,
+          "rootMeanSquareError": 64.2896772247011,
+          "maxChannelError": 255,
+          "pixelsAbove32": 398,
+          "fractionAbove32": 0.09716796875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4183756510416667,
+          "rootMeanSquareError": 2.8258796335167924,
+          "maxChannelError": 27,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.10734049479166667,
+      "rootMeanSquareError": 0.9035970507966111,
+      "maxChannelError": 12,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.10734049479166667,
+          "rootMeanSquareError": 0.9035970507966111,
+          "maxChannelError": 12,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.3836263020833333,
+          "rootMeanSquareError": 2.1259954776135657,
+          "maxChannelError": 32,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.828125,
+      "rootMeanSquareError": 4.388075698222779,
+      "maxChannelError": 64,
+      "pixelsAbove32": 43,
+      "fractionAbove32": 0.010498046875,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.828125,
+          "rootMeanSquareError": 4.388075698222779,
+          "maxChannelError": 64,
+          "pixelsAbove32": 43,
+          "fractionAbove32": 0.010498046875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.130615234375,
+          "rootMeanSquareError": 5.282012703801932,
+          "maxChannelError": 108,
+          "pixelsAbove32": 63,
+          "fractionAbove32": 0.015380859375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 2.3711751302083335,
+      "rootMeanSquareError": 20.921462685755465,
+      "maxChannelError": 255,
+      "pixelsAbove32": 36,
+      "fractionAbove32": 0.0087890625,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 3.3953450520833335,
+          "rootMeanSquareError": 27.074162109033956,
+          "maxChannelError": 255,
+          "pixelsAbove32": 68,
+          "fractionAbove32": 0.0166015625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.3711751302083335,
+          "rootMeanSquareError": 20.921462685755465,
+          "maxChannelError": 255,
+          "pixelsAbove32": 36,
+          "fractionAbove32": 0.0087890625,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.23282877604166666,
+      "rootMeanSquareError": 1.9278784958579902,
+      "maxChannelError": 24,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.23282877604166666,
+          "rootMeanSquareError": 1.9278784958579902,
+          "maxChannelError": 24,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4236653645833333,
+          "rootMeanSquareError": 2.539819598662472,
+          "maxChannelError": 69,
+          "pixelsAbove32": 3,
+          "fractionAbove32": 0.000732421875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.16349283854166666,
+      "rootMeanSquareError": 1.4271878763410935,
+      "maxChannelError": 49,
+      "pixelsAbove32": 3,
+      "fractionAbove32": 0.000732421875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.16349283854166666,
+          "rootMeanSquareError": 1.4271878763410935,
+          "maxChannelError": 49,
+          "pixelsAbove32": 3,
+          "fractionAbove32": 0.000732421875,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.54833984375,
+          "rootMeanSquareError": 2.137372072195199,
+          "maxChannelError": 54,
+          "pixelsAbove32": 3,
+          "fractionAbove32": 0.000732421875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.61474609375,
+      "rootMeanSquareError": 3.217131470088429,
+      "maxChannelError": 38,
+      "pixelsAbove32": 21,
+      "fractionAbove32": 0.005126953125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 23.639973958333332,
+          "rootMeanSquareError": 59.32251243643372,
+          "maxChannelError": 255,
+          "pixelsAbove32": 840,
+          "fractionAbove32": 0.205078125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.61474609375,
+          "rootMeanSquareError": 3.217131470088429,
+          "maxChannelError": 38,
+          "pixelsAbove32": 21,
+          "fractionAbove32": 0.005126953125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-auto.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 7.669921875,
+      "rootMeanSquareError": 34.941552761361365,
+      "maxChannelError": 187,
+      "pixelsAbove32": 252,
+      "fractionAbove32": 0.0615234375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 25.189453125,
+          "rootMeanSquareError": 63.671026962655205,
+          "maxChannelError": 217,
+          "pixelsAbove32": 782,
+          "fractionAbove32": 0.19091796875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 7.669921875,
+          "rootMeanSquareError": 34.941552761361365,
+          "maxChannelError": 187,
+          "pixelsAbove32": 252,
+          "fractionAbove32": 0.0615234375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-contexts.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 1.6219889322916667,
+      "rootMeanSquareError": 6.141088828962527,
+      "maxChannelError": 35,
+      "pixelsAbove32": 143,
+      "fractionAbove32": 0.034912109375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.197509765625,
+          "rootMeanSquareError": 5.5333314704125875,
+          "maxChannelError": 35,
+          "pixelsAbove32": 135,
+          "fractionAbove32": 0.032958984375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.6219889322916667,
+          "rootMeanSquareError": 6.141088828962527,
+          "maxChannelError": 35,
+          "pixelsAbove32": 143,
+          "fractionAbove32": 0.034912109375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-nested.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.6350911458333334,
+      "rootMeanSquareError": 3.5205405450252476,
+      "maxChannelError": 75,
+      "pixelsAbove32": 28,
+      "fractionAbove32": 0.0068359375,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 8.715087890625,
+          "rootMeanSquareError": 33.36930472825101,
+          "maxChannelError": 158,
+          "pixelsAbove32": 444,
+          "fractionAbove32": 0.1083984375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.6350911458333334,
+          "rootMeanSquareError": 3.5205405450252476,
+          "maxChannelError": 75,
+          "pixelsAbove32": 28,
+          "fractionAbove32": 0.0068359375,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-percent.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.2661946614583333,
+      "rootMeanSquareError": 1.8812612471978296,
+      "maxChannelError": 31,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.8331705729166667,
+          "rootMeanSquareError": 14.315655356331055,
+          "maxChannelError": 187,
+          "pixelsAbove32": 108,
+          "fractionAbove32": 0.0263671875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.2661946614583333,
+          "rootMeanSquareError": 1.8812612471978296,
+          "maxChannelError": 31,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-resources.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.5071614583333334,
+      "rootMeanSquareError": 2.9238935763521443,
+      "maxChannelError": 29,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.01806640625,
+          "rootMeanSquareError": 0.13441133229754104,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.5071614583333334,
+          "rootMeanSquareError": 2.9238935763521443,
+          "maxChannelError": 29,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-sizing.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.12353515625,
+      "rootMeanSquareError": 1.2436688625125794,
+      "maxChannelError": 25,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.12353515625,
+          "rootMeanSquareError": 1.2436688625125794,
+          "maxChannelError": 25,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 11.622884114583334,
+          "rootMeanSquareError": 44.10220027402733,
+          "maxChannelError": 255,
+          "pixelsAbove32": 373,
+          "fractionAbove32": 0.091064453125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "svg-image-text.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 2.2670084635416665,
+      "rootMeanSquareError": 8.21574426184516,
+      "maxChannelError": 86,
+      "pixelsAbove32": 138,
+      "fractionAbove32": 0.03369140625,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 12.2138671875,
+          "rootMeanSquareError": 38.172873801573196,
+          "maxChannelError": 219,
+          "pixelsAbove32": 525,
+          "fractionAbove32": 0.128173828125,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.2670084635416665,
+          "rootMeanSquareError": 8.21574426184516,
+          "maxChannelError": 86,
+          "pixelsAbove32": 138,
+          "fractionAbove32": 0.03369140625,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "symbols.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.4364420572916667,
+      "rootMeanSquareError": 2.548823385611813,
+      "maxChannelError": 39,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.17586263020833334,
+          "rootMeanSquareError": 1.5226426879633757,
+          "maxChannelError": 32,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.4364420572916667,
+          "rootMeanSquareError": 2.548823385611813,
+          "maxChannelError": 39,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "text-basic.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.3389485677083333,
+      "rootMeanSquareError": 2.0174410423541502,
+      "maxChannelError": 34,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.3389485677083333,
+          "rootMeanSquareError": 2.0174410423541502,
+          "maxChannelError": 34,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.6207682291666665,
+          "rootMeanSquareError": 9.120432646901499,
+          "maxChannelError": 91,
+          "pixelsAbove32": 172,
+          "fractionAbove32": 0.0419921875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 14.745686848958334,
+      "rootMeanSquareError": 41.51618366202962,
+      "maxChannelError": 215,
+      "pixelsAbove32": 640,
+      "fractionAbove32": 0.15625,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 14.745686848958334,
+          "rootMeanSquareError": 41.51618366202962,
+          "maxChannelError": 215,
+          "pixelsAbove32": 640,
+          "fractionAbove32": 0.15625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 10.466634114583334,
+          "rootMeanSquareError": 33.658810545587464,
+          "maxChannelError": 215,
+          "pixelsAbove32": 463,
+          "fractionAbove32": 0.113037109375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-length.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 1.177001953125,
+      "rootMeanSquareError": 5.7330124402991665,
+      "maxChannelError": 58,
+      "pixelsAbove32": 81,
+      "fractionAbove32": 0.019775390625,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.177001953125,
+          "rootMeanSquareError": 5.7330124402991665,
+          "maxChannelError": 58,
+          "pixelsAbove32": 81,
+          "fractionAbove32": 0.019775390625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 3.8588053385416665,
+          "rootMeanSquareError": 12.080476269627852,
+          "maxChannelError": 116,
+          "pixelsAbove32": 286,
+          "fractionAbove32": 0.06982421875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-paints.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 1.1468098958333333,
+      "rootMeanSquareError": 4.635756073716562,
+      "maxChannelError": 67,
+      "pixelsAbove32": 47,
+      "fractionAbove32": 0.011474609375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.1468098958333333,
+          "rootMeanSquareError": 4.635756073716562,
+          "maxChannelError": 67,
+          "pixelsAbove32": 47,
+          "fractionAbove32": 0.011474609375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 3.760986328125,
+          "rootMeanSquareError": 11.927007141314133,
+          "maxChannelError": 100,
+          "pixelsAbove32": 270,
+          "fractionAbove32": 0.06591796875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 2.6631673177083335,
+      "rootMeanSquareError": 10.375741219757508,
+      "maxChannelError": 117,
+      "pixelsAbove32": 174,
+      "fractionAbove32": 0.04248046875,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 2.6631673177083335,
+          "rootMeanSquareError": 10.375741219757508,
+          "maxChannelError": 117,
+          "pixelsAbove32": 174,
+          "fractionAbove32": 0.04248046875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 3.24853515625,
+          "rootMeanSquareError": 10.764955984292271,
+          "maxChannelError": 138,
+          "pixelsAbove32": 190,
+          "fractionAbove32": 0.04638671875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 1.740234375,
+      "rootMeanSquareError": 7.615356350411319,
+      "maxChannelError": 88,
+      "pixelsAbove32": 72,
+      "fractionAbove32": 0.017578125,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 7.582763671875,
+          "rootMeanSquareError": 31.509938443340776,
+          "maxChannelError": 240,
+          "pixelsAbove32": 251,
+          "fractionAbove32": 0.061279296875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.740234375,
+          "rootMeanSquareError": 7.615356350411319,
+          "maxChannelError": 88,
+          "pixelsAbove32": 72,
+          "fractionAbove32": 0.017578125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 2.0143229166666665,
+      "rootMeanSquareError": 7.021544227115096,
+      "maxChannelError": 74,
+      "pixelsAbove32": 75,
+      "fractionAbove32": 0.018310546875,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 6.383626302083333,
+          "rootMeanSquareError": 22.585417291224662,
+          "maxChannelError": 205,
+          "pixelsAbove32": 359,
+          "fractionAbove32": 0.087646484375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.0143229166666665,
+          "rootMeanSquareError": 7.021544227115096,
+          "maxChannelError": 74,
+          "pixelsAbove32": 75,
+          "fractionAbove32": 0.018310546875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.687744140625,
+      "rootMeanSquareError": 4.546123219637255,
+      "maxChannelError": 98,
+      "pixelsAbove32": 35,
+      "fractionAbove32": 0.008544921875,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.687744140625,
+          "rootMeanSquareError": 4.546123219637255,
+          "maxChannelError": 98,
+          "pixelsAbove32": 35,
+          "fractionAbove32": 0.008544921875,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.8639322916666665,
+          "rootMeanSquareError": 16.83576167251574,
+          "maxChannelError": 208,
+          "pixelsAbove32": 138,
+          "fractionAbove32": 0.03369140625,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-path-styles.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 1.6712239583333333,
+      "rootMeanSquareError": 8.692659963416453,
+      "maxChannelError": 111,
+      "pixelsAbove32": 110,
+      "fractionAbove32": 0.02685546875,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.6712239583333333,
+          "rootMeanSquareError": 8.692659963416453,
+          "maxChannelError": 111,
+          "pixelsAbove32": 110,
+          "fractionAbove32": 0.02685546875,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.6766764322916667,
+          "rootMeanSquareError": 7.376506069737555,
+          "maxChannelError": 124,
+          "pixelsAbove32": 123,
+          "fractionAbove32": 0.030029296875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-position.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 2.505615234375,
+      "rootMeanSquareError": 14.918646029347245,
+      "maxChannelError": 183,
+      "pixelsAbove32": 119,
+      "fractionAbove32": 0.029052734375,
+      "passed": false,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 2.505615234375,
+          "rootMeanSquareError": 14.918646029347245,
+          "maxChannelError": 183,
+          "pixelsAbove32": 119,
+          "fractionAbove32": 0.029052734375,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.8406575520833335,
+          "rootMeanSquareError": 10.477880036156328,
+          "maxChannelError": 116,
+          "pixelsAbove32": 189,
+          "fractionAbove32": 0.046142578125,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-spans.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.2898763020833333,
+      "rootMeanSquareError": 1.8669968086028785,
+      "maxChannelError": 26,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.2898763020833333,
+          "rootMeanSquareError": 1.8669968086028785,
+          "maxChannelError": 26,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 3.89404296875,
+          "rootMeanSquareError": 15.00911723787967,
+          "maxChannelError": 202,
+          "pixelsAbove32": 248,
+          "fractionAbove32": 0.060546875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-style.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.421142578125,
+      "rootMeanSquareError": 2.360133708032591,
+      "maxChannelError": 33,
+      "pixelsAbove32": 1,
+      "fractionAbove32": 0.000244140625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.421142578125,
+          "rootMeanSquareError": 2.360133708032591,
+          "maxChannelError": 33,
+          "pixelsAbove32": 1,
+          "fractionAbove32": 0.000244140625,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 5.417317708333333,
+          "rootMeanSquareError": 16.05720973192416,
+          "maxChannelError": 137,
+          "pixelsAbove32": 296,
+          "fractionAbove32": 0.072265625,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.2894694010416667,
+      "rootMeanSquareError": 1.722084832949585,
+      "maxChannelError": 26,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.2894694010416667,
+          "rootMeanSquareError": 1.722084832949585,
+          "maxChannelError": 26,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 2.5572916666666665,
+          "rootMeanSquareError": 8.5474796023204,
+          "maxChannelError": 113,
+          "pixelsAbove32": 150,
+          "fractionAbove32": 0.03662109375,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.12141927083333333,
+      "rootMeanSquareError": 1.067314459871129,
+      "maxChannelError": 25,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.12141927083333333,
+          "rootMeanSquareError": 1.067314459871129,
+          "maxChannelError": 25,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 1.7965494791666667,
+          "rootMeanSquareError": 8.805950210771313,
+          "maxChannelError": 134,
+          "pixelsAbove32": 120,
+          "fractionAbove32": 0.029296875,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "transforms.svg",
+      "reference": "resvg",
+      "meanAbsoluteError": 0.09562174479166667,
+      "rootMeanSquareError": 1.070550080079551,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.09562174479166667,
+          "rootMeanSquareError": 1.070550080079551,
+          "maxChannelError": 32,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.3920084635416667,
+          "rootMeanSquareError": 2.8332136540287602,
+          "maxChannelError": 60,
+          "pixelsAbove32": 18,
+          "fractionAbove32": 0.00439453125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "use-clips.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.5908203125,
+      "rootMeanSquareError": 3.7366515898818644,
+      "maxChannelError": 43,
+      "pixelsAbove32": 38,
+      "fractionAbove32": 0.00927734375,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 1.1612955729166667,
+          "rootMeanSquareError": 7.213099790918603,
+          "maxChannelError": 64,
+          "pixelsAbove32": 100,
+          "fractionAbove32": 0.0244140625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.5908203125,
+          "rootMeanSquareError": 3.7366515898818644,
+          "maxChannelError": 43,
+          "pixelsAbove32": 38,
+          "fractionAbove32": 0.00927734375,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.1875,
+      "rootMeanSquareError": 2.019275602371636,
+      "maxChannelError": 41,
+      "pixelsAbove32": 12,
+      "fractionAbove32": 0.0029296875,
+      "passed": true,
+      "alternates": {
+        "chromium": {
+          "meanAbsoluteError": 0.1875,
+          "rootMeanSquareError": 2.019275602371636,
+          "maxChannelError": 41,
+          "pixelsAbove32": 12,
+          "fractionAbove32": 0.0029296875,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.035807291666666664,
+      "rootMeanSquareError": 0.7421463804398698,
+      "maxChannelError": 23,
+      "pixelsAbove32": 0,
+      "fractionAbove32": 0,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 48.498372395833336,
+          "rootMeanSquareError": 111.18464108887747,
+          "maxChannelError": 255,
+          "pixelsAbove32": 1168,
+          "fractionAbove32": 0.28515625,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.035807291666666664,
+          "rootMeanSquareError": 0.7421463804398698,
+          "maxChannelError": 23,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "use.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.22119140625,
+      "rootMeanSquareError": 1.768227249017124,
+      "maxChannelError": 46,
+      "pixelsAbove32": 2,
+      "fractionAbove32": 0.00048828125,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.109619140625,
+          "rootMeanSquareError": 1.2368119404507973,
+          "maxChannelError": 33,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.22119140625,
+          "rootMeanSquareError": 1.768227249017124,
+          "maxChannelError": 46,
+          "pixelsAbove32": 2,
+          "fractionAbove32": 0.00048828125,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.6529947916666666,
+      "rootMeanSquareError": 3.437073837219678,
+      "maxChannelError": 75,
+      "pixelsAbove32": 25,
+      "fractionAbove32": 0.006103515625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 154.76180013020834,
+          "rootMeanSquareError": 187.3067282974501,
+          "maxChannelError": 255,
+          "pixelsAbove32": 4096,
+          "fractionAbove32": 1,
+          "passed": false
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.6529947916666666,
+          "rootMeanSquareError": 3.437073837219678,
+          "maxChannelError": 75,
+          "pixelsAbove32": 25,
+          "fractionAbove32": 0.006103515625,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "viewports.svg",
+      "reference": "chromium",
+      "meanAbsoluteError": 0.21663411458333334,
+      "rootMeanSquareError": 2.134285777783753,
+      "maxChannelError": 41,
+      "pixelsAbove32": 9,
+      "fractionAbove32": 0.002197265625,
+      "passed": true,
+      "alternates": {
+        "resvg": {
+          "meanAbsoluteError": 0.030598958333333332,
+          "rootMeanSquareError": 0.619507112549969,
+          "maxChannelError": 17,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0,
+          "passed": true
+        },
+        "chromium": {
+          "meanAbsoluteError": 0.21663411458333334,
+          "rootMeanSquareError": 2.134285777783753,
+          "maxChannelError": 41,
+          "pixelsAbove32": 9,
+          "fractionAbove32": 0.002197265625,
+          "passed": true
+        }
+      }
+    }
+  ]
+}

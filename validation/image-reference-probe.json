@@ -1,0 +1,27 @@
+{
+  "reference": "@resvg/resvg-js 2.6.2",
+  "nearest": {
+    "original": {
+      "meanAbsoluteError": 14.27391975308642,
+      "rootMeanSquareError": 22.870795842496076,
+      "maxChannelError": 91
+    },
+    "optimizeSpeed": {
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0
+    }
+  },
+  "intrinsicSizing": {
+    "original": {
+      "meanAbsoluteError": 55.06280193236715,
+      "rootMeanSquareError": 93.95590324845743,
+      "maxChannelError": 215
+    },
+    "explicitDimensions": {
+      "meanAbsoluteError": 2.9903381642512077,
+      "rootMeanSquareError": 16.686992436809916,
+      "maxChannelError": 107
+    }
+  }
+}

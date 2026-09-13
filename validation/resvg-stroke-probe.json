@@ -1,0 +1,10 @@
+[
+  {
+    "fixture": "stroke-calibration",
+    "maxChangeWhenRemovingProperty": 0
+  },
+  {
+    "fixture": "stroke-vector",
+    "maxChangeWhenRemovingProperty": 0
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "experimental": true,
+  "source": "text-investigation/svg.bend",
+  "fixture": "text-spans.svg",
+  "results": {
+    "reference": {
+      "mae": 0.8011067708333334,
+      "rmse": 3.332731065382664,
+      "max": 35,
+      "pixelsAbove32": 2
+    },
+    "chromium": {
+      "mae": 3.6190592447916665,
+      "rmse": 14.292229436502375,
+      "max": 202,
+      "pixelsAbove32": 232
+    }
+  }
+}

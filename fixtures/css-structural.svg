@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<style>
+:root { fill:#307bab; }
+g > rect:nth-child(2n+1) { fill:#d16d36; }
+g > rect:first-child { stroke:#944da0; stroke-width:2; }
+g > rect:last-child { stroke:#3e9b60; stroke-width:2; }
+g > rect:not(.skip) { opacity:.6; }
+g > rect:nth-last-child(-n+2) { fill:#935ba8; }
+.only > rect:only-child { fill:#50a077; opacity:1; }
+rect:empty { stroke-linejoin:round; }
+</style>
+<g><rect x="3" y="3" width="10" height="25"/><rect x="19" y="3" width="10" height="25"/><rect class="skip" x="35" y="3" width="10" height="25"/><rect x="51" y="3" width="10" height="25"/></g>
+<g class="only"><rect x="3" y="36" width="26" height="24"/></g>
+<svg x="35" y="36" width="26" height="24"><rect width="26" height="24"/></svg>
+</svg>

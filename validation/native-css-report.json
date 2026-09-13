@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "check": "Saved C and JavaScript renderers produce byte-identical 64x64 AA8 CSS matrices",
+  "svgSourceSHA256": "02b3b0efd2d7db5b42dfd1e844f741763642302ccc87873b06a44b19dab5349f",
+  "results": [
+    {
+      "fixture": "css-cascade.svg",
+      "passed": true,
+      "sha256": "e14b75ce2950f9d6281e38f3e2440c986c69ccde62ad2bab71cb774618d711d5"
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "passed": true,
+      "sha256": "7bbc75b48d8081119e17ef59fad0720983aed36774ad85963653c0df65143fc0"
+    },
+    {
+      "fixture": "css-structural.svg",
+      "passed": true,
+      "sha256": "0ca540453186eea6bd64b20b8f82fcbd2fec9a95e2698d79e8846cf780f7750f"
+    },
+    {
+      "fixture": "css-resources.svg",
+      "passed": true,
+      "sha256": "855ab4fc01eddd87806e1dd16ebd376afa12ef128508d6924a5471328358187a"
+    },
+    {
+      "fixture": "css-media.svg",
+      "passed": true,
+      "sha256": "b554e5aeb25890dec6c1554451c9bbc0df6d7f6f1bb4459a643b92cc7273fd19"
+    }
+  ]
+}

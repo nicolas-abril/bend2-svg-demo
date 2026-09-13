@@ -1,0 +1,107 @@
+--- state.bend
++++ state.bend
+@@ -9,6 +9,7 @@
+ 
+ type Action is Data:
+   Load{source: String}
++  Source{source: String}
+   Press{x: U32, y: U32}
+   Drag{x: U32, y: U32}
+   Release{}
+@@ -134,9 +135,26 @@
+   State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
+   load.fonts(text, w, h, fonts)
+ 
++# Applying source is an edit; opening a file still starts a new history.
++def source.changed(s: State, +doc: SVG.Element) -> State:
++  State{old, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  +width = w
++  +height = h
++  +book = fonts
++  State{doc, SVG.document.fonts(doc, U32.to_f32(width), U32.to_f32(height), book), "", SVG.identity(), False{},
++    SVG.Point{0.0, 0.0}, doc, Con{old, history}, width, height, book}
++
++def source.ready(+s: State, +text: String) -> State:
++  SVG.branch(State, SVG.string.equal(text, get.source(s)), _ => s,
++    _ => source.changed(s, SVG.parse(text)))
++
++def source(s: State, text: String) -> State:
++  source.ready(release(s), text)
++
+ def apply(s: State, action: Action) -> State:
+   match action:
+     case Load{text}: replace(s, text)
++    case Source{text}: source(s, text)
+     case Press{x, y}: press(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
+     case Drag{x, y}: move(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
+     case Release{}: release(s)
+@@ -163,11 +181,12 @@
+   SVG.Scan{cmd, body} = scan
+   +c = cmd
+   +b = body
+-  SVG.branch(Action, String.eq(c, "load"), _ => Load{b},
++  SVG.branch(Action, String.eq(c, "source"), _ => Source{b},
++    _ => SVG.branch(Action, String.eq(c, "load"), _ => Load{b},
+     _ => SVG.branch(Action, String.eq(c, "down") || String.eq(c, "move"), _ => command.coords(c, SVG.numbers(b)),
+       _ => SVG.branch(Action, String.eq(c, "up"), _ => Release{},
+         _ => SVG.branch(Action, String.eq(c, "set"), _ => command.property(SVG.until(b, 10, "")),
+-          _ => SVG.choose(Action, String.eq(c, "delete"), Delete{}, SVG.choose(Action, String.eq(c, "undo"), Undo{}, Nothing{}))))))
++          _ => SVG.choose(Action, String.eq(c, "delete"), Delete{}, SVG.choose(Action, String.eq(c, "undo"), Undo{}, Nothing{})))))))
+ 
+ def command(s: String) -> Action:
+   command.split(SVG.until(s, 10, ""))
+--- web.html
++++ web.html
+@@ -64,7 +64,7 @@
+ $('noFill').onclick=()=>send('set\nfill\nnone');
+ $('delete').onclick=()=>send('delete');$('undo').onclick=()=>send('undo');
+ $('set').onclick=()=>send(`set\n${$('property').value}\n${$('value').value}`);
+-$('apply').onclick=()=>send(`load\n${$('source').value}`);
++$('apply').onclick=()=>send(`source\n${$('source').value}`);
+ $('download').onclick=async()=>{await queue;const text=await(await fetch('/source')).text();const url=URL.createObjectURL(new Blob([text],{type:'image/svg+xml'}));const a=document.createElement('a');a.href=url;a.download='drawing.svg';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ try{await show(await fetch('/frame'));$('source').value=await(await fetch('/source')).text();$('status').textContent='Ready';}catch(error){$('status').textContent=error.message;}
+ </script>
+--- /dev/null
++++ check-source-undo.bend
+@@ -0,0 +1,41 @@
++import Base
++import ./state.bend as Editor
++import ./svg.bend as SVG
++
++def ok(value: Bool) -> String:
++  SVG.choose(String, value, "PASS", "FAIL")
++
++def same(+a: Editor.State, +b: Editor.State) -> Bool:
++  SVG.string.equal(Editor.get.source(a), Editor.get.source(b)) && SVG.string.equal(Editor.frame(a), Editor.frame(b))
++
++def replacement() -> String:
++  "<svg width='16' height='16'><title>é &amp; 🙂</title><rect x='8' y='2' width='6' height='10' fill='green'/></svg>"
++
++def main() -> IO(Unit):
++  +start = Editor.load("<svg width='16' height='16'><rect x='2' y='2' width='6' height='10' fill='red'/></svg>", 16, 16)
++  +painted = Editor.apply(Editor.apply(Editor.apply(start, Editor.Press{4, 4}), Editor.Release{}), Editor.Property{"fill", "blue"})
++  +changed = Editor.apply(painted, Editor.input("source\n" ++ replacement()))
++  +unchanged = Editor.apply(painted, Editor.Source{Editor.get.source(painted)})
++  +drag = Editor.apply(Editor.apply(start, Editor.Press{4, 4}), Editor.Drag{6, 5})
++  +afterDrag = Editor.apply(drag, Editor.Source{replacement()})
++  +opened = Editor.apply(painted, Editor.Load{replacement()})
++  do IO<Unit>:
++    Unit <- IO.print(ok(Bool.not(SVG.string.equal(Editor.frame(changed), Editor.frame(painted)))))
++    Unit <- IO.print(ok(same(Editor.undo(changed), painted)))
++    Unit <- IO.print(ok(same(Editor.undo(Editor.undo(changed)), start)))
++    Unit <- IO.print(ok(same(Editor.undo(unchanged), start)))
++    Unit <- IO.print(ok(String.eq(Editor.get.selected(changed), "")))
++    Unit <- IO.print(ok(U32.is_eq(Editor.quality(changed), 4)))
++    Unit <- IO.print(ok(same(Editor.undo(afterDrag), Editor.release(drag))))
++    Unit <- IO.print(ok(same(Editor.undo(Editor.undo(afterDrag)), start)))
++    IO.print(ok(same(Editor.undo(opened), opened)))
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS

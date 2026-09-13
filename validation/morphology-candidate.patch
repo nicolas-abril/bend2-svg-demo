@@ -1,0 +1,231 @@
+--- svg.bend
++++ svg.bend
+@@ -5792,6 +5792,7 @@
+   FilterBlend{kind: U32}
+   FilterMerge{inputs: List<&2, FilterInput>}
+   FilterBlur{kernel: List<&2, FilterTap>}
++  FilterMorphology{dilate: Bool, radius: U32, direction: Point}
+ 
+ def filter.merge(xs: List<&2, FilterInput>, +p: Point, +linear: Bool, back: Color) -> Color:
+   match xs:
+@@ -5802,6 +5803,19 @@
+   match xs:
+     case Nil{}: acc
+     case Con{FilterTap{delta, weight}, rest}: filter.convolve(rest, input, p, linear, color.add(acc, color.fade(filter.input.color(input, point.add(p, delta), linear), weight)))
++
++# Morphology takes component-wise extrema of premultiplied channels.
++def filter.morphology.join(+a: Color, +b: Color, +dilate: Bool) -> Color:
++  Color{ar, ag, ab, aa} = a
++  Color{br, bg, bb, ba} = b
++  Color{choose(F32, dilate, max(ar, br), min(ar, br)), choose(F32, dilate, max(ag, bg), min(ag, bg)), choose(F32, dilate, max(ab, bb), min(ab, bb)), choose(F32, dilate, max(aa, ba), min(aa, ba))}
++
++def filter.morphology.sample(left: Nat, +index: F32, +direction: Point, +dilate: Bool, +input: FilterInput, +p: Point, +linear: Bool, acc: Color) -> Color:
++  match left:
++    case 0n: acc
++    case 1n+rest:
++      filter.morphology.sample(rest, (index + 1.0 : F32), direction, dilate, input, p, linear,
++        filter.morphology.join(acc, filter.input.color(input, point.add(p, point.scale(direction, index)), linear), dilate))
+ 
+ def filter.op.sample(op: FilterOp, +a: FilterInput, +b: FilterInput, +p: Point, +linear: Bool) -> Color:
+   match op:
+@@ -5814,6 +5828,10 @@
+     case FilterBlend{kind}: filter.blend(filter.input.color(a, p, linear), filter.input.color(b, p, linear), kind)
+     case FilterMerge{inputs}: filter.merge(inputs, p, linear, clear())
+     case FilterBlur{kernel}: filter.convolve(kernel, a, p, linear, clear())
++    case FilterMorphology{dilate, radius, direction}:
++      +n = radius
++      +expand = dilate
++      filter.morphology.sample(U32.to_nat((n * 2 + 1 : U32)), F32.neg(U32.to_f32(n)), direction, expand, a, p, linear, choose(Color, expand, clear(), Color{1.0, 1.0, 1.0, 1.0}))
+ 
+ type FilterWindow is Data:
+   FilterWindow{region: Bounds, inverse: Matrix}
+@@ -5978,6 +5996,22 @@
+   branch(Raster, F32.is_lt(sx, 0.0) || F32.is_lt(sy, 0.0), _ => raster.store(format, Flat{clear()}, linear),
+     _ => filter.draw(format, FilterBlur{filter.kernel(matrix.vector(units, Point{0.0, sy}), raster.scale(format))}, first, first, window, linear, aa))
+ 
++# Rectangular min/max is separable along the transformed primitive axes.
++# A radius beyond the finite buffer diagonal only visits transparent samples.
++def filter.morphology.axis(+vector: Point, +step: F32, dilate: Bool) -> FilterOp:
++  +length = point.distance(vector, Point{0.0, 0.0})
++  +radius = F32.to_u32(clamp(F32.floor((length / step + 0.5 : F32)), 0.0, 2048.0))
++  FilterMorphology{dilate, radius, point.scale(vector, (step / max(length, 0.000001) : F32))}
++
++def filter.morphology(+as: List<&2, Attr>, +format: Raster, +input: FilterInput, +units: Matrix, window: FilterWindow, +linear: Bool, +aa: U32) -> Raster:
++  +values = numbers(attr.get(as, "radius", "0"))
++  +rx = max(nth(values, 0n, 0.0), 0.0)
++  +ry = max(nth(values, 1n, nth(values, 0n, 0.0)), 0.0)
++  +dilate = String.eq(attr.get(as, "operator", "erode"), "dilate")
++  +region = filter.input.region(input)
++  +first = {FilterInput{filter.draw(format, filter.morphology.axis(matrix.vector(units, Point{rx, 0.0}), raster.scale(format), dilate), input, input, FilterWindow{Bounds{F32.neg(1.0e30), F32.neg(1.0e30), 1.0e30, 1.0e30}, identity()}, linear, aa), region, False{}, False{}} : FilterInput}
++  filter.draw(format, filter.morphology.axis(matrix.vector(units, Point{0.0, ry}), raster.scale(format), dilate), first, first, window, linear, aa)
++
+ def filter.shadow(+attrs: List<&2, Attr>, +format: Raster, +input: FilterInput, +units: Matrix, +viewport: Point, +window: FilterWindow, +linear: Bool, +aa: U32) -> Raster:
+   +as = {Con{Attr{"stdDeviation", attr.get(attrs, "stdDeviation", "2")}, Con{Attr{"dx", attr.get(attrs, "dx", "2")}, Con{Attr{"dy", attr.get(attrs, "dy", "2")}, attrs}}} : List<&2, Attr>}
+   +region = filter.input.region(input)
+@@ -5997,7 +6031,7 @@
+   +box = bounds.intersection(region, filter.subregion(as, defaultBox, viewport))
+   +window = {FilterWindow{box, matrix.inverse(units)} : FilterWindow}
+   +linear = branch(Bool, String.eq(name, "feFlood"), _ => False{}, _ => branch(Bool, String.eq(name, "feOffset"), _ => raster.is.linear(filter.input.raster(a)), _ => Bool.not(String.eq(attr.get(as, "color-interpolation-filters", "linearRGB"), "sRGB"))))
+-  FilterInput{branch(Raster, String.eq(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => branch(Raster, String.eq(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => filter.draw(format, filter.op.parse(name, as, kids, units, viewport, merges), a, b, window, linear, aa))), box, False{}, False{}}
++  FilterInput{branch(Raster, String.eq(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => branch(Raster, String.eq(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => branch(Raster, String.eq(name, "feMorphology"), _ => filter.morphology(as, format, a, units, window, linear, aa), _ => filter.draw(format, filter.op.parse(name, as, kids, units, viewport, merges), a, b, window, linear, aa)))), box, False{}, False{}}
+ 
+ @unsafe
+ def filter.chain(+xs: List<&2, Element>, +format: Raster, +source: FilterInput, +previous: FilterInput, +results: List<&2, FilterResult>, +region: Bounds, +units: Matrix, +viewport: Point, +aa: U32) -> FilterInput:
+@@ -6016,7 +6050,11 @@
+       +sx = nth(vs, 0n, 0.0)
+       +sy = nth(vs, 1n, sx)
+       +pad = (3.0 * (point.distance(matrix.vector(units, Point{sx, 0.0}), Point{0.0, 0.0}) + point.distance(matrix.vector(units, Point{0.0, sy}), Point{0.0, 0.0})) : F32)
+-      filter.padding(rest, units, choose(F32, String.eq(name, "feGaussianBlur") || String.eq(name, "feDropShadow"), max(margin, pad), margin))
++      +radii = numbers(attr.get(as, "radius", "0"))
++      +rx = max(nth(radii, 0n, 0.0), 0.0)
++      +ry = max(nth(radii, 1n, nth(radii, 0n, 0.0)), 0.0)
++      +morphPad = (point.distance(matrix.vector(units, Point{rx, 0.0}), Point{0.0, 0.0}) + point.distance(matrix.vector(units, Point{0.0, ry}), Point{0.0, 0.0}) + 2.0 : F32)
++      filter.padding(rest, units, choose(F32, String.eq(name, "feGaussianBlur") || String.eq(name, "feDropShadow"), max(margin, pad), choose(F32, String.eq(name, "feMorphology"), max(margin, morphPad), margin)))
+ 
+ def filter.present(xs: List<&2, Element>) -> Bool:
+   match xs:
+--- /dev/null
++++ check-morphology.bend
+@@ -0,0 +1,40 @@
++# Independent geometric expectations for integer morphology and premultiplied RGBA.
++import Base
++import ./svg.bend as SVG
++
++def doc(body: String) -> List<&2, SVG.Scene<SVG.Brush>>:
++  SVG.document(SVG.parse("<svg width='24' height='24'>" ++ body ++ "</svg>"), 24.0, 24.0)
++
++def filtered(op: String, radius: String, source: String, input: String) -> String:
++  "<defs><filter id='m' filterUnits='userSpaceOnUse' x='0' y='0' width='24' height='24' color-interpolation-filters='sRGB'><feMorphology operator='" ++ op ++ "' radius='" ++ radius ++ "' in='" ++ input ++ "'/></filter></defs><g filter='url(#m)'>" ++ source ++ "</g>"
++
++def equal(a: String, b: String) -> String:
++  SVG.choose(String, SVG.string.equal(SVG.ppm(24, 24, doc(a), 2), SVG.ppm(24, 24, doc(b), 2)), "PASS", "FAIL")
++
++def rect() -> String:
++  "<rect x='6' y='6' width='8' height='8' fill='red'/>"
++
++def color(op: String, expected: U32) -> String:
++  nodes = SVG.prepare.scenes(doc(filtered(op, "1", "<rect x='6' y='6' width='4' height='8' fill='red' fill-opacity='.5'/><rect x='10' y='6' width='4' height='8' fill='blue' fill-opacity='.75'/>", "SourceGraphic")), SVG.identity(), 1)
++  +got = SVG.pixel(nodes, 9, 9, 1)
++  SVG.choose(String, U32.is_eq(got, expected), "PASS", U32.show(got))
++
++def main() -> IO(Unit):
++  do IO<Unit>:
++    Unit <- IO.print(equal(filtered("erode", "2", rect(), "SourceGraphic"), "<rect x='8' y='8' width='4' height='4' fill='red'/>"))
++    Unit <- IO.print(equal(filtered("dilate", "2", rect(), "SourceGraphic"), "<rect x='4' y='4' width='12' height='12' fill='red'/>"))
++    Unit <- IO.print(equal(filtered("dilate", "2 0", rect(), "SourceGraphic"), "<rect x='4' y='6' width='12' height='8' fill='red'/>"))
++    Unit <- IO.print(equal(filtered("erode", "0 2", rect(), "SourceGraphic"), "<rect x='6' y='8' width='8' height='4' fill='red'/>"))
++    Unit <- IO.print(equal(filtered("dilate", "0", rect(), "SourceGraphic"), rect()))
++    Unit <- IO.print(equal(filtered("dilate", "2", rect(), "SourceAlpha"), "<rect x='4' y='4' width='12' height='12' fill='black'/>"))
++    Unit <- IO.print(color("dilate", 12534015))
++    IO.print(color("erode", 8421504))
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
+--- /dev/null
++++ fixtures/morphology-graph.svg
+@@ -0,0 +1,12 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
++<defs>
++ <filter id="outline" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="dilate" radius="2" in="SourceAlpha" result="thick"/><feComposite in="thick" in2="SourceAlpha" operator="out" result="ring"/><feFlood flood-color="#a35"/><feComposite in2="ring" operator="in"/></filter>
++ <filter id="opening" x="-.5" y="-.5" width="2" height="2"><feMorphology radius="1"/><feMorphology operator="dilate" radius="1"/></filter>
++ <filter id="clipped" filterUnits="userSpaceOnUse" x="2" y="34" width="27" height="26"><feFlood flood-color="#296" x="8" y="39" width="14" height="15"/><feMorphology operator="dilate" radius="3"/></filter>
++ <filter id="shift" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="dilate" radius="1" result="m"/><feOffset dx="3" dy="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
++</defs>
++<rect x="8" y="8" width="15" height="15" fill="#269" filter="url(#outline)"/>
++<path d="M38 6H54V14H57V15H54V23H38Z" fill="#c85" filter="url(#opening)"/>
++<rect x="6" y="38" width="18" height="16" filter="url(#clipped)"/>
++<rect x="39" y="38" width="13" height="15" fill="#36c" fill-opacity=".6" filter="url(#shift)"/>
++</svg>
+--- /dev/null
++++ fixtures/morphology-units.svg
+@@ -0,0 +1,11 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
++<defs>
++ <filter id="box" primitiveUnits="objectBoundingBox" x="-.5" y="-.5" width="2" height="2"><feMorphology radius=".125 .25" operator="dilate"/></filter>
++ <filter id="m" x="-.5" y="-.5" width="2" height="2"><feMorphology radius="1 2" operator="erode"/></filter>
++ <filter id="grow" x="-.5" y="-.5" width="2" height="2"><feMorphology radius="2 1" operator="dilate"/></filter>
++</defs>
++<rect x="8" y="8" width="16" height="12" fill="#d64" filter="url(#box)"/>
++<g transform="translate(35 6) scale(2 1.5)"><rect width="10" height="12" fill="#29a" filter="url(#m)"/></g>
++<g transform="translate(16 47) rotate(25)"><rect x="-8" y="-6" width="16" height="12" fill="#7a4" filter="url(#grow)"/></g>
++<g transform="translate(46 47) skewX(25)"><rect x="-8" y="-7" width="16" height="14" fill="#a58" filter="url(#m)"/></g>
++</svg>
+--- /dev/null
++++ fixtures/morphology-basic.svg
+@@ -0,0 +1,12 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
++<defs>
++ <filter id="erode" x="-.5" y="-.5" width="2" height="2"><feMorphology radius="2"/></filter>
++ <filter id="dilate" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="dilate" radius="2"/></filter>
++ <filter id="color" x="-.5" y="-.5" width="2" height="2" color-interpolation-filters="sRGB"><feMorphology operator="dilate" radius="2"/></filter>
++ <filter id="alpha" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="erode" in="SourceAlpha" radius="1 2"/></filter>
++</defs>
++<rect x="5" y="5" width="22" height="20" fill="#c43" filter="url(#erode)"/>
++<rect x="38" y="8" width="16" height="14" fill="#39b" filter="url(#dilate)"/>
++<g filter="url(#color)"><rect x="6" y="39" width="9" height="15" fill="red" fill-opacity=".5"/><rect x="15" y="39" width="9" height="15" fill="blue" fill-opacity=".75"/></g>
++<path d="M38 37H57V43H49V57H43V43H38Z" fill="#693" filter="url(#alpha)"/>
++</svg>
+--- /dev/null
++++ fixtures/morphology-radius.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><filter id="m00" filterUnits="userSpaceOnUse" x="0" y="0" width="16" height="16"><feMorphology operator="erode" radius="0"/></filter><filter id="m01" filterUnits="userSpaceOnUse" x="16" y="0" width="16" height="16"><feMorphology operator="erode" radius=".49"/></filter><filter id="m02" filterUnits="userSpaceOnUse" x="32" y="0" width="16" height="16"><feMorphology operator="erode" radius=".5"/></filter><filter id="m03" filterUnits="userSpaceOnUse" x="48" y="0" width="16" height="16"><feMorphology operator="erode" radius="1.5"/></filter><filter id="m04" filterUnits="userSpaceOnUse" x="0" y="16" width="16" height="16"><feMorphology operator="erode" radius="2 0"/></filter><filter id="m05" filterUnits="userSpaceOnUse" x="16" y="16" width="16" height="16"><feMorphology operator="erode" radius="0 2"/></filter><filter id="m06" filterUnits="userSpaceOnUse" x="32" y="16" width="16" height="16"><feMorphology operator="erode" radius="-1 2"/></filter><filter id="m07" filterUnits="userSpaceOnUse" x="48" y="16" width="16" height="16"><feMorphology operator="erode" radius="2 -1"/></filter><filter id="m10" filterUnits="userSpaceOnUse" x="0" y="32" width="16" height="16"><feMorphology operator="dilate" radius="0"/></filter><filter id="m11" filterUnits="userSpaceOnUse" x="16" y="32" width="16" height="16"><feMorphology operator="dilate" radius=".49"/></filter><filter id="m12" filterUnits="userSpaceOnUse" x="32" y="32" width="16" height="16"><feMorphology operator="dilate" radius=".5"/></filter><filter id="m13" filterUnits="userSpaceOnUse" x="48" y="32" width="16" height="16"><feMorphology operator="dilate" radius="1.5"/></filter><filter id="m14" filterUnits="userSpaceOnUse" x="0" y="48" width="16" height="16"><feMorphology operator="dilate" radius="2 0"/></filter><filter id="m15" filterUnits="userSpaceOnUse" x="16" y="48" width="16" height="16"><feMorphology operator="dilate" radius="0 2"/></filter><filter id="m16" filterUnits="userSpaceOnUse" x="32" y="48" width="16" height="16"><feMorphology operator="dilate" radius="-1 2"/></filter><filter id="m17" filterUnits="userSpaceOnUse" x="48" y="48" width="16" height="16"><feMorphology operator="dilate" radius="2 -1"/></filter></defs><rect x="4" y="4" width="8" height="8" fill="#2685b4" filter="url(#m00)"/><rect x="20" y="4" width="8" height="8" fill="#2685b4" filter="url(#m01)"/><rect x="36" y="4" width="8" height="8" fill="#2685b4" filter="url(#m02)"/><rect x="52" y="4" width="8" height="8" fill="#2685b4" filter="url(#m03)"/><rect x="4" y="20" width="8" height="8" fill="#2685b4" filter="url(#m04)"/><rect x="20" y="20" width="8" height="8" fill="#2685b4" filter="url(#m05)"/><rect x="36" y="20" width="8" height="8" fill="#2685b4" filter="url(#m06)"/><rect x="52" y="20" width="8" height="8" fill="#2685b4" filter="url(#m07)"/><rect x="4" y="36" width="8" height="8" fill="#2685b4" filter="url(#m10)"/><rect x="20" y="36" width="8" height="8" fill="#2685b4" filter="url(#m11)"/><rect x="36" y="36" width="8" height="8" fill="#2685b4" filter="url(#m12)"/><rect x="52" y="36" width="8" height="8" fill="#2685b4" filter="url(#m13)"/><rect x="4" y="52" width="8" height="8" fill="#2685b4" filter="url(#m14)"/><rect x="20" y="52" width="8" height="8" fill="#2685b4" filter="url(#m15)"/><rect x="36" y="52" width="8" height="8" fill="#2685b4" filter="url(#m16)"/><rect x="52" y="52" width="8" height="8" fill="#2685b4" filter="url(#m17)"/></svg>
+--- validation/coverage.json
++++ validation/coverage.json
+@@ -4,7 +4,7 @@
+     "rootMeanSquareError": 5,
+     "fractionAbove32": 0.01
+   },
+-  "referencePolicy": "Use resvg for the basic geometry, opacity, clipping and cap/join/dash fixtures. Use Chromium for gradients, use/symbol/nested viewports, pathLength, non-scaling strokes and isolated dashed subpaths. The installed resvg binding omits fr, linearRGB, pathLength, vector-effect and symbol default dimensions; it also differs on quoted/empty gradient paint, zero-sized nested viewports and cyclic references. Keep all raw errors and alternate comparisons, including disagreements at clipped edges and the unresolved zero-length closed dash. Classic mask fixtures use resvg; mask-mode and linearRGB fixtures use Chromium because the resvg probes show those properties are ignored. Invalid/cyclic masks use Chromium for comparison but remain a failure: Bend applies transparent black to invalid mask sources per CSS Masking, while reference engines render some of those targets unmasked. Patterns use resvg except transformed patterns, where Chromium is selected. Removing the descriptive title from pattern-reference changes 1056 Chromium pixels but no resvg pixels; SVG2 explicitly permits descriptive children in templates. Transformed patterns retain a failure against Chromium; resvg also differs more substantially on the skewed tile. CSS fixtures use Chromium, with isolated CSS reference probes and all raw resvg results retained; the resvg binding omits several tested cascade, selector, media-query and geometry behaviors. Text fixtures use resvg with the exact bundled Noto Sans font files; Chromium uses those same font files via FontFace. Browser glyph hinting and antialiasing produce additional differences. All initial text errors remain recorded, including baseline/anchored-spacing disagreements; neither reference is treated as an exact font-rasterization oracle. Fitted-text comparisons remain failures. Nested fitting differs substantially across engines; Bend preserves independently fitted descendants as fixed units per the SVG2 resolve-text-length procedure. Following-character advancement and combinations with explicit positions remain under investigation. Expanded color fixtures use Chromium. All148 named values match the official CSS table and Chromium exactly; functional/resource color fixtures differ by at most one channel level. Isolated colors-reference-probe.json records older resvg color-syntax limitations; all alternate results are retained. Marker fixtures use Chromium: the resvg binding treats auto-start-reverse as zero orientation, omits context paints, and differs on shorthand priority and subpath tangents. Keep all resvg results. Transformed marker viewport edges and composited context-paint edges remain failed comparisons with the original thresholds. Filter fixtures use Chromium consistently. Keep resvg alternate comparisons, including its shifted offset subregions and missing context paints in filtered markers. Gaussian kernels, transformed filter buffers and nested patterned filtering differ between reference engines; transformed and nested filter failures remain recorded without changing thresholds. Embedded PNG fixtures use Chromium. Isolated image-reference-probe.json shows resvg 2.6.2 ignores image-rendering:pixelated (optimizeSpeed gives exact nearest-neighbor pixels) and omits intrinsically sized image elements. Both complete raw comparisons are retained. The image aspect-ratio fixture now passes after stabilizing F32 texel-boundary ties; prior and corrected measurements are recorded in sampling.md. Embedded JPEG fixtures use Chromium, retaining resvg alternate comparisons. Standalone JPEG decoder probes also compare every pixel against Pillow/libjpeg. Extended feBlend fixtures use Chromium consistently with the other filter fixtures. All sixteen modes are compared on sixteen color pairs in opaque sRGB, varying-alpha sRGB and linearRGB. Raw resvg comparisons are retained, including nonseparable-mode and boundary differences. Embedded SVG sizing uses resvg: the independent 12-case probe records Chromium ignoring slice fitting and changing no-viewBox behavior. Other SVG image fixtures use Chromium, keeping both complete reports. The root stylesheet intrinsic-size discrepancy and embedded stroke antialiasing remain failures; neither thresholds nor prior reference choices are changed. The embedded SVG text fixture includes matching subset font data for Chromium; Bend uses its bundled Noto outlines. The tested resvg binding paints no text in this embedded SVG image. Chromium remains primary and its residual text antialiasing error remains a failure. Text-path fixtures retain the existing resvg text policy except positions and references, where independent probes demonstrate omitted pathLength offset calibration and direct path data. The basic-shape fixture uses resvg because Chromium paints no text for that reference. All five failures and both alternate reports are retained; no thresholds are changed.",
++  "referencePolicy": "Use resvg for the basic geometry, opacity, clipping and cap/join/dash fixtures. Use Chromium for gradients, use/symbol/nested viewports, pathLength, non-scaling strokes and isolated dashed subpaths. The installed resvg binding omits fr, linearRGB, pathLength, vector-effect and symbol default dimensions; it also differs on quoted/empty gradient paint, zero-sized nested viewports and cyclic references. Keep all raw errors and alternate comparisons, including disagreements at clipped edges and the unresolved zero-length closed dash. Classic mask fixtures use resvg; mask-mode and linearRGB fixtures use Chromium because the resvg probes show those properties are ignored. Invalid/cyclic masks use Chromium for comparison but remain a failure: Bend applies transparent black to invalid mask sources per CSS Masking, while reference engines render some of those targets unmasked. Patterns use resvg except transformed patterns, where Chromium is selected. Removing the descriptive title from pattern-reference changes 1056 Chromium pixels but no resvg pixels; SVG2 explicitly permits descriptive children in templates. Transformed patterns retain a failure against Chromium; resvg also differs more substantially on the skewed tile. CSS fixtures use Chromium, with isolated CSS reference probes and all raw resvg results retained; the resvg binding omits several tested cascade, selector, media-query and geometry behaviors. Text fixtures use resvg with the exact bundled Noto Sans font files; Chromium uses those same font files via FontFace. Browser glyph hinting and antialiasing produce additional differences. All initial text errors remain recorded, including baseline/anchored-spacing disagreements; neither reference is treated as an exact font-rasterization oracle. Fitted-text comparisons remain failures. Nested fitting differs substantially across engines; Bend preserves independently fitted descendants as fixed units per the SVG2 resolve-text-length procedure. Following-character advancement and combinations with explicit positions remain under investigation. Expanded color fixtures use Chromium. All148 named values match the official CSS table and Chromium exactly; functional/resource color fixtures differ by at most one channel level. Isolated colors-reference-probe.json records older resvg color-syntax limitations; all alternate results are retained. Marker fixtures use Chromium: the resvg binding treats auto-start-reverse as zero orientation, omits context paints, and differs on shorthand priority and subpath tangents. Keep all resvg results. Transformed marker viewport edges and composited context-paint edges remain failed comparisons with the original thresholds. Filter fixtures use Chromium consistently. Keep resvg alternate comparisons, including its shifted offset subregions and missing context paints in filtered markers. Gaussian kernels, transformed filter buffers and nested patterned filtering differ between reference engines; transformed and nested filter failures remain recorded without changing thresholds. Embedded PNG fixtures use Chromium. Isolated image-reference-probe.json shows resvg 2.6.2 ignores image-rendering:pixelated (optimizeSpeed gives exact nearest-neighbor pixels) and omits intrinsically sized image elements. Both complete raw comparisons are retained. The image aspect-ratio fixture now passes after stabilizing F32 texel-boundary ties; prior and corrected measurements are recorded in sampling.md. Embedded JPEG fixtures use Chromium, retaining resvg alternate comparisons. Standalone JPEG decoder probes also compare every pixel against Pillow/libjpeg. Extended feBlend fixtures use Chromium consistently with the other filter fixtures. All sixteen modes are compared on sixteen color pairs in opaque sRGB, varying-alpha sRGB and linearRGB. Raw resvg comparisons are retained, including nonseparable-mode and boundary differences. Embedded SVG sizing uses resvg: the independent 12-case probe records Chromium ignoring slice fitting and changing no-viewBox behavior. Other SVG image fixtures use Chromium, keeping both complete reports. The root stylesheet intrinsic-size discrepancy and embedded stroke antialiasing remain failures; neither thresholds nor prior reference choices are changed. The embedded SVG text fixture includes matching subset font data for Chromium; Bend uses its bundled Noto outlines. The tested resvg binding paints no text in this embedded SVG image. Chromium remains primary and its residual text antialiasing error remains a failure. Text-path fixtures retain the existing resvg text policy except positions and references, where independent probes demonstrate omitted pathLength offset calibration and direct path data. The basic-shape fixture uses resvg because Chromium paints no text for that reference. All five failures and both alternate reports are retained; no thresholds are changed. Morphology fixtures use Chromium, consistent with the existing filter group. The independent morphology-reference-probe.json records fractional-radius quantization, zero axes and the older resvg binding\u2019s shifted morphology kernel. All alternate comparisons and transformed-edge failures are retained.",
+   "fixtures": {
+     "basic.svg": {
+       "reference": "resvg",
+@@ -943,6 +943,42 @@
+         "inherited paint-order",
+         "text ignores fill-rule"
+       ]
++    },
++    "morphology-basic.svg": {
++      "reference": "chromium",
++      "features": [
++        "erode",
++        "dilate",
++        "premultiplied channels",
++        "SourceAlpha"
++      ]
++    },
++    "morphology-units.svg": {
++      "reference": "chromium",
++      "features": [
++        "objectBoundingBox radii",
++        "nonuniform scale",
++        "rotation",
++        "skew"
++      ]
++    },
++    "morphology-graph.svg": {
++      "reference": "chromium",
++      "features": [
++        "named results",
++        "outline composition",
++        "opening",
++        "primitive subregions",
++        "merge"
++      ]
++    },
++    "morphology-radius.svg": {
++      "reference": "chromium",
++      "features": [
++        "fractional radii",
++        "zero axes",
++        "negative axes"
++      ]
+     }
+   }
+ }

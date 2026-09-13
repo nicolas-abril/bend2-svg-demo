@@ -1,0 +1,306 @@
+# XML: tokens, element tree, entities, attributes and serialization.
+import Base
+import ./util.bend as U
+
+def name.stop(+c: U32) -> Bool:
+  U.space(c) || U32.is_eq(c, 61) || U32.is_eq(c, 47) || U32.is_eq(c, 62)
+
+def xml.name(+s: String, +acc: String) -> U.Scan:
+  match s:
+    case SNil{}: U.Scan{U.rev(acc, ""), ""}
+    case SCon{Chr{c}, t}:
+      U.branch(U.Scan, name.stop(c), _ => U.Scan{U.rev(acc, ""), s},
+        _ => xml.name(t, SCon{Chr{c}, acc}))
+
+def value(s: String) -> U.Scan:
+  match s:
+    case SNil{}: U.Scan{"", ""}
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +rest = t
+      U.branch(U.Scan, U32.is_eq(ch, 34) || U32.is_eq(ch, 39),
+        _ => U.until(rest, ch, ""), _ => xml.name(SCon{Chr{ch}, rest}, ""))
+
+def equals(s: String) -> U.Scan:
+  match s:
+    case SNil{}: U.Scan{"", ""}
+    case SCon{Chr{c}, t}:
+      U.branch(U.Scan, U32.is_eq(c, 61), _ => value(U.trim(t)), _ => U.Scan{"", ""})
+
+type Attr is Data:
+  Attr{key: String, val: String}
+
+type Tag is Data:
+  Tag{attrs: List<&2, Attr>, tail: String, closed: Bool}
+
+def attr.append(a: U.Scan, b: U.Scan, attrs: List<&2, Attr>) -> Tag:
+  U.Scan{k, unused} = a
+  U.Scan{v, t} = b
+  Tag{Con{Attr{k, v}, attrs}, t, False{}}
+
+def attr.read.scan(+a: U.Scan, attrs: List<&2, Attr>) -> Tag:
+  U.Scan{k, t} = a
+  attr.append(a, equals(U.trim(t)), attrs)
+
+def attr.read(s: String, attrs: List<&2, Attr>) -> Tag:
+  attr.read.scan(xml.name(s, ""), attrs)
+
+def attributes.more(tag: Tag, next: String -> List<&2, Attr> -> Tag) -> Tag:
+  Tag{attrs, tail, closed} = tag
+  next(tail)(attrs)
+
+def attributes.close(scan: U.Scan, attrs: List<&2, Attr>) -> Tag:
+  U.Scan{h, t} = scan
+  Tag{attrs, t, True{}}
+
+@unsafe
+def attributes(s: String, attrs: List<&2, Attr>) -> Tag:
+  match s:
+    case SNil{}: Tag{attrs, "", False{}}
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +tail = t
+      +as = attrs
+      U.branch(Tag, U.space(ch), _ => attributes(tail, as),
+        _ => U.branch(Tag, U32.is_eq(ch, 62), _ => Tag{as, tail, False{}},
+          _ => U.branch(Tag, U32.is_eq(ch, 47),
+            _ => attributes.close(U.until(tail, 62, ""), as),
+            _ => attributes.more(attr.read(SCon{Chr{ch}, tail}, as),
+              next => ats => attributes(next, ats)))))
+
+type Token is Data:
+  Open{name: String, attrs: List<&2, Attr>, closed: Bool}
+  Shut{name: String}
+  Text{content: String}
+
+type Lexeme is Data:
+  Lexeme{token: Token, tail: String}
+
+def lex.open(n: String, tag: Tag) -> Lexeme:
+  Tag{attrs, tail, closed} = tag
+  Lexeme{Open{n, attrs, closed}, tail}
+
+def lex.named(scan: U.Scan) -> Lexeme:
+  U.Scan{n, t} = scan
+  lex.open(n, attributes(t, Nil{}))
+
+def lex.shut(scan: U.Scan) -> Lexeme:
+  U.Scan{n, t} = scan
+  Lexeme{Shut{n}, t}
+
+def xml.raw(s: String) -> String:
+  match s:
+    case SNil{}: ""
+    case SCon{Chr{c}, t}:
+      +ch = c
+      U.choose(String, U32.is_eq(ch, 38), "&amp;", SCon{Chr{ch}, ""}) ++ xml.raw(t)
+
+def lex.cdata(scan: U.Scan) -> Lexeme:
+  U.Scan{h, t} = scan
+  Lexeme{Text{xml.raw(h)}, t}
+
+def lex.tag(+s: String) -> Lexeme:
+  U.branch(Lexeme, U.prefix(s, "![CDATA["), _ => lex.cdata(U.until.sequence(U.drop(s, "![CDATA["), "]]>", "")),
+    _ => U.branch(Lexeme, U.prefix(s, "!--"), _ => Lexeme{Text{""}, U.through(s, "-->")},
+    _ => U.branch(Lexeme, U.prefix(s, "?"), _ => Lexeme{Text{""}, U.through(s, "?>")},
+      _ => U.branch(Lexeme, U.prefix(s, "!"), _ => Lexeme{Text{""}, U.through(s, ">")},
+        _ => U.branch(Lexeme, U.prefix(s, "/"), _ => lex.shut(U.until(U.drop(s, "/"), 62, "")),
+          _ => lex.named(xml.name(s, "")))))))
+
+def lex.more(item: Lexeme, next: String -> List<&2, Token>) -> List<&2, Token>:
+  Lexeme{tok, t} = item
+  Con{tok, next(t)}
+
+def lex.after(s: String, next: String -> List<&2, Token>) -> List<&2, Token>:
+  match s:
+    case SNil{}: Nil{}
+    case SCon{c, t}: lex.more(lex.tag(SCon{c, t}), next)
+
+def lex.text(scan: U.Scan, next: String -> List<&2, Token>) -> List<&2, Token>:
+  U.Scan{h, t} = scan
+  Con{Text{h}, lex.after(t, next)}
+
+@unsafe
+def tokenize(s: String) -> List<&2, Token>:
+  match s:
+    case SNil{}: Nil{}
+    case SCon{c, t}:
+      lex.text(U.until(SCon{c, t}, 60, ""), next => tokenize(next))
+
+type Element is Data:
+  Element{name: String, attrs: List<&2, Attr>, children: List<&2, Element>, text: String}
+
+def elements.rev(xs: List<&2, Element>, acc: List<&2, Element>) -> List<&2, Element>:
+  match xs:
+    case Nil{}: acc
+    case Con{h, t}: elements.rev(t, Con{h, acc})
+
+def element.finish(e: Element) -> Element:
+  Element{n, a, kids, txt} = e
+  Element{n, a, elements.rev(kids, Nil{}), txt}
+
+def stack.add(s: List<&2, Element>, node: Element) -> List<&2, Element>:
+  match s:
+    case Nil{}: Con{Element{"#document", Nil{}, Con{node, Nil{}}, ""}, Nil{}}
+    case Con{Element{n, a, kids, txt}, rest}:
+      Con{Element{n, a, Con{node, kids}, txt}, rest}
+
+def stack.text(+s: List<&2, Element>, +text: String) -> List<&2, Element>:
+  U.branch(List<&2, Element>, String.eq(text, ""), _ => s,
+    _ => stack.add(s, Element{"#text", Nil{}, Nil{}, text}))
+
+def stack.close(s: List<&2, Element>) -> List<&2, Element>:
+  match s:
+    case Nil{}: Nil{}
+    case Con{node, rest}: stack.add(rest, element.finish(node))
+
+def tree.step(tok: Token, +s: List<&2, Element>) -> List<&2, Element>:
+  match tok:
+    case Text{txt}: stack.text(s, txt)
+    case Shut{n}: stack.close(s)
+    case Open{n, a, closed}:
+      +node = {Element{n, a, Nil{}, ""} : Element}
+      U.choose(List<&2, Element>, closed, stack.add(s, node), Con{node, s})
+
+def tree(tokens: List<&2, Token>, s: List<&2, Element>) -> List<&2, Element>:
+  match tokens:
+    case Nil{}: s
+    case Con{tok, rest}: tree(rest, tree.step(tok, s))
+
+def tree.root(s: List<&2, Element>) -> Element:
+  match s:
+    case Nil{}: Element{"#document", Nil{}, Nil{}, ""}
+    case Con{node, rest}: element.finish(node)
+
+def annotate(xs: List<&2, Token>, +i: U32) -> List<&2, Token>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{Open{n, as, closed}, rest}:
+      Con{Open{n, Con{Attr{"#editor-id", U32.show(i)}, as}, closed}, annotate(rest, U32.inc(i))}
+    case Con{tok, rest}: Con{tok, annotate(rest, i)}
+
+def attr.get(attrs: List<&2, Attr>, +key: String, +fallback: String) -> String:
+  match attrs:
+    case Nil{}: fallback
+    case Con{Attr{k, v}, t}:
+      U.branch(String, String.eq(k, key), _ => v, _ => attr.get(t, key, fallback))
+
+def attrs.append(xs: List<&2, Attr>, ys: List<&2, Attr>) -> List<&2, Attr>:
+  match xs:
+    case Nil{}: ys
+    case Con{h, t}: Con{h, attrs.append(t, ys)}
+
+def element.prefer(a: Maybe<&2, Element>, b: Maybe<&2, Element>) -> Maybe<&2, Element>:
+  match a:
+    case Some{e}: Some{e}
+    case None{}: b
+
+def element.find(+xs: List<&2, Element>, +id: String) -> Maybe<&2, Element>:
+  match xs:
+    case Nil{}: None{}
+    case Con{Element{n, as, kids, txt}, rest}:
+      U.branch(Maybe<&2, Element>, String.eq(attr.get(as, "id", ""), id),
+        _ => Some{Element{n, as, kids, txt}},
+        _ => element.prefer(U.branch(Maybe<&2, Element>, String.eq(n, "#svg-image"), _ => None{}, _ => element.find(kids, id)), element.find(rest, id)))
+
+# Decode XML entities before interpreting attributes or exposing source editing.
+def entity(+s: String) -> String:
+  U.branch(String, String.eq(s, "amp"), _ => "&",
+    _ => U.branch(String, String.eq(s, "lt"), _ => "<",
+      _ => U.branch(String, String.eq(s, "gt"), _ => ">",
+        _ => U.branch(String, String.eq(s, "quot"), _ => "\"",
+          _ => U.branch(String, String.eq(s, "apos"), _ => "'",
+            _ => U.branch(String, U.prefix(s, "#x"), _ => SCon{Chr{U.hex(U.drop(s, "#x"), 0)}, ""},
+              _ => U.branch(String, U.prefix(s, "#"), _ => SCon{Chr{F32.to_u32(U.scalar(U.drop(s, "#"), 65533.0))}, ""},
+                _ => "&" ++ s ++ ";")))))))
+
+def entities.more(scan: U.Scan, acc: String, next: String -> String -> String) -> String:
+  U.Scan{h, t} = scan
+  next(t)(U.rev(entity(h), acc))
+
+@unsafe
+def entities.loop(s: String, +acc: String) -> String:
+  match s:
+    case SNil{}: U.rev(acc, "")
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +tail = t
+      U.branch(String, U32.is_eq(ch, 38),
+        _ => entities.more(U.until(tail, 59, ""), acc, rest => text => entities.loop(rest, text)),
+        _ => entities.loop(tail, SCon{Chr{ch}, acc}))
+
+def entities(s: String) -> String:
+  entities.loop(s, "")
+
+def decode.attrs(as: List<&2, Attr>) -> List<&2, Attr>:
+  match as:
+    case Nil{}: Nil{}
+    case Con{Attr{k, v}, rest}: Con{Attr{k, entities(v)}, decode.attrs(rest)}
+
+def decode.nodes(xs: List<&2, Element>) -> List<&2, Element>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{Element{n, as, kids, txt}, rest}:
+      Con{Element{n, decode.attrs(as), decode.nodes(kids), entities(txt)}, decode.nodes(rest)}
+
+def parse(s: String) -> Element:
+  tree.root(decode.nodes(tree(annotate(tokenize(s), 1), Con{Element{"#document", Nil{}, Nil{}, ""}, Nil{}})))
+
+# Editor support: identifiers are private metadata and never serialized.
+def attrs.remove(+as: List<&2, Attr>, +key: String) -> List<&2, Attr>:
+  match as:
+    case Nil{}: Nil{}
+    case Con{Attr{k, v}, rest}:
+      +kk = k
+      U.branch(List<&2, Attr>, String.eq(kk, key), _ => attrs.remove(rest, key),
+        _ => Con{Attr{kk, v}, attrs.remove(rest, key)})
+
+def attrs.set(as: List<&2, Attr>, +key: String, value: String) -> List<&2, Attr>:
+  Con{Attr{key, value}, attrs.remove(as, key)}
+
+# Build escaped XML in reverse, so large data URIs do not grow the host stack.
+def escape.rev(s: String, acc: String) -> String:
+  match s:
+    case SNil{}: acc
+    case SCon{Chr{c}, t}:
+      +ch = c
+      escape.rev(t, U.rev(U.choose(String, U32.is_eq(ch, 38), "&amp;",
+        U.choose(String, U32.is_eq(ch, 60), "&lt;",
+          U.choose(String, U32.is_eq(ch, 62), "&gt;",
+            U.choose(String, U32.is_eq(ch, 34), "&quot;", SCon{Chr{ch}, ""})))), acc))
+
+def escape(s: String) -> String:
+  U.rev(escape.rev(s, ""), "")
+
+def serialize.attrs.rev(as: List<&2, Attr>, +acc: String) -> String:
+  match as:
+    case Nil{}: acc
+    case Con{Attr{k, v}, rest}:
+      +key = k
+      serialize.attrs.rev(rest, U.branch(String, U.prefix(key, "#"), _ => acc,
+        _ => SCon{Chr{34}, escape.rev(v, SCon{Chr{34}, SCon{Chr{61}, U.rev(key, SCon{Chr{32}, acc})}})}))
+
+def serialize.attrs(as: List<&2, Attr>) -> String:
+  U.rev(serialize.attrs.rev(as, ""), "")
+
+def serialize.element(+n: String, as: List<&2, Attr>, kids: List<&2, Element>, txt: String, +acc: String,
+  children: List<&2, Element> -> String -> String) -> String:
+  +isDocument = String.eq(n, "#document")
+  +isText = String.eq(n, "#text")
+  +open = U.branch(String, isDocument || isText, _ => acc,
+    _ => SCon{Chr{62}, serialize.attrs.rev(as, U.rev(n, SCon{Chr{60}, acc}))})
+  +body = children(U.choose(List<&2, Element>, isText, Nil{}, kids))(U.choose(String, isDocument, open, escape.rev(txt, open)))
+  U.branch(String, isDocument || isText, _ => body, _ => SCon{Chr{62}, U.rev(n, SCon{Chr{47}, SCon{Chr{60}, body}})})
+
+@unsafe
+def serialize.nodes.rev(xs: List<&2, Element>, acc: String) -> String:
+  match xs:
+    case Nil{}: acc
+    case Con{Element{n, as, kids, txt}, rest}:
+      serialize.nodes.rev(rest, serialize.element(n, as, kids, txt, acc, nodes => tail => serialize.nodes.rev(nodes, tail)))
+
+def serialize.nodes(xs: List<&2, Element>) -> String:
+  U.rev(serialize.nodes.rev(xs, ""), "")
+
+def serialize(root: Element) -> String:
+  serialize.nodes(Con{root, Nil{}})

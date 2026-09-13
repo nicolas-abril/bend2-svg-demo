@@ -1,0 +1,11 @@
+{
+  "pid": 50585,
+  "binarySHA256": "d67764a86c1fa1f57f7105b56913c98d099fc2d9d007759efa8d6cba40c47a91",
+  "bundleActivationReturned": true,
+  "active": false,
+  "frontmost": false,
+  "method": "Process-addressed events only; temporary bundle of camera checkpoint",
+  "saved": true,
+  "savedSource": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "pointerSelectionPassed": false
+}

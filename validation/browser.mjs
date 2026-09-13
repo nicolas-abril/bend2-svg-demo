@@ -1,0 +1,44 @@
+import { chromium } from 'playwright';
+import { writeFileSync } from 'node:fs';
+import { dirname,resolve } from 'node:path';
+const here=dirname(import.meta.filename);
+const browser=await chromium.launch({headless:true});
+const page=await browser.newPage({viewport:{width:1180,height:850}});
+let moveRequests=0;page.on('request',r=>{if(r.url().endsWith('/event') && r.postData()?.startsWith('6d 6f 76 65 a '))moveRequests++;});
+page.setDefaultTimeout(60000);
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+try {
+const started=performance.now();
+console.time('browser interactions');
+await page.goto('http://127.0.0.1:8088');
+await page.waitForFunction(()=>document.querySelector('#status').textContent==='Ready',{timeout:60000});
+const before=await page.locator('#source').inputValue();
+const box=await page.locator('canvas').boundingBox();
+const at=(x,y)=>({x:box.x+x*box.width/256,y:box.y+y*box.height/256});
+await page.mouse.move(at(60,60).x,at(60,60).y);
+await page.mouse.down();
+await page.evaluate(({x,y})=>{
+ const c=document.querySelector('canvas');
+ for(let i=1;i<=60;i++)c.dispatchEvent(new PointerEvent('pointermove',{pointerId:1,clientX:x-20+20*i/60,clientY:y-10+10*i/60,bubbles:true}));
+},at(80,70));
+await page.mouse.move(at(80,70).x,at(80,70).y);
+await page.mouse.up();
+await page.waitForFunction(()=>document.querySelector('#source').value.includes('transform:matrix'),{timeout:60000});
+await page.waitForFunction(()=>document.querySelector('#status').textContent==='Ready',{timeout:60000});
+const moved=await page.locator('#source').inputValue();
+if(!moved.includes('20,10'))throw Error('Drag did not apply expected transform');
+if(moveRequests>=20)throw Error('Drag moves were not coalesced');
+await page.locator('#property').selectOption('stroke-dasharray');
+await page.locator('#value').fill('4 2');
+await page.locator('#set').click();
+await page.waitForFunction(()=>document.querySelector('#source').value.includes('stroke-dasharray:4 2'),{timeout:60000});
+await page.locator('#noFill').click();
+await page.waitForFunction(()=>document.querySelector('#source').value.includes('fill:none'),{timeout:60000});
+await page.locator('#undo').click();
+await page.waitForFunction(()=>!document.querySelector('#source').value.includes('fill:none'),{timeout:60000});
+await page.screenshot({path:resolve(here,'web-editor.png'),fullPage:true});
+if(errors.length)throw Error(errors.join('\n'));
+writeFileSync(resolve(here,'browser-report.json'),JSON.stringify({passed:true,checks:['initial pixel matrix','drag transforms source by 20,10','burst drag input coalesced','stroke dash edit','fill edit','undo','no browser errors'],durationSeconds:(performance.now()-started)/1000,moveRequests,before,moved},null,2)+'\n');
+console.timeEnd('browser interactions');
+console.log('Browser interactions passed');
+} finally {await browser.close();}

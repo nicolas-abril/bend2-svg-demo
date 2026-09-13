@@ -1,0 +1,204 @@
+{
+  "passed": true,
+  "integrated": true,
+  "count": 48,
+  "sourceSHA256": {
+    "svg.bend": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+    "state.bend": "83513370e590e7df992d0daa684a142890585fa1e00bcd8cefa823bf9272a036",
+    "web.html": "2a238b67675052aff38b2bf30d473493bcdc10495d147ed46598ba4c4a0e5136"
+  },
+  "checks": [
+    {
+      "file": "check-svg-sizing.bend",
+      "sha256": "48e95442934ef9f4ff549ce21f7536d70693c2093d9774019c27f56d8a10b89b"
+    },
+    {
+      "file": "check-use.bend",
+      "sha256": "f1d098dcb14e366287094d706af5c95c04b51ddeb7f72be86dc937090adcaaa2"
+    },
+    {
+      "file": "check-filters-graph.bend",
+      "sha256": "a7415a834d63de2258a4d2850215d123f9731be738536da069995e63014a5809"
+    },
+    {
+      "file": "check-png.bend",
+      "sha256": "be94d23088eeea914d3753ebf15d4cdb1fdc34bfe7ed0ae9287448b3d45f5dfa"
+    },
+    {
+      "file": "check-utf8.bend",
+      "sha256": "d9026e7b92d57d8e29bc22bdf0c911292bd90d7a2da03efd3aab7974998369f1"
+    },
+    {
+      "file": "check-css-media.bend",
+      "sha256": "b9df5bff6a79086cb8320c79fbb3c2d889ad90f2380510f3aaaf042203f391ab"
+    },
+    {
+      "file": "check-colors.bend",
+      "sha256": "654f3e91d025d1bc228df5602c68c767287e382a0f94c3456414ff2ac281d832"
+    },
+    {
+      "file": "check-coverage.bend",
+      "sha256": "d3cb5c9713ac77456d00ff63c0229af44b723e1f525a7e30fb57eb387468b33b"
+    },
+    {
+      "file": "check-svg-data.bend",
+      "sha256": "14908dea4b71d8c254c71bc94b952590f23259dff86cf28acbb7bc86fa2daea2"
+    },
+    {
+      "file": "check-text-path-editor.bend",
+      "sha256": "0e471c0a1bd9264a8fe8f3d5b735d8f2b571983552036ade2892b9a05ad55399"
+    },
+    {
+      "file": "check-svg-scopes.bend",
+      "sha256": "46b4690c177e839e01168c602f4cb93028822d30303b6c7424bf26e29ad3735f"
+    },
+    {
+      "file": "check-mask.bend",
+      "sha256": "f27726882dcb73f61fbc14102b936db6fc795077cd8bda23194d25f40934236e"
+    },
+    {
+      "file": "check-xml.bend",
+      "sha256": "2bed3b04017b35adc72ff26058295b3504d1fdc5ef07a98df23e903e521ebf34"
+    },
+    {
+      "file": "check-text-paint-run.bend",
+      "sha256": "8f7e37dacb467357c6cf45199dd9a7810c4611e9921e80639a2a4e0560eb70ac"
+    },
+    {
+      "file": "check-blend.bend",
+      "sha256": "9871bede0917d16224c64aa880ebc1987d0f87a546beaba87762a896a310891c"
+    },
+    {
+      "file": "check-numbers.bend",
+      "sha256": "3668f8e4a34110367809862c3b586c72b902713969123cf3c8d55dd75abf6317"
+    },
+    {
+      "file": "check-paint-order.bend",
+      "sha256": "bfbdf8b66e1e07a2f2ddfa68048eb2ff2fa437b41b2618d323159aad205f20b0"
+    },
+    {
+      "file": "check-marker-geometry.bend",
+      "sha256": "cbc52d8a8bf3322459ef4734889ebbd7d31b16dc6bcb4fd4a437d39d3189f9a0"
+    },
+    {
+      "file": "check.bend",
+      "sha256": "0532262408442c0ff0534b9d476d317c26d981aac27bbbcc1a6ef1fbccc321a6"
+    },
+    {
+      "file": "check-editor.bend",
+      "sha256": "6ab54e85345187c8dcc9c605f06d1a335b5ba92f7ae5c69621c0bc26baccac21"
+    },
+    {
+      "file": "check-morphology.bend",
+      "sha256": "998b20ae54dd286ab0c1c0c790b66ce951a41e7433e5660665847a7429f4546c"
+    },
+    {
+      "file": "check-state.bend",
+      "sha256": "85791bbe59461a214bde254dfdf613fa350bdfa39784fd16c86ba37d28e309f0"
+    },
+    {
+      "file": "check-raster.bend",
+      "sha256": "8f23c83cb2aa153ca874669fbb157485be491fcd5b26398f304a8fadd4834858"
+    },
+    {
+      "file": "check-jpeg-bits.bend",
+      "sha256": "1875551856c8fafdba0fff353ef8a1d404fc6025751d169ad644860ef22c4416"
+    },
+    {
+      "file": "check-paint.bend",
+      "sha256": "8eae2891a9a7b1219b9076175f6147d6756cdf23333864eb329592b470793fe8"
+    },
+    {
+      "file": "check-text.bend",
+      "sha256": "9a5daf2ce0aeb91aeacde4f4d8d4759e1b6af66f473298efd926549f308d8c19"
+    },
+    {
+      "file": "check-jpeg-errors.bend",
+      "sha256": "e6c407b4155207fb0118cceb3e22a074b2525287755b0e586bbf2b17e59203b3"
+    },
+    {
+      "file": "check-svg-image.bend",
+      "sha256": "1f63549b6215ff3d5fbd48aa9dab0f1bc735fc7cee3f9e8c5421154e3ada14e2"
+    },
+    {
+      "file": "check-filters.bend",
+      "sha256": "1567887dc6c74a97e26c742a2c5697bfd7d6b0f997372d35281b2166423517f1"
+    },
+    {
+      "file": "check-pattern.bend",
+      "sha256": "dfa61c7a48a332b3333979b309d2d43e7b9a6cd6eb85e3698bf9da645fbcd105"
+    },
+    {
+      "file": "check-text-length.bend",
+      "sha256": "97394ab14bbb505df3af2700ca35abba712e33c832fefa393df4630917829289"
+    },
+    {
+      "file": "check-source-undo.bend",
+      "sha256": "5fd5fde6bb46c52b6e35a25791f512c40f389e6d283098bfd2f3cc99a1df9c87"
+    },
+    {
+      "file": "check-image-fonts.bend",
+      "sha256": "bdb2ea506ce87d87e56785062e7280aed78b6a2bf01790b736c89591a247c7ee"
+    },
+    {
+      "file": "check-images.bend",
+      "sha256": "ca5149274e56bcc54958b3c643a2403e5525fa592feef4413443446cb93067c7"
+    },
+    {
+      "file": "check-stroke.bend",
+      "sha256": "47b139a350e9253a854d304d9c219d59bab0e9e55f43291fbd2b3a013bde9acb"
+    },
+    {
+      "file": "check-svg-uri.bend",
+      "sha256": "46bb787d6b8aa59203d398cfa8bf5cad678f5012b5b18836e6ec2d3b887f278f"
+    },
+    {
+      "file": "check-svg-editor.bend",
+      "sha256": "1f87caea7b4431a96d769cd33eeac5311ea131cada6155165e8a64f79b1e582f"
+    },
+    {
+      "file": "check-image-boundaries.bend",
+      "sha256": "efb8d3ba930e9196cad984f79ee86ce3548e13535f5692da6f0c596fa4ca964b"
+    },
+    {
+      "file": "check-font-metrics.bend",
+      "sha256": "398d8f9751263ebeca6cc4609bca84ab8bcd39745da61ce46e8b88754744296e"
+    },
+    {
+      "file": "check-markers.bend",
+      "sha256": "19f2602237b04f7f1c65c7527e08e07b6041a0ebef548c4cebb44f19dc073a25"
+    },
+    {
+      "file": "check-css.bend",
+      "sha256": "fde87cf260142b763f8cdafbd5d3e9e0724e2ffa61702f4fb3397bfce37b3ae6"
+    },
+    {
+      "file": "check-inflate.bend",
+      "sha256": "976bc9d5a3585ee477fb943f41d7e6d8e78efa297f049a227dc706c08efc7501"
+    },
+    {
+      "file": "check-viewport.bend",
+      "sha256": "b3beeaf28cdf1ef20f8dc61286192e313d1f282a423c46573668b49ac58d4fb0"
+    },
+    {
+      "file": "check-gesture.bend",
+      "sha256": "c8fc3a8c7db16041b3a6de8206c32e0e946e9fa902f335ce40964ef2007b33a6"
+    },
+    {
+      "file": "check-text-path.bend",
+      "sha256": "4861e43e33be57eb14fd44dc68069d8f358b4cd48a50ffb0a5c22a5a7d8caa49"
+    },
+    {
+      "file": "check-serialize-large.bend",
+      "sha256": "e3ef91192032598ff54741f69814d9dda8c12ea80bdcbdb0d7be17bc3052d7af"
+    },
+    {
+      "file": "check-jpeg.bend",
+      "sha256": "0ca102310875223d773de9e39d9327fb90039f2927914918c5b13cbc751619ba"
+    },
+    {
+      "file": "check-bytes.bend",
+      "sha256": "d95d2783a947774245385eeade474c7315059c14cbb7030135a01e6ca41fb3c6"
+    }
+  ]
+}

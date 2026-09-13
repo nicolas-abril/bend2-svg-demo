@@ -1,0 +1,412 @@
+--- a/svg.bend
++++ b/svg.bend
+@@ -1518,6 +1518,23 @@
+     _ => edges.transform(path(attr.get(as, "d", "")), transform(attr.get(as, "#glyph-transform", ""), identity())),
+     _ => path(shape.data(name, as, vw, vh)))
+ 
++# Paint adjacent glyphs with one shared style as one geometry. This keeps all
++# fills together and all strokes together, including overlapping glyphs.
++def glyph.edges.append(xs: List<&2, Edge>, ys: List<&2, Edge>) -> List<&2, Edge>:
++  match xs:
++    case Nil{}: ys
++    case Con{h, t}: Con{h, glyph.edges.append(t, ys)}
++
++def glyph.edges(xs: List<&2, Element>) -> List<&2, Edge>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}:
++      +attrs = as
++      glyph.edges.append(edges.transform(path(attr.get(attrs, "d", "")), transform(attr.get(attrs, "#glyph-transform", ""), identity())), glyph.edges(rest))
++
++def shape.children(+name: String, as: List<&2, Attr>, kids: List<&2, Element>, vw: F32, vh: F32) -> List<&2, Edge>:
++  branch(List<&2, Edge>, String.eq(name, "#glyph-run"), _ => glyph.edges(kids), _ => shape(name, as, vw, vh))
++
+ type MarkerSubpath is Data:
+   MarkerSubpath{start: Point, segments: List<&2, MarkerSegment>, closed: Bool}
+ 
+@@ -2166,22 +2183,48 @@
+   MarkerStyle{start, middle, end} = ms
+   MarkerStyle{style.value(as, "marker-start", start, "none", True{}), style.value(as, "marker-mid", middle, "none", True{}), style.value(as, "marker-end", end, "none", True{})}
+ 
++# Normalize the small CSS paint-order vocabulary; omitted operations follow in
++# default fill/stroke/markers order. Invalid values retain the inherited order.
++def paint.order.normalize(s: String, +out: String, +gap: Bool) -> String:
++  match s:
++    case SNil{}: out
++    case SCon{Chr{c}, rest}:
++      +ch = c
++      +tail = rest
++      branch(String, space(ch), _ => paint.order.normalize(tail, out, Bool.not(String.eq(out, ""))),
++        _ => paint.order.normalize(tail, out ++ choose(String, gap, " ", "") ++ SCon{Chr{ch}, SNil{}}, False{}))
++
++def paint.order.name(+order: U32) -> String:
++  choose(String, U32.is_eq(order, 1), "fill markers stroke", choose(String, U32.is_eq(order, 2), "stroke fill markers",
++    choose(String, U32.is_eq(order, 3), "stroke markers fill", choose(String, U32.is_eq(order, 4), "markers fill stroke",
++      choose(String, U32.is_eq(order, 5), "markers stroke fill", "normal")))))
++
++def paint.order.value(+s: String, fallback: U32) -> U32:
++  +v = paint.order.normalize(css.lower(trim.both(s)), "", False{})
++  choose(U32, String.eq(v, "normal") || String.eq(v, "fill") || String.eq(v, "fill stroke") || String.eq(v, "fill stroke markers"), 0,
++    choose(U32, String.eq(v, "fill markers") || String.eq(v, "fill markers stroke"), 1,
++      choose(U32, String.eq(v, "stroke") || String.eq(v, "stroke fill") || String.eq(v, "stroke fill markers"), 2,
++        choose(U32, String.eq(v, "stroke markers") || String.eq(v, "stroke markers fill"), 3,
++          choose(U32, String.eq(v, "markers") || String.eq(v, "markers fill") || String.eq(v, "markers fill stroke"), 4,
++            choose(U32, String.eq(v, "markers stroke") || String.eq(v, "markers stroke fill"), 5, fallback))))))
++
+ # Compilation resolves geometry and inherited presentation once per edit.
+ type Style is Data:
+   Style{fill: String, stroke: String, color: String, fillOpacity: F32,
+-    strokeOpacity: F32, width: F32, even: Bool, visible: Bool, strokeSettings: StrokeSettings, markers: MarkerStyle, imageRendering: String}
++    strokeOpacity: F32, width: F32, even: Bool, visible: Bool, strokeSettings: StrokeSettings, markers: MarkerStyle, imageRendering: String, paintOrder: U32}
+ 
+ def style.default() -> Style:
+-  Style{"black", "none", "black", 1.0, 1.0, 1.0, False{}, True{}, stroke.settings(), MarkerStyle{"none", "none", "none"}, "auto"}
++  Style{"black", "none", "black", 1.0, 1.0, 1.0, False{}, True{}, stroke.settings(), MarkerStyle{"none", "none", "none"}, "auto", 0}
+ 
+ def style.inherit(+s: Style, +as: List<&2, Attr>, ref: F32) -> Style:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
++  +po = order
+   Style{style.value(as, "fill", fill, "black", True{}), style.value(as, "stroke", stroke, "none", True{}), style.value(as, "color", col, "black", True{}),
+     color.opacity(style.value(as, "fill-opacity", F32.show(fo), "1", True{}), fo),
+     color.opacity(style.value(as, "stroke-opacity", F32.show(so), "1", True{}), so),
+     max(0.0, unit(number(style.value(as, "stroke-width", F32.show(width), "1", True{})), ref)),
+     String.eq(style.value(as, "fill-rule", choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
+-    String.eq(style.value(as, "visibility", choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{})}
++    String.eq(style.value(as, "visibility", choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{}), paint.order.value(style.value(as, "paint-order", paint.order.name(po), "normal", True{}), po)}
+ 
+ # Gradient resources are compiled into paint functions before rasterization.
+ type Stop is Data:
+@@ -3513,7 +3556,7 @@
+       _ => brush.solid(color(choose(String, String.eq(css.lower(trim.both(s)), "currentcolor"), current, s)), opacity)))
+ 
+ def style.colors(+s: Style, +all: List<&2, Element>, +box: Bounds, +w: F32, +h: F32, fills: Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Paint<Brush>:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   Paint{brush(fill, col, fo, all, box, w, h, fills), brush(stroke, col, so, all, box, w, h, strokes)}
+ 
+ # Clip paths combine geometry by union; nested clip paths intersect coverage.
+@@ -3560,7 +3603,7 @@
+           +matrix = matrix.mul(matrix.mul(m, transform(attr.get(as, "transform", ""), identity())),
+             choose(Matrix, String.eq(n, "use"), translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0")), identity()))
+           +rule = String.eq(attr.get(as, "clip-rule", choose(String, even, "evenodd", "nonzero")), "evenodd")
+-          +es = shape(n, as, w, h)
++          +es = shape.children(n, as, kids, w, h)
+           +box = bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})
+           branch(Clip, String.eq(attr.get(as, "display", "inline"), "none"),
+             _ => clip.build(1n+dd, rest, all, m, w, h, even),
+@@ -3573,12 +3616,12 @@
+   clip.attach(as, all, box, m, nodes => mat => clip.build(128n, nodes, all, mat, w, h, False{}))
+ 
+ def style.nonScaling(s: Style) -> Bool:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   StrokeSettings{cap, join, limit, dash, offset, vector} = ss
+   String.eq(vector, "non-scaling-stroke")
+ 
+ def style.outline(+s: Style, +es: List<&2, Edge>, +m: Matrix, ref: F32, declared: F32) -> StrokeMesh:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   +screen = style.nonScaling(s)
+   stroke.mesh(branch(List<&2, StrokePart>, String.eq(stroke, "none") || F32.is_le(width, 0.0), _ => Nil{},
+     _ => stroke.compile(choose(List<&2, Edge>, screen, edges.transform(es, m), es), (width / 2.0 : F32), ss, ref, declared)),
+@@ -3678,7 +3721,7 @@
+   EmbeddedImage{raster, attrs, inv, String.eq(rendering, "pixelated") || String.eq(rendering, "crisp-edges") || String.eq(rendering, "optimizeSpeed")}
+ 
+ def style.image.rendering(s: Style) -> String:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   rendering
+ 
+ def bitmap.element(+name: String, +as: List<&2, Attr>, w: F32, h: F32) -> EmbeddedImage:
+@@ -3690,8 +3733,8 @@
+     case EmbeddedImage{raster, attrs, inv, nearest}: attrs
+ 
+ def style.image(s: Style) -> Style:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
+-  Style{"white", "none", col, 1.0, 1.0, 0.0, False{}, visible, ss, MarkerStyle{"none", "none", "none"}, rendering}
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
++  Style{"white", "none", col, 1.0, 1.0, 0.0, False{}, visible, ss, MarkerStyle{"none", "none", "none"}, rendering, order}
+ 
+ def bitmap.style(image: EmbeddedImage, style: Style) -> Style:
+   match image:
+@@ -3699,12 +3742,12 @@
+     case EmbeddedImage{raster, attrs, inv, nearest}: style.image(style)
+ 
+ def style.is.visible(s: Style) -> Bool:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   visible
+ 
+ def style.embedded(s: Style) -> Style:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
+-  Style{"none", "none", col, 1.0, 1.0, 0.0, False{}, visible, ss, MarkerStyle{"none", "none", "none"}, rendering}
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
++  Style{"none", "none", col, 1.0, 1.0, 0.0, False{}, visible, ss, MarkerStyle{"none", "none", "none"}, rendering, order}
+ 
+ def bitmap.paint(image: EmbeddedImage, ink: Paint<Brush>) -> Paint<Brush>:
+   match image:
+@@ -3895,27 +3938,31 @@
+     case FilterSpec{region, units, viewport, attrs, primitives}: original(Unit{})
+     case FilterImage{raster}: raster.color(raster, p, linear)
+ 
+-def scene.shape(es: EdgeTree, +s: Style, ink: Paint<Brush>, outline: StrokeMesh, +p: Point, +paintPoint: Point, worldPoint: Point, +linear: Bool, fills: List<&2, Scene<Brush>> -> Point -> Point -> Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Color) -> Color:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++def paint.order.composite(+order: U32, +fill: Color, +stroke: Color, +markers: Color) -> Color:
++  choose(Color, U32.is_eq(order, 1), color.over(stroke, color.over(markers, fill)),
++    choose(Color, U32.is_eq(order, 2), color.over(markers, color.over(fill, stroke)),
++      choose(Color, U32.is_eq(order, 3), color.over(fill, color.over(markers, stroke)),
++        choose(Color, U32.is_eq(order, 4), color.over(stroke, color.over(fill, markers)),
++          choose(Color, U32.is_eq(order, 5), color.over(fill, color.over(stroke, markers)), color.over(markers, color.over(stroke, fill)))))))
++
++def scene.shape(es: EdgeTree, +s: Style, ink: Paint<Brush>, outline: StrokeMesh, +p: Point, +paintPoint: Point, worldPoint: Point, +linear: Bool, markers: Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Color) -> Color:
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   Paint{fc, sc} = ink
+-  branch(Color, visible,
+-    _ => color.over(
+-      branch(Color, Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0),
+-        _ => branch(Color, stroke.mesh.inside(outline, worldPoint), _ => color.space(brush.sample(sc, p, paintPoint, strokes), linear), _ => clear()),
+-        _ => clear()),
+-      branch(Color, Bool.not(String.eq(fill, "none")),
+-        _ => branch(Color, edge.tree.inside(es, p, even), _ => color.space(brush.sample(fc, p, paintPoint, fills), linear), _ => clear()), _ => clear())),
+-    _ => clear())
++  paint.order.composite(order,
++    branch(Color, visible && Bool.not(String.eq(fill, "none")),
++      _ => branch(Color, edge.tree.inside(es, p, even), _ => color.space(brush.sample(fc, p, paintPoint, fills), linear), _ => clear()), _ => clear()),
++    branch(Color, visible && Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0),
++      _ => branch(Color, stroke.mesh.inside(outline, worldPoint), _ => color.space(brush.sample(sc, p, paintPoint, strokes), linear), _ => clear()), _ => clear()), markers)
+ 
+ def style.margin(s: Style) -> F32:
+-  Style{fill, stroke, col, fo, so, w, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, w, even, visible, ss, ms, rendering, order} = s
+   StrokeSettings{cap, join, limit, dash, offset, vector} = ss
+   (w * max(1.41421356237, limit) / 2.0 : F32)
+ 
+-def scene.local(+scene: Scene<Brush>, +p: Point, paintPoint: Point, linear: Bool, fills: List<&2, Scene<Brush>> -> Point -> Point -> Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Color) -> Color:
++def scene.local(+scene: Scene<Brush>, +p: Point, paintPoint: Point, linear: Bool, +markers: Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Color) -> Color:
+   Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect} = scene
+   +q = matrix.point(inv, p)
+-  branch(Color, bounds.inside(box, q, style.margin(style)) || style.nonScaling(style), _ => scene.shape(fillTree, style, ink, outline, q, matrix.point(inv, paintPoint), p, linear, fills, strokes), _ => clear())
++  branch(Color, bounds.inside(box, q, style.margin(style)) || style.nonScaling(style), _ => scene.shape(fillTree, style, ink, outline, q, matrix.point(inv, paintPoint), p, linear, markers, fills, strokes), _ => markers)
+ 
+ # Pattern scenes are finite compiled subtrees; the callback obscures structural descent.
+ @unsafe
+@@ -3923,10 +3970,10 @@
+   match scenes:
+     case Nil{}: back
+     case Con{Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
+-      sample(rest, p, paintPoint, branch(Color, bounds.inside(coverage, p, 0.01), _ => color.over(mask.apply(branch(Color, clip.inside(mask, p), _ => filter.sample(effect, paintPoint, linear, _ => sample(markerNodes, p, paintPoint, sample(kids, p, paintPoint,
+-        scene.local(Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}, p, paintPoint, linear,
++      sample(rest, p, paintPoint, branch(Color, bounds.inside(coverage, p, 0.01), _ => color.over(mask.apply(branch(Color, clip.inside(mask, p), _ => filter.sample(effect, paintPoint, linear, _ => sample(kids, p, paintPoint,
++        scene.local(Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}, p, paintPoint, linear, sample(markerNodes, p, paintPoint, clear(), linear),
+           nodes => q => center => sample(nodes, q, center, clear(), False{}),
+-          nodes => q => center => sample(nodes, q, center, clear(), False{})), linear), linear)), _ => clear()),
++          nodes => q => center => sample(nodes, q, center, clear(), False{})), linear)), _ => clear()),
+         opacity, maskMode, _ => sample(maskNodes, p, paintPoint, clear(), U32.is_eq(maskMode, 3))), back), _ => back), linear)
+ 
+ # Patterns compile their content once and reuse it for every tile sample.
+@@ -4075,11 +4122,11 @@
+   prefix(start, "url(") || prefix(middle, "url(") || prefix(end, "url(")
+ 
+ def marker.instances(+name: String, as: List<&2, Attr>, +s: Style, all: List<&2, Element>, active: List<&2, String>, +w: F32, +h: F32) -> List<&2, Element>:
+-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering} = s
++  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+   branch(List<&2, Element>, marker.enabled(ms) && (String.eq(name, "path") || String.eq(name, "line") || String.eq(name, "polyline") || String.eq(name, "polygon")),
+     _ => marker.instances.loop(marker.trace(shape.data(name, as, w, h)), True{}, ms, all, active, width, w, h), _ => Nil{})
+ 
+-def compile.node(+n: String, +as: List<&2, Attr>, +vp: Viewport, inherited: Style, +all: List<&2, Element>, +active: List<&2, String>,
++def compile.node(+n: String, +as: List<&2, Attr>, +glyphs: List<&2, Element>, +vp: Viewport, inherited: Style, +all: List<&2, Element>, +active: List<&2, String>,
+   masks: String -> List<&2, Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, fills: String -> List<&2, Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, strokes: String -> List<&2, Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
+   markers: List<&2, Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
+   children: Style -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
+@@ -4089,8 +4136,8 @@
+   +attrs = bitmap.attrs(embedded, as)
+   +style = choose(Style, String.eq(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
+   branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (String.eq(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
+-    _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape(n, attrs, vw, vh), matrix, style,
+-      color.opacity(attr.get(attrs, "opacity", "1"), 1.0), children(style)(matrix)(vw)(vh),
++    _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape.children(n, attrs, glyphs, vw, vh), matrix, style,
++      color.opacity(attr.get(attrs, "opacity", "1"), 1.0), branch(List<&2, Scene<Brush>>, String.eq(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
+       attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
+         node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills),
+         node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes)), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
+@@ -4104,7 +4151,7 @@
+     case 1n+d Con{Element{tagname, attrs, kids, txt}, rest}:
+       +as = image.layout.attrs(properties(attrs), w, h)
+       +n = tagname
+-      scenes.append(compile.node(n, as, element.viewport(n, as, m, w, h, root), inherited, all, active,
++      scenes.append(compile.node(n, as, kids, element.viewport(n, as, m, w, h, root), inherited, all, active,
+         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
+         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
+         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
+@@ -5092,6 +5139,42 @@
+         nodes => f => vw => vh => text.expand(nodes, f, vw, vh, False{})), text.expand(rest, font, w, h, root)}
+ 
+ 
++type TextPaintRun is Data:
++  TextPaintRun{nodes: List<&2, Element>, rest: List<&2, Element>}
++
++def text.paint.reverse(xs: List<&2, Element>, acc: List<&2, Element>) -> List<&2, Element>:
++  match xs:
++    case Nil{}: acc
++    case Con{h, t}: text.paint.reverse(t, Con{h, acc})
++
++@unsafe
++def text.paint.take(+xs: List<&2, Element>, +acc: List<&2, Element>) -> TextPaintRun:
++  match xs:
++    case Nil{}: TextPaintRun{text.paint.reverse(acc, Nil{}), Nil{}}
++    case Con{Element{n, as, kids, txt}, rest}:
++      +name = n
++      branch(TextPaintRun, String.eq(name, "#glyph"),
++        _ => text.paint.take(rest, Con{Element{name, as, kids, txt}, acc}), _ => TextPaintRun{text.paint.reverse(acc, Nil{}), xs})
++
++def text.paint.attrs(xs: List<&2, Element>) -> List<&2, Attr>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}: Con{Attr{"fill-rule", "nonzero"}, as}
++
++def text.paint.run(run: TextPaintRun, next: List<&2, Element> -> List<&2, Element>) -> List<&2, Element>:
++  TextPaintRun{nodes, rest} = run
++  +glyphs = nodes
++  Con{Element{"#glyph-run", text.paint.attrs(glyphs), glyphs, ""}, next(rest)}
++
++@unsafe
++def text.paint.group(+xs: List<&2, Element>) -> List<&2, Element>:
++  match xs:
++    case Nil{}: Nil{}
++    case Con{Element{n, as, kids, txt}, rest}:
++      +name = n
++      branch(List<&2, Element>, String.eq(name, "#glyph"), _ => text.paint.run(text.paint.take(xs, Nil{}), remaining => text.paint.group(remaining)),
++        _ => Con{Element{name, as, text.paint.group(kids), txt}, text.paint.group(rest)})
++
+ # Resolve context paints after compiling the finite scene tree. Paint server
+ # coordinates stay in the referencing shape's space, including bounding boxes.
+ def context.unfaded(+brush: Brush) -> Brush:
+@@ -5393,7 +5476,7 @@
+   +styled = css.tree(kids, css.rules(css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, css.element.count(kids))
+   +embedded = image.svg.expand(16n, styled, w, h)
+   +used = use.expand(64n, embedded, embedded, Nil{})
+-  +nodes = text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{})
++  +nodes = text.paint.group(text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{}))
+   context.scenes(compile(64n, nodes, style.default(), identity(), w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
+ 
+ def document(root: Element, w: F32, h: F32) -> List<&2, Scene<Brush>>:
+@@ -6116,5 +6199,5 @@
+     case Con{Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
+       node = {Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect} : Scene<Brush>}
+       pick.prefer(pick(rest, p), branch(Pick, bounds.inside(coverage, p, 0.01) && clip.inside(mask, p) && F32.is_gt(mask.factor(maskMode, _ => sample(maskNodes, p, p, clear(), U32.is_eq(maskMode, 3))), 0.0), _ => pick.prefer(pick.instance(pick(kids, p), id, inv),
+-        pick.node(sample(markerNodes, p, p, scene.local(node, p, p, False{}, nodes => q => center => sample(nodes, q, center, clear(), False{}), nodes => q => center => sample(nodes, q, center, clear(), False{})), False{}), id, inv)), _ => Pick{False{}, "", identity()}))
+-
++        pick.node(scene.local(node, p, p, False{}, sample(markerNodes, p, p, clear(), False{}), nodes => q => center => sample(nodes, q, center, clear(), False{}), nodes => q => center => sample(nodes, q, center, clear(), False{})), id, inv)), _ => Pick{False{}, "", identity()}))
++
+--- a/web.html
++++ b/web.html
+@@ -17,7 +17,7 @@
+ <div class="work"><canvas id="canvas" width="256" height="256" tabindex="0" aria-label="SVG drawing; click and drag shapes"></canvas><span id="status" role="status">Loading drawing…</span></div>
+ <aside>
+ <section><h2>Document</h2><div class="row"><label class="file">Open SVG<input id="file" type="file" accept=".svg,image/svg+xml"></label><button id="download">Save SVG</button><button id="undo">Undo</button></div><p>Drag a shape to move it. Use arrow keys to nudge, or Delete to remove it.</p></section>
+-<section><h2>Selected shape</h2><div class="row"><label>Fill <input id="fill" type="color" value="#4682b4"></label><button id="noFill">No fill</button><button id="delete">Delete</button></div><div class="row" style="margin-top:14px"><select id="property" aria-label="Property"><option>stroke</option><option>fill</option><option>stroke-width</option><option>stroke-linecap</option><option>stroke-linejoin</option><option>stroke-miterlimit</option><option>stroke-dasharray</option><option>stroke-dashoffset</option><option>vector-effect</option><option>pathLength</option><option>marker</option><option>marker-start</option><option>marker-mid</option><option>marker-end</option><option>filter</option><option>mask</option><option>mask-mode</option><option>clip-path</option><option>fill-rule</option><option>stroke-opacity</option><option>opacity</option><option>fill-opacity</option><option>transform</option><option>x</option><option>y</option><option>width</option><option>height</option><option>preserveAspectRatio</option><option>image-rendering</option><option>href</option><option>textLength</option><option>lengthAdjust</option><option>font-size</option><option>font-weight</option><option>font-style</option><option>text-anchor</option><option>letter-spacing</option><option>word-spacing</option><option>baseline-shift</option></select><input id="value" value="#202b32" aria-label="Property value"><button id="set">Apply</button></div><p>Changes affect the shape you last clicked.</p></section>
++<section><h2>Selected shape</h2><div class="row"><label>Fill <input id="fill" type="color" value="#4682b4"></label><button id="noFill">No fill</button><button id="delete">Delete</button></div><div class="row" style="margin-top:14px"><select id="property" aria-label="Property"><option>paint-order</option><option>stroke</option><option>fill</option><option>stroke-width</option><option>stroke-linecap</option><option>stroke-linejoin</option><option>stroke-miterlimit</option><option>stroke-dasharray</option><option>stroke-dashoffset</option><option>vector-effect</option><option>pathLength</option><option>marker</option><option>marker-start</option><option>marker-mid</option><option>marker-end</option><option>filter</option><option>mask</option><option>mask-mode</option><option>clip-path</option><option>fill-rule</option><option>stroke-opacity</option><option>opacity</option><option>fill-opacity</option><option>transform</option><option>x</option><option>y</option><option>width</option><option>height</option><option>preserveAspectRatio</option><option>image-rendering</option><option>href</option><option>textLength</option><option>lengthAdjust</option><option>font-size</option><option>font-weight</option><option>font-style</option><option>text-anchor</option><option>letter-spacing</option><option>word-spacing</option><option>baseline-shift</option></select><input id="value" value="#202b32" aria-label="Property value"><button id="set">Apply</button></div><p>Changes affect the shape you last clicked.</p></section>
+ <section><h2>SVG source</h2><textarea id="source" spellcheck="false" aria-label="SVG source"></textarea><button class="primary" id="apply">Apply source</button><p>Editing source and dragging shapes update the same document.</p></section>
+ </aside></main>
+ <script type="module">
+--- a/check-paint-order.bend
++++ b/check-paint-order.bend
+@@ -0,0 +1,31 @@
++# Translucent fill, stroke and marker overlap must preserve all six orderings.
++import Base
++import ./svg.bend as SVG
++
++def pixel(order: String) -> U32:
++  +source = "<svg><defs><marker id='m' markerUnits='userSpaceOnUse' markerWidth='10' markerHeight='10' overflow='visible'><rect x='-5' y='-5' width='10' height='10' fill='lime' opacity='.5'/></marker></defs><path d='M3 4H23V14Z' fill='red' fill-opacity='.5' stroke='blue' stroke-opacity='.5' stroke-width='6' marker-mid='url(#m)' paint-order='" ++ order ++ "'/></svg>"
++  SVG.pixel(SVG.document(SVG.parse(source), 32.0, 24.0), 21, 5, 1)
++
++def main() -> IO(Unit):
++  do IO<Unit>:
++    Unit <- IO.print(U32.show(pixel("normal")))
++    Unit <- IO.print(U32.show(pixel("fill markers")))
++    Unit <- IO.print(U32.show(pixel("stroke")))
++    Unit <- IO.print(U32.show(pixel("stroke markers")))
++    Unit <- IO.print(U32.show(pixel("markers")))
++    Unit <- IO.print(U32.show(pixel("markers stroke")))
++    Unit <- IO.print(U32.show(SVG.paint.order.value("  STROKE\tfill\nmarkers ", 5)))
++    Unit <- IO.print(U32.show(SVG.paint.order.value("fill fill", 5)))
++    Unit <- IO.print(U32.show(SVG.paint.order.value("normal stroke", 5)))
++    IO.print(U32.show(SVG.paint.order.value("unknown", 5)))
++
++#|4235104
++#|4219039
++#|6332224
++#|10444864
++#|6307999
++#|10436704
++#|2
++#|5
++#|5
++#|5
+--- a/check-text-paint-run.bend
++++ b/check-text-paint-run.bend
+@@ -0,0 +1,18 @@
++# Overlapping glyphs are filled once, then stroked together, in paint-order.
++import Base
++import ./svg.bend as SVG
++
++def same(+order: String) -> Bool:
++  +book = SVG.font.parse("g|0:65|600 1 1 0|M0 0H500V700H0Z\n", SVG.font.empty())
++  +paint = " fill='red' fill-opacity='.5' stroke='blue' stroke-opacity='.5' stroke-width='2' paint-order='" ++ order ++ "'"
++  +text = SVG.document.fonts(SVG.parse("<svg><text x='2' y='12' font-size='10' letter-spacing='-4' fill-rule='evenodd'" ++ paint ++ ">AA</text></svg>"), 32.0, 24.0, book)
++  +path = SVG.document(SVG.parse("<svg><path d='M2 12H7V5H2Z M4 12H9V5H4Z'" ++ paint ++ "/></svg>"), 32.0, 24.0)
++  SVG.string.equal(SVG.ppm(32, 24, text, 2), SVG.ppm(32, 24, path, 2))
++
++def main() -> IO(Unit):
++  do IO<Unit>:
++    Unit <- IO.print(SVG.choose(String, same("normal"), "True", "False"))
++    IO.print(SVG.choose(String, same("stroke"), "True", "False"))
++
++#|True
++#|True
+--- a/fixtures/paint-order-shapes.svg
++++ b/fixtures/paint-order-shapes.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="5" y="6" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="normal"/><rect x="26" y="6" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="fill markers"/><rect x="47" y="6" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="stroke"/><rect x="5" y="37" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="stroke markers"/><rect x="26" y="37" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="markers"/><rect x="47" y="37" width="12" height="20" fill="#247ba0" fill-opacity=".55" stroke="#e76f51" stroke-opacity=".65" stroke-width="6" paint-order="markers stroke"/></svg>
+--- a/fixtures/paint-order-markers.svg
++++ b/fixtures/paint-order-markers.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs><marker id="m" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" overflow="visible"><rect x="-5" y="-5" width="10" height="10" fill="lime" opacity=".5"/></marker></defs><path d="M4 5h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="normal"/><path d="M36 5h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="fill markers"/><path d="M4 26h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="stroke"/><path d="M36 26h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="stroke markers"/><path d="M4 47h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="markers"/><path d="M36 47h20v10z" fill="red" fill-opacity=".5" stroke="blue" stroke-opacity=".5" stroke-width="6" marker-mid="url(#m)" paint-order="markers stroke"/></svg>
+--- a/fixtures/text-paint-order.svg
++++ b/fixtures/text-paint-order.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g font-family="Noto Sans" font-size="14" letter-spacing="-5" fill="#2879a8" fill-opacity=".6" stroke="#c34d61" stroke-opacity=".65" stroke-width="3"><text x="6" y="12">AAA</text><text x="36" y="12" paint-order="stroke">AAA</text><g paint-order="stroke"><text x="6" y="30">AAA</text><text x="36" y="30" paint-order="normal">AAA</text></g><text x="6" y="48" fill-rule="evenodd">AAA</text><text x="36" y="48" style="paint-order:stroke fill">AAA</text></g></svg>
+--- a/validation/coverage.json
++++ b/validation/coverage.json
+@@ -919,6 +919,30 @@
+       "features": [
+         "text on a basic-shape equivalent path"
+       ]
++    },
++    "paint-order-shapes.svg": {
++      "reference": "chromium",
++      "features": [
++        "all paint-order permutations",
++        "translucent fill/stroke composition"
++      ]
++    },
++    "paint-order-markers.svg": {
++      "reference": "chromium",
++      "features": [
++        "all six fill/stroke/marker orders",
++        "translucent marker overlap",
++        "owner opacity isolation"
++      ]
++    },
++    "text-paint-order.svg": {
++      "reference": "resvg",
++      "features": [
++        "stroke under text fill",
++        "overlapping glyphs painted as one run",
++        "inherited paint-order",
++        "text ignores fill-rule"
++      ]
+     }
+   }
+ }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><path id="diamond" d="M10 0L20 10 10 20 0 10Z"/><clipPath id="c"><use href="#diamond" x="4" y="4"/><use href="#diamond" x="30" y="8"/></clipPath><clipPath id="small"><rect x="0" y="0" width="10" height="20"/></clipPath></defs>
+<rect width="64" height="30" fill="teal" clip-path="url(#c)"/>
+<use href="#diamond" x="8" y="36" fill="purple" clip-path="url(#small)"/>
+<use href="#diamond" x="36" y="36" fill="orange" opacity=".5"/>
+</svg>

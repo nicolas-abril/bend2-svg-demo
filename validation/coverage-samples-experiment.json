@@ -1,0 +1,63 @@
+{
+  "experimental": true,
+  "samplesPerPixel": 64,
+  "description": "one point per 8x8 cell with 64 distinct x/y strata and central symmetry",
+  "results": [
+    {
+      "fixture": "text-style.svg",
+      "reference": "resvg",
+      "mae": 1.5862630208333333,
+      "rmse": 4.597415629323718,
+      "max": 33,
+      "pixelsAbove32": 1
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "reference": "resvg",
+      "mae": 0.986328125,
+      "rmse": 3.1219516381984525,
+      "max": 37,
+      "pixelsAbove32": 2
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "reference": "chromium",
+      "mae": 0.951171875,
+      "rmse": 3.92663431341015,
+      "max": 38,
+      "pixelsAbove32": 14
+    },
+    {
+      "fixture": "basic.svg",
+      "reference": "resvg",
+      "mae": 0.3081868489583333,
+      "rmse": 1.794064831546415,
+      "max": 37,
+      "pixelsAbove32": 2
+    },
+    {
+      "fixture": "clipping.svg",
+      "reference": "resvg",
+      "mae": 0.259521484375,
+      "rmse": 1.8026627801556045,
+      "max": 28,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "reference": "chromium",
+      "mae": 2.18310546875,
+      "rmse": 6.315876778339383,
+      "max": 55,
+      "pixelsAbove32": 112
+    },
+    {
+      "fixture": "markers-compositing.svg",
+      "reference": "chromium",
+      "mae": 0.9356282552083334,
+      "rmse": 6.047197988789932,
+      "max": 102,
+      "pixelsAbove32": 62
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "pid": 30919,
+  "binarySHA256": "fda113054fbb23758eda0d41fd2cd88d46ce7cd5732adf6323a89f713bf28a59",
+  "method": "CGEvent.postToPid; no activation or global events",
+  "eventExitCode": 0,
+  "eventOutput": "Posted action directly to SVG test PID 30919\n",
+  "saveCreated": true,
+  "passed": false,
+  "clickOutput": "Posted action directly to SVG test PID 30919\n",
+  "blueOutput": "Posted action directly to SVG test PID 30919\n",
+  "savedSource": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n <filter height=\"2\" width=\"2\" y=\"-.5\" x=\"-.5\" id=\"erode\"><feMorphology radius=\"2\"></feMorphology></filter>\n <filter height=\"2\" width=\"2\" y=\"-.5\" x=\"-.5\" id=\"dilate\"><feMorphology radius=\"2\" operator=\"dilate\"></feMorphology></filter>\n <filter color-interpolation-filters=\"sRGB\" height=\"2\" width=\"2\" y=\"-.5\" x=\"-.5\" id=\"color\"><feMorphology radius=\"2\" operator=\"dilate\"></feMorphology></filter>\n <filter height=\"2\" width=\"2\" y=\"-.5\" x=\"-.5\" id=\"alpha\"><feMorphology radius=\"1 2\" in=\"SourceAlpha\" operator=\"erode\"></feMorphology></filter>\n</defs>\n<rect filter=\"url(#erode)\" fill=\"#c43\" height=\"20\" width=\"22\" y=\"5\" x=\"5\"></rect>\n<rect filter=\"url(#dilate)\" fill=\"#39b\" height=\"14\" width=\"16\" y=\"8\" x=\"38\"></rect>\n<g filter=\"url(#color)\"><rect fill-opacity=\".5\" fill=\"red\" height=\"15\" width=\"9\" y=\"39\" x=\"6\"></rect><rect fill-opacity=\".75\" fill=\"blue\" height=\"15\" width=\"9\" y=\"39\" x=\"15\"></rect></g>\n<path filter=\"url(#alpha)\" fill=\"#693\" d=\"M38 37H57V43H49V57H43V43H38Z\"></path>\n</svg>\n"
+}

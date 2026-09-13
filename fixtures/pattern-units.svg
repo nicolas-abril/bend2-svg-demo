@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<pattern id="user" patternUnits="userSpaceOnUse" x="3" y="2" width="8" height="8"><rect width="4" height="5" fill="#2575bb"/><circle cx="6" cy="6" r="1" fill="#e55735"/></pattern>
+<pattern id="bbox" width=".25" height=".5"><rect width="3" height="5" fill="#49a367"/></pattern>
+<pattern id="content" patternUnits="userSpaceOnUse" patternContentUnits="objectBoundingBox" x="1" y="1" width="8" height="8"><rect width=".125" height=".125" fill="#9054b0"/></pattern>
+<pattern id="both" width="25%" height="25%" patternContentUnits="objectBoundingBox"><rect width=".125" height=".125" fill="#b98424"/></pattern>
+</defs>
+<rect x="2" y="2" width="28" height="28" fill="url(#user)"/>
+<rect x="34" y="2" width="28" height="28" fill="url(#bbox)"/>
+<rect x="2" y="34" width="28" height="28" fill="url(#content)"/>
+<rect x="34" y="34" width="28" height="28" fill="url(#both)"/>
+</svg>

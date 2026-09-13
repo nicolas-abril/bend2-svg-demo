@@ -1,0 +1,271 @@
+{
+  "passed": true,
+  "integrated": true,
+  "count": 51,
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "native.bend": "e758ea65eb9073da6c9a728cd8ea77237c690bf3f69652c0dbf4d0ef1c984e00",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": [
+    {
+      "file": "check-blend.bend",
+      "sha256": "9871bede0917d16224c64aa880ebc1987d0f87a546beaba87762a896a310891c",
+      "assertions": 128
+    },
+    {
+      "file": "check-bytes.bend",
+      "sha256": "d95d2783a947774245385eeade474c7315059c14cbb7030135a01e6ca41fb3c6",
+      "assertions": 7
+    },
+    {
+      "file": "check-camera-sizing.bend",
+      "sha256": "056ed79d511d1599df2972ed05ea3a00738382cdcefaaa35d634efd8e61e0e41",
+      "assertions": 7
+    },
+    {
+      "file": "check-camera.bend",
+      "sha256": "89e544d24b3e87c442d397fb52d9269b944e7e405d9729531799b5e196f5dba8",
+      "assertions": 15
+    },
+    {
+      "file": "check-colors.bend",
+      "sha256": "654f3e91d025d1bc228df5602c68c767287e382a0f94c3456414ff2ac281d832",
+      "assertions": 23
+    },
+    {
+      "file": "check-convolve.bend",
+      "sha256": "a376165f39ecc553f74ba2ffd01173ab33eee7ce895e12b3c48ddbad67f7275f",
+      "assertions": 26
+    },
+    {
+      "file": "check-coverage.bend",
+      "sha256": "d3cb5c9713ac77456d00ff63c0229af44b723e1f525a7e30fb57eb387468b33b",
+      "assertions": 3
+    },
+    {
+      "file": "check-css-media.bend",
+      "sha256": "b9df5bff6a79086cb8320c79fbb3c2d889ad90f2380510f3aaaf042203f391ab",
+      "assertions": 2
+    },
+    {
+      "file": "check-css.bend",
+      "sha256": "fde87cf260142b763f8cdafbd5d3e9e0724e2ffa61702f4fb3397bfce37b3ae6",
+      "assertions": 8
+    },
+    {
+      "file": "check-editor.bend",
+      "sha256": "6ab54e85345187c8dcc9c605f06d1a335b5ba92f7ae5c69621c0bc26baccac21",
+      "assertions": 5
+    },
+    {
+      "file": "check-filters-graph.bend",
+      "sha256": "a7415a834d63de2258a4d2850215d123f9731be738536da069995e63014a5809",
+      "assertions": 11
+    },
+    {
+      "file": "check-filters.bend",
+      "sha256": "1567887dc6c74a97e26c742a2c5697bfd7d6b0f997372d35281b2166423517f1",
+      "assertions": 9
+    },
+    {
+      "file": "check-font-metrics.bend",
+      "sha256": "398d8f9751263ebeca6cc4609bca84ab8bcd39745da61ce46e8b88754744296e",
+      "assertions": 8
+    },
+    {
+      "file": "check-gesture.bend",
+      "sha256": "c8fc3a8c7db16041b3a6de8206c32e0e946e9fa902f335ce40964ef2007b33a6",
+      "assertions": 4
+    },
+    {
+      "file": "check-image-boundaries.bend",
+      "sha256": "efb8d3ba930e9196cad984f79ee86ce3548e13535f5692da6f0c596fa4ca964b",
+      "assertions": 3
+    },
+    {
+      "file": "check-image-fonts.bend",
+      "sha256": "bdb2ea506ce87d87e56785062e7280aed78b6a2bf01790b736c89591a247c7ee",
+      "assertions": 6
+    },
+    {
+      "file": "check-images.bend",
+      "sha256": "ca5149274e56bcc54958b3c643a2403e5525fa592feef4413443446cb93067c7",
+      "assertions": 4
+    },
+    {
+      "file": "check-inflate.bend",
+      "sha256": "976bc9d5a3585ee477fb943f41d7e6d8e78efa297f049a227dc706c08efc7501",
+      "assertions": 11
+    },
+    {
+      "file": "check-jpeg-bits.bend",
+      "sha256": "1875551856c8fafdba0fff353ef8a1d404fc6025751d169ad644860ef22c4416",
+      "assertions": 6
+    },
+    {
+      "file": "check-jpeg-errors.bend",
+      "sha256": "e6c407b4155207fb0118cceb3e22a074b2525287755b0e586bbf2b17e59203b3",
+      "assertions": 13
+    },
+    {
+      "file": "check-jpeg.bend",
+      "sha256": "0ca102310875223d773de9e39d9327fb90039f2927914918c5b13cbc751619ba",
+      "assertions": 19
+    },
+    {
+      "file": "check-marker-geometry.bend",
+      "sha256": "cbc52d8a8bf3322459ef4734889ebbd7d31b16dc6bcb4fd4a437d39d3189f9a0",
+      "assertions": 6
+    },
+    {
+      "file": "check-markers.bend",
+      "sha256": "19f2602237b04f7f1c65c7527e08e07b6041a0ebef548c4cebb44f19dc073a25",
+      "assertions": 3
+    },
+    {
+      "file": "check-mask.bend",
+      "sha256": "f27726882dcb73f61fbc14102b936db6fc795077cd8bda23194d25f40934236e",
+      "assertions": 7
+    },
+    {
+      "file": "check-morphology.bend",
+      "sha256": "998b20ae54dd286ab0c1c0c790b66ce951a41e7433e5660665847a7429f4546c",
+      "assertions": 8
+    },
+    {
+      "file": "check-numbers.bend",
+      "sha256": "3668f8e4a34110367809862c3b586c72b902713969123cf3c8d55dd75abf6317",
+      "assertions": 5
+    },
+    {
+      "file": "check-paint-order.bend",
+      "sha256": "bfbdf8b66e1e07a2f2ddfa68048eb2ff2fa437b41b2618d323159aad205f20b0",
+      "assertions": 10
+    },
+    {
+      "file": "check-paint.bend",
+      "sha256": "8eae2891a9a7b1219b9076175f6147d6756cdf23333864eb329592b470793fe8",
+      "assertions": 4
+    },
+    {
+      "file": "check-pattern.bend",
+      "sha256": "dfa61c7a48a332b3333979b309d2d43e7b9a6cd6eb85e3698bf9da645fbcd105",
+      "assertions": 6
+    },
+    {
+      "file": "check-png.bend",
+      "sha256": "be94d23088eeea914d3753ebf15d4cdb1fdc34bfe7ed0ae9287448b3d45f5dfa",
+      "assertions": 33
+    },
+    {
+      "file": "check-raster.bend",
+      "sha256": "8f23c83cb2aa153ca874669fbb157485be491fcd5b26398f304a8fadd4834858",
+      "assertions": 4
+    },
+    {
+      "file": "check-serialize-large.bend",
+      "sha256": "e3ef91192032598ff54741f69814d9dda8c12ea80bdcbdb0d7be17bc3052d7af",
+      "assertions": 6
+    },
+    {
+      "file": "check-source-undo.bend",
+      "sha256": "5fd5fde6bb46c52b6e35a25791f512c40f389e6d283098bfd2f3cc99a1df9c87",
+      "assertions": 9
+    },
+    {
+      "file": "check-state.bend",
+      "sha256": "d2dc0a3897e243f4b719481e1020d80f6be6b29bc2717ff8ac4e03a40a9586da",
+      "assertions": 3
+    },
+    {
+      "file": "check-stroke.bend",
+      "sha256": "47b139a350e9253a854d304d9c219d59bab0e9e55f43291fbd2b3a013bde9acb",
+      "assertions": 7
+    },
+    {
+      "file": "check-svg-data.bend",
+      "sha256": "14908dea4b71d8c254c71bc94b952590f23259dff86cf28acbb7bc86fa2daea2",
+      "assertions": 12
+    },
+    {
+      "file": "check-svg-editor.bend",
+      "sha256": "1f87caea7b4431a96d769cd33eeac5311ea131cada6155165e8a64f79b1e582f",
+      "assertions": 11
+    },
+    {
+      "file": "check-svg-image.bend",
+      "sha256": "1f63549b6215ff3d5fbd48aa9dab0f1bc735fc7cee3f9e8c5421154e3ada14e2",
+      "assertions": 1
+    },
+    {
+      "file": "check-svg-scopes.bend",
+      "sha256": "46b4690c177e839e01168c602f4cb93028822d30303b6c7424bf26e29ad3735f",
+      "assertions": 6
+    },
+    {
+      "file": "check-svg-sizing.bend",
+      "sha256": "48e95442934ef9f4ff549ce21f7536d70693c2093d9774019c27f56d8a10b89b",
+      "assertions": 10
+    },
+    {
+      "file": "check-svg-uri.bend",
+      "sha256": "46bb787d6b8aa59203d398cfa8bf5cad678f5012b5b18836e6ec2d3b887f278f",
+      "assertions": 7
+    },
+    {
+      "file": "check-text-length.bend",
+      "sha256": "97394ab14bbb505df3af2700ca35abba712e33c832fefa393df4630917829289",
+      "assertions": 15
+    },
+    {
+      "file": "check-text-paint-run.bend",
+      "sha256": "8f7e37dacb467357c6cf45199dd9a7810c4611e9921e80639a2a4e0560eb70ac",
+      "assertions": 2
+    },
+    {
+      "file": "check-text-path-editor.bend",
+      "sha256": "0e471c0a1bd9264a8fe8f3d5b735d8f2b571983552036ade2892b9a05ad55399",
+      "assertions": 6
+    },
+    {
+      "file": "check-text-path.bend",
+      "sha256": "4861e43e33be57eb14fd44dc68069d8f358b4cd48a50ffb0a5c22a5a7d8caa49",
+      "assertions": 4
+    },
+    {
+      "file": "check-text.bend",
+      "sha256": "9a5daf2ce0aeb91aeacde4f4d8d4759e1b6af66f473298efd926549f308d8c19",
+      "assertions": 11
+    },
+    {
+      "file": "check-use.bend",
+      "sha256": "f1d098dcb14e366287094d706af5c95c04b51ddeb7f72be86dc937090adcaaa2",
+      "assertions": 6
+    },
+    {
+      "file": "check-utf8.bend",
+      "sha256": "d9026e7b92d57d8e29bc22bdf0c911292bd90d7a2da03efd3aab7974998369f1",
+      "assertions": 3
+    },
+    {
+      "file": "check-viewport.bend",
+      "sha256": "b3beeaf28cdf1ef20f8dc61286192e313d1f282a423c46573668b49ac58d4fb0",
+      "assertions": 5
+    },
+    {
+      "file": "check-xml.bend",
+      "sha256": "2bed3b04017b35adc72ff26058295b3504d1fdc5ef07a98df23e903e521ebf34",
+      "assertions": 1
+    },
+    {
+      "file": "check.bend",
+      "sha256": "0532262408442c0ff0534b9d476d317c26d981aac27bbbcc1a6ef1fbccc321a6",
+      "assertions": 3
+    }
+  ]
+}

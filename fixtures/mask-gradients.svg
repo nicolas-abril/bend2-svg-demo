@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><linearGradient id="fade"><stop stop-color="black"/><stop offset="1" stop-color="white"/></linearGradient><radialGradient id="round"><stop stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/></radialGradient>
+<mask id="linear" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade)"/></mask><mask id="radial" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#round)"/></mask></defs>
+<rect x="4" y="4" width="56" height="22" fill="purple" mask="url(#linear)"/>
+<g mask="url(#radial)"><rect x="4" y="32" width="56" height="28" fill="teal"/><rect x="24" y="36" width="16" height="20" fill="red"/></g>
+</svg>

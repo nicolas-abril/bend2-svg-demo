@@ -1,0 +1,410 @@
+[
+  {
+    "reference": "chromium",
+    "quadrant": 0,
+    "meanAbsoluteError": 0.13310185185185186,
+    "rootMeanSquareError": 0.36483126490454715,
+    "maxChannelError": 1,
+    "samples": [
+      {
+        "x": 5,
+        "y": 5,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "bend": [
+          255,
+          128,
+          128
+        ],
+        "reference": [
+          255,
+          127,
+          127
+        ]
+      },
+      {
+        "x": 16,
+        "y": 14,
+        "bend": [
+          64,
+          32,
+          223
+        ],
+        "reference": [
+          64,
+          32,
+          223
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "chromium",
+    "quadrant": 1,
+    "meanAbsoluteError": 0.15162037037037038,
+    "rootMeanSquareError": 0.38938460469100517,
+    "maxChannelError": 1,
+    "samples": [
+      {
+        "x": 37,
+        "y": 5,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 41,
+        "y": 9,
+        "bend": [
+          255,
+          128,
+          128
+        ],
+        "reference": [
+          255,
+          127,
+          127
+        ]
+      },
+      {
+        "x": 48,
+        "y": 14,
+        "bend": [
+          64,
+          32,
+          223
+        ],
+        "reference": [
+          64,
+          32,
+          223
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "chromium",
+    "quadrant": 2,
+    "meanAbsoluteError": 28.77777777777778,
+    "rootMeanSquareError": 32.96610211852303,
+    "maxChannelError": 41,
+    "samples": [
+      {
+        "x": 5,
+        "y": 37,
+        "bend": [
+          214,
+          214,
+          214
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 9,
+        "y": 41,
+        "bend": [
+          240,
+          112,
+          112
+        ],
+        "reference": [
+          255,
+          127,
+          127
+        ]
+      },
+      {
+        "x": 16,
+        "y": 46,
+        "bend": [
+          83,
+          51,
+          242
+        ],
+        "reference": [
+          83,
+          51,
+          242
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "chromium",
+    "quadrant": 3,
+    "meanAbsoluteError": 0.06944444444444445,
+    "rootMeanSquareError": 0.26352313834736496,
+    "maxChannelError": 1,
+    "samples": [
+      {
+        "x": 37,
+        "y": 37,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 41,
+        "y": 41,
+        "bend": [
+          128,
+          255,
+          255
+        ],
+        "reference": [
+          127,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 48,
+        "y": 46,
+        "bend": [
+          223,
+          255,
+          64
+        ],
+        "reference": [
+          223,
+          255,
+          64
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "resvg",
+    "quadrant": 0,
+    "meanAbsoluteError": 0.13310185185185186,
+    "rootMeanSquareError": 0.36483126490454715,
+    "maxChannelError": 1,
+    "samples": [
+      {
+        "x": 5,
+        "y": 5,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "bend": [
+          255,
+          128,
+          128
+        ],
+        "reference": [
+          255,
+          127,
+          127
+        ]
+      },
+      {
+        "x": 16,
+        "y": 14,
+        "bend": [
+          64,
+          32,
+          223
+        ],
+        "reference": [
+          64,
+          32,
+          223
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "resvg",
+    "quadrant": 1,
+    "meanAbsoluteError": 0.16319444444444445,
+    "rootMeanSquareError": 0.4039733214513608,
+    "maxChannelError": 1,
+    "samples": [
+      {
+        "x": 37,
+        "y": 5,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 41,
+        "y": 9,
+        "bend": [
+          255,
+          128,
+          128
+        ],
+        "reference": [
+          255,
+          127,
+          127
+        ]
+      },
+      {
+        "x": 48,
+        "y": 14,
+        "bend": [
+          64,
+          32,
+          223
+        ],
+        "reference": [
+          64,
+          32,
+          223
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "resvg",
+    "quadrant": 2,
+    "meanAbsoluteError": 0.2777777777777778,
+    "rootMeanSquareError": 1.0540925533894598,
+    "maxChannelError": 4,
+    "samples": [
+      {
+        "x": 5,
+        "y": 37,
+        "bend": [
+          214,
+          214,
+          214
+        ],
+        "reference": [
+          214,
+          214,
+          214
+        ]
+      },
+      {
+        "x": 9,
+        "y": 41,
+        "bend": [
+          240,
+          112,
+          112
+        ],
+        "reference": [
+          240,
+          112,
+          112
+        ]
+      },
+      {
+        "x": 16,
+        "y": 46,
+        "bend": [
+          83,
+          51,
+          242
+        ],
+        "reference": [
+          87,
+          55,
+          246
+        ]
+      }
+    ]
+  },
+  {
+    "reference": "resvg",
+    "quadrant": 3,
+    "meanAbsoluteError": 14.23611111111111,
+    "rootMeanSquareError": 27.98933328569614,
+    "maxChannelError": 64,
+    "samples": [
+      {
+        "x": 37,
+        "y": 37,
+        "bend": [
+          255,
+          255,
+          255
+        ],
+        "reference": [
+          255,
+          255,
+          255
+        ]
+      },
+      {
+        "x": 41,
+        "y": 41,
+        "bend": [
+          128,
+          255,
+          255
+        ],
+        "reference": [
+          127,
+          191,
+          191
+        ]
+      },
+      {
+        "x": 48,
+        "y": 46,
+        "bend": [
+          223,
+          255,
+          64
+        ],
+        "reference": [
+          195,
+          227,
+          36
+        ]
+      }
+    ]
+  }
+]

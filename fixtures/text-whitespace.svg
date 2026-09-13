@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" font-family="Noto Sans" font-size="12">
+<text x="32" y="15" text-anchor="middle" fill="#337da6">  A   B  </text>
+<text x="3" y="34" fill="#a85380">A <tspan fill="#579968"> B </tspan>C</text>
+<text x="3" y="54" xml:space="preserve" fill="#977034"> A  B </text>
+</svg>

@@ -1,0 +1,793 @@
+{
+  "sourceSHA256": "8049f793b502babb9461a25cd08f67cfbbbba86869baf4f26b252d67e60a6d98",
+  "description": "Shift only the four Bend-positioned outlines of the middle-anchored text row and compare to the saved resvg text pixels",
+  "halfSpacing": 0.22733333333333347,
+  "best": {
+    "delta": 0.22733333333333347,
+    "meanAbsoluteError": 0,
+    "maxChannelError": 0,
+    "changedPixels": 0
+  },
+  "results": [
+    {
+      "delta": -1,
+      "meanAbsoluteError": 14.423958333333333,
+      "maxChannelError": 183,
+      "changedPixels": 184
+    },
+    {
+      "delta": -0.984375,
+      "meanAbsoluteError": 14.346527777777778,
+      "maxChannelError": 183,
+      "changedPixels": 183
+    },
+    {
+      "delta": -0.96875,
+      "meanAbsoluteError": 14.107986111111112,
+      "maxChannelError": 183,
+      "changedPixels": 182
+    },
+    {
+      "delta": -0.953125,
+      "meanAbsoluteError": 14.039583333333333,
+      "maxChannelError": 183,
+      "changedPixels": 179
+    },
+    {
+      "delta": -0.9375,
+      "meanAbsoluteError": 13.989930555555556,
+      "maxChannelError": 183,
+      "changedPixels": 178
+    },
+    {
+      "delta": -0.921875,
+      "meanAbsoluteError": 13.765277777777778,
+      "maxChannelError": 183,
+      "changedPixels": 178
+    },
+    {
+      "delta": -0.90625,
+      "meanAbsoluteError": 13.626041666666667,
+      "maxChannelError": 183,
+      "changedPixels": 178
+    },
+    {
+      "delta": -0.890625,
+      "meanAbsoluteError": 13.596527777777778,
+      "maxChannelError": 183,
+      "changedPixels": 175
+    },
+    {
+      "delta": -0.875,
+      "meanAbsoluteError": 13.489930555555556,
+      "maxChannelError": 183,
+      "changedPixels": 175
+    },
+    {
+      "delta": -0.859375,
+      "meanAbsoluteError": 13.360763888888888,
+      "maxChannelError": 183,
+      "changedPixels": 168
+    },
+    {
+      "delta": -0.84375,
+      "meanAbsoluteError": 12.943055555555556,
+      "maxChannelError": 183,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.828125,
+      "meanAbsoluteError": 12.834027777777777,
+      "maxChannelError": 183,
+      "changedPixels": 170
+    },
+    {
+      "delta": -0.8125,
+      "meanAbsoluteError": 12.797222222222222,
+      "maxChannelError": 183,
+      "changedPixels": 174
+    },
+    {
+      "delta": -0.796875,
+      "meanAbsoluteError": 12.683333333333334,
+      "maxChannelError": 183,
+      "changedPixels": 171
+    },
+    {
+      "delta": -0.78125,
+      "meanAbsoluteError": 12.307986111111111,
+      "maxChannelError": 183,
+      "changedPixels": 171
+    },
+    {
+      "delta": -0.765625,
+      "meanAbsoluteError": 12.249305555555555,
+      "maxChannelError": 183,
+      "changedPixels": 171
+    },
+    {
+      "delta": -0.75,
+      "meanAbsoluteError": 12.159375,
+      "maxChannelError": 183,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.734375,
+      "meanAbsoluteError": 12.1,
+      "maxChannelError": 183,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.71875,
+      "meanAbsoluteError": 11.825694444444444,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.703125,
+      "meanAbsoluteError": 11.758680555555555,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.6875,
+      "meanAbsoluteError": 11.630902777777777,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.671875,
+      "meanAbsoluteError": 11.42013888888889,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.65625,
+      "meanAbsoluteError": 11.284722222222221,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.640625,
+      "meanAbsoluteError": 11.255208333333334,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.625,
+      "meanAbsoluteError": 11.186458333333333,
+      "maxChannelError": 183,
+      "changedPixels": 167
+    },
+    {
+      "delta": -0.609375,
+      "meanAbsoluteError": 11.194444444444445,
+      "maxChannelError": 183,
+      "changedPixels": 172
+    },
+    {
+      "delta": -0.59375,
+      "meanAbsoluteError": 10.724652777777777,
+      "maxChannelError": 183,
+      "changedPixels": 172
+    },
+    {
+      "delta": -0.578125,
+      "meanAbsoluteError": 10.616666666666667,
+      "maxChannelError": 183,
+      "changedPixels": 171
+    },
+    {
+      "delta": -0.5625,
+      "meanAbsoluteError": 10.578472222222222,
+      "maxChannelError": 183,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.546875,
+      "meanAbsoluteError": 10.17013888888889,
+      "maxChannelError": 149,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.53125,
+      "meanAbsoluteError": 9.798263888888888,
+      "maxChannelError": 149,
+      "changedPixels": 170
+    },
+    {
+      "delta": -0.515625,
+      "meanAbsoluteError": 9.679166666666667,
+      "maxChannelError": 138,
+      "changedPixels": 170
+    },
+    {
+      "delta": -0.5,
+      "meanAbsoluteError": 9.628125,
+      "maxChannelError": 138,
+      "changedPixels": 170
+    },
+    {
+      "delta": -0.484375,
+      "meanAbsoluteError": 9.530208333333333,
+      "maxChannelError": 138,
+      "changedPixels": 169
+    },
+    {
+      "delta": -0.46875,
+      "meanAbsoluteError": 9.310069444444444,
+      "maxChannelError": 138,
+      "changedPixels": 166
+    },
+    {
+      "delta": -0.453125,
+      "meanAbsoluteError": 9.142708333333333,
+      "maxChannelError": 138,
+      "changedPixels": 164
+    },
+    {
+      "delta": -0.4375,
+      "meanAbsoluteError": 9.036111111111111,
+      "maxChannelError": 138,
+      "changedPixels": 164
+    },
+    {
+      "delta": -0.421875,
+      "meanAbsoluteError": 8.831597222222221,
+      "maxChannelError": 138,
+      "changedPixels": 164
+    },
+    {
+      "delta": -0.40625,
+      "meanAbsoluteError": 8.675694444444444,
+      "maxChannelError": 138,
+      "changedPixels": 163
+    },
+    {
+      "delta": -0.390625,
+      "meanAbsoluteError": 8.627430555555556,
+      "maxChannelError": 138,
+      "changedPixels": 163
+    },
+    {
+      "delta": -0.375,
+      "meanAbsoluteError": 8.5375,
+      "maxChannelError": 138,
+      "changedPixels": 162
+    },
+    {
+      "delta": -0.359375,
+      "meanAbsoluteError": 8.485416666666667,
+      "maxChannelError": 138,
+      "changedPixels": 161
+    },
+    {
+      "delta": -0.34375,
+      "meanAbsoluteError": 8.010416666666666,
+      "maxChannelError": 138,
+      "changedPixels": 158
+    },
+    {
+      "delta": -0.328125,
+      "meanAbsoluteError": 7.902083333333334,
+      "maxChannelError": 138,
+      "changedPixels": 158
+    },
+    {
+      "delta": -0.3125,
+      "meanAbsoluteError": 7.766319444444444,
+      "maxChannelError": 138,
+      "changedPixels": 158
+    },
+    {
+      "delta": -0.296875,
+      "meanAbsoluteError": 7.331944444444445,
+      "maxChannelError": 103,
+      "changedPixels": 157
+    },
+    {
+      "delta": -0.28125,
+      "meanAbsoluteError": 6.895833333333333,
+      "maxChannelError": 103,
+      "changedPixels": 149
+    },
+    {
+      "delta": -0.265625,
+      "meanAbsoluteError": 6.778819444444444,
+      "maxChannelError": 92,
+      "changedPixels": 148
+    },
+    {
+      "delta": -0.25,
+      "meanAbsoluteError": 6.673611111111111,
+      "maxChannelError": 92,
+      "changedPixels": 149
+    },
+    {
+      "delta": -0.234375,
+      "meanAbsoluteError": 6.6149305555555555,
+      "maxChannelError": 92,
+      "changedPixels": 147
+    },
+    {
+      "delta": -0.21875,
+      "meanAbsoluteError": 6.653819444444444,
+      "maxChannelError": 92,
+      "changedPixels": 151
+    },
+    {
+      "delta": -0.203125,
+      "meanAbsoluteError": 6.524305555555555,
+      "maxChannelError": 92,
+      "changedPixels": 150
+    },
+    {
+      "delta": -0.1875,
+      "meanAbsoluteError": 6.375694444444444,
+      "maxChannelError": 92,
+      "changedPixels": 150
+    },
+    {
+      "delta": -0.171875,
+      "meanAbsoluteError": 6.167361111111111,
+      "maxChannelError": 92,
+      "changedPixels": 147
+    },
+    {
+      "delta": -0.15625,
+      "meanAbsoluteError": 5.987152777777778,
+      "maxChannelError": 92,
+      "changedPixels": 146
+    },
+    {
+      "delta": -0.140625,
+      "meanAbsoluteError": 5.9378472222222225,
+      "maxChannelError": 92,
+      "changedPixels": 147
+    },
+    {
+      "delta": -0.125,
+      "meanAbsoluteError": 5.869097222222222,
+      "maxChannelError": 92,
+      "changedPixels": 146
+    },
+    {
+      "delta": -0.109375,
+      "meanAbsoluteError": 5.347916666666666,
+      "maxChannelError": 92,
+      "changedPixels": 145
+    },
+    {
+      "delta": -0.09375,
+      "meanAbsoluteError": 5.23125,
+      "maxChannelError": 92,
+      "changedPixels": 144
+    },
+    {
+      "delta": -0.078125,
+      "meanAbsoluteError": 5.063888888888889,
+      "maxChannelError": 92,
+      "changedPixels": 143
+    },
+    {
+      "delta": -0.0625,
+      "meanAbsoluteError": 4.906944444444444,
+      "maxChannelError": 92,
+      "changedPixels": 142
+    },
+    {
+      "delta": -0.046875,
+      "meanAbsoluteError": 4.473958333333333,
+      "maxChannelError": 91,
+      "changedPixels": 140
+    },
+    {
+      "delta": -0.03125,
+      "meanAbsoluteError": 4.023263888888889,
+      "maxChannelError": 58,
+      "changedPixels": 138
+    },
+    {
+      "delta": -0.015625,
+      "meanAbsoluteError": 3.8854166666666665,
+      "maxChannelError": 46,
+      "changedPixels": 136
+    },
+    {
+      "delta": 0,
+      "meanAbsoluteError": 3.7197916666666666,
+      "maxChannelError": 46,
+      "changedPixels": 133
+    },
+    {
+      "delta": 0.015625,
+      "meanAbsoluteError": 3.620833333333333,
+      "maxChannelError": 46,
+      "changedPixels": 130
+    },
+    {
+      "delta": 0.03125,
+      "meanAbsoluteError": 3.3024305555555555,
+      "maxChannelError": 46,
+      "changedPixels": 123
+    },
+    {
+      "delta": 0.046875,
+      "meanAbsoluteError": 3.154166666666667,
+      "maxChannelError": 46,
+      "changedPixels": 118
+    },
+    {
+      "delta": 0.0625,
+      "meanAbsoluteError": 2.989236111111111,
+      "maxChannelError": 46,
+      "changedPixels": 115
+    },
+    {
+      "delta": 0.078125,
+      "meanAbsoluteError": 2.7444444444444445,
+      "maxChannelError": 46,
+      "changedPixels": 109
+    },
+    {
+      "delta": 0.09375,
+      "meanAbsoluteError": 2.528125,
+      "maxChannelError": 46,
+      "changedPixels": 100
+    },
+    {
+      "delta": 0.109375,
+      "meanAbsoluteError": 2.4583333333333335,
+      "maxChannelError": 46,
+      "changedPixels": 99
+    },
+    {
+      "delta": 0.125,
+      "meanAbsoluteError": 2.332291666666667,
+      "maxChannelError": 46,
+      "changedPixels": 96
+    },
+    {
+      "delta": 0.140625,
+      "meanAbsoluteError": 1.8142361111111112,
+      "maxChannelError": 46,
+      "changedPixels": 79
+    },
+    {
+      "delta": 0.15625,
+      "meanAbsoluteError": 1.3388888888888888,
+      "maxChannelError": 46,
+      "changedPixels": 65
+    },
+    {
+      "delta": 0.171875,
+      "meanAbsoluteError": 1.1895833333333334,
+      "maxChannelError": 46,
+      "changedPixels": 55
+    },
+    {
+      "delta": 0.1875,
+      "meanAbsoluteError": 1.0333333333333334,
+      "maxChannelError": 46,
+      "changedPixels": 48
+    },
+    {
+      "delta": 0.203125,
+      "meanAbsoluteError": 0.5611111111111111,
+      "maxChannelError": 46,
+      "changedPixels": 31
+    },
+    {
+      "delta": 0.21875,
+      "meanAbsoluteError": 0.10729166666666666,
+      "maxChannelError": 12,
+      "changedPixels": 11
+    },
+    {
+      "delta": 0.234375,
+      "meanAbsoluteError": 0.04861111111111111,
+      "maxChannelError": 12,
+      "changedPixels": 5
+    },
+    {
+      "delta": 0.25,
+      "meanAbsoluteError": 0.23645833333333333,
+      "maxChannelError": 23,
+      "changedPixels": 22
+    },
+    {
+      "delta": 0.265625,
+      "meanAbsoluteError": 0.33611111111111114,
+      "maxChannelError": 23,
+      "changedPixels": 30
+    },
+    {
+      "delta": 0.28125,
+      "meanAbsoluteError": 0.6506944444444445,
+      "maxChannelError": 46,
+      "changedPixels": 47
+    },
+    {
+      "delta": 0.296875,
+      "meanAbsoluteError": 0.7774305555555555,
+      "maxChannelError": 46,
+      "changedPixels": 56
+    },
+    {
+      "delta": 0.3125,
+      "meanAbsoluteError": 0.9440972222222223,
+      "maxChannelError": 46,
+      "changedPixels": 61
+    },
+    {
+      "delta": 0.328125,
+      "meanAbsoluteError": 1.2138888888888888,
+      "maxChannelError": 46,
+      "changedPixels": 69
+    },
+    {
+      "delta": 0.34375,
+      "meanAbsoluteError": 1.3534722222222222,
+      "maxChannelError": 46,
+      "changedPixels": 74
+    },
+    {
+      "delta": 0.359375,
+      "meanAbsoluteError": 1.4225694444444446,
+      "maxChannelError": 46,
+      "changedPixels": 76
+    },
+    {
+      "delta": 0.375,
+      "meanAbsoluteError": 1.5697916666666667,
+      "maxChannelError": 46,
+      "changedPixels": 82
+    },
+    {
+      "delta": 0.390625,
+      "meanAbsoluteError": 2.0722222222222224,
+      "maxChannelError": 46,
+      "changedPixels": 98
+    },
+    {
+      "delta": 0.40625,
+      "meanAbsoluteError": 2.562152777777778,
+      "maxChannelError": 46,
+      "changedPixels": 110
+    },
+    {
+      "delta": 0.421875,
+      "meanAbsoluteError": 2.6868055555555554,
+      "maxChannelError": 46,
+      "changedPixels": 112
+    },
+    {
+      "delta": 0.4375,
+      "meanAbsoluteError": 2.825,
+      "maxChannelError": 46,
+      "changedPixels": 114
+    },
+    {
+      "delta": 0.453125,
+      "meanAbsoluteError": 3.2569444444444446,
+      "maxChannelError": 46,
+      "changedPixels": 122
+    },
+    {
+      "delta": 0.46875,
+      "meanAbsoluteError": 3.667708333333333,
+      "maxChannelError": 46,
+      "changedPixels": 132
+    },
+    {
+      "delta": 0.484375,
+      "meanAbsoluteError": 3.8055555555555554,
+      "maxChannelError": 58,
+      "changedPixels": 132
+    },
+    {
+      "delta": 0.5,
+      "meanAbsoluteError": 3.9920138888888888,
+      "maxChannelError": 69,
+      "changedPixels": 133
+    },
+    {
+      "delta": 0.515625,
+      "meanAbsoluteError": 4.108680555555556,
+      "maxChannelError": 69,
+      "changedPixels": 133
+    },
+    {
+      "delta": 0.53125,
+      "meanAbsoluteError": 4.424652777777778,
+      "maxChannelError": 92,
+      "changedPixels": 133
+    },
+    {
+      "delta": 0.546875,
+      "meanAbsoluteError": 4.533680555555556,
+      "maxChannelError": 92,
+      "changedPixels": 132
+    },
+    {
+      "delta": 0.5625,
+      "meanAbsoluteError": 4.661111111111111,
+      "maxChannelError": 92,
+      "changedPixels": 133
+    },
+    {
+      "delta": 0.578125,
+      "meanAbsoluteError": 4.8850694444444445,
+      "maxChannelError": 92,
+      "changedPixels": 132
+    },
+    {
+      "delta": 0.59375,
+      "meanAbsoluteError": 5.1,
+      "maxChannelError": 92,
+      "changedPixels": 134
+    },
+    {
+      "delta": 0.609375,
+      "meanAbsoluteError": 5.168402777777778,
+      "maxChannelError": 92,
+      "changedPixels": 134
+    },
+    {
+      "delta": 0.625,
+      "meanAbsoluteError": 5.298611111111111,
+      "maxChannelError": 92,
+      "changedPixels": 134
+    },
+    {
+      "delta": 0.640625,
+      "meanAbsoluteError": 5.815277777777778,
+      "maxChannelError": 92,
+      "changedPixels": 136
+    },
+    {
+      "delta": 0.65625,
+      "meanAbsoluteError": 6.308333333333334,
+      "maxChannelError": 92,
+      "changedPixels": 136
+    },
+    {
+      "delta": 0.671875,
+      "meanAbsoluteError": 6.436805555555556,
+      "maxChannelError": 92,
+      "changedPixels": 138
+    },
+    {
+      "delta": 0.6875,
+      "meanAbsoluteError": 6.536458333333333,
+      "maxChannelError": 92,
+      "changedPixels": 140
+    },
+    {
+      "delta": 0.703125,
+      "meanAbsoluteError": 7.008333333333334,
+      "maxChannelError": 92,
+      "changedPixels": 141
+    },
+    {
+      "delta": 0.71875,
+      "meanAbsoluteError": 7.388194444444444,
+      "maxChannelError": 92,
+      "changedPixels": 141
+    },
+    {
+      "delta": 0.734375,
+      "meanAbsoluteError": 7.523958333333334,
+      "maxChannelError": 103,
+      "changedPixels": 141
+    },
+    {
+      "delta": 0.75,
+      "meanAbsoluteError": 7.629861111111111,
+      "maxChannelError": 115,
+      "changedPixels": 141
+    },
+    {
+      "delta": 0.765625,
+      "meanAbsoluteError": 7.728125,
+      "maxChannelError": 115,
+      "changedPixels": 141
+    },
+    {
+      "delta": 0.78125,
+      "meanAbsoluteError": 7.981597222222222,
+      "maxChannelError": 137,
+      "changedPixels": 142
+    },
+    {
+      "delta": 0.796875,
+      "meanAbsoluteError": 8.149305555555555,
+      "maxChannelError": 137,
+      "changedPixels": 144
+    },
+    {
+      "delta": 0.8125,
+      "meanAbsoluteError": 8.21875,
+      "maxChannelError": 137,
+      "changedPixels": 143
+    },
+    {
+      "delta": 0.828125,
+      "meanAbsoluteError": 8.426388888888889,
+      "maxChannelError": 138,
+      "changedPixels": 142
+    },
+    {
+      "delta": 0.84375,
+      "meanAbsoluteError": 8.625347222222222,
+      "maxChannelError": 138,
+      "changedPixels": 145
+    },
+    {
+      "delta": 0.859375,
+      "meanAbsoluteError": 8.674652777777778,
+      "maxChannelError": 138,
+      "changedPixels": 145
+    },
+    {
+      "delta": 0.875,
+      "meanAbsoluteError": 8.803125,
+      "maxChannelError": 138,
+      "changedPixels": 145
+    },
+    {
+      "delta": 0.890625,
+      "meanAbsoluteError": 9.306944444444444,
+      "maxChannelError": 138,
+      "changedPixels": 151
+    },
+    {
+      "delta": 0.90625,
+      "meanAbsoluteError": 9.77361111111111,
+      "maxChannelError": 138,
+      "changedPixels": 152
+    },
+    {
+      "delta": 0.921875,
+      "meanAbsoluteError": 9.902083333333334,
+      "maxChannelError": 138,
+      "changedPixels": 153
+    },
+    {
+      "delta": 0.9375,
+      "meanAbsoluteError": 10.039583333333333,
+      "maxChannelError": 138,
+      "changedPixels": 155
+    },
+    {
+      "delta": 0.953125,
+      "meanAbsoluteError": 10.510069444444444,
+      "maxChannelError": 138,
+      "changedPixels": 155
+    },
+    {
+      "delta": 0.96875,
+      "meanAbsoluteError": 10.453125,
+      "maxChannelError": 138,
+      "changedPixels": 159
+    },
+    {
+      "delta": 0.984375,
+      "meanAbsoluteError": 10.551388888888889,
+      "maxChannelError": 149,
+      "changedPixels": 159
+    },
+    {
+      "delta": 1,
+      "meanAbsoluteError": 10.65798611111111,
+      "maxChannelError": 149,
+      "changedPixels": 160
+    },
+    {
+      "delta": 0.22733333333333347,
+      "meanAbsoluteError": 0,
+      "maxChannelError": 0,
+      "changedPixels": 0
+    }
+  ]
+}

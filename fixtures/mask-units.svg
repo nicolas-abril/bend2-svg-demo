@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><mask id="half" maskContentUnits="objectBoundingBox"><rect width=".5" height="1" fill="white"/></mask>
+<mask id="region" x=".25" y=".25" width=".5" height=".5"><rect width="100%" height="100%" fill="white"/></mask>
+<mask id="user" maskUnits="userSpaceOnUse" x="4" y="4" width="16" height="20"><rect width="30" height="30" fill="white"/></mask></defs>
+<rect x="4" y="4" width="24" height="24" fill="teal" mask="url(#half)"/>
+<g mask="url(#half)" transform="translate(34 4)"><rect width="10" height="20" fill="red"/><rect x="10" y="4" width="14" height="20" fill="blue"/></g>
+<rect x="4" y="36" width="24" height="24" fill="purple" mask="url(#region)"/>
+<g transform="translate(34 32)"><rect width="28" height="28" fill="orange" mask="url(#user)"/></g>
+</svg>

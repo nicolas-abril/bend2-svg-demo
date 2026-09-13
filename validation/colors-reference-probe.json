@@ -1,0 +1,253 @@
+{
+  "description": "Equivalent isolated color expressions rendered independently",
+  "results": [
+    {
+      "feature": "rebeccapurple",
+      "actual": "rebeccapurple",
+      "expected": "#663399",
+      "chromium": {
+        "actual": [
+          102,
+          51,
+          153
+        ],
+        "expected": [
+          102,
+          51,
+          153
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          0,
+          0
+        ],
+        "expected": [
+          102,
+          51,
+          153
+        ],
+        "equal": false
+      }
+    },
+    {
+      "feature": "legacy percentage RGB",
+      "actual": "rgb(100%,0%,0%)",
+      "expected": "#ff0000",
+      "chromium": {
+        "actual": [
+          255,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          255,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": true
+      }
+    },
+    {
+      "feature": "modern RGB",
+      "actual": "rgb(255 0 0)",
+      "expected": "#ff0000",
+      "chromium": {
+        "actual": [
+          255,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          255,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": true
+      }
+    },
+    {
+      "feature": "modern percentage alpha",
+      "actual": "rgb(255 0 0 / 50%)",
+      "expected": "rgba(255,0,0,.5)",
+      "chromium": {
+        "actual": [
+          255,
+          127,
+          127
+        ],
+        "expected": [
+          255,
+          127,
+          127
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          128,
+          128
+        ],
+        "equal": false
+      }
+    },
+    {
+      "feature": "legacy HSL",
+      "actual": "hsl(120,100%,50%)",
+      "expected": "#00ff00",
+      "chromium": {
+        "actual": [
+          0,
+          255,
+          0
+        ],
+        "expected": [
+          0,
+          255,
+          0
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          255,
+          0
+        ],
+        "expected": [
+          0,
+          255,
+          0
+        ],
+        "equal": true
+      }
+    },
+    {
+      "feature": "modern HSL",
+      "actual": "hsl(120 100% 50%)",
+      "expected": "#00ff00",
+      "chromium": {
+        "actual": [
+          0,
+          255,
+          0
+        ],
+        "expected": [
+          0,
+          255,
+          0
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          255,
+          0
+        ],
+        "expected": [
+          0,
+          255,
+          0
+        ],
+        "equal": true
+      }
+    },
+    {
+      "feature": "hue units",
+      "actual": "hsl(.5turn 100% 50%)",
+      "expected": "#00ffff",
+      "chromium": {
+        "actual": [
+          0,
+          255,
+          255
+        ],
+        "expected": [
+          0,
+          255,
+          255
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          0,
+          0
+        ],
+        "expected": [
+          0,
+          255,
+          255
+        ],
+        "equal": false
+      }
+    },
+    {
+      "feature": "HWB",
+      "actual": "hwb(0 0% 0%)",
+      "expected": "#ff0000",
+      "chromium": {
+        "actual": [
+          255,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": true
+      },
+      "resvg": {
+        "actual": [
+          0,
+          0,
+          0
+        ],
+        "expected": [
+          255,
+          0,
+          0
+        ],
+        "equal": false
+      }
+    }
+  ]
+}

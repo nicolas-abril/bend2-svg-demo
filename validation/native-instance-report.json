@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "fixtures": [
+    "use.svg",
+    "viewports-nested.svg",
+    "use-cycles.svg"
+  ],
+  "check": "Saved C renderer and JavaScript renderer produce byte-identical 64x64 AA8 matrices",
+  "svgSourceSHA256": "6ad46e0449321db5415619e0cc887c5ee009d347878e535e12dcf236bd9a2f80"
+}

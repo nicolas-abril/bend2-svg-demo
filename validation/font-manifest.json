@@ -1,0 +1,67 @@
+{
+  "generator": "fontTools 4.59.2; static outlines, horizontal GPOS pair data and OS/2 metrics",
+  "asset": "fonts.dat",
+  "assetSHA256": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e",
+  "faces": [
+    {
+      "metrics": {
+        "subscript": 0.075,
+        "superscript": 0.35,
+        "ascender": 1.069,
+        "descender": -0.293,
+        "xheight": 0.536
+      },
+      "file": "NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "unicodeMappings": 2840,
+      "unitsPerEm": 1000,
+      "version": "Version 2.008; ttfautohint (v1.8) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+      "source": "https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSans"
+    },
+    {
+      "metrics": {
+        "subscript": 0.075,
+        "superscript": 0.35,
+        "ascender": 1.069,
+        "descender": -0.293,
+        "xheight": 0.546
+      },
+      "file": "NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "unicodeMappings": 2840,
+      "unitsPerEm": 1000,
+      "version": "Version 2.008; ttfautohint (v1.8) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+      "source": "https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSans"
+    },
+    {
+      "metrics": {
+        "subscript": 0.075,
+        "superscript": 0.35,
+        "ascender": 1.069,
+        "descender": -0.293,
+        "xheight": 0.536
+      },
+      "file": "NotoSans-Italic.ttf",
+      "sha256": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
+      "unicodeMappings": 2840,
+      "unitsPerEm": 1000,
+      "version": "Version 2.008; ttfautohint (v1.8) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+      "source": "https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSans"
+    },
+    {
+      "metrics": {
+        "subscript": 0.075,
+        "superscript": 0.35,
+        "ascender": 1.069,
+        "descender": -0.293,
+        "xheight": 0.546
+      },
+      "file": "NotoSans-BoldItalic.ttf",
+      "sha256": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466",
+      "unicodeMappings": 2840,
+      "unitsPerEm": 1000,
+      "version": "Version 2.008; ttfautohint (v1.8) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+      "source": "https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSans"
+    }
+  ]
+}

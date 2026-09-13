@@ -1,0 +1,22 @@
+{
+  "experimental": true,
+  "passed": true,
+  "checks": [
+    {
+      "file": "check-font-metrics.bend",
+      "passed": true
+    },
+    {
+      "file": "check-text.bend",
+      "passed": true
+    },
+    {
+      "file": "check-text-length.bend",
+      "passed": true
+    }
+  ],
+  "nativeMetricCheck": true,
+  "sourceSHA256": "f644682ed6296f42698293a7c387c2492bb2274dbdeb036dc1ea4259ec0dba16",
+  "fontSHA256": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e",
+  "fontGenerationReproduced": true
+}

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "binarySHA256": null,
+  "serverBackend": "javascript",
+  "durationSeconds": 21.017035709,
+  "checks": [
+    "headless and web image pixels agree",
+    "local resource and style scopes",
+    "no SVG presentation DOM",
+    "pick owning image",
+    "resize and preserve other elements",
+    "change aspect fitting",
+    "retain authored data URIs",
+    "exact source/full-matrix undo",
+    "drag and undo",
+    "save preserves embedded data",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "cd77a3f56536818426710c872f4e95e63252883a0e12d36a12dce25d1cdbf736",
+    "state.bend": "a604ac987ef8a7607df05f015e437c965ad0577f7bfbcfd34fd84c91c2adab27",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "before": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><style>rect{fill:lime}text{font-size:30px}</style><defs><linearGradient id=\"paint\"><stop stop-color=\"lime\"></stop><stop stop-color=\"yellow\" offset=\"1\"></stop></linearGradient></defs><image href=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48c3R5bGU+cmVjdHtmaWxsOnVybCgjcGFpbnQpfTwvc3R5bGU+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludCI+PHN0b3Agc3RvcC1jb2xvcj0icmVkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSJibHVlIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCBpZD0iYm94IiB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiLz48L2RlZnM+PHVzZSBocmVmPSIjYm94Ii8+PC9zdmc+\" height=\"28\" width=\"28\" y=\"2\" x=\"2\"></image><image href=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48c3R5bGU+cmVjdHtmaWxsOnVybCgjcGFpbnQpfTwvc3R5bGU+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludCI+PHN0b3Agc3RvcC1jb2xvcj0iY3lhbiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0ibWFnZW50YSIvPjwvbGluZWFyR3JhZGllbnQ+PHJlY3QgaWQ9ImJveCIgeD0iMiIgeT0iMiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIi8+PC9kZWZzPjx1c2UgaHJlZj0iI2JveCIvPjwvc3ZnPg==\" height=\"28\" width=\"28\" y=\"2\" x=\"34\"></image><rect height=\"20\" width=\"28\" y=\"36\" x=\"2\"></rect></svg>\n"
+}

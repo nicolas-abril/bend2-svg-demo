@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "width": 64,
+  "height": 64,
+  "aa": 8,
+  "backend": "C --gpu off",
+  "method": "Median of three alternating paired process runs; identical matrices required",
+  "baselineBinarySHA256": "8453211523f744c0713753626fd24ec520da47e3747df6432be702a60430ab29",
+  "currentBinarySHA256": "98548202173dc461c04ba97e1261ecf2dd47071c4c21431ab671cf5106ab9bed",
+  "sourceSHA256": "86a1bfa504bda81f47365cfbb80503c31eed5bbfc53355b0a8ea48a18c70a3bd",
+  "results": [
+    {
+      "fixture": "markers-context.svg",
+      "identical": true,
+      "beforeSeconds": [
+        3.011603542,
+        2.6717434170000005,
+        2.621042208000001
+      ],
+      "afterSeconds": [
+        0.6320568330000002,
+        0.6129374170000002,
+        0.6014740419999999
+      ],
+      "beforeMedian": 2.6717434170000005,
+      "afterMedian": 0.6129374170000002,
+      "speedup": 4.358917147001322
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "identical": true,
+      "beforeSeconds": [
+        4.58552925,
+        4.6289983329999975,
+        4.5721240829999985
+      ],
+      "afterSeconds": [
+        0.5985833330000004,
+        0.586741,
+        0.6012445420000003
+      ],
+      "beforeMedian": 4.58552925,
+      "afterMedian": 0.5985833330000004,
+      "speedup": 7.660636367902339
+    },
+    {
+      "fixture": "text-basic.svg",
+      "identical": true,
+      "beforeSeconds": [
+        3.7684286670000002,
+        3.8002995420000008,
+        3.784178458000002
+      ],
+      "afterSeconds": [
+        1.950816917,
+        1.9491255829999974,
+        1.951314750000005
+      ],
+      "beforeMedian": 3.784178458000002,
+      "afterMedian": 1.950816917,
+      "speedup": 1.9397916970185891
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "identical": true,
+      "beforeSeconds": [
+        1.655396332999997,
+        1.6413895410000041,
+        1.617835874999997
+      ],
+      "afterSeconds": [
+        1.513659415999995,
+        1.5498679580000025,
+        1.551279416000005
+      ],
+      "beforeMedian": 1.6413895410000041,
+      "afterMedian": 1.5498679580000025,
+      "speedup": 1.0590512130582426
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "passed": true,
+  "checks": [
+    "PASS check-use.bend",
+    "PASS check-filters-graph.bend",
+    "PASS check-png.bend",
+    "PASS check-css-media.bend",
+    "PASS check-colors.bend",
+    "PASS check-coverage.bend",
+    "PASS check-mask.bend",
+    "PASS check-xml.bend",
+    "PASS check-numbers.bend",
+    "PASS check-marker-geometry.bend",
+    "PASS check.bend",
+    "PASS check-editor.bend",
+    "PASS check-state.bend",
+    "PASS check-raster.bend",
+    "PASS check-jpeg-bits.bend",
+    "PASS check-paint.bend",
+    "PASS check-text.bend",
+    "PASS check-jpeg-errors.bend",
+    "PASS check-filters.bend",
+    "PASS check-pattern.bend",
+    "PASS check-text-length.bend",
+    "PASS check-images.bend",
+    "PASS check-stroke.bend",
+    "PASS check-image-boundaries.bend",
+    "PASS check-font-metrics.bend",
+    "PASS check-markers.bend",
+    "PASS check-css.bend",
+    "PASS check-inflate.bend",
+    "PASS check-viewport.bend",
+    "PASS check-gesture.bend",
+    "PASS check-jpeg.bend",
+    "PASS check-bytes.bend"
+  ],
+  "nativeFontMetricCases": 8,
+  "nativeFontMetricOutput": "0.6\n-2.8\n1.2\n-3.6\n1.6\n-3.2\n2.73\n3.25\n",
+  "sourceSHA256": {
+    "svg.bend": "f644682ed6296f42698293a7c387c2492bb2274dbdeb036dc1ea4259ec0dba16",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e",
+    "check-font-metrics.bend": "398d8f9751263ebeca6cc4609bca84ab8bcd39745da61ce46e8b88754744296e"
+  },
+  "changedMatrices": [
+    "text-spans.ppm"
+  ],
+  "javascriptMatricesRerendered": [
+    "text-spans.svg",
+    "text-length.svg",
+    "text-length-spans.svg",
+    "text-unicode.svg",
+    "text-paints.svg",
+    "text-position.svg",
+    "text-whitespace.svg",
+    "text-basic.svg",
+    "text-style.svg"
+  ],
+  "unchangedNontextMatricesRetainedFromSamplingCheckpoint": 80,
+  "fullNativeBuild": "passed",
+  "timestamp": "2026-09-11T09:21:06.667010+00:00"
+}

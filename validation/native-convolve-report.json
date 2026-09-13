@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "native.bend": "e758ea65eb9073da6c9a728cd8ea77237c690bf3f69652c0dbf4d0ef1c984e00",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "bf6b13e89a68ab771886bdf6435dcfe880edca4cd595b2899239f7662988917e",
+  "results": [
+    {
+      "fixture": "convolve-kernels.svg",
+      "savedSourceMatches": true,
+      "screenshot": "native-convolve-kernels.png",
+      "passed": true,
+      "pixelsCompared": 65536,
+      "differingPixels": 174,
+      "calibratedWindowEdgeDifferences": 0,
+      "unexplainedPixels": 0,
+      "meanAbsoluteError": 0.452880859375,
+      "maxChannelError": 255,
+      "maxCalibratedChannelError": 0,
+      "windowCalibration": "native-camera-calibration-report.json"
+    },
+    {
+      "fixture": "convolve-units.svg",
+      "savedSourceMatches": true,
+      "screenshot": "native-convolve-units.png",
+      "passed": true,
+      "pixelsCompared": 65536,
+      "differingPixels": 174,
+      "calibratedWindowEdgeDifferences": 0,
+      "unexplainedPixels": 0,
+      "meanAbsoluteError": 0.452880859375,
+      "maxChannelError": 255,
+      "maxCalibratedChannelError": 0,
+      "windowCalibration": "native-camera-calibration-report.json"
+    }
+  ],
+  "renderingPassed": true,
+  "keyboardSavePassed": true,
+  "pointerEditingPassed": false,
+  "method": "Two independently launched native windows; process-addressed Save key and every-pixel screenshot comparison with existing calibrated OS border",
+  "durationSeconds": 22.385491132736206
+}

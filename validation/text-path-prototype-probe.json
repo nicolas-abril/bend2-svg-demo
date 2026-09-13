@@ -1,0 +1,1194 @@
+{
+  "experimental": true,
+  "sourceSHA256": "5e914f2945d3aa321ad573f747978d928c8ae67030afb6a60f271f5a130f8647",
+  "results": [
+    {
+      "name": "line",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 18.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            18.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 28.046001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            28.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 36.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            36.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "offset",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 30,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            30,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 38.946003,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            38.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007122000000002515
+        },
+        {
+          "index": 2,
+          "x": 48.046,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            48.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 56.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            56.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "percent-middle",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 41.443,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            41.421875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02112499999999784
+        },
+        {
+          "index": 1,
+          "x": 50.389,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            50.375,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.014000000000002899
+        },
+        {
+          "index": 2,
+          "x": 59.489002,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            59.484375,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.004626999999999271
+        },
+        {
+          "index": 3,
+          "x": 68.337,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            68.34375,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.006749999999996703
+        }
+      ],
+      "maxOriginDifference": 0.02112499999999784
+    },
+    {
+      "name": "pathLength",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 30,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            30,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 38.946003,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            38.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007122000000002515
+        },
+        {
+          "index": 2,
+          "x": 48.046,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            48.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 56.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            56.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "pathLength-percent",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 35,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            35,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 43.946003,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            43.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007122000000002515
+        },
+        {
+          "index": 2,
+          "x": 53.046,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            53.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 61.893997,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            61.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787800000000118
+        }
+      ],
+      "maxOriginDifference": 0.02787800000000118
+    },
+    {
+      "name": "root-xy",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 17,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            17,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 25.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            25.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 35.046,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            35.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 43.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            43.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "root-dxdy",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 17,
+          "y": 49,
+          "angle": 0,
+          "chromiumStart": [
+            17,
+            49
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 25.946,
+          "y": 49,
+          "angle": 0,
+          "chromiumStart": [
+            25.953125,
+            49
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 35.046,
+          "y": 49,
+          "angle": 0,
+          "chromiumStart": [
+            35.0625,
+            49
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 43.894,
+          "y": 49,
+          "angle": 0,
+          "chromiumStart": [
+            43.921875,
+            49
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "root-lists",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 17,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            17,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 35,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            35,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 2,
+          "x": 44.1,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            44.109375,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.009374999999998579
+        },
+        {
+          "index": 3,
+          "x": 52.947998,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            52.96875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.020752000000001658
+        }
+      ],
+      "maxOriginDifference": 0.020752000000001658
+    },
+    {
+      "name": "spans",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 23.946,
+          "y": 44,
+          "angle": 0,
+          "chromiumStart": [
+            23.953125,
+            44
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 33.046,
+          "y": 44,
+          "angle": 0,
+          "chromiumStart": [
+            33.0625,
+            44
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016500000000000625
+        },
+        {
+          "index": 3,
+          "x": 41.894,
+          "y": 44,
+          "angle": 0,
+          "chromiumStart": [
+            41.921875,
+            44
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "rotation",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10.564546,
+          "y": 38.552757,
+          "angle": 31.30993164534545,
+          "chromiumStart": [
+            10.564995765686035,
+            38.55160140991211
+          ],
+          "chromiumAngle": 31.309932708740234,
+          "originDifference": 0.0012400312994296147
+        },
+        {
+          "index": 1,
+          "x": 20.389679,
+          "y": 39.09533,
+          "angle": 51.30993247481448,
+          "chromiumStart": [
+            20.398330688476562,
+            39.093990325927734
+          ],
+          "chromiumAngle": 51.309932708740234,
+          "originDifference": 0.008754795264045864
+        },
+        {
+          "index": 2,
+          "x": 29.268171,
+          "y": 40.95363,
+          "angle": 51.30993247481448,
+          "chromiumStart": [
+            29.286375045776367,
+            40.95353698730469
+          ],
+          "chromiumAngle": 51.309932708740234,
+          "originDifference": 0.018204283396761417
+        },
+        {
+          "index": 3,
+          "x": 38.188206,
+          "y": 42.28795,
+          "angle": 51.30993247481448,
+          "chromiumStart": [
+            38.21809387207031,
+            42.289215087890625
+          ],
+          "chromiumAngle": 51.309932708740234,
+          "originDifference": 0.02991463428261004
+        }
+      ],
+      "maxOriginDifference": 0.02991463428261004
+    },
+    {
+      "name": "curve",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 17.967459,
+          "y": 56.024593,
+          "angle": -43.80703877423749,
+          "chromiumStart": [
+            18.009632110595703,
+            55.95246505737305
+          ],
+          "chromiumAngle": -43.579776763916016,
+          "originDifference": 0.08355244679190874
+        },
+        {
+          "index": 1,
+          "x": 24.553394,
+          "y": 49.7389,
+          "angle": -38.96380143804248,
+          "chromiumStart": [
+            24.620695114135742,
+            49.67826461791992
+          ],
+          "chromiumAngle": -38.98322296142578,
+          "originDifference": 0.09058746891214738
+        },
+        {
+          "index": 2,
+          "x": 30.668348,
+          "y": 44.729496,
+          "angle": -33.355928747658375,
+          "chromiumStart": [
+            30.748472213745117,
+            44.677734375
+          ],
+          "chromiumAngle": -33.45308303833008,
+          "originDifference": 0.09538949339897615
+        },
+        {
+          "index": 3,
+          "x": 37.905445,
+          "y": 39.974773,
+          "angle": -26.922028410476038,
+          "chromiumStart": [
+            37.95793533325195,
+            39.892120361328125
+          ],
+          "chromiumAngle": -26.30426597595215,
+          "originDifference": 0.09791166306586989
+        },
+        {
+          "index": 4,
+          "x": 45.646507,
+          "y": 36.202164,
+          "angle": -19.664324913531058,
+          "chromiumStart": [
+            45.744815826416016,
+            36.18171691894531
+          ],
+          "chromiumAngle": -20.246685028076172,
+          "originDifference": 0.1004126908062494
+        },
+        {
+          "index": 5,
+          "x": 49.033318,
+          "y": 34.826378,
+          "angle": -13.739397027576391,
+          "chromiumStart": [
+            49.118919372558594,
+            34.813026428222656
+          ],
+          "chromiumAngle": -13.958626747131348,
+          "originDifference": 0.08663636334034608
+        },
+        {
+          "index": 6,
+          "x": 56.50152,
+          "y": 32.859615,
+          "angle": -3.2294106007057275,
+          "chromiumStart": [
+            56.58355712890625,
+            32.92369079589844
+          ],
+          "chromiumAngle": -4.200385093688965,
+          "originDifference": 0.10409513984427547
+        },
+        {
+          "index": 7,
+          "x": 64.77852,
+          "y": 32.221638,
+          "angle": 7.50014571315951,
+          "chromiumStart": [
+            64.85581970214844,
+            32.22304916381836
+          ],
+          "chromiumAngle": 7.5094075202941895,
+          "originDifference": 0.07731258200034037
+        }
+      ],
+      "maxOriginDifference": 0.10409513984427547
+    },
+    {
+      "name": "reference-transform",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 18.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            18.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 28.046001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            28.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 36.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            36.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "ancestor-transform",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            0,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 8.946,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            8.953125953674316,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007125953674316676
+        },
+        {
+          "index": 2,
+          "x": 18.046001,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            18.0625,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 26.894001,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            26.921875,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787400000000062
+        }
+      ],
+      "maxOriginDifference": 0.02787400000000062
+    },
+    {
+      "name": "text-transform",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 18.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            18.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 28.046001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            28.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 36.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            36.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "direct-path",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 60,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            60
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 18.946,
+          "y": 60,
+          "angle": 0,
+          "chromiumStart": [
+            18.953125,
+            60
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 28.046001,
+          "y": 60,
+          "angle": 0,
+          "chromiumStart": [
+            28.0625,
+            60
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 36.894,
+          "y": 60,
+          "angle": 0,
+          "chromiumStart": [
+            36.921875,
+            60
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "shape",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 99.32524,
+          "y": 48.029804,
+          "angle": 97.8526463067799,
+          "chromiumStart": [
+            0,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 110.32844317462299
+        },
+        {
+          "index": 1,
+          "x": 98.018105,
+          "y": 57.065178,
+          "angle": 111.14051789931854,
+          "chromiumStart": [
+            0,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 113.41950206187077
+        },
+        {
+          "index": 2,
+          "x": 95.148796,
+          "y": 64.45915,
+          "angle": 124.43005541160929,
+          "chromiumStart": [
+            0,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 114.92726133938856
+        },
+        {
+          "index": 3,
+          "x": 90.190216,
+          "y": 71.598755,
+          "angle": 138.9257458571993,
+          "chromiumStart": [
+            0,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 115.15492512123258
+        }
+      ],
+      "maxOriginDifference": 115.15492512123258
+    },
+    {
+      "name": "closed-wrap",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 52.499992,
+          "angle": -90,
+          "chromiumStart": [
+            10,
+            52.5
+          ],
+          "chromiumAngle": -90,
+          "originDifference": 0.000008000000001118224
+        }
+      ],
+      "maxOriginDifference": 0.000008000000001118224
+    },
+    {
+      "name": "side-right",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 18.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            18.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.007124999999998494
+        },
+        {
+          "index": 2,
+          "x": 28.046001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            28.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 36.894,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            36.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787500000000165
+        }
+      ],
+      "maxOriginDifference": 0.02787500000000165
+    },
+    {
+      "name": "negative-offset",
+      "glyphs": [
+        {
+          "index": 1,
+          "x": 6.946,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            6.953125,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.00712500000000027
+        },
+        {
+          "index": 2,
+          "x": 16.046001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            16.0625,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.016498999999999597
+        },
+        {
+          "index": 3,
+          "x": 24.894001,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            24.921875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.02787400000000062
+        }
+      ],
+      "maxOriginDifference": 0.02787400000000062
+    },
+    {
+      "name": "mixed",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 4,
+          "y": 20,
+          "angle": 0,
+          "chromiumStart": [
+            4,
+            20
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 2,
+          "x": 19.1,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            19.109375,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.009374999999998579
+        },
+        {
+          "index": 3,
+          "x": 90,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            90,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 4,
+          "x": 100.22,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            100.21875,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.0012499999999988631
+        }
+      ],
+      "maxOriginDifference": 0.009374999999998579
+    },
+    {
+      "name": "missing",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 4,
+          "y": 20,
+          "angle": 0,
+          "chromiumStart": [
+            4,
+            20
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            35.984375,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 35.984375
+        },
+        {
+          "index": 4,
+          "x": 10.22,
+          "y": 0,
+          "angle": 0,
+          "chromiumStart": [
+            46.203125,
+            0
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 35.983125
+        }
+      ],
+      "maxOriginDifference": 35.984375
+    },
+    {
+      "name": "length-fit",
+      "glyphs": [
+        {
+          "index": 0,
+          "x": 10,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            10,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0
+        },
+        {
+          "index": 1,
+          "x": 22.052055,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            22.04793930053711,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.004115699462889921
+        },
+        {
+          "index": 2,
+          "x": 34.31158,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            34.3061408996582,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.005439100341796177
+        },
+        {
+          "index": 3,
+          "x": 46.23161,
+          "y": 40,
+          "angle": 0,
+          "chromiumStart": [
+            46.22792434692383,
+            40
+          ],
+          "chromiumAngle": 0,
+          "originDifference": 0.0036856530761752992
+        }
+      ],
+      "maxOriginDifference": 0.005439100341796177
+    }
+  ]
+}

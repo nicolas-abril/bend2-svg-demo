@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 4.686099792,
+  "checks": [
+    "load Bend-rendered filters",
+    "replace filter reference",
+    "remove filter",
+    "exact source and pixel undo",
+    "drag filtered geometry and undo",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "bef6412b7baa249344409d8eb550469e8c6b8736614675156e39930bc6884453",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "5b9749ca9e73c7b29ee89033049712ca00e780e2a4e40d8ef99c058da7a0daa3"
+  },
+  "before": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n <filter height=\"200%\" width=\"200%\" y=\"-50%\" x=\"-50%\" id=\"offset\"><feOffset dy=\"2\" dx=\"3\"></feOffset></filter>\n <filter id=\"flood\"><feFlood flood-opacity=\".7\" flood-color=\"#369\"></feFlood></filter>\n <filter color-interpolation-filters=\"sRGB\" id=\"matrix\"><feColorMatrix values=\"0 0 1 0 0  1 0 0 0 0  0 1 0 0 0  0 0 0 1 0\"></feColorMatrix></filter>\n <filter color-interpolation-filters=\"sRGB\" id=\"transfer\"><feComponentTransfer><feFuncR tableValues=\"1 0\" type=\"table\"></feFuncR><feFuncG intercept=\".2\" slope=\".5\" type=\"linear\"></feFuncG><feFuncB offset=\".1\" exponent=\"2\" amplitude=\".8\" type=\"gamma\"></feFuncB><feFuncA slope=\".7\" type=\"linear\"></feFuncA></feComponentTransfer></filter>\n <linearGradient id=\"g\"><stop stop-color=\"#e84\"></stop><stop stop-color=\"#28d\" offset=\"1\"></stop></linearGradient>\n</defs>\n<rect filter=\"url(#offset)\" fill=\"#e43\" height=\"18\" width=\"18\" y=\"5\" x=\"5\"></rect>\n<circle filter=\"url(#flood)\" r=\"9\" cy=\"15\" cx=\"46\"></circle>\n<rect filter=\"url(#matrix)\" fill=\"url(#g)\" height=\"20\" width=\"20\" y=\"35\" x=\"5\"></rect>\n<rect filter=\"url(#transfer)\" fill=\"url(#g)\" height=\"20\" width=\"20\" y=\"35\" x=\"37\"></rect>\n</svg>\n"
+}

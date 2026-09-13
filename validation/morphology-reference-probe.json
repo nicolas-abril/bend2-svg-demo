@@ -1,0 +1,453 @@
+{
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "operator": "erode",
+      "radius": "0",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": ".2",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": ".49",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": ".5",
+      "chromium": [
+        11,
+        11,
+        18,
+        18
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": ".75",
+      "chromium": [
+        11,
+        11,
+        18,
+        18
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": ".99",
+      "chromium": [
+        11,
+        11,
+        18,
+        18
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "1",
+      "chromium": [
+        11,
+        11,
+        18,
+        18
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "1.2",
+      "chromium": [
+        11,
+        11,
+        18,
+        18
+      ],
+      "resvg": [
+        12,
+        12,
+        18,
+        18
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "1.5",
+      "chromium": [
+        12,
+        12,
+        17,
+        17
+      ],
+      "resvg": [
+        12,
+        12,
+        18,
+        18
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "1.9",
+      "chromium": [
+        12,
+        12,
+        17,
+        17
+      ],
+      "resvg": [
+        12,
+        12,
+        18,
+        18
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "2.1",
+      "chromium": [
+        12,
+        12,
+        17,
+        17
+      ],
+      "resvg": [
+        13,
+        13,
+        17,
+        17
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "1 0",
+      "chromium": [
+        11,
+        10,
+        18,
+        19
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "0 1",
+      "chromium": [
+        10,
+        11,
+        19,
+        18
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "erode",
+      "radius": "-1 2",
+      "chromium": [
+        10,
+        12,
+        19,
+        17
+      ],
+      "resvg": [
+        11,
+        11,
+        19,
+        19
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "0",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": ".2",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": ".49",
+      "chromium": [
+        10,
+        10,
+        19,
+        19
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": ".5",
+      "chromium": [
+        9,
+        9,
+        20,
+        20
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": ".75",
+      "chromium": [
+        9,
+        9,
+        20,
+        20
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": ".99",
+      "chromium": [
+        9,
+        9,
+        20,
+        20
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "1",
+      "chromium": [
+        9,
+        9,
+        20,
+        20
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "1.2",
+      "chromium": [
+        9,
+        9,
+        20,
+        20
+      ],
+      "resvg": [
+        9,
+        9,
+        21,
+        21
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "1.5",
+      "chromium": [
+        8,
+        8,
+        21,
+        21
+      ],
+      "resvg": [
+        9,
+        9,
+        21,
+        21
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "1.9",
+      "chromium": [
+        8,
+        8,
+        21,
+        21
+      ],
+      "resvg": [
+        9,
+        9,
+        21,
+        21
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "2.1",
+      "chromium": [
+        8,
+        8,
+        21,
+        21
+      ],
+      "resvg": [
+        8,
+        8,
+        22,
+        22
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "1 0",
+      "chromium": [
+        9,
+        10,
+        20,
+        19
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "0 1",
+      "chromium": [
+        10,
+        9,
+        19,
+        20
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    },
+    {
+      "operator": "dilate",
+      "radius": "-1 2",
+      "chromium": [
+        10,
+        8,
+        19,
+        21
+      ],
+      "resvg": [
+        10,
+        10,
+        20,
+        20
+      ]
+    }
+  ]
+}

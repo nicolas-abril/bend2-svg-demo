@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "fixtures": [
+    "mask-gradients.svg",
+    "mask-compositing.svg",
+    "mask-nested.svg",
+    "mask-errors.svg"
+  ],
+  "check": "Saved C renderer and JavaScript renderer produce byte-identical 64x64 AA8 matrices",
+  "svgSourceSHA256": "ed29c07f0e58edd15bee50cbf5febead6153e952e9a5c49fa6651502f79083fb"
+}

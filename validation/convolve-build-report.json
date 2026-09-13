@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "native.bend": "e758ea65eb9073da6c9a728cd8ea77237c690bf3f69652c0dbf4d0ef1c984e00",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 51,
+  "assertions": 532,
+  "exactBackendFixtureCount": 117,
+  "primaryPassing": 93,
+  "primaryTotal": 117,
+  "toolchainRecord": "convolve-toolchain-report.json",
+  "binaries": {
+    "native": {
+      "binarySHA256": "bf6b13e89a68ab771886bdf6435dcfe880edca4cd595b2899239f7662988917e",
+      "generatedCSHA256": "1364c860d8d17ed8d4e45375a092634bd30a4fdad12a3580c1c2e478465312d5",
+      "builtFrom": "Frozen convolution sources; freshly compiled C"
+    },
+    "web": {
+      "binarySHA256": "a106e24eb52805aaf40024660b55b5affb2403fd56e95015a8bab3908e00dff6",
+      "generatedCSHA256": "5f55451c9ff522ccdde15f68b9b2142159582198979837471c0fb21454b7a59a",
+      "builtFrom": "Frozen convolution sources; freshly compiled C"
+    },
+    "render": {
+      "binarySHA256": "ca0feb12b3d1680136df4200a06b2ba72bd57f281c438d30b206fc14bfc00b4d",
+      "generatedCSHA256": "b11077f95db5f9b5377438827b0f66d524c5273686c4656d64e9f1d5dfb6bb07",
+      "builtFrom": "Frozen convolution sources; freshly compiled C"
+    }
+  }
+}

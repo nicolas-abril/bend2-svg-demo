@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "rebuilt native frontend opened the styled text-span fixture",
+    "subscript and superscript placement visually inspected",
+    "native test window closed"
+  ],
+  "fixture": "fixtures/text-spans.svg",
+  "screenshot": "native-font-metrics.png",
+  "sourceSHA256": {
+    "svg.bend": "f644682ed6296f42698293a7c387c2492bb2274dbdeb036dc1ea4259ec0dba16",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "f72af58c983291bf32fcccad12f426c8541f205c275580add3cb906cb33ce2c1",
+  "timestamp": "2026-09-11T09:38:00.787055+00:00"
+}

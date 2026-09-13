@@ -1,0 +1,117 @@
+{
+  "integrated": true,
+  "sourceSHA256": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+  "renderSHA256": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+  "referenceVersions": {
+    "chromium": "153.0.8010.12",
+    "resvg": "@resvg/resvg-js 2.6.2"
+  },
+  "primaryReference": "chromium",
+  "results": [
+    {
+      "fixture": "convolve-alpha.svg",
+      "durationSeconds": 18.04195325,
+      "sha256": "bcf8e8ea837e5750c6bb0dad7ce78eaeefda1eae602284b421b9ca9bc4c1e568",
+      "references": {
+        "chromium": {
+          "meanAbsoluteError": 4.1357421875,
+          "rootMeanSquareError": 12.370619489843667,
+          "maxChannelError": 41,
+          "pixelsAbove32": 356,
+          "passed": false
+        },
+        "resvg": {
+          "meanAbsoluteError": 2.0436197916666665,
+          "rootMeanSquareError": 10.497984677625828,
+          "maxChannelError": 64,
+          "pixelsAbove32": 180,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "convolve-edges.svg",
+      "durationSeconds": 79.314137375,
+      "sha256": "8d7bdb741174f3fa06765978934a5a838dc02b1eeda499d1dd893961a0d1834f",
+      "references": {
+        "chromium": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "passed": true
+        },
+        "resvg": {
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "convolve-graph.svg",
+      "durationSeconds": 38.86601449999999,
+      "sha256": "c9022e5c48cc3fedaf37c1089a54149da7066483a1c63b89444b45a3bf88d8ef",
+      "references": {
+        "chromium": {
+          "meanAbsoluteError": 0.06266276041666667,
+          "rootMeanSquareError": 0.26362605697591174,
+          "maxChannelError": 3,
+          "pixelsAbove32": 0,
+          "passed": true
+        },
+        "resvg": {
+          "meanAbsoluteError": 1.6661783854166667,
+          "rootMeanSquareError": 15.071898001744836,
+          "maxChannelError": 223,
+          "pixelsAbove32": 74,
+          "passed": false
+        }
+      }
+    },
+    {
+      "fixture": "convolve-kernels.svg",
+      "durationSeconds": 81.02948679099998,
+      "sha256": "24a4c41ea277c44b424c23c4ec9bdc1ec12939c78d99a14f941207f7738aaba5",
+      "references": {
+        "chromium": {
+          "meanAbsoluteError": 0.3062337239583333,
+          "rootMeanSquareError": 2.2547512046324907,
+          "maxChannelError": 71,
+          "pixelsAbove32": 9,
+          "passed": true
+        },
+        "resvg": {
+          "meanAbsoluteError": 0.184326171875,
+          "rootMeanSquareError": 1.410035414374996,
+          "maxChannelError": 43,
+          "pixelsAbove32": 2,
+          "passed": true
+        }
+      }
+    },
+    {
+      "fixture": "convolve-units.svg",
+      "durationSeconds": 45.59416320800001,
+      "sha256": "de4ba7eced61776d83860d27a621eaaf88adc9484a87d6dd3db5c55b11736186",
+      "references": {
+        "chromium": {
+          "meanAbsoluteError": 6.600748697916667,
+          "rootMeanSquareError": 22.716113441692293,
+          "maxChannelError": 185,
+          "pixelsAbove32": 349,
+          "passed": false
+        },
+        "resvg": {
+          "meanAbsoluteError": 6.595133463541667,
+          "rootMeanSquareError": 22.732993228340867,
+          "maxChannelError": 186,
+          "pixelsAbove32": 355,
+          "passed": false
+        }
+      }
+    }
+  ]
+}

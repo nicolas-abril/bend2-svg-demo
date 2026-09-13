@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "check": "Saved C and JavaScript renderers produce byte-identical 64x64 AA8 text matrices",
+  "fontAssetSHA256": "5cb0b73bf6552fae20b5770bd1b050b7bb28edd6a813f11209b1157f3d5522d1",
+  "svgSourceSHA256": "71555d595e2769b82950753fc80bab658d638b903dbe908babc04a002b677636",
+  "results": [
+    {
+      "fixture": "text-basic.svg",
+      "passed": true,
+      "sha256": "da37242776b780c85de4c0e6e9e97f98365a2c9b8d4233fb4155681905e6c349"
+    },
+    {
+      "fixture": "text-style.svg",
+      "passed": true,
+      "sha256": "97e28f8bf461efd67e0ae2ac6d78eae5dd2411b1d479d9c719c376e846d75d57"
+    },
+    {
+      "fixture": "text-spans.svg",
+      "passed": true,
+      "sha256": "da73effae55894e12db336a8793afbf9b448e896ea36d0f82626932a0ffc306e"
+    },
+    {
+      "fixture": "text-position.svg",
+      "passed": true,
+      "sha256": "aeaffa7f7436e7eba80ea92cd861a318e8735c058431b85cd579799d6e9256f2"
+    },
+    {
+      "fixture": "text-paints.svg",
+      "passed": true,
+      "sha256": "238612973d92616500134d47cb1ba0df77b9309f112b8f3ee7a9300f1ae07ed5"
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "passed": true,
+      "sha256": "e6abaa2d4ed482841809cdca8eef1e429e96d8da0a6310125e6957daf8261f8d"
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "passed": true,
+      "sha256": "81d01c6b66ecd6e81be6532dda75bba1f9bbf5438089b6fefbe4d800ffd344de"
+    },
+    {
+      "fixture": "text-length.svg",
+      "passed": true,
+      "sha256": "5ebcb14c80c34c58c7728a2223d340d6a63e7ba8fe1ddbbb6bb3a4609980aa04"
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "passed": true,
+      "sha256": "7dcb1eb799cc76be03e6c44f82f3e9d6bca605c34c070bc553d8815a6f04c921"
+    }
+  ]
+}

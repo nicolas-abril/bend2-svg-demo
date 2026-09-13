@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="bbox" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox"><feFlood flood-color="#e85" x=".1" y=".2" width=".7" height=".6"/><feOffset dx=".1" dy=".1"/></filter>
+ <filter id="user" filterUnits="userSpaceOnUse" x="33" y="3" width="25" height="25"><feFlood flood-color="#49b" x="36" y="6" width="12" height="12" result="f"/><feOffset dx="4" dy="3"/><feMerge><feMergeNode in="f"/><feMergeNode/></feMerge></filter>
+ <filter id="red" x="-.5" y="-.5" width="2" height="2"><feFlood flood-color="red"/></filter>
+ <clipPath id="clip"><circle cx="15" cy="46" r="8"/></clipPath>
+ <mask id="mask"><rect x="34" y="35" width="11" height="24" fill="white"/></mask>
+</defs>
+<rect x="5" y="5" width="20" height="20" filter="url(#bbox)"/>
+<rect x="35" y="5" width="20" height="20" filter="url(#user)"/>
+<g opacity=".5" clip-path="url(#clip)" filter="url(#red)"><rect x="7" y="38" width="16" height="16"/></g>
+<rect x="37" y="38" width="16" height="16" filter="url(#red)" mask="url(#mask)" opacity=".5"/>
+</svg>

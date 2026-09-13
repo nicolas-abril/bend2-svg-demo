@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" stroke="purple" stroke-width="3">
+<g transform="translate(4 4) scale(2 .7)"><rect width="25" height="22" vector-effect="non-scaling-stroke"/></g>
+<path d="M0 0L20 7L5 13" transform="translate(7 27) scale(2)" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="bevel"/>
+<path d="M0 0H26" transform="translate(6 60) scale(2)" vector-effect="non-scaling-stroke" stroke-dasharray="4 3"/>
+</svg>

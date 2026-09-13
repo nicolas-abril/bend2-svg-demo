@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="offset" x="-50%" y="-50%" width="200%" height="200%"><feOffset dx="3" dy="2"/></filter>
+ <filter id="flood"><feFlood flood-color="#369" flood-opacity=".7"/></filter>
+ <filter id="matrix" color-interpolation-filters="sRGB"><feColorMatrix values="0 0 1 0 0  1 0 0 0 0  0 1 0 0 0  0 0 0 1 0"/></filter>
+ <filter id="transfer" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="table" tableValues="1 0"/><feFuncG type="linear" slope=".5" intercept=".2"/><feFuncB type="gamma" amplitude=".8" exponent="2" offset=".1"/><feFuncA type="linear" slope=".7"/></feComponentTransfer></filter>
+ <linearGradient id="g"><stop stop-color="#e84"/><stop offset="1" stop-color="#28d"/></linearGradient>
+</defs>
+<rect x="5" y="5" width="18" height="18" fill="#e43" filter="url(#offset)"/>
+<circle cx="46" cy="15" r="9" filter="url(#flood)"/>
+<rect x="5" y="35" width="20" height="20" fill="url(#g)" filter="url(#matrix)"/>
+<rect x="37" y="35" width="20" height="20" fill="url(#g)" filter="url(#transfer)"/>
+</svg>

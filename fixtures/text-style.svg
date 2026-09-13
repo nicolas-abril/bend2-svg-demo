@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" font-family="Noto Sans" font-size="12">
+<style>.bold{font-weight:bold;fill:#296b9d}.italic{font-style:italic;fill:#a44976}.both{font-style:italic;font-weight:700;fill:#4b8a55}</style>
+<text x="3" y="13">Normal</text><text class="bold" x="3" y="29">Bold AV</text>
+<text class="italic" x="3" y="45">Italic</text><text class="both" x="3" y="60">Bold Italic</text>
+</svg>

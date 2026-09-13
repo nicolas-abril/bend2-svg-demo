@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<pattern id="meet" patternUnits="userSpaceOnUse" x="1" y="2" width="10" height="8" viewBox="-2 -1 4 4"><rect x="-2" y="-1" width="4" height="4" fill="#80b7d2"/><path d="M-2-1H2L-2 3Z" fill="#266588"/></pattern>
+<pattern id="none" width=".5" height=".25" viewBox="0 0 10 10" preserveAspectRatio="none"><rect width="10" height="10" fill="#dbc384"/><circle cx="5" cy="5" r="4" fill="#a67627"/></pattern>
+<pattern id="slice" patternUnits="userSpaceOnUse" width="10" height="8" viewBox="0 0 10 20" preserveAspectRatio="xMaxYMax slice"><rect width="10" height="20" fill="#d490c8"/><rect y="15" width="5" height="5" fill="#824574"/></pattern>
+</defs>
+<rect x="2" y="2" width="28" height="28" fill="url(#meet)"/>
+<rect x="34" y="2" width="28" height="28" fill="url(#none)"/>
+<rect x="2" y="34" width="60" height="28" fill="url(#slice)"/>
+</svg>

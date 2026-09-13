@@ -1,0 +1,197 @@
+{
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "innerAttrs": "width=\"20\" height=\"10\"",
+      "aspect": "xMidYMid meet",
+      "chromiumBox": [
+        4,
+        4,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        14,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\"",
+      "aspect": "none",
+      "chromiumBox": [
+        4,
+        4,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        4,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\"",
+      "aspect": "xMaxYMax slice",
+      "chromiumBox": [
+        4,
+        4,
+        23,
+        23
+      ],
+      "resvgBox": [
+        64,
+        64,
+        -1,
+        -1
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 20 10\"",
+      "aspect": "xMidYMid meet",
+      "chromiumBox": [
+        4,
+        14,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        14,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 20 10\"",
+      "aspect": "none",
+      "chromiumBox": [
+        4,
+        4,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        4,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 20 10\"",
+      "aspect": "xMaxYMax slice",
+      "chromiumBox": [
+        4,
+        14,
+        23,
+        23
+      ],
+      "resvgBox": [
+        64,
+        64,
+        -1,
+        -1
+      ]
+    },
+    {
+      "innerAttrs": "viewBox=\"0 0 20 10\"",
+      "aspect": "xMidYMid meet",
+      "chromiumBox": [
+        4,
+        14,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        14,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "viewBox=\"0 0 20 10\"",
+      "aspect": "none",
+      "chromiumBox": [
+        4,
+        4,
+        23,
+        23
+      ],
+      "resvgBox": [
+        4,
+        4,
+        23,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "viewBox=\"0 0 20 10\"",
+      "aspect": "xMaxYMax slice",
+      "chromiumBox": [
+        4,
+        14,
+        23,
+        23
+      ],
+      "resvgBox": [
+        64,
+        64,
+        -1,
+        -1
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 10 10\"",
+      "aspect": "xMidYMid meet",
+      "chromiumBox": [
+        4,
+        4,
+        43,
+        23
+      ],
+      "resvgBox": [
+        14,
+        14,
+        33,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 10 10\"",
+      "aspect": "none",
+      "chromiumBox": [
+        14,
+        4,
+        33,
+        23
+      ],
+      "resvgBox": [
+        14,
+        4,
+        33,
+        23
+      ]
+    },
+    {
+      "innerAttrs": "width=\"20\" height=\"10\" viewBox=\"0 0 10 10\"",
+      "aspect": "xMaxYMax slice",
+      "chromiumBox": [
+        4,
+        4,
+        43,
+        23
+      ],
+      "resvgBox": [
+        4,
+        4,
+        23,
+        23
+      ]
+    }
+  ]
+}

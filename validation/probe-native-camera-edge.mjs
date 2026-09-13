@@ -1,0 +1,3 @@
+import{readFileSync,writeFileSync}from'node:fs';import{PNG}from'pngjs';import{dirname,resolve}from'node:path';
+const v=dirname(import.meta.filename),p=PNG.sync.read(readFileSync(resolve(v,'native-camera-key-left.png'))),e=readFileSync(resolve(v,'native-camera-pan-expected.ppm'),'utf8').trim().split(/\s+/).slice(4).map(Number),out=[];
+for(let y=0;y<233;y++)for(let x=0;x<256;x++){const a=Array.from(p.data.slice(((y+58)*p.width+x+34)*4,((y+58)*p.width+x+34)*4+4)),b=e.slice((y*256+x)*3,(y*256+x)*3+3);if(a.slice(0,3).some((n,i)=>n!==b[i]))out.push({x,y,actual:a,expected:b});}writeFileSync(resolve(v,'native-camera-edge-probe.json'),JSON.stringify(out,null,2)+'\n');console.log(out);

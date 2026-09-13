@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "method": "Independently emitted C is byte-identical after the shared-state source-undo change",
+  "previousStateSHA256": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+  "stateSHA256": "83513370e590e7df992d0daa684a142890585fa1e00bcd8cefa823bf9272a036",
+  "sourceSHA256": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+  "generatedCSHA256": "62882a7332344e78bb728dc39f67618e762bbc0a4f091e8b58bef813b5f59333",
+  "previousGeneratedCSHA256": "62882a7332344e78bb728dc39f67618e762bbc0a4f091e8b58bef813b5f59333",
+  "binarySHA256": "7a162c92e8ca4717e4dfc5a45404b645aa64776f742d468b955c6c3b4f7c50e7"
+}

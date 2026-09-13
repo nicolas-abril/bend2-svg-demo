@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<style>
+rect { fill: #eee; }
+.panel > rect.tile { fill:#377fae; }
+.panel g rect[data-kind^="warm"] { fill:#d46e3c; }
+#first + rect { stroke:#a14580; stroke-width:2; }
+#first ~ rect[data-kind$="end"] { fill:#59a370; }
+rect[data-tag~="mark"] { opacity:.5; }
+rect[data-lang|="en"] { stroke:#514176; stroke-width:2; }
+.panel rect[data-kind*="center"] { fill:#9b5eae; }
+rect[data-case="RED" i] { fill:#d5484b; }
+</style>
+<g class="panel"><rect id="first" class="tile" x="3" y="3" width="16" height="24"/>
+<rect class="tile" data-kind="the-end" x="24" y="3" width="16" height="24"/>
+<rect class="tile" data-tag="one mark three" x="45" y="3" width="16" height="24"/>
+<g><rect data-kind="warm-start" x="3" y="36" width="16" height="24"/>
+<rect data-kind="the-center-cell" data-lang="en-US" x="24" y="36" width="16" height="24"/>
+<rect data-case="red" x="45" y="36" width="16" height="24"/></g></g>
+</svg>

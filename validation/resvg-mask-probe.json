@@ -1,0 +1,13 @@
+{
+  "reference": "@resvg/resvg-js 2.6.2",
+  "results": [
+    {
+      "probe": "Remove mask-mode:alpha override",
+      "changedPixels": 0
+    },
+    {
+      "probe": "Remove mask color-interpolation=linearRGB",
+      "changedPixels": 0
+    }
+  ]
+}

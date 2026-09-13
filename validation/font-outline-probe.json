@@ -1,0 +1,21 @@
+{
+  "diagnostic": "Same font outlines rendered as independent SVG paths versus SVG text; Bend positions retained to isolate geometry/rasterization from shaping.",
+  "results": [
+    {
+      "name": "text",
+      "meanAbsoluteError": 0.3943684895833333,
+      "rootMeanSquareError": 2.4792104337873377,
+      "maxChannelError": 32
+    },
+    {
+      "name": "outlines",
+      "meanAbsoluteError": 0.3943684895833333,
+      "rootMeanSquareError": 2.4792104337873377,
+      "maxChannelError": 32
+    }
+  ],
+  "betweenReferences": {
+    "meanAbsoluteError": 0,
+    "maxChannelError": 0
+  }
+}

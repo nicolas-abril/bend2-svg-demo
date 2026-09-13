@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><g id="a"><rect width="12" height="12" fill="teal"/><use href="#b" x="14"/></g><g id="b"><circle cx="6" cy="6" r="6" fill="orange"/><use href="#a" x="14"/></g><use id="self" href="#self"/></defs>
+<use href="#a" x="4" y="4"/>
+<use href="#self" x="4" y="28"/>
+<use href="#a" x="4" y="40"/>
+</svg>

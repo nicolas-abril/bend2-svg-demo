@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs><marker id="m" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto" markerUnits="userSpaceOnUse" overflow="visible"><path d="M-1 1L6 3L-1 5Z" fill="#36a"/></marker><marker id="s" markerWidth="4" markerHeight="4" refX="2" refY="2" markerUnits="userSpaceOnUse"><rect width="4" height="4" fill="#e33"/></marker></defs>
+<g fill="none" stroke="#bbb" marker-start="url(#s)" marker-mid="url(#m)" marker-end="url(#s)">
+<path d="M8 8L28 8L28 24Z"/>
+<path d="M40 8L40 8L55 8M42 22L55 22"/>
+<path d="M8 42Q8 28 24 42T40 42A8 8 0 0 1 56 42"/>
+<polyline points="8,57 24,53 40,57 56,53"/>
+</g></svg>

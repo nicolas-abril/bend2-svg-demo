@@ -1,0 +1,34 @@
+{
+  "fixture": "pattern-transform.svg",
+  "description": "resvg render at larger resolution, then area-average to 64px; diagnostic only, not substituted for primary reference",
+  "results": [
+    {
+      "referenceScale": 1,
+      "meanAbsoluteError": 8.620930989583334,
+      "rootMeanSquareError": 26.21950423527779,
+      "maxChannelError": 178,
+      "pixelsAbove32": 469
+    },
+    {
+      "referenceScale": 2,
+      "meanAbsoluteError": 4.05419921875,
+      "rootMeanSquareError": 16.040004310512202,
+      "maxChannelError": 168,
+      "pixelsAbove32": 271
+    },
+    {
+      "referenceScale": 4,
+      "meanAbsoluteError": 1.7833658854166667,
+      "rootMeanSquareError": 8.15536194079801,
+      "maxChannelError": 103,
+      "pixelsAbove32": 122
+    },
+    {
+      "referenceScale": 8,
+      "meanAbsoluteError": 0.948486328125,
+      "rootMeanSquareError": 3.9757668449254333,
+      "maxChannelError": 47,
+      "pixelsAbove32": 40
+    }
+  ]
+}

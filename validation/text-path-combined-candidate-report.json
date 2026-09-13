@@ -1,0 +1,102 @@
+{
+  "sourceSHA256": {
+    "svg.bend": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+    "state.bend": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "priorFixtureCount": 100,
+  "fixtureCount": 105,
+  "passing": 82,
+  "newResults": [
+    {
+      "fixture": "text-path-styles.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 1.849609375,
+      "rootMeanSquareError": 8.934813480262658,
+      "maxChannelError": 112,
+      "differingPixels": 378,
+      "pixelsAbove32": 128,
+      "fractionAbove32": 0.03125,
+      "reference": "resvg",
+      "features": [
+        "path text spans",
+        "bold and italic faces",
+        "gradient paint",
+        "textLength fitting"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 0.7337239583333334,
+      "rootMeanSquareError": 4.534966148578179,
+      "maxChannelError": 101,
+      "differingPixels": 197,
+      "pixelsAbove32": 42,
+      "fractionAbove32": 0.01025390625,
+      "reference": "resvg",
+      "features": [
+        "text on a basic-shape equivalent path"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "meanAbsoluteError": 1.658935546875,
+      "rootMeanSquareError": 7.231067008272362,
+      "maxChannelError": 88,
+      "pixelsAbove32": 57,
+      "reference": "chromium",
+      "features": [
+        "numeric and percentage startOffset",
+        "pathLength calibration",
+        "position lists and glyph rotation"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "meanAbsoluteError": 1.8882649739583333,
+      "rootMeanSquareError": 6.558971025355908,
+      "maxChannelError": 66,
+      "pixelsAbove32": 64,
+      "reference": "chromium",
+      "features": [
+        "referenced path transforms",
+        "direct path data",
+        "ordinary text before and after a textPath"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "width": 64,
+      "height": 64,
+      "meanAbsoluteError": 2.8317057291666665,
+      "rootMeanSquareError": 10.108461286631776,
+      "maxChannelError": 110,
+      "differingPixels": 623,
+      "pixelsAbove32": 155,
+      "fractionAbove32": 0.037841796875,
+      "reference": "resvg",
+      "features": [
+        "straight and curved text paths",
+        "arcs",
+        "startOffset and anchors"
+      ],
+      "passed": false
+    }
+  ],
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  }
+}

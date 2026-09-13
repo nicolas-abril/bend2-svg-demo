@@ -1,0 +1,51 @@
+{
+  "sourceSHA256": "71687dba69cfe587672cd62b9a1ce950f2c05131e3b4664b4630afdb8f2cbab3",
+  "referenceVersion": "155.0",
+  "referenceScale": 1,
+  "results": [
+    {
+      "fixture": "convolve-alpha.svg",
+      "meanAbsoluteError": 4.141276041666667,
+      "rootMeanSquareError": 12.370843157063574,
+      "maxChannelError": 41,
+      "pixelsAbove32": 356,
+      "passed": false
+    },
+    {
+      "fixture": "convolve-edges.svg",
+      "meanAbsoluteError": 0,
+      "rootMeanSquareError": 0,
+      "maxChannelError": 0,
+      "pixelsAbove32": 0,
+      "passed": true
+    },
+    {
+      "fixture": "convolve-graph.svg",
+      "meanAbsoluteError": 0.11588541666666667,
+      "rootMeanSquareError": 0.3530927345141311,
+      "maxChannelError": 3,
+      "pixelsAbove32": 0,
+      "passed": true
+    },
+    {
+      "fixture": "convolve-kernels.svg",
+      "meanAbsoluteError": 0.10196940104166667,
+      "rootMeanSquareError": 0.7477722992050009,
+      "maxChannelError": 21,
+      "pixelsAbove32": 0,
+      "passed": true
+    },
+    {
+      "fixture": "convolve-units.svg",
+      "meanAbsoluteError": 0.23201497395833334,
+      "rootMeanSquareError": 4.124713926317598,
+      "maxChannelError": 204,
+      "pixelsAbove32": 6,
+      "passed": true
+    }
+  ],
+  "kernelUnitLengthProbe": {
+    "changedPixels": 704,
+    "maxChannelChange": 183
+  }
+}

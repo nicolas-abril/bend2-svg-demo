@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <radialGradient id="a"><stop stop-color="white"/><stop offset="1" stop-color="navy"/></radialGradient>
+ <radialGradient id="b" href="#a" fx="25%" fy="30%"/>
+ <radialGradient id="c" href="#a" fr="20%"/>
+ <radialGradient id="d" href="#a" gradientTransform="translate(.1 0) scale(.7 1)" spreadMethod="reflect"/>
+</defs>
+<rect x="2" y="2" width="28" height="28" fill="url(#a)"/>
+<rect x="34" y="2" width="28" height="28" fill="url(#b)"/>
+<rect x="2" y="34" width="28" height="28" fill="url(#c)"/>
+<rect x="34" y="34" width="28" height="28" fill="url(#d)"/>
+</svg>

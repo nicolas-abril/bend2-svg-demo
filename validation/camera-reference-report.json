@@ -1,0 +1,38 @@
+{
+  "integrated": true,
+  "sourceSHA256": "acbc0c3c9275fe6c0901244c2568c305fd619b89f1e06a717a89d8f1430d5b65",
+  "renderSHA256": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+  "reference": "@resvg/resvg-js 2.6.2; rendered at fitted size and centered in the white output matrix",
+  "results": [
+    {
+      "name": "camera-wide",
+      "referenceWidth": 256,
+      "referenceHeight": 128,
+      "meanAbsoluteError": 0.005655924479166667,
+      "rootMeanSquareError": 0.24269100885951667,
+      "maxChannelError": 27,
+      "pixelsAbove32": 0,
+      "passed": true
+    },
+    {
+      "name": "camera-tall",
+      "referenceWidth": 128,
+      "referenceHeight": 256,
+      "meanAbsoluteError": 0.011042277018229166,
+      "rootMeanSquareError": 0.3282567319893899,
+      "maxChannelError": 13,
+      "pixelsAbove32": 0,
+      "passed": true
+    },
+    {
+      "name": "camera-resources",
+      "referenceWidth": 256,
+      "referenceHeight": 128,
+      "meanAbsoluteError": 0.11688232421875,
+      "rootMeanSquareError": 1.4089311824297583,
+      "maxChannelError": 42,
+      "pixelsAbove32": 11,
+      "passed": true
+    }
+  ]
+}

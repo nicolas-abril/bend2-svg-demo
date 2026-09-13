@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<style>
+.start { stop-color:#317fb5; }.end {stop-color:#b95889;stop-opacity:.8;}
+.target {fill:url(#paint);clip-path:url(#cut);}
+#cut circle {r:12px;}
+#tile .cell {fill:#d77a34;}
+.instance {fill:#50956f;}
+#mask rect {fill:white;}
+.masked {mask:url(#mask);fill:#aa4e7b;}
+</style>
+<defs>
+<linearGradient id="paint"><stop class="start"/><stop class="end" offset="1"/></linearGradient>
+<clipPath id="cut"><circle cx="16" cy="16" r="1"/></clipPath>
+<g id="shape"><rect width="24" height="24"/></g>
+<pattern id="tile" patternUnits="userSpaceOnUse" width="8" height="8"><rect class="cell" width="4" height="6"/></pattern>
+<mask id="mask"><rect x="34" y="36" width="12" height="24"/></mask>
+</defs>
+<rect class="target" width="32" height="32"/>
+<use class="instance" href="#shape" x="36" y="4"/>
+<rect x="4" y="36" width="24" height="24" fill="url(#tile)"/>
+<rect class="masked" x="34" y="36" width="26" height="24"/>
+</svg>

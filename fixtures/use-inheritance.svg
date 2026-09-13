@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" color="navy">
+<defs fill="red"><g id="tile"><rect width="12" height="12" fill="inherit"/><path d="M0 16H12" stroke="inherit" stroke-width="inherit" stroke-linecap="inherit"/></g><symbol id="stamp" width="16" height="16" viewBox="0 0 8 8"><rect width="8" height="8" fill="currentColor"/></symbol></defs>
+<use href="#tile" x="4" y="4" fill="teal" stroke="purple" stroke-width="4" stroke-linecap="round"/>
+<use href="#tile" x="30" y="4" fill="orange" stroke="red" stroke-width="2"/>
+<use href="#stamp" x="4" y="36" color="lime"/>
+<use href="#stamp" x="32" y="36" width="24" height="16" color="orange"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="multiply" color-interpolation-filters="sRGB"><feFlood flood-color="#8c4" flood-opacity=".6" result="bg"/><feBlend in="SourceGraphic" in2="bg" mode="multiply"/></filter>
+ <filter id="screen"><feFlood flood-color="#8c4" flood-opacity=".6" result="bg"/><feBlend in="SourceGraphic" in2="bg" mode="screen"/></filter>
+ <filter id="dark"><feFlood flood-color="#48c" result="bg"/><feBlend in="SourceGraphic" in2="bg" mode="darken"/></filter>
+ <filter id="light"><feFlood flood-color="#48c" result="bg"/><feBlend in="SourceGraphic" in2="bg" mode="lighten"/></filter>
+</defs>
+<circle cx="15" cy="15" r="9" fill="#d64" fill-opacity=".7" filter="url(#multiply)"/>
+<circle cx="47" cy="15" r="9" fill="#d64" fill-opacity=".7" filter="url(#screen)"/>
+<circle cx="15" cy="47" r="9" fill="#d64" fill-opacity=".7" filter="url(#dark)"/>
+<circle cx="47" cy="47" r="9" fill="#d64" fill-opacity=".7" filter="url(#light)"/>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "actual": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "delete": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "drag": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect style=\";transform:matrix(1,0 0,1 8,8 )\" fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "nudge": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect style=\";transform:matrix(1,0 0,1 2,0 )\" fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "paint": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect style=\";fill:#4682b4\" fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "pan": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "start": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "up": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>",
+  "zoom": "<svg height=\"256\" width=\"512\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#c43\" height=\"96\" width=\"128\" y=\"64\" x=\"64\" id=\"box\"></rect><circle fill=\"#29a\" r=\"48\" cy=\"128\" cx=\"400\"></circle></svg>"
+}

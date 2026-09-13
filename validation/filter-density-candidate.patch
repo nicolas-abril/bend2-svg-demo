@@ -1,0 +1,11 @@
+--- svg.bend
++++ svg.bend
+@@ -6038,7 +6038,7 @@
+ def filter.render(+scene: Scene<Brush>, +region: Bounds, +units: Matrix, +viewport: Point, +primitives: List<&2, Element>, space: Matrix, +aa: U32) -> Raster:
+   +world = bounds.transform(region, units)
+   +area = bounds.expand(bounds.merge(world, scene.coverage(Con{scene, Nil{}}, bounds.empty())), filter.padding(primitives, units, 0.0))
+-  +format = raster.format(area, (1.0 / max(filter.density(space), 0.000001) : F32))
++  +format = raster.format(area, (0.5 / max(filter.density(space), 0.000001) : F32))
+   +raw = {FilterInput{raster.scene(format, Con{filter.source(scene), Nil{}}, aa), region, False{}, True{}} : FilterInput}
+   +source = {FilterInput{filter.draw(format, FilterCopy{}, raw, raw, FilterWindow{region, matrix.inverse(units)}, False{}, aa), region, False{}, True{}} : FilterInput}
+   +result = filter.chain(primitives, format, source, source, Nil{}, region, units, viewport, aa)

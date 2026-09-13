@@ -1,0 +1,38 @@
+{
+  "experimental": true,
+  "sourceSHA256": "9078af2d90a95e8de565217a320bf19e8c659ec8343fe3ab8a1606fbe477dcbd",
+  "chromiumVersion": "153.0.8010.12",
+  "note": "The fixture embeds a Noto Sans subset for the independent browser image. Bend uses its bundled matching Noto outlines; this does not claim support for user font-face decoding.",
+  "results": [
+    {
+      "variant": "text-before",
+      "chromium": {
+        "meanAbsoluteError": 11.991943359375,
+        "rootMeanSquareError": 35.13790146182075,
+        "maxChannelError": 219,
+        "pixelsAbove32": 551
+      },
+      "resvg": {
+        "meanAbsoluteError": 10.059733072916666,
+        "rootMeanSquareError": 33.67076926838768,
+        "maxChannelError": 219,
+        "pixelsAbove32": 417
+      }
+    },
+    {
+      "variant": "text",
+      "chromium": {
+        "meanAbsoluteError": 2.0204264322916665,
+        "rootMeanSquareError": 7.372323622777173,
+        "maxChannelError": 99,
+        "pixelsAbove32": 115
+      },
+      "resvg": {
+        "meanAbsoluteError": 12.386067708333334,
+        "rootMeanSquareError": 38.451079494897364,
+        "maxChannelError": 219,
+        "pixelsAbove32": 517
+      }
+    }
+  ]
+}

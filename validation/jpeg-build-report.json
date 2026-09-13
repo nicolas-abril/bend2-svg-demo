@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "command": "make -j3 all check",
+  "exitCode": 0,
+  "checks": [
+    "check-use.bend",
+    "check-filters-graph.bend",
+    "check-png.bend",
+    "check-css-media.bend",
+    "check-colors.bend",
+    "check-coverage.bend",
+    "check-mask.bend",
+    "check-xml.bend",
+    "check-numbers.bend",
+    "check-marker-geometry.bend",
+    "check.bend",
+    "check-editor.bend",
+    "check-state.bend",
+    "check-raster.bend",
+    "check-jpeg-bits.bend",
+    "check-paint.bend",
+    "check-text.bend",
+    "check-jpeg-errors.bend",
+    "check-filters.bend",
+    "check-pattern.bend",
+    "check-text-length.bend",
+    "check-images.bend",
+    "check-stroke.bend",
+    "check-markers.bend",
+    "check-css.bend",
+    "check-inflate.bend",
+    "check-viewport.bend",
+    "check-gesture.bend",
+    "check-jpeg.bend",
+    "check-bytes.bend"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "51cbfe5f0bf707280ff8d231c68f6d45ccbadf13d1f79038f9b878849e495834",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "5cb0b73bf6552fae20b5770bd1b050b7bb28edd6a813f11209b1157f3d5522d1"
+  },
+  "binaries": {
+    "native": {
+      "sha256": "3d9700ae74ecd59f5d95c85f314307c96184ad169d4c408d200fd2f767272027",
+      "bytes": 2343032
+    },
+    "web": {
+      "sha256": "809554486a67b55403aba2a26d0ac858829bea0abb9d736dca7382b17128327f",
+      "bytes": 2566368
+    },
+    "render": {
+      "sha256": "f728fed3653489302db71bde718e12498b3be94c98b5c3efedaaa16e6e02ecb6",
+      "bytes": 2383464
+    }
+  },
+  "fixtureMatrices": 89,
+  "exactBackendParity": true,
+  "timestamp": "2026-09-11T08:39:16.141540+00:00"
+}

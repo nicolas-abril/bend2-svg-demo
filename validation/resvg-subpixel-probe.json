@@ -1,0 +1,68 @@
+[
+  {
+    "name": "rect",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><rect x=\"43.308\" y=\"3.88\" width=\"1.056\" height=\"9.12\"/></svg>",
+    "row": [
+      255,
+      255,
+      63,
+      191,
+      255
+    ]
+  },
+  {
+    "name": "path",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><path d=\"M44.364 13H43.308V3.88H44.364Z\"/></svg>",
+    "row": [
+      255,
+      255,
+      63,
+      191,
+      255
+    ]
+  },
+  {
+    "name": "matrix",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><path d=\"M173 0H85V760H173Z\" transform=\"matrix(.012 0 0 -.012 42.288 13)\"/></svg>",
+    "row": [
+      255,
+      255,
+      63,
+      191,
+      255
+    ]
+  },
+  {
+    "name": "integer",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><rect x=\"43\" y=\"4\" width=\"1\" height=\"9\"/></svg>",
+    "row": [
+      255,
+      255,
+      0,
+      255,
+      255
+    ]
+  },
+  {
+    "name": "quarter",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><rect x=\"43.25\" y=\"4\" width=\"1.125\" height=\"9\"/></svg>",
+    "row": [
+      255,
+      255,
+      63,
+      127,
+      255
+    ]
+  },
+  {
+    "name": "decimal",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"16\"><rect x=\"43.3\" y=\"4\" width=\"1.06\" height=\"9\"/></svg>",
+    "row": [
+      255,
+      255,
+      63,
+      191,
+      255
+    ]
+  }
+]

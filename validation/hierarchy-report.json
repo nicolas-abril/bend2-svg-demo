@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "fixtures": 24,
+  "check": "All raster matrices byte-identical before and after stroke, fill and clip bounds hierarchies"
+}

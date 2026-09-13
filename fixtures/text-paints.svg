@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" font-family="Noto Sans" font-size="18" font-weight="bold">
+<defs><linearGradient id="g"><stop stop-color="#287cb0"/><stop offset="1" stop-color="#c75383"/></linearGradient>
+<clipPath id="cut"><rect x="0" y="39" width="64" height="17"/></clipPath></defs>
+<text x="3" y="20" fill="url(#g)">Bend</text>
+<text x="3" y="40" fill="none" stroke="#367fa5" stroke-width=".7">SVG</text>
+<text x="3" y="61" fill="#4e9466" clip-path="url(#cut)">Clip</text>
+</svg>

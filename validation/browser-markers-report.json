@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 23.550376958,
+  "checks": [
+    "load marker context paints",
+    "pick marker selects owning path",
+    "stroke edit updates context paint",
+    "edit marker-end",
+    "exact source and color undo",
+    "drag via marker and undo",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "86a1bfa504bda81f47365cfbb80503c31eed5bbfc53355b0a8ea48a18c70a3bd",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "ce09c1ae0ad5d4cde33436da0e60b0db881fbffbb254a2c9a3b2895b9ea627f8"
+  },
+  "before": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><defs>\n<linearGradient gradientUnits=\"userSpaceOnUse\" y2=\"0\" x2=\"64\" y1=\"0\" x1=\"0\" id=\"grad\"><stop stop-color=\"#f33\"></stop><stop stop-color=\"#36f\" offset=\"1\"></stop></linearGradient>\n<pattern patternUnits=\"userSpaceOnUse\" height=\"4\" width=\"4\" id=\"pat\"><rect fill=\"#fb3\" height=\"4\" width=\"4\"></rect><rect fill=\"#386\" height=\"4\" width=\"2\"></rect></pattern>\n<marker markerUnits=\"userSpaceOnUse\" refY=\"4\" refX=\"4\" markerHeight=\"8\" markerWidth=\"8\" id=\"m\"><circle fill=\"context-stroke\" r=\"4\" cy=\"4\" cx=\"4\"></circle></marker>\n<marker markerUnits=\"userSpaceOnUse\" refY=\"4\" refX=\"4\" markerHeight=\"8\" markerWidth=\"8\" id=\"f\"><rect fill-opacity=\".5\" fill=\"context-fill\" height=\"8\" width=\"8\"></rect></marker>\n</defs><g marker-end=\"url(#m)\" marker-mid=\"url(#m)\" marker-start=\"url(#m)\" stroke-width=\"2\" fill=\"none\">\n<path stroke-opacity=\".25\" stroke=\"#c43\" d=\"M8 10L30 10L54 10\"></path>\n<path stroke=\"url(#grad)\" d=\"M8 25L30 25L54 25\"></path>\n<path stroke=\"url(#pat)\" d=\"M8 40L30 40L54 40\"></path>\n<path marker-end=\"url(#f)\" marker-mid=\"url(#f)\" marker-start=\"url(#f)\" fill-opacity=\"0\" fill=\"rgba(20,120,200,.7)\" stroke=\"none\" d=\"M8 55L30 55L54 55\"></path>\n</g></svg>\n",
+  "colored": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><defs>\n<linearGradient gradientUnits=\"userSpaceOnUse\" y2=\"0\" x2=\"64\" y1=\"0\" x1=\"0\" id=\"grad\"><stop stop-color=\"#f33\"></stop><stop stop-color=\"#36f\" offset=\"1\"></stop></linearGradient>\n<pattern patternUnits=\"userSpaceOnUse\" height=\"4\" width=\"4\" id=\"pat\"><rect fill=\"#fb3\" height=\"4\" width=\"4\"></rect><rect fill=\"#386\" height=\"4\" width=\"2\"></rect></pattern>\n<marker markerUnits=\"userSpaceOnUse\" refY=\"4\" refX=\"4\" markerHeight=\"8\" markerWidth=\"8\" id=\"m\"><circle fill=\"context-stroke\" r=\"4\" cy=\"4\" cx=\"4\"></circle></marker>\n<marker markerUnits=\"userSpaceOnUse\" refY=\"4\" refX=\"4\" markerHeight=\"8\" markerWidth=\"8\" id=\"f\"><rect fill-opacity=\".5\" fill=\"context-fill\" height=\"8\" width=\"8\"></rect></marker>\n</defs><g marker-end=\"url(#m)\" marker-mid=\"url(#m)\" marker-start=\"url(#m)\" stroke-width=\"2\" fill=\"none\">\n<path style=\";stroke:lime\" stroke-opacity=\".25\" stroke=\"#c43\" d=\"M8 10L30 10L54 10\"></path>\n<path stroke=\"url(#grad)\" d=\"M8 25L30 25L54 25\"></path>\n<path stroke=\"url(#pat)\" d=\"M8 40L30 40L54 40\"></path>\n<path marker-end=\"url(#f)\" marker-mid=\"url(#f)\" marker-start=\"url(#f)\" fill-opacity=\"0\" fill=\"rgba(20,120,200,.7)\" stroke=\"none\" d=\"M8 55L30 55L54 55\"></path>\n</g></svg>\n"
+}

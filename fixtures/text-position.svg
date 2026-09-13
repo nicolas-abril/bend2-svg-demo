@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" font-family="Noto Sans" font-size="12">
+<text x="3 20 40" y="15" fill="#2879a8">ABC</text>
+<text x="32" y="33" text-anchor="middle" fill="#aa4f72">Bend</text>
+<text x="61" y="50" text-anchor="end" letter-spacing="1" fill="#488c60">SVG</text>
+<text x="4" y="61" rotate="-10 0 10" font-size="9" fill="#946432">rotate</text>
+</svg>

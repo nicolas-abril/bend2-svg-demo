@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<style>.marked {marker:url(#a); fill:none;stroke:#999;stroke-width:2}.marked.special {marker-mid:url(#b)} #third{marker:url(#b)!important;marker-end:none}</style>
+<defs fill="#c32"><marker id="a" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z"/></marker><marker id="b" markerWidth="4" markerHeight="4" refX="2" refY="2" fill="#38a"><rect width="4" height="4"/></marker></defs>
+<g fill="lime" color="purple"><path class="marked" d="M8 10L30 10L54 10"/><path class="marked special" d="M8 25L30 25L54 25"/><path id="third" class="marked" d="M8 40L30 40L54 40" style="marker:url(#a)"/><path class="marked" d="M8 55L30 55L54 55" style="marker:url(#b);marker-mid:none;marker-end:url(#a)"/></g>
+</svg>

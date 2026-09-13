@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 40.556441,
+  "checks": [
+    "load functional gradient/mask/pattern colors",
+    "edit HWB plus alpha",
+    "combine percentage fill-opacity",
+    "exact source and color undo",
+    "uppercase named color",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "06809f607a3e992d9ca2e3fd05aacc36b798373fbf41dad6de587e8dd61576aa",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "dd5144f3e26e01f339815ebe929170a16c69f88884de0f0ea0d78e5d7fd4ae97"
+  },
+  "before": "<svg color=\"hsl(210 70% 45%)\" viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<linearGradient id=\"g\"><stop stop-color=\"rgb(100% 0 0 / 80%)\"></stop><stop stop-opacity=\"50%\" stop-color=\"hwb(240 0% 0%)\" offset=\"1\"></stop></linearGradient>\n<mask mask-type=\"alpha\" id=\"m\"><rect fill=\"hsl(0 0% 100% / 50%)\" height=\"64\" width=\"64\"></rect></mask>\n<pattern height=\"8\" width=\"8\" patternUnits=\"userSpaceOnUse\" id=\"p\"><rect fill=\"PAPAYAWHIP\" height=\"8\" width=\"8\"></rect><rect fill=\"hsl(330 70% 50%)\" height=\"4\" width=\"4\"></rect></pattern>\n</defs>\n<rect fill=\"url(#g)\" height=\"16\" width=\"32\"></rect>\n<rect fill=\"CURRENTCOLOR\" height=\"16\" width=\"32\" x=\"32\"></rect>\n<g opacity=\"50%\"><rect fill=\"hsl(120 100% 50%)\" height=\"16\" width=\"32\" y=\"16\"></rect></g>\n<rect fill-opacity=\"25%\" fill=\"rgb(255 0 0)\" height=\"16\" width=\"32\" y=\"16\" x=\"32\"></rect>\n<rect mask=\"url(#m)\" fill=\"rgb(0 0 255)\" height=\"16\" width=\"32\" y=\"32\"></rect>\n<rect fill=\"url(#p)\" height=\"16\" width=\"32\" y=\"32\" x=\"32\"></rect>\n<path stroke-opacity=\"50%\" stroke-width=\"8\" stroke=\"hwb(180 0% 0%)\" d=\"M4 56H28\"></path>\n<rect style=\"fill:rgba(100%, 50%, 0%, 80%);fill-opacity:50%\" height=\"16\" width=\"32\" y=\"48\" x=\"32\"></rect>\n</svg>\n",
+  "colored": "<svg color=\"hsl(210 70% 45%)\" viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n<linearGradient id=\"g\"><stop stop-color=\"rgb(100% 0 0 / 80%)\"></stop><stop stop-opacity=\"50%\" stop-color=\"hwb(240 0% 0%)\" offset=\"1\"></stop></linearGradient>\n<mask mask-type=\"alpha\" id=\"m\"><rect fill=\"hsl(0 0% 100% / 50%)\" height=\"64\" width=\"64\"></rect></mask>\n<pattern height=\"8\" width=\"8\" patternUnits=\"userSpaceOnUse\" id=\"p\"><rect fill=\"PAPAYAWHIP\" height=\"8\" width=\"8\"></rect><rect fill=\"hsl(330 70% 50%)\" height=\"4\" width=\"4\"></rect></pattern>\n</defs>\n<rect fill=\"url(#g)\" height=\"16\" width=\"32\"></rect>\n<rect style=\";fill:hwb(120 0% 0% / 50%)\" fill=\"CURRENTCOLOR\" height=\"16\" width=\"32\" x=\"32\"></rect>\n<g opacity=\"50%\"><rect fill=\"hsl(120 100% 50%)\" height=\"16\" width=\"32\" y=\"16\"></rect></g>\n<rect fill-opacity=\"25%\" fill=\"rgb(255 0 0)\" height=\"16\" width=\"32\" y=\"16\" x=\"32\"></rect>\n<rect mask=\"url(#m)\" fill=\"rgb(0 0 255)\" height=\"16\" width=\"32\" y=\"32\"></rect>\n<rect fill=\"url(#p)\" height=\"16\" width=\"32\" y=\"32\" x=\"32\"></rect>\n<path stroke-opacity=\"50%\" stroke-width=\"8\" stroke=\"hwb(180 0% 0%)\" d=\"M4 56H28\"></path>\n<rect style=\"fill:rgba(100%, 50%, 0%, 80%);fill-opacity:50%\" height=\"16\" width=\"32\" y=\"48\" x=\"32\"></rect>\n</svg>\n"
+}

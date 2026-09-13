@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><mask id="s"><rect width="48" height="32" fill="red" opacity=".5"/><rect x="16" width="48" height="32" fill="lime" opacity=".5"/></mask>
+<mask id="l" color-interpolation="linearRGB"><rect y="32" width="48" height="32" fill="red" opacity=".5"/><rect x="16" y="32" width="48" height="32" fill="lime" opacity=".5"/></mask></defs>
+<rect width="64" height="32" fill="purple" mask="url(#s)"/><rect y="32" width="64" height="32" fill="purple" mask="url(#l)"/>
+</svg>

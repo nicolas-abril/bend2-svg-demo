@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "durationSeconds": 38.173758584000005,
+  "checks": [
+    "open masked SVG",
+    "masked-out picking leaves document unchanged",
+    "select visible part",
+    "remove mask using property control",
+    "preserve mask definitions",
+    "undo mask edit",
+    "no browser errors"
+  ],
+  "before": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs><mask maskContentUnits=\"objectBoundingBox\" id=\"half\"><rect fill=\"white\" height=\"1\" width=\".5\"></rect></mask>\n<mask height=\".5\" width=\".5\" y=\".25\" x=\".25\" id=\"region\"><rect fill=\"white\" height=\"100%\" width=\"100%\"></rect></mask>\n<mask height=\"20\" width=\"16\" y=\"4\" x=\"4\" maskUnits=\"userSpaceOnUse\" id=\"user\"><rect fill=\"white\" height=\"30\" width=\"30\"></rect></mask></defs>\n<rect mask=\"url(#half)\" fill=\"teal\" height=\"24\" width=\"24\" y=\"4\" x=\"4\"></rect>\n<g transform=\"translate(34 4)\" mask=\"url(#half)\"><rect fill=\"red\" height=\"20\" width=\"10\"></rect><rect fill=\"blue\" height=\"20\" width=\"14\" y=\"4\" x=\"10\"></rect></g>\n<rect mask=\"url(#region)\" fill=\"purple\" height=\"24\" width=\"24\" y=\"36\" x=\"4\"></rect>\n<g transform=\"translate(34 32)\"><rect mask=\"url(#user)\" fill=\"orange\" height=\"28\" width=\"28\"></rect></g>\n</svg>\n",
+  "after": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs><mask maskContentUnits=\"objectBoundingBox\" id=\"half\"><rect fill=\"white\" height=\"1\" width=\".5\"></rect></mask>\n<mask height=\".5\" width=\".5\" y=\".25\" x=\".25\" id=\"region\"><rect fill=\"white\" height=\"100%\" width=\"100%\"></rect></mask>\n<mask height=\"20\" width=\"16\" y=\"4\" x=\"4\" maskUnits=\"userSpaceOnUse\" id=\"user\"><rect fill=\"white\" height=\"30\" width=\"30\"></rect></mask></defs>\n<rect style=\";transform:matrix(1,0 0,1 0,0 );mask:none\" mask=\"url(#half)\" fill=\"teal\" height=\"24\" width=\"24\" y=\"4\" x=\"4\"></rect>\n<g transform=\"translate(34 4)\" mask=\"url(#half)\"><rect fill=\"red\" height=\"20\" width=\"10\"></rect><rect fill=\"blue\" height=\"20\" width=\"14\" y=\"4\" x=\"10\"></rect></g>\n<rect mask=\"url(#region)\" fill=\"purple\" height=\"24\" width=\"24\" y=\"36\" x=\"4\"></rect>\n<g transform=\"translate(34 32)\"><rect mask=\"url(#user)\" fill=\"orange\" height=\"28\" width=\"28\"></rect></g>\n</svg>\n",
+  "serverBackend": "native"
+}

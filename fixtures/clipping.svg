@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <clipPath id="a"><circle cx="18" cy="18" r="13"/><rect x="17" y="16" width="13" height="13"/></clipPath>
+ <clipPath id="b" clipPathUnits="objectBoundingBox"><path d="M0 0 H1 V1 H0 Z M.25 .25 V.75 H.75 V.25Z" clip-rule="evenodd"/></clipPath>
+ <clipPath id="c" transform="rotate(20 15 48)"><ellipse cx="15" cy="48" rx="13" ry="8"/></clipPath>
+ <clipPath id="d"><rect x="34" y="35" width="24" height="26"/></clipPath>
+ <clipPath id="e" clip-path="url(#d)"><circle cx="45" cy="45" r="16"/></clipPath>
+</defs>
+<rect width="32" height="32" fill="red" clip-path="url(#a)"/>
+<rect x="34" y="3" width="26" height="26" fill="blue" clip-path="url(#b)"/>
+<g clip-path="url(#c)" opacity=".7"><rect x="2" y="34" width="27" height="27" fill="green"/><rect x="10" y="42" width="16" height="15" fill="gold"/></g>
+<rect x="33" y="33" width="29" height="29" fill="purple" clip-path="url(#e)"/>
+</svg>

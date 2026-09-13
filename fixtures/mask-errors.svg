@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><mask id="self"><rect width="64" height="64" fill="white" mask="url(#self)"/></mask><mask id="a"><rect width="64" height="64" fill="white" mask="url(#b)"/></mask><mask id="b"><rect width="64" height="64" fill="white" mask="url(#a)"/></mask><mask id="empty"/><mask id="zero" width="0"><rect width="64" height="64" fill="white"/></mask><rect id="wrong" width="20" height="20"/></defs>
+<rect width="16" height="16" fill="red" mask="url(#missing)"/><rect x="20" width="16" height="16" fill="red" mask="url(#wrong)"/>
+<rect y="20" width="16" height="16" fill="red" mask="url(#self)"/><rect x="20" y="20" width="16" height="16" fill="red" mask="url(#a)"/>
+<rect y="40" width="16" height="16" fill="red" mask="url(#empty)"/><rect x="20" y="40" width="16" height="16" fill="red" mask="url(#zero)"/>
+<rect x="44" y="44" width="12" height="12" fill="teal"/>
+</svg>

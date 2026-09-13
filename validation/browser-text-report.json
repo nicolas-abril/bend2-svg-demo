@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "binarySHA256": "34cc2affc82546c4127dbb592d890203905c9fced62fabf53e841621ae2618f7",
+  "serverBackend": "native",
+  "durationSeconds": 18.586644583,
+  "checks": [
+    "Bend rasterizes bundled Noto Sans glyphs",
+    "select text through glyph pixels",
+    "recolor selected text only",
+    "preserve authored text on save",
+    "exact source and pixel undo",
+    "font-weight uses bundled bold glyphs",
+    "nudge text and undo",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "f644682ed6296f42698293a7c387c2492bb2274dbdeb036dc1ea4259ec0dba16",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "before": "<svg font-family=\"Noto Sans\" viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<text fill=\"#2879a8\" font-size=\"15\" y=\"17\" x=\"3\">Bend</text>\n<text fill=\"#ab4675\" font-size=\"14\" y=\"35\" x=\"3\">SVG 2</text>\n<text fill=\"#468e64\" font-size=\"14\" y=\"54\" x=\"3\">AV To</text>\n</svg>\n",
+  "edited": "<svg font-family=\"Noto Sans\" viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<text style=\";fill:#00ff00\" fill=\"#2879a8\" font-size=\"15\" y=\"17\" x=\"3\">Bend</text>\n<text fill=\"#ab4675\" font-size=\"14\" y=\"35\" x=\"3\">SVG 2</text>\n<text fill=\"#468e64\" font-size=\"14\" y=\"54\" x=\"3\">AV To</text>\n</svg>\n"
+}

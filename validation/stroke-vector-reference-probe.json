@@ -1,0 +1,57 @@
+{
+  "reference": "153.0.8010.12",
+  "purpose": "Compare equivalent non-scaling stroke geometry and rectangle outlines without changing primary fixtures",
+  "results": {
+    "original": {
+      "versusBend": {
+        "mae": 1.07421875,
+        "rmse": 4.4874499474924505,
+        "max": 32
+      },
+      "rectangleVersusBend": {
+        "mae": 1.4295833333333334,
+        "rmse": 5.634898697699306,
+        "max": 32
+      },
+      "versusOriginal": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      }
+    },
+    "flattened": {
+      "versusBend": {
+        "mae": 0.6722005208333334,
+        "rmse": 2.901513837996182,
+        "max": 30
+      },
+      "rectangleVersusBend": {
+        "mae": 0.40041666666666664,
+        "rmse": 1.3239775929624589,
+        "max": 7
+      },
+      "versusOriginal": {
+        "mae": 0.4020182291666667,
+        "rmse": 2.7134766866819895,
+        "max": 25
+      }
+    },
+    "outlinedRectangle": {
+      "versusBend": {
+        "mae": 1.07421875,
+        "rmse": 4.4874499474924505,
+        "max": 32
+      },
+      "rectangleVersusBend": {
+        "mae": 1.4295833333333334,
+        "rmse": 5.634898697699306,
+        "max": 32
+      },
+      "versusOriginal": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "compiled native frontend opened JPEG compositing fixture",
+    "JPEG clipping, mask, grayscale filter and pattern visually inspected",
+    "native test window closed"
+  ],
+  "screenshot": "native-jpeg.png",
+  "fixture": "fixtures/jpeg-compositing.svg",
+  "sourceSHA256": {
+    "svg.bend": "51cbfe5f0bf707280ff8d231c68f6d45ccbadf13d1f79038f9b878849e495834",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9"
+  },
+  "binarySHA256": "3d9700ae74ecd59f5d95c85f314307c96184ad169d4c408d200fd2f767272027"
+}

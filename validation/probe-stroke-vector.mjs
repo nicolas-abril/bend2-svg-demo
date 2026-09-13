@@ -1,0 +1,3 @@
+import{PNG}from'pngjs';import{readFileSync}from'node:fs';
+const a=readFileSync('validation/stroke-vector.ppm','utf8').trim().split(/\s+/).slice(4).map(Number),b=PNG.sync.read(readFileSync('validation/stroke-vector-chromium.png')).data;
+for(const [name,y0,y1]of[['rect',0,25],['path',25,57],['dashes',57,64]]){let sum=0,max=0,bad=[];for(let y=y0;y<y1;y++)for(let x=0;x<64;x++){const aa=a.slice((y*64+x)*3,(y*64+x)*3+3),bb=[...b.slice((y*64+x)*4,(y*64+x)*4+3)];let d=Math.max(...aa.map((v,i)=>Math.abs(v-bb[i])));sum+=aa.reduce((s,v,i)=>s+Math.abs(v-bb[i]),0);max=Math.max(max,d);if(d>15)bad.push([x,y,aa,bb]);}console.log(name,'mae',sum/((y1-y0)*64*3),'max',max,'bad',bad.slice(0,40));}

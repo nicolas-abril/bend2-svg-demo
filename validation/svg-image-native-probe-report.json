@@ -1,0 +1,488 @@
+{
+  "experimental": true,
+  "passed": true,
+  "sourceSHA256": "b1c681b4762eeb3b4a7f13165a990d9fa505b6a0137e4bcdb3a3956aee1dee15",
+  "binarySHA256": "53a7b9482675953943869afb9dd308d5045544432d3a49a7630e451b5d34f034",
+  "results": [
+    {
+      "fixture": "markers-compositing.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "use.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "clipping.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-spans.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "viewports.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "symbols.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "colors-named.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-length.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "paths.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-basic.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "css-structural.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "opacity.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "basic.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "use-clips.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "css-resources.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-paints.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-uris.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-position.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-compression.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "css-media.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "transforms.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-units.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "masks.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "markers-context.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-basic.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "text-style.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "passed": true,
+      "provenance": "saved blend checkpoint JavaScript matrix"
+    },
+    {
+      "fixture": "svg-image-resources.svg",
+      "passed": true,
+      "provenance": "fresh frozen-prototype JavaScript matrix"
+    },
+    {
+      "fixture": "svg-image-nested.svg",
+      "passed": true,
+      "provenance": "fresh frozen-prototype JavaScript matrix"
+    },
+    {
+      "fixture": "svg-image-sizing.svg",
+      "passed": true,
+      "provenance": "fresh frozen-prototype JavaScript matrix"
+    }
+  ]
+}

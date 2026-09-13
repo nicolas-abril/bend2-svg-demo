@@ -1,0 +1,82 @@
+{
+  "experimental": true,
+  "sourceSHA256": "5e914f2945d3aa321ad573f747978d928c8ae67030afb6a60f271f5a130f8647",
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "name": "basic",
+      "chromium": {
+        "meanAbsoluteError": 3.1241048177083335,
+        "rootMeanSquareError": 10.274816724592139,
+        "maxChannelError": 117,
+        "pixelsAbove32": 182
+      },
+      "resvg": {
+        "meanAbsoluteError": 2.8317057291666665,
+        "rootMeanSquareError": 10.108461286631776,
+        "maxChannelError": 110,
+        "pixelsAbove32": 155
+      }
+    },
+    {
+      "name": "positions",
+      "chromium": {
+        "meanAbsoluteError": 1.658935546875,
+        "rootMeanSquareError": 7.231067008272362,
+        "maxChannelError": 88,
+        "pixelsAbove32": 57
+      },
+      "resvg": {
+        "meanAbsoluteError": 7.5615234375,
+        "rootMeanSquareError": 31.270102908968816,
+        "maxChannelError": 240,
+        "pixelsAbove32": 246
+      }
+    },
+    {
+      "name": "styles",
+      "chromium": {
+        "meanAbsoluteError": 1.656494140625,
+        "rootMeanSquareError": 7.2621519476983085,
+        "maxChannelError": 109,
+        "pixelsAbove32": 129
+      },
+      "resvg": {
+        "meanAbsoluteError": 1.849609375,
+        "rootMeanSquareError": 8.934813480262658,
+        "maxChannelError": 112,
+        "pixelsAbove32": 128
+      }
+    },
+    {
+      "name": "references",
+      "chromium": {
+        "meanAbsoluteError": 1.8882649739583333,
+        "rootMeanSquareError": 6.558971025355908,
+        "maxChannelError": 66,
+        "pixelsAbove32": 64
+      },
+      "resvg": {
+        "meanAbsoluteError": 6.413818359375,
+        "rootMeanSquareError": 22.24101344445568,
+        "maxChannelError": 205,
+        "pixelsAbove32": 340
+      }
+    },
+    {
+      "name": "shapes",
+      "chromium": {
+        "meanAbsoluteError": 2.8985188802083335,
+        "rootMeanSquareError": 16.933163170948255,
+        "maxChannelError": 201,
+        "pixelsAbove32": 139
+      },
+      "resvg": {
+        "meanAbsoluteError": 0.7337239583333334,
+        "rootMeanSquareError": 4.534966148578179,
+        "maxChannelError": 101,
+        "pixelsAbove32": 42
+      }
+    }
+  ]
+}

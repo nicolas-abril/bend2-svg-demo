@@ -1,0 +1,35 @@
+{
+  "experimental": true,
+  "passed": true,
+  "sourceSHA256": "69b50e1805de569e1841b8da0207c29083db1bdabd5689299074f4a6030b8c8c",
+  "results": [
+    {
+      "fixture": "filters-composite.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "passed": true
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "passed": true
+    }
+  ]
+}

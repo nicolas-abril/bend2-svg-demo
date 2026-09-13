@@ -1,0 +1,7 @@
+{
+  "validationOnly": true,
+  "bundle": "/private/tmp/bend-svg-work/paint-order-investigation/build/Bend SVG Validation.app",
+  "binarySHA256": "f7c78fdb4ae1778158690762b69ffb130ab8ae612b02806dfe23537f298b532d",
+  "sourceSHA256": "8049f793b502babb9461a25cd08f67cfbbbba86869baf4f26b252d67e60a6d98",
+  "purpose": "Test LaunchServices activation for native input; wrapper only sets file paths and starts the exact compiled Bend app"
+}

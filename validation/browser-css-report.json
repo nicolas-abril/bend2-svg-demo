@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "durationSeconds": 27.916135667,
+  "checks": [
+    "stylesheet colors rendered in Bend",
+    "select styled shape",
+    "inline edit wins normal stylesheet rule",
+    "preserve style element and class attributes",
+    "undo restores exact source and stylesheet color",
+    "stylesheet important overrides normal inline edit",
+    "inline important overrides stylesheet important",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "02b3b0efd2d7db5b42dfd1e844f741763642302ccc87873b06a44b19dab5349f",
+    "state.bend": "36e7f01037a11f2ae6eb87e097ab46428c460865d3a55fa6bed86845ed143ee9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6c791512a13c4bf19655191afc99683d20e04b8eef7c0b777d1a8b89eb5baaa2"
+  },
+  "before": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<style>\n/* Author CSS takes precedence over presentation attributes. */\nrect { fill: #357dab; }\n.hot { fill: #db743c; }\n#special { fill: #5c9e60; }\n.hot { fill: #994d9e; }\n.strong { fill: #d77735 !important; }\n#last { fill: #286ba3 !important; }\n</style>\n<rect fill=\"red\" height=\"26\" width=\"18\" y=\"2\" x=\"2\"></rect>\n<rect height=\"26\" width=\"18\" y=\"2\" x=\"23\" class=\"hot\"></rect>\n<rect height=\"26\" width=\"18\" y=\"2\" x=\"44\" class=\"hot\" id=\"special\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"2\" style=\"fill:#d44c55\" class=\"hot\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"23\" style=\"fill:blue\" class=\"strong\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"44\" style=\"fill:#55a776 !important;fill:red\" id=\"last\"></rect>\n</svg>\n",
+  "after": "<svg viewBox=\"0 0 64 64\" height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<style>\n/* Author CSS takes precedence over presentation attributes. */\nrect { fill: #357dab; }\n.hot { fill: #db743c; }\n#special { fill: #5c9e60; }\n.hot { fill: #994d9e; }\n.strong { fill: #d77735 !important; }\n#last { fill: #286ba3 !important; }\n</style>\n<rect fill=\"red\" height=\"26\" width=\"18\" y=\"2\" x=\"2\"></rect>\n<rect height=\"26\" width=\"18\" y=\"2\" x=\"23\" class=\"hot\"></rect>\n<rect style=\";fill:#00ff00\" height=\"26\" width=\"18\" y=\"2\" x=\"44\" class=\"hot\" id=\"special\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"2\" style=\"fill:#d44c55\" class=\"hot\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"23\" style=\"fill:blue\" class=\"strong\"></rect>\n<rect height=\"28\" width=\"18\" y=\"34\" x=\"44\" style=\"fill:#55a776 !important;fill:red\" id=\"last\"></rect>\n</svg>\n"
+}

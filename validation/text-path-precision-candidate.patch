@@ -1,0 +1,175 @@
+--- a/svg.bend
++++ b/svg.bend
+@@ -443,11 +443,11 @@
+   +d = point.sub(p, q)
+   F32.sqrt(point.dot(d, d))
+ 
+-def cubic.flat(+p: Point, +a: Point, +b: Point, +q: Point) -> Bool:
++def cubic.flat.precise(+precision: F32, +p: Point, +a: Point, +b: Point, +q: Point) -> Bool:
+   F32.is_lt((point.distance(p, a) + point.distance(a, b) + point.distance(b, q)
+-    - point.distance(p, q) : F32), 0.0005)
+-
+-def cubic(depth: Nat, +p: Point, +a: Point, +b: Point, +q: Point,
++    - point.distance(p, q) : F32), (0.0005 / (precision * precision * precision) : F32))
++
++def cubic.precise(+precision: F32, depth: Nat, +p: Point, +a: Point, +b: Point, +q: Point,
+   +edges: List<&2, Edge>) -> List<&2, Edge>:
+   match depth:
+     case 0n: Con{Edge{p, q, True{}, False{}}, edges}
+@@ -459,8 +459,8 @@
+       +l = point.mid(pa, ab)
+       +r = point.mid(ab, bq)
+       +m = point.mid(l, r)
+-      branch(List<&2, Edge>, cubic.flat(p, a, b, q), _ => Con{Edge{p, q, True{}, False{}}, edges},
+-        _ => cubic(dd, m, r, bq, q, cubic(dd, p, pa, l, m, edges)))
++      branch(List<&2, Edge>, cubic.flat.precise(precision, p, a, b, q), _ => Con{Edge{p, q, True{}, False{}}, edges},
++        _ => cubic.precise(precision, dd, m, r, bq, q, cubic.precise(precision, dd, p, pa, l, m, edges)))
+ 
+ type Params is Data:
+   Params{values: List<&2, F32>, tail: String, valid: Bool}
+@@ -519,7 +519,7 @@
+     ((F32.neg(rx) * F32.sin(phi) * F32.sin(theta) + ry * F32.cos(phi) * F32.cos(theta)) * direction : F32)}
+ 
+ type Path is Data:
+-  Path{current: Point, start: Point, control: Point, command: U32, previous: U32, edges: List<&2, Edge>, trace: Maybe<&2, List<&2, MarkerSegment>>}
++  Path{current: Point, start: Point, control: Point, command: U32, previous: U32, edges: List<&2, Edge>, trace: Maybe<&2, List<&2, MarkerSegment>>, precision: F32}
+ 
+ def upper(+c: U32) -> U32:
+   choose(U32, U32.is_ge(c, 97) && U32.is_le(c, 122), (c - 32 : U32), c)
+@@ -528,27 +528,32 @@
+   point.add(choose(Point, U32.is_ge(cmd, 97), current, Point{0.0, 0.0}), p)
+ 
+ def path.move(+p: Path, +q: Point, cmd: U32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
+   Path{q, q, q, choose(U32, U32.is_ge(cmd, 97), 108, 76), 77,
+-    choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{Edge{cur, start, False{}, False{}}, es}), marker.segment(trace, marker.line(q, q, 1))}
++    choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{Edge{cur, start, False{}, False{}}, es}), marker.segment(trace, marker.line(q, q, 1)), detail}
+ 
+ def path.line(+p: Path, +q: Point, +cmd: U32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
+-  Path{q, start, q, cmd, upper(cmd), Con{Edge{cur, q, True{}, False{}}, es}, marker.segment(trace, marker.line(cur, q, 0))}
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
++  Path{q, start, q, cmd, upper(cmd), Con{Edge{cur, q, True{}, False{}}, es}, marker.segment(trace, marker.line(cur, q, 0)), detail}
+ 
+ def path.cubic(+p: Path, +a: Point, +b: Point, +q: Point, +cmd: U32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
+-  Path{q, start, b, cmd, upper(cmd), cubic(10n, cur, a, b, q, es), marker.segment(trace, marker.cubic(cur, a, b, q))}
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
++  Path{q, start, b, cmd, upper(cmd), cubic.precise(detail, choose(Nat, F32.is_gt(detail, 1.0), 14n, 10n), cur, a, b, q, es), marker.segment(trace, marker.cubic(cur, a, b, q)), detail}
+ 
+ def path.quad(+p: Path, +a: Point, +q: Point, +cmd: U32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
+   ca = point.add(cur, point.scale(point.sub(a, cur), 0.6666666666666666))
+   cb = point.add(q, point.scale(point.sub(a, q), 0.6666666666666666))
+-  Path{q, start, a, cmd, upper(cmd), cubic(10n, cur, ca, cb, q, es), marker.segment(trace, marker.cubic(cur, a, a, q))}
++  Path{q, start, a, cmd, upper(cmd), cubic.precise(detail, choose(Nat, F32.is_gt(detail, 1.0), 14n, 10n), cur, ca, cb, q, es), marker.segment(trace, marker.cubic(cur, a, a, q)), detail}
+ 
+ def path.close(+p: Path) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
+-  Path{start, start, start, 0, 90, Con{Edge{cur, start, True{}, True{}}, es}, marker.segment(trace, marker.line(cur, start, 2))}
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
++  Path{start, start, start, 0, 90, Con{Edge{cur, start, True{}, True{}}, es}, marker.segment(trace, marker.line(cur, start, 2)), detail}
+ 
+ def path.h(+cur: Point, +v: F32, cmd: U32) -> Point:
+   Point{x, y} = cur
+@@ -573,11 +578,12 @@
+ 
+ def arc.draw(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
+   +center: Point, +theta: F32, +delta: F32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
+   # At most 1/128 revolution per edge, further refined for larger radii.
+-  +count = max(1.0, F32.ceil((F32.abs(delta) * F32.sqrt(max(rx, ry)) * 8.0 : F32)))
++  +count = max(1.0, F32.ceil((F32.abs(delta) * F32.sqrt(max(rx, ry)) * 8.0 * detail : F32)))
+   Path{q, start, q, cmd, 65, arc.edges(U32.to_nat(F32.to_u32(min(4096.0, count))),
+-    1.0, (delta / min(4096.0, count) : F32), theta, center, rx, ry, phi, q, cur, es), marker.segment(trace, MarkerSegment{cur, q, marker.arc.tangent(rx, ry, phi, theta, delta), marker.arc.tangent(rx, ry, phi, (theta + delta : F32), delta), 0})}
++    1.0, (delta / min(4096.0, count) : F32), theta, center, rx, ry, phi, q, cur, es), marker.segment(trace, MarkerSegment{cur, q, marker.arc.tangent(rx, ry, phi, theta, delta), marker.arc.tangent(rx, ry, phi, (theta + delta : F32), delta), 0}), detail}
+ 
+ def arc.angles(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
+   +xp: F32, +yp: F32, +cx: F32, +cy: F32, +center: Point, sweep: F32) -> Path:
+@@ -593,7 +599,7 @@
+ 
+ def arc.center(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
+   +xp: F32, +yp: F32, +coef: F32, sweep: F32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
+   +cx = (coef * rx * yp / ry : F32)
+   +cy = (0.0 - coef * ry * xp / rx : F32)
+   center = point.add(point.mid(cur, q), Point{(F32.cos(phi) * cx - F32.sin(phi) * cy : F32),
+@@ -620,15 +626,16 @@
+ 
+ def path.arc(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, phi: F32,
+   large: F32, sweep: F32) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
+-  branch(Path, F32.is_lt(point.distance(cur, q), 0.000001), _ => Path{q, start, q, cmd, 65, es, trace},
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
++  +detail = precision
++  branch(Path, F32.is_lt(point.distance(cur, q), 0.000001), _ => Path{q, start, q, cmd, 65, es, trace, detail},
+     _ => branch(Path, F32.is_eq(rx, 0.0) || F32.is_eq(ry, 0.0), _ => path.line(p, q, cmd),
+       _ => arc.prepare(p, q, cmd, F32.abs(rx), F32.abs(ry), (phi * 0.017453292519943295 : F32),
+         large, sweep, point.scale(point.sub(cur, q), 0.5))))
+ 
+ 
+ def path.apply(+p: Path, +cmd: U32, +vs: List<&2, F32>) -> Path:
+-  Path{cur, start, ctrl, old, prev, es, trace} = p
++  Path{cur, start, ctrl, old, prev, es, trace, precision} = p
+   +c = upper(cmd)
+   +x = nth(vs, 0n, 0.0)
+   +y = nth(vs, 1n, 0.0)
+@@ -670,7 +677,7 @@
+   action(next)
+ 
+ def path.scan(+p: Path, s: String, next: String -> Path -> Path) -> Path:
+-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
++  Path{cur, start, ctrl, cmd, prev, es, trace, precision} = p
+   match s:
+     case SNil{}: p
+     case SCon{Chr{c}, t}:
+@@ -688,11 +695,14 @@
+   path.scan(p, separators(s), t => next => path.loop(t, next))
+ 
+ def path.finish(+p: Path) -> List<&2, Edge>:
+-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
++  Path{cur, start, ctrl, cmd, prev, es, trace, precision} = p
+   choose(List<&2, Edge>, U32.is_eq(prev, 0), Nil{}, Con{Edge{cur, start, False{}, False{}}, es})
+ 
++def path.precise(s: String, detail: F32) -> List<&2, Edge>:
++  path.finish(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, None{}, detail}))
++
+ def path(s: String) -> List<&2, Edge>:
+-  path.finish(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, None{}}))
++  path.precise(s, 1.0)
+ 
+ # Geometry queries use half-open crossings, supporting both SVG fill rules.
+ def edge.cross(+edge: Edge, +p: Point) -> F32:
+@@ -1606,11 +1616,11 @@
+     case Some{segments}: marker.vertices(marker.subpaths(marker.segments.reverse(segments, Nil{}), Point{0.0, 0.0}, Nil{}, False{}, Nil{}))
+ 
+ def marker.trace.path(p: Path) -> List<&2, MarkerVertex>:
+-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
++  Path{cur, start, ctrl, cmd, prev, es, trace, precision} = p
+   marker.trace.result(trace)
+ 
+ def marker.trace(s: String) -> List<&2, MarkerVertex>:
+-  marker.trace.path(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, Some{Nil{}}}))
++  marker.trace.path(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, Some{Nil{}}, 1.0}))
+ 
+ # Stroke geometry is compiled once. Overlapping parts form a union, so alpha
+ # is applied once even at joins, caps and self intersections.
+@@ -4755,7 +4765,7 @@
+     case Con{Edge{p, q, stroked, closed}, rest}: text.path.edges(rest, choose(List<&2, Edge>, stroked && F32.is_gt(point.distance(p, q), 0.000001), Con{Edge{p, q, stroked, closed}, acc}, acc))
+ 
+ def text.path.geometry(+as: List<&2, Attr>) -> List<&2, Edge>:
+-  text.path.edges(edges.transform(path(attr.get(as, "#text-path-data", "")), transform(attr.get(as, "#text-path-transform", ""), identity())), Nil{})
++  text.path.edges(edges.transform(path.precise(attr.get(as, "#text-path-data", ""), 8.0), transform(attr.get(as, "#text-path-transform", ""), identity())), Nil{})
+ 
+ def text.path.total(xs: List<&2, Edge>) -> F32:
+   match xs:

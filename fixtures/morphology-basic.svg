@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="erode" x="-.5" y="-.5" width="2" height="2"><feMorphology radius="2"/></filter>
+ <filter id="dilate" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="dilate" radius="2"/></filter>
+ <filter id="color" x="-.5" y="-.5" width="2" height="2" color-interpolation-filters="sRGB"><feMorphology operator="dilate" radius="2"/></filter>
+ <filter id="alpha" x="-.5" y="-.5" width="2" height="2"><feMorphology operator="erode" in="SourceAlpha" radius="1 2"/></filter>
+</defs>
+<rect x="5" y="5" width="22" height="20" fill="#c43" filter="url(#erode)"/>
+<rect x="38" y="8" width="16" height="14" fill="#39b" filter="url(#dilate)"/>
+<g filter="url(#color)"><rect x="6" y="39" width="9" height="15" fill="red" fill-opacity=".5"/><rect x="15" y="39" width="9" height="15" fill="blue" fill-opacity=".75"/></g>
+<path d="M38 37H57V43H49V57H43V43H38Z" fill="#693" filter="url(#alpha)"/>
+</svg>

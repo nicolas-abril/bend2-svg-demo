@@ -1,0 +1,778 @@
+{
+  "experimental": true,
+  "passed": true,
+  "reference": "Independent Chromium SVG cells, with at most one channel level of rounding tolerance; every selected color pair is retained",
+  "sourceSHA256": "69b50e1805de569e1841b8da0207c29083db1bdabd5689299074f4a6030b8c8c",
+  "cases": [
+    {
+      "mode": "normal",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 13404228
+    },
+    {
+      "mode": "normal",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "normal",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 0
+    },
+    {
+      "mode": "normal",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 8421504
+    },
+    {
+      "mode": "normal",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 12607536
+    },
+    {
+      "mode": "normal",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16711935
+    },
+    {
+      "mode": "normal",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 65535
+    },
+    {
+      "mode": "normal",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 66046
+    },
+    {
+      "mode": "multiply",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 2704432
+    },
+    {
+      "mode": "multiply",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "multiply",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 0
+    },
+    {
+      "mode": "multiply",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 6303768
+    },
+    {
+      "mode": "multiply",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 6303768
+    },
+    {
+      "mode": "multiply",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 0
+    },
+    {
+      "mode": "multiply",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 0
+    },
+    {
+      "mode": "multiply",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 65793
+    },
+    {
+      "mode": "screen",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 14075079
+    },
+    {
+      "mode": "screen",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "screen",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "screen",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 14725272
+    },
+    {
+      "mode": "screen",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 14725272
+    },
+    {
+      "mode": "screen",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16777215
+    },
+    {
+      "mode": "screen",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16777215
+    },
+    {
+      "mode": "screen",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16711422
+    },
+    {
+      "mode": "darken",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 3375172
+    },
+    {
+      "mode": "darken",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "darken",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 0
+    },
+    {
+      "mode": "darken",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 8413232
+    },
+    {
+      "mode": "darken",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 8413232
+    },
+    {
+      "mode": "darken",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 0
+    },
+    {
+      "mode": "darken",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 0
+    },
+    {
+      "mode": "darken",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 65793
+    },
+    {
+      "mode": "lighten",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 13404339
+    },
+    {
+      "mode": "lighten",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "lighten",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "lighten",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 12615808
+    },
+    {
+      "mode": "lighten",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 12615808
+    },
+    {
+      "mode": "lighten",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16777215
+    },
+    {
+      "mode": "lighten",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16777215
+    },
+    {
+      "mode": "lighten",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16711422
+    },
+    {
+      "mode": "overlay",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 5408912
+    },
+    {
+      "mode": "overlay",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "overlay",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "overlay",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 12607536
+    },
+    {
+      "mode": "overlay",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 12607793
+    },
+    {
+      "mode": "overlay",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 65280
+    },
+    {
+      "mode": "overlay",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16711680
+    },
+    {
+      "mode": "overlay",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16645378
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 16777204
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 16761184
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 16764318
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 65280
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16711680
+    },
+    {
+      "mode": "color-dodge",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16777215
+    },
+    {
+      "mode": "color-burn",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 4352
+    },
+    {
+      "mode": "color-burn",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "color-burn",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "color-burn",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 8454144
+    },
+    {
+      "mode": "color-burn",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 5636096
+    },
+    {
+      "mode": "color-burn",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 65280
+    },
+    {
+      "mode": "color-burn",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16711680
+    },
+    {
+      "mode": "color-burn",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 0
+    },
+    {
+      "mode": "hard-light",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 11372639
+    },
+    {
+      "mode": "hard-light",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "hard-light",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 0
+    },
+    {
+      "mode": "hard-light",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 12607793
+    },
+    {
+      "mode": "hard-light",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 12607536
+    },
+    {
+      "mode": "hard-light",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16711935
+    },
+    {
+      "mode": "hard-light",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 65535
+    },
+    {
+      "mode": "hard-light",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 131837
+    },
+    {
+      "mode": "soft-light",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 5866650
+    },
+    {
+      "mode": "soft-light",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "soft-light",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "soft-light",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 12607536
+    },
+    {
+      "mode": "soft-light",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 10186840
+    },
+    {
+      "mode": "soft-light",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 65280
+    },
+    {
+      "mode": "soft-light",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16711680
+    },
+    {
+      "mode": "soft-light",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16645380
+    },
+    {
+      "mode": "difference",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 10029167
+    },
+    {
+      "mode": "difference",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "difference",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "difference",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 4202576
+    },
+    {
+      "mode": "difference",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 4202576
+    },
+    {
+      "mode": "difference",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16777215
+    },
+    {
+      "mode": "difference",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16777215
+    },
+    {
+      "mode": "difference",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16645629
+    },
+    {
+      "mode": "exclusion",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 11370647
+    },
+    {
+      "mode": "exclusion",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "exclusion",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "exclusion",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 8421504
+    },
+    {
+      "mode": "exclusion",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 8421504
+    },
+    {
+      "mode": "exclusion",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16777215
+    },
+    {
+      "mode": "exclusion",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16777215
+    },
+    {
+      "mode": "exclusion",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16645629
+    },
+    {
+      "mode": "hue",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 10641954
+    },
+    {
+      "mode": "hue",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "hue",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "hue",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 7895160
+    },
+    {
+      "mode": "hue",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 8421504
+    },
+    {
+      "mode": "hue",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16731903
+    },
+    {
+      "mode": "hue",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 28013
+    },
+    {
+      "mode": "hue",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 14671871
+    },
+    {
+      "mode": "saturation",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 3113399
+    },
+    {
+      "mode": "saturation",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "saturation",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "saturation",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 7895160
+    },
+    {
+      "mode": "saturation",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 8421504
+    },
+    {
+      "mode": "saturation",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 65280
+    },
+    {
+      "mode": "saturation",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16711680
+    },
+    {
+      "mode": "saturation",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 16711169
+    },
+    {
+      "mode": "color",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 10904094
+    },
+    {
+      "mode": "color",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 0
+    },
+    {
+      "mode": "color",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 16777215
+    },
+    {
+      "mode": "color",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 7895160
+    },
+    {
+      "mode": "color",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 13133880
+    },
+    {
+      "mode": "color",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 16731903
+    },
+    {
+      "mode": "color",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 28013
+    },
+    {
+      "mode": "color",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 14671871
+    },
+    {
+      "mode": "luminosity",
+      "source": "#cc8844",
+      "backdrop": "#3380b3",
+      "expected": 5875417
+    },
+    {
+      "mode": "luminosity",
+      "source": "#ffffff",
+      "backdrop": "#000000",
+      "expected": 16777215
+    },
+    {
+      "mode": "luminosity",
+      "source": "#000000",
+      "backdrop": "#ffffff",
+      "expected": 0
+    },
+    {
+      "mode": "luminosity",
+      "source": "#808080",
+      "backdrop": "#c06030",
+      "expected": 13133880
+    },
+    {
+      "mode": "luminosity",
+      "source": "#c06030",
+      "backdrop": "#808080",
+      "expected": 7895160
+    },
+    {
+      "mode": "luminosity",
+      "source": "#ff00ff",
+      "backdrop": "#00ff00",
+      "expected": 45312
+    },
+    {
+      "mode": "luminosity",
+      "source": "#00ffff",
+      "backdrop": "#ff0000",
+      "expected": 16749202
+    },
+    {
+      "mode": "luminosity",
+      "source": "#0101fe",
+      "backdrop": "#fefe01",
+      "expected": 2105344
+    }
+  ],
+  "randomNativeJavascriptCases": 1024,
+  "nativeReferenceCases": 128
+}

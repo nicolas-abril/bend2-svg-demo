@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs>
+ <filter id="in" x="-.5" y="-.5" width="2" height="2"><feOffset dx="5" dy="3" result="shift"/><feComposite in="SourceGraphic" in2="shift" operator="in"/></filter>
+ <filter id="out" x="-.5" y="-.5" width="2" height="2"><feOffset dx="5" dy="3" result="shift"/><feComposite in="SourceGraphic" in2="shift" operator="out"/></filter>
+ <filter id="xor" x="-.5" y="-.5" width="2" height="2"><feOffset dx="5" dy="3" result="shift"/><feComposite in="SourceGraphic" in2="shift" operator="xor"/></filter>
+ <filter id="arith" color-interpolation-filters="sRGB"><feFlood flood-color="#248" result="f"/><feComposite in="SourceGraphic" in2="f" operator="arithmetic" k1=".3" k2=".4" k3=".6" k4=".05"/></filter>
+</defs>
+<circle cx="14" cy="14" r="9" fill="#e64" filter="url(#in)"/>
+<circle cx="45" cy="14" r="9" fill="#e64" filter="url(#out)"/>
+<circle cx="14" cy="45" r="9" fill="#48d" fill-opacity=".7" filter="url(#xor)"/>
+<rect x="36" y="36" width="18" height="18" fill="#d86" fill-opacity=".8" filter="url(#arith)"/>
+</svg>

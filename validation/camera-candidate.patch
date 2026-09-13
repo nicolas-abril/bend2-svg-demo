@@ -1,0 +1,429 @@
+--- before/svg.bend
++++ after/svg.bend
+@@ -5471,13 +5471,44 @@
+     case Nil{}: False{}
+     case Con{Element{n, as, kids, txt}, rest}: String.eq(n, "text") || (String.eq(n, "image") && image.svg.reference(trim.both(attr.get(as, "href", attr.get(as, "xlink:href", ""))))) || text.present(kids) || text.present(rest)
+ 
+-def document.fonts(+root: Element, +w: F32, +h: F32, book: FontBook) -> List<&2, Scene<Brush>>:
++def document.camera.fonts(+root: Element, +w: F32, +h: F32, matrix: Matrix, book: FontBook) -> List<&2, Scene<Brush>>:
+   Element{n, a, kids, txt} = root
+   +styled = css.tree(kids, css.rules(css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, css.element.count(kids))
+   +embedded = image.svg.expand(16n, styled, w, h)
+   +used = use.expand(64n, embedded, embedded, Nil{})
+   +nodes = text.paint.group(text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{}))
+-  context.scenes(compile(64n, nodes, style.default(), identity(), w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
++  context.scenes(compile(64n, nodes, style.default(), matrix, w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
++
++def document.fonts(root: Element, w: F32, h: F32, book: FontBook) -> List<&2, Scene<Brush>>:
++  document.camera.fonts(root, w, h, identity(), book)
++
++# The document viewport and the output matrix have independent dimensions.
++def document.size(+root: Element, +w: F32, +h: F32) -> Point:
++  Element{n, attrs, kids, txt} = root
++  +styled = css.tree(kids, css.rules(css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, css.element.count(kids))
++  +as = image.svg.attrs(image.svg.root(styled))
++  Point{max(0.0, viewport.dimension(as, "width", w)), max(0.0, viewport.dimension(as, "height", h))}
++
++def document.fit.matrix(size: Point, +w: F32, +h: F32) -> Matrix:
++  Point{width, height} = size
++  +vw = width
++  +vh = height
++  +zoom = min((w / max(vw, 0.000001) : F32), (h / max(vh, 0.000001) : F32))
++  Matrix{zoom, 0.0, 0.0, zoom, ((w - vw * zoom) * 0.5 : F32), ((h - vh * zoom) * 0.5 : F32)}
++
++def document.natural.size(root: Element, matrix: Matrix, book: FontBook, size: Point) -> List<&2, Scene<Brush>>:
++  Point{vw, vh} = size
++  document.camera.fonts(root, vw, vh, matrix, book)
++
++def document.natural.fonts(+root: Element, +w: F32, +h: F32, matrix: Matrix, book: FontBook) -> List<&2, Scene<Brush>>:
++  document.natural.size(root, matrix, book, document.size(root, w, h))
++
++def document.fitted.size(root: Element, w: F32, h: F32, book: FontBook, +size: Point) -> List<&2, Scene<Brush>>:
++  Point{vw, vh} = size
++  document.camera.fonts(root, vw, vh, document.fit.matrix(size, w, h), book)
++
++def document.fitted.fonts(+root: Element, +w: F32, +h: F32, book: FontBook) -> List<&2, Scene<Brush>>:
++  document.fitted.size(root, w, h, book, document.size(root, w, h))
+ 
+ def document(root: Element, w: F32, h: F32) -> List<&2, Scene<Brush>>:
+   document.fonts(root, w, h, font.empty())
+--- before/state.bend
++++ after/state.bend
+@@ -2,14 +2,18 @@
+ import Base
+ import ./svg.bend as SVG
+ 
++type Camera is Data:
++  Camera{matrix: SVG.Matrix}
++
+ type State is Data:
+   State{document: SVG.Element, scene: List<&2, SVG.Scene<SVG.Brush>>, selected: String,
+     inverse: SVG.Matrix, dragging: Bool, anchor: SVG.Point, baseline: SVG.Element,
+-    history: List<&2, SVG.Element>, width: U32, height: U32, fonts: SVG.FontBook}
++    history: List<&2, SVG.Element>, width: U32, height: U32, fonts: SVG.FontBook, camera: Camera}
+ 
+ type Action is Data:
+   Load{source: String}
+   Source{source: String}
++  Navigate{kind: U32}
+   Press{x: U32, y: U32}
+   Drag{x: U32, y: U32}
+   Release{}
+@@ -19,9 +23,43 @@
+   Undo{}
+   Nothing{}
+ 
++def camera.fit.size(+size: SVG.Point, w: F32, h: F32) -> Camera:
++  SVG.Point{vw, vh} = size
++  Camera{SVG.document.fit.matrix(size, w, h)}
++
++def camera.fit(doc: SVG.Element, +w: F32, +h: F32) -> Camera:
++  camera.fit.size(SVG.document.size(doc, w, h), w, h)
++
++def camera.actual(doc: SVG.Element, w: F32, h: F32) -> Camera:
++  Camera{SVG.identity()}
++
++def camera.render(doc: SVG.Element, book: SVG.FontBook, camera: Camera, w: U32, h: U32) -> List<&2, SVG.Scene<SVG.Brush>>:
++  Camera{matrix} = camera
++  SVG.document.natural.fonts(doc, U32.to_f32(w), U32.to_f32(h), matrix, book)
++
++def camera.zoom(camera: Camera, factor: F32, w: F32, h: F32) -> Camera:
++  Camera{SVG.Matrix{a, b, c, d, e, f}} = camera
++  +old = a
++  +zoom = SVG.clamp((old * factor : F32), 0.000001, 1000000.0)
++  +ratio = (zoom / SVG.max(old, 0.000001) : F32)
++  +cx = (w * 0.5 : F32)
++  +cy = (h * 0.5 : F32)
++  Camera{SVG.Matrix{zoom, (b * ratio : F32), (c * ratio : F32), (d * ratio : F32), (cx + (e - cx) * ratio : F32), (cy + (f - cy) * ratio : F32)}}
++
++def camera.pan(camera: Camera, x: F32, y: F32) -> Camera:
++  Camera{matrix} = camera
++  Camera{SVG.matrix.mul(SVG.translate(x, y), matrix)}
++
++def camera.next(+camera: Camera, +kind: U32, +doc: SVG.Element, +w: F32, +h: F32) -> Camera:
++  SVG.branch(Camera, U32.is_eq(kind, 0), _ => camera.actual(doc, w, h),
++    _ => SVG.branch(Camera, U32.is_eq(kind, 1), _ => camera.fit(doc, w, h),
++      _ => SVG.branch(Camera, U32.is_eq(kind, 2) || U32.is_eq(kind, 3), _ => camera.zoom(camera, SVG.choose(F32, U32.is_eq(kind, 2), 1.25, 0.8), w, h),
++        _ => camera.pan(camera, SVG.choose(F32, U32.is_eq(kind, 4), 32.0, SVG.choose(F32, U32.is_eq(kind, 5), F32.neg(32.0), 0.0)), SVG.choose(F32, U32.is_eq(kind, 6), 32.0, SVG.choose(F32, U32.is_eq(kind, 7), F32.neg(32.0), 0.0))))))
++
+ def from.document.fonts(+doc: SVG.Element, +w: U32, +h: U32, +fonts: SVG.FontBook) -> State:
+-  State{doc, SVG.document.fonts(doc, U32.to_f32(w), U32.to_f32(h), fonts), "", SVG.identity(), False{},
+-    SVG.Point{0.0, 0.0}, doc, Nil{}, w, h, fonts}
++  +camera = camera.fit(doc, U32.to_f32(w), U32.to_f32(h))
++  State{doc, camera.render(doc, fonts, camera, w, h), "", SVG.identity(), False{},
++    SVG.Point{0.0, 0.0}, doc, Nil{}, w, h, fonts, camera}
+ 
+ def load.fonts(source: String, w: U32, h: U32, fonts: SVG.FontBook) -> State:
+   from.document.fonts(SVG.parse(source), w, h, fonts)
+@@ -30,15 +68,15 @@
+   load.fonts(source, w, h, SVG.font.empty())
+ 
+ def get.source(s: State) -> String:
+-  State{doc, scene, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, scene, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.serialize(doc)
+ 
+ def get.scene(s: State) -> List<&2, SVG.Scene<SVG.Brush>>:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   nodes
+ 
+ def get.selected(s: State) -> String:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   id
+ 
+ def edit.attrs(+as: List<&2, SVG.Attr>, +op: U32, key: String, value: String, matrix: SVG.Matrix) -> List<&2, SVG.Attr>:
+@@ -69,19 +107,19 @@
+   edit.root(edit.nodes(Con{doc, Nil{}}, id, op, key, value, matrix), doc)
+ 
+ def rebuild(+s: State, +doc: SVG.Element, +history: List<&2, SVG.Element>) -> State:
+-  State{old, nodes, id, inv, down, anchor, base, undo, w, h, fonts} = s
+-  State{doc, SVG.document.fonts(doc, U32.to_f32(w), U32.to_f32(h), fonts), id, inv, down, anchor, base, history, w, h, fonts}
++  State{old, nodes, id, inv, down, anchor, base, undo, w, h, fonts, camera} = s
++  State{doc, camera.render(doc, fonts, camera, w, h), id, inv, down, anchor, base, history, w, h, fonts, camera}
+ 
+ def press.picked(+s: State, point: SVG.Point, hit: SVG.Pick) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.Pick{found, sel, matrix} = hit
+-  State{doc, nodes, sel, matrix, found, point, doc, history, w, h, fonts}
++  State{doc, nodes, sel, matrix, found, point, doc, history, w, h, fonts, camera}
+ 
+ def press(+s: State, +point: SVG.Point) -> State:
+   press.picked(s, point, SVG.pick(get.scene(s), point))
+ 
+ def drag.delta(+s: State, +delta: SVG.Point) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.Point{dx, dy} = delta
+   SVG.branch(State, F32.is_eq(dx, 0.0) && F32.is_eq(dy, 0.0),
+     _ => rebuild(s, base, history),
+@@ -89,7 +127,7 @@
+       SVG.matrix.mul(SVG.translate(dx, dy), SVG.matrix.inverse(inv)))), history))
+ 
+ def move(+s: State, point: SVG.Point) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.branch(State, down, _ => drag.delta(s, SVG.point.sub(point, anchor)), _ => s)
+ 
+ # A gesture creates one undo entry only when its final document differs.
+@@ -99,17 +137,17 @@
+     _ => history)
+ 
+ def release(+s: State) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   +current = doc
+-  State{current, nodes, id, inv, False{}, anchor, current, release.history(current, base, down, history), w, h, fonts}
++  State{current, nodes, id, inv, False{}, anchor, current, release.history(current, base, down, history), w, h, fonts, camera}
+ 
+ def modify.ready(+s: State, op: U32, key: String, value: String) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.branch(State, String.eq(id, ""), _ => s,
+     _ => release(rebuild(s, edit(doc, id, op, key, value, SVG.identity()), Con{doc, history})))
+ 
+ def translate.ready(+s: State, dx: F32, dy: F32) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   release(rebuild(s, edit(doc, id, 3, "", "", SVG.matrix.mul(inv,
+     SVG.matrix.mul(SVG.translate(dx, dy), SVG.matrix.inverse(inv)))), Con{doc, history}))
+ 
+@@ -119,7 +157,7 @@
+     case Con{doc, rest}: release(rebuild(s, doc, rest))
+ 
+ def undo.ready(+s: State) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   undo.history(s, history)
+ 
+ def modify(s: State, op: U32, key: String, value: String) -> State:
+@@ -132,17 +170,17 @@
+   undo.ready(release(s))
+ 
+ def replace(s: State, text: String) -> State:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   load.fonts(text, w, h, fonts)
+ 
+ # Applying source is an edit; opening a file still starts a new history.
+-def source.changed(s: State, +doc: SVG.Element) -> State:
+-  State{old, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++def source.changed(+s: State, +doc: SVG.Element) -> State:
++  State{old, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   +width = w
+   +height = h
+   +book = fonts
+-  State{doc, SVG.document.fonts(doc, U32.to_f32(width), U32.to_f32(height), book), "", SVG.identity(), False{},
+-    SVG.Point{0.0, 0.0}, doc, Con{old, history}, width, height, book}
++  State{doc, camera.render(doc, book, camera, width, height), "", SVG.identity(), False{},
++    SVG.Point{0.0, 0.0}, doc, Con{old, history}, width, height, book, camera}
+ 
+ def source.ready(+s: State, +text: String) -> State:
+   SVG.branch(State, SVG.string.equal(text, get.source(s)), _ => s,
+@@ -150,11 +188,20 @@
+ 
+ def source(s: State, text: String) -> State:
+   source.ready(release(s), text)
++
++def navigate.ready(+s: State, kind: U32) -> State:
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
++  +next = camera.next(camera, kind, doc, U32.to_f32(w), U32.to_f32(h))
++  State{doc, camera.render(doc, fonts, next, w, h), "", SVG.identity(), False{}, SVG.Point{0.0, 0.0}, doc, history, w, h, fonts, next}
++
++def navigate(s: State, kind: U32) -> State:
++  navigate.ready(release(s), kind)
+ 
+ def apply(s: State, action: Action) -> State:
+   match action:
+     case Load{text}: replace(s, text)
+     case Source{text}: source(s, text)
++    case Navigate{kind}: navigate(s, kind)
+     case Press{x, y}: press(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
+     case Drag{x, y}: move(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
+     case Release{}: release(s)
+@@ -191,7 +238,7 @@
+ def command(s: String) -> Action:
+   command.split(SVG.until(s, 10, ""))
+ 
+-def key(+code: U32) -> Action:
++def key.document(+code: U32) -> Action:
+   SVG.choose(Action, U32.is_eq(code, 122), Undo{},
+     SVG.choose(Action, U32.is_eq(code, 127) || U32.is_eq(code, 8), Delete{},
+       SVG.choose(Action, U32.is_eq(code, 63234), Translate{F32.neg(1.0), 0.0},
+@@ -201,6 +248,17 @@
+               SVG.choose(Action, U32.is_eq(code, 114), Property{"fill", "#e34b36"},
+                 SVG.choose(Action, U32.is_eq(code, 103), Property{"fill", "#79bd4a"},
+                   SVG.choose(Action, U32.is_eq(code, 98), Property{"fill", "#4682b4"}, Nothing{})))))))))
++
++def key(+code: U32) -> Action:
++  +fit = U32.is_eq(code, 102)
++  +zoomIn = U32.is_eq(code, 43) || U32.is_eq(code, 61)
++  +zoomOut = U32.is_eq(code, 45)
++  +left = U32.is_eq(code, 104)
++  +right = U32.is_eq(code, 108)
++  +up = U32.is_eq(code, 107)
++  +down = U32.is_eq(code, 106)
++  SVG.branch(Action, U32.is_eq(code, 48) || fit || zoomIn || zoomOut || left || right || up || down,
++    _ => Navigate{SVG.choose(U32, fit, 1, SVG.choose(U32, zoomIn, 2, SVG.choose(U32, zoomOut, 3, SVG.choose(U32, left, 4, SVG.choose(U32, right, 5, SVG.choose(U32, up, 6, SVG.choose(U32, down, 7, 0)))))))}, _ => key.document(code))
+ 
+ def event(ev: Event) -> Action:
+   match ev:
+@@ -318,14 +376,14 @@
+     _ => key(F32.to_u32(SVG.scalar(SVG.drop(text, "key\n"), 0.0))), _ => command(text))
+ 
+ def quality(s: State) -> U32:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.choose(U32, down, 1, 4)
+ 
+ def canvas(+s: State) -> Image:
+   SVG.image(8n, 0, 0, get.scene(s), quality(s))
+ 
+ def frame(+s: State) -> String:
+-  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   SVG.ppm(w, h, nodes, quality(s))
+ 
+ def changed(action: Action, s: State) -> Bool:
+--- before/native.bend
++++ after/native.bend
+@@ -52,4 +52,4 @@
+ def main() -> IO(Unit):
+   do IO<Unit>:
+     state : Editor.State <- Editor.initial()
+-    App.run(~Session, ~App{s => view(s), tick}, "Bend SVG - drag / RGB / arrows / Z undo / S save", 256, 256, session(state))
++    App.run(~Session, ~App{s => view(s), tick}, "Bend SVG - F fit / +/- zoom / HJKL pan / Z undo", 256, 256, session(state))
+--- before/render.bend
++++ after/render.bend
+@@ -14,7 +14,7 @@
+     return env.value(result, fallback)
+ 
+ def output(doc: SVG.Element, +w: U32, +h: U32, aa: U32, fonts: SVG.FontBook) -> String:
+-  SVG.ppm(w, h, SVG.document.fonts(doc, U32.to_f32(w), U32.to_f32(h), fonts), aa)
++  SVG.ppm(w, h, SVG.document.fitted.fonts(doc, U32.to_f32(w), U32.to_f32(h), fonts), aa)
+ 
+ def render.document(+doc: SVG.Element) -> IO(Unit):
+   do IO<Unit>:
+--- before/web.html
++++ after/web.html
+@@ -14,7 +14,7 @@
+ </style>
+ <header><h1>Bend SVG Studio</h1><small>Open a drawing. Select a shape. Make it yours.</small></header>
+ <main>
+-<div class="work"><canvas id="canvas" width="256" height="256" tabindex="0" aria-label="SVG drawing; click and drag shapes"></canvas><span id="status" role="status">Loading drawing…</span></div>
++<div class="work"><canvas id="canvas" width="256" height="256" tabindex="0" aria-label="SVG drawing; click and drag shapes"></canvas><div class="row" aria-label="View controls"><button id="fit">Fit</button><button id="actual">100%</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button><button id="panLeft" aria-label="Pan left">←</button><button id="panUp" aria-label="Pan up">↑</button><button id="panDown" aria-label="Pan down">↓</button><button id="panRight" aria-label="Pan right">→</button></div><span id="status" role="status">Loading drawing…</span></div>
+ <aside>
+ <section><h2>Document</h2><div class="row"><label class="file">Open SVG<input id="file" type="file" accept=".svg,image/svg+xml"></label><button id="download">Save SVG</button><button id="undo">Undo</button></div><p>Drag a shape to move it. Use arrow keys to nudge, or Delete to remove it.</p></section>
+ <section><h2>Selected shape</h2><div class="row"><label>Fill <input id="fill" type="color" value="#4682b4"></label><button id="noFill">No fill</button><button id="delete">Delete</button></div><div class="row" style="margin-top:14px"><select id="property" aria-label="Property"><option>paint-order</option><option>stroke</option><option>fill</option><option>stroke-width</option><option>stroke-linecap</option><option>stroke-linejoin</option><option>stroke-miterlimit</option><option>stroke-dasharray</option><option>stroke-dashoffset</option><option>vector-effect</option><option>pathLength</option><option>marker</option><option>marker-start</option><option>marker-mid</option><option>marker-end</option><option>filter</option><option>mask</option><option>mask-mode</option><option>clip-path</option><option>fill-rule</option><option>stroke-opacity</option><option>opacity</option><option>fill-opacity</option><option>transform</option><option>x</option><option>y</option><option>width</option><option>height</option><option>preserveAspectRatio</option><option>image-rendering</option><option>href</option><option>textLength</option><option>lengthAdjust</option><option>font-size</option><option>font-weight</option><option>font-style</option><option>text-anchor</option><option>letter-spacing</option><option>word-spacing</option><option>baseline-shift</option></select><input id="value" value="#202b32" aria-label="Property value"><button id="set">Apply</button></div><p>Changes affect the shape you last clicked.</p></section>
+@@ -60,6 +60,7 @@
+ canvas.onpointercancel=e=>{send(`move\n${position(e)}`,false,true);pointer=null;send('up');};
+ canvas.onkeydown=e=>{const codes={ArrowLeft:63234,ArrowRight:63235,ArrowUp:63232,ArrowDown:63233,Delete:127,Backspace:8};const code=codes[e.key]??(e.key.length===1?e.key.toLowerCase().codePointAt(0):0);if(code){e.preventDefault();send(`key\n${code}`);}};
+ $('file').onchange=async e=>{const file=e.target.files[0];if(file)await send(`load\n${await file.text()}`);};
++for(const [id,code] of [['fit',102],['actual',48],['zoomIn',43],['zoomOut',45],['panLeft',104],['panRight',108],['panUp',107],['panDown',106]]) $(id).onclick=()=>send(`key\n${code}`);
+ $('fill').onchange=e=>send(`set\nfill\n${e.target.value}`);
+ $('noFill').onclick=()=>send('set\nfill\nnone');
+ $('delete').onclick=()=>send('delete');$('undo').onclick=()=>send('undo');
+--- before/check-state.bend
++++ after/check-state.bend
+@@ -2,7 +2,7 @@
+ import ./state.bend as Editor
+ 
+ def size(s: Editor.State) -> String:
+-  Editor.State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts} = s
++  Editor.State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+   U32.show(w) ++ "x" ++ U32.show(h)
+ 
+ def main() -> IO(Unit):
+--- before/check-camera.bend
++++ after/check-camera.bend
+@@ -0,0 +1,60 @@
++# View navigation is independent of document edits and their history.
++import Base
++import ./state.bend as Editor
++import ./svg.bend as SVG
++
++def drawing() -> String:
++  "<svg width='128' height='64'><rect x='32' y='16' width='32' height='32' fill='red'/></svg>"
++
++def rectangle(x: String, y: String, width: String, height: String, color: String) -> String:
++  "<rect x='" ++ x ++ "' y='" ++ y ++ "' width='" ++ width ++ "' height='" ++ height ++ "' fill='" ++ color ++ "'/>"
++
++def equal(s: Editor.State, body: String) -> String:
++  SVG.choose(String, SVG.string.equal(Editor.frame(s), SVG.ppm(64, 64, SVG.document(SVG.parse("<svg>" ++ body ++ "</svg>"), 64.0, 64.0), 4)), "PASS", "FAIL")
++
++def same(+a: Editor.State, +b: Editor.State) -> String:
++  SVG.choose(String, SVG.string.equal(Editor.frame(a), Editor.frame(b)) && SVG.string.equal(Editor.get.source(a), Editor.get.source(b)), "PASS", "FAIL")
++
++def stroke(effect: String) -> Editor.State:
++  Editor.load("<svg width='128' height='64'><path d='M32 32H96' stroke='red' stroke-width='4' " ++ effect ++ "/></svg>", 64, 64)
++
++def main() -> IO(Unit):
++  +start = Editor.load(drawing(), 64, 64)
++  +zoomed = Editor.apply(start, Editor.key(43))
++  +panned = Editor.apply(start, Editor.key(104))
++  +picked = Editor.apply(Editor.apply(panned, Editor.Press{56, 32}), Editor.Release{})
++  +moved = Editor.apply(Editor.apply(Editor.apply(panned, Editor.Press{56, 32}), Editor.Drag{60, 36}), Editor.Release{})
++  +painted = Editor.apply(Editor.apply(Editor.apply(start, Editor.Press{20, 28}), Editor.Release{}), Editor.Property{"fill", "blue"})
++  +resized = Editor.apply(start, Editor.Source{"<svg width='256' height='128'><rect width='100%' height='100%' fill='red'/></svg>"})
++  do IO<Unit>:
++    Unit <- IO.print(equal(start, rectangle("16", "24", "16", "16", "red")))
++    Unit <- IO.print(equal(zoomed, rectangle("12", "22", "20", "20", "red")))
++    Unit <- IO.print(same(Editor.apply(zoomed, Editor.key(45)), start))
++    Unit <- IO.print(equal(panned, rectangle("48", "24", "16", "16", "red")))
++    Unit <- IO.print(equal(Editor.apply(picked, Editor.Property{"fill", "blue"}), rectangle("48", "24", "16", "16", "blue")))
++    Unit <- IO.print(equal(moved, rectangle("52", "28", "16", "16", "red")))
++    Unit <- IO.print(same(Editor.undo(moved), panned))
++    Unit <- IO.print(equal(Editor.apply(picked, Editor.key(63235)), rectangle("49", "24", "16", "16", "red")))
++    Unit <- IO.print(equal(Editor.apply(start, Editor.key(48)), rectangle("32", "16", "32", "32", "red")))
++    Unit <- IO.print(same(Editor.apply(Editor.apply(panned, Editor.key(43)), Editor.key(102)), start))
++    Unit <- IO.print(same(Editor.undo(Editor.apply(painted, Editor.key(43))), zoomed))
++    Unit <- IO.print(equal(resized, rectangle("0", "16", "128", "64", "red")))
++    Unit <- IO.print(same(Editor.undo(resized), start))
++    Unit <- IO.print(equal(stroke(""), rectangle("16", "31", "32", "2", "red")))
++    IO.print(equal(stroke("vector-effect='non-scaling-stroke'"), rectangle("16", "30", "32", "4", "red")))
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
+--- before/check-camera-sizing.bend
++++ after/check-camera-sizing.bend
+@@ -0,0 +1,25 @@
++# Fitting uses the natural viewport while percentages and CSS remain document-local.
++import Base
++import ./state.bend as Editor
++import ./svg.bend as SVG
++
++def equal(source: String, body: String) -> String:
++  SVG.choose(String, SVG.string.equal(Editor.frame(Editor.load(source, 64, 64)), SVG.ppm(64, 64, SVG.document(SVG.parse("<svg>" ++ body ++ "</svg>"), 64.0, 64.0), 4)), "PASS", "FAIL")
++
++def main() -> IO(Unit):
++  do IO<Unit>:
++    Unit <- IO.print(equal("<svg width='50%' height='25%'><rect width='100%' height='100%' fill='red'/></svg>", "<rect y='16' width='64' height='32' fill='red'/>"))
++    Unit <- IO.print(equal("<svg width='64' height='64'><style>svg {width:128px;height:64px}</style><rect width='100%' height='100%' fill='red'/></svg>", "<rect y='16' width='64' height='32' fill='red'/>"))
++    Unit <- IO.print(equal("<svg width='128' height='64' viewBox='0 0 64 64'><rect width='64' height='64' fill='red'/></svg>", "<rect x='16' y='16' width='32' height='32' fill='red'/>"))
++    Unit <- IO.print(equal("<svg width='0' height='64'><rect width='100%' height='100%' fill='red'/></svg>", ""))
++    Unit <- IO.print(equal("<svg width='128' height='64'><svg width='50%' height='100%' viewBox='0 0 16 16'><rect width='16' height='16' fill='red'/></svg></svg>", "<rect y='16' width='32' height='32' fill='red'/>"))
++    Unit <- IO.print(equal("<svg width='128' height='64'><style>rect {fill:blue} @media (min-width:100px) {rect {fill:red}}</style><rect width='100%' height='100%'/></svg>", "<rect y='16' width='64' height='32' fill='red'/>"))
++    IO.print(equal("<svg viewBox='0 0 128 64'><rect width='128' height='64' fill='red'/></svg>", "<rect y='16' width='64' height='32' fill='red'/>"))
++
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS
++#|PASS

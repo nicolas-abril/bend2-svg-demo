@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "scope": "Native window presentation only; automated native input remains unverified",
+  "sourceSHA256": {
+    "svg.bend": "cd77a3f56536818426710c872f4e95e63252883a0e12d36a12dce25d1cdbf736",
+    "state.bend": "a604ac987ef8a7607df05f015e437c965ad0577f7bfbcfd34fd84c91c2adab27",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "e623fb983b5c8fe45b2603ce8853426ee9d44a0de1509d6c46f7d079eb425535",
+  "window": 355,
+  "pid": 43404,
+  "screenshot": "native-svg-images.png",
+  "expectedMatrix": "native-svg-images-expected.ppm",
+  "canvasCrop": [
+    34,
+    58,
+    256,
+    256
+  ],
+  "allPixelComparison": {
+    "meanAbsoluteError": 0.452880859375,
+    "rootMeanSquareError": 10.310141183828122,
+    "maxChannelError": 255,
+    "changedPixels": 174
+  },
+  "allDifferencesWithinOSRoundedBottomCorners": true,
+  "nativeInput": {
+    "passed": false,
+    "reason": "Targeted events caused no observed edit; normal input was not sent because macOS did not grant the test app foreground focus. No global events were sent after the focus guard failed.",
+    "focusGuard": "macOS did not make the test app the foreground input target; normal input was aborted."
+  },
+  "closed": true,
+  "allCanvasPixelsEqual": false,
+  "matchedCanvasPixels": 65362,
+  "observedCornerExtentPixels": 24,
+  "note": "All174 differences are confined to the two rounded bottom window corners; all other65362 canvas pixels are exact. Full-image error values above retain those pixels.",
+  "equivalentCurrentLibrarySHA256": "9078af2d90a95e8de565217a320bf19e8c659ec8343fe3ab8a1606fbe477dcbd",
+  "equivalenceEvidence": "svg-images-build-report.json: byte-identical native emitted C"
+}

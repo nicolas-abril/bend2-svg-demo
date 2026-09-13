@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "binarySHA256": "a19346f5c7b2102190c737384691fe916de92f06e0a330c2e2f159ce43da99b0",
+  "serverBackend": "native",
+  "durationSeconds": 6.817120292,
+  "checks": [
+    "Bend web pixels match headless blend centers",
+    "select hue-filtered shape",
+    "switch to soft-light",
+    "other shapes unchanged",
+    "exact source and full-matrix undo",
+    "drag filtered shape and undo",
+    "save retains authored blend primitives",
+    "no browser errors"
+  ],
+  "sourceSHA256": {
+    "svg.bend": "69b50e1805de569e1841b8da0207c29083db1bdabd5689299074f4a6030b8c8c",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "before": "<svg height=\"64\" width=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n<defs>\n <filter color-interpolation-filters=\"sRGB\" id=\"hue\"><feFlood result=\"bg\" flood-opacity=\".6\" flood-color=\"#48c\"></feFlood><feBlend mode=\"hue\" in2=\"bg\" in=\"SourceGraphic\"></feBlend></filter>\n <filter color-interpolation-filters=\"sRGB\" id=\"soft\"><feFlood result=\"bg\" flood-opacity=\".6\" flood-color=\"#48c\"></feFlood><feBlend mode=\"soft-light\" in2=\"bg\" in=\"SourceGraphic\"></feBlend></filter>\n <filter id=\"burn\"><feFlood result=\"bg\" flood-opacity=\".6\" flood-color=\"#8c4\"></feFlood><feBlend mode=\"color-burn\" in2=\"bg\" in=\"SourceGraphic\"></feBlend></filter>\n <filter id=\"overlay\"><feFlood result=\"bg\" flood-opacity=\".6\" flood-color=\"#48c\"></feFlood><feBlend mode=\"overlay\" in2=\"bg\" in=\"SourceGraphic\"></feBlend></filter>\n <clipPath id=\"cut\"><rect rx=\"4\" height=\"16\" width=\"24\" y=\"38\" x=\"4\"></rect></clipPath>\n <mask id=\"fade\"><rect fill=\"white\" height=\"64\" width=\"64\"></rect><circle fill=\"#888\" r=\"5\" cy=\"48\" cx=\"51\"></circle></mask>\n</defs>\n<circle filter=\"url(#hue)\" fill-opacity=\".7\" fill=\"#d64\" r=\"10\" cy=\"16\" cx=\"16\"></circle>\n<circle filter=\"url(#soft)\" fill-opacity=\".7\" fill=\"#d64\" r=\"10\" cy=\"16\" cx=\"48\"></circle>\n<g opacity=\".8\"><circle clip-path=\"url(#cut)\" filter=\"url(#burn)\" fill-opacity=\".7\" fill=\"#d64\" r=\"10\" cy=\"48\" cx=\"16\"></circle></g>\n<circle mask=\"url(#fade)\" filter=\"url(#overlay)\" fill-opacity=\".7\" fill=\"#d64\" r=\"10\" cy=\"48\" cx=\"48\"></circle>\n</svg>\n"
+}

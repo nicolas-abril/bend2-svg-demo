@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" color="hsl(210 70% 45%)">
+<defs>
+<linearGradient id="g"><stop stop-color="rgb(100% 0 0 / 80%)"/><stop offset="1" stop-color="hwb(240 0% 0%)" stop-opacity="50%"/></linearGradient>
+<mask id="m" mask-type="alpha"><rect width="64" height="64" fill="hsl(0 0% 100% / 50%)"/></mask>
+<pattern id="p" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="PAPAYAWHIP"/><rect width="4" height="4" fill="hsl(330 70% 50%)"/></pattern>
+</defs>
+<rect width="32" height="16" fill="url(#g)"/>
+<rect x="32" width="32" height="16" fill="CURRENTCOLOR"/>
+<g opacity="50%"><rect y="16" width="32" height="16" fill="hsl(120 100% 50%)"/></g>
+<rect x="32" y="16" width="32" height="16" fill="rgb(255 0 0)" fill-opacity="25%"/>
+<rect y="32" width="32" height="16" fill="rgb(0 0 255)" mask="url(#m)"/>
+<rect x="32" y="32" width="32" height="16" fill="url(#p)"/>
+<path d="M4 56H28" stroke="hwb(180 0% 0%)" stroke-width="8" stroke-opacity="50%"/>
+<rect x="32" y="48" width="32" height="16" style="fill:rgba(100%, 50%, 0%, 80%);fill-opacity:50%"/>
+</svg>

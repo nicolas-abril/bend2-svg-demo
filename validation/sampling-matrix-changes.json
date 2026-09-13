@@ -1,0 +1,11 @@
+{
+  "unchanged": 88,
+  "changed": [
+    {
+      "fixture": "images-aspect.svg",
+      "changedChannels": 90,
+      "maxChange": 99
+    }
+  ],
+  "check": "Artifact differences after re-rendering seven PNG fixtures; the other 82 matrices are retained from the JPEG checkpoint for the next native parity run."
+}

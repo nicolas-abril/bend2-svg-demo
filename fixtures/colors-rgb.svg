@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<rect x="0" y="0" width="16" height="16" fill="rgb(100%,0%,0%)"/>
+<rect x="16" y="0" width="16" height="16" fill="rgba(0%,100%,0%,50%)"/>
+<rect x="32" y="0" width="16" height="16" fill="rgb(0 0 255 / 25%)"/>
+<rect x="48" y="0" width="16" height="16" fill="RGB(100% 0 255)"/>
+<rect x="0" y="16" width="16" height="16" fill="rgba(255, 128, 0, .5)"/>
+<rect x="16" y="16" width="16" height="16" fill="rgb(300 -20 128)"/>
+<rect x="32" y="16" width="16" height="16" fill="rgb(10% 20% 30% / 80%)"/>
+<rect x="48" y="16" width="16" height="16" fill="rgb(none 255 none)"/>
+<rect x="0" y="32" width="16" height="16" fill="rgb(255 0 0 / none)"/>
+<rect x="16" y="32" width="16" height="16" fill="rgb(0,255,255,75%)"/>
+<rect x="32" y="32" width="16" height="16" fill="#aBcD"/>
+<rect x="48" y="32" width="16" height="16" fill="#ABCDEF80"/>
+<rect x="0" y="48" width="16" height="16" fill=" LightSeaGreen "/>
+<rect x="16" y="48" width="16" height="16" fill="TRANSPARENT"/>
+<rect x="32" y="48" width="16" height="16" fill="rgb(1e2 2e2 0)"/>
+<rect x="48" y="48" width="16" height="16" fill="rgb(255 255 255 / 120%)"/>
+</svg>

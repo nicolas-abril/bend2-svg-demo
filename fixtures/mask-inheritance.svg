@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs fill="white"><mask id="inherited"><rect width="24" height="24"/><circle cx="44" cy="16" r="12"/></mask>
+<mask id="dark" fill="black"><rect width="64" height="64"/><rect x="4" y="40" width="20" height="20" fill="white"/></mask></defs>
+<rect width="64" height="32" fill="purple" mask="url(#inherited)"/>
+<rect y="32" width="64" height="32" fill="teal" mask="url(#dark)"/>
+</svg>

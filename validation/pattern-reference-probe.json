@@ -1,0 +1,18 @@
+[
+  {
+    "fixture": "pattern-reference.svg",
+    "change": "remove descriptive title child",
+    "changedPixels": {
+      "chromium": 1056,
+      "resvg": 0
+    }
+  },
+  {
+    "fixture": "pattern-transform.svg",
+    "change": "set negative pattern origin to zero",
+    "changedPixels": {
+      "chromium": 740,
+      "resvg": 716
+    }
+  }
+]

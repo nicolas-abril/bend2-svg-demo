@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs>
+<marker id="m" markerWidth="8" markerHeight="6" refX="4" refY="3" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#b35" fill-opacity=".5"/></marker>
+</defs><g fill="none" stroke="#888" marker-start="url(#m)" marker-mid="url(#m)" marker-end="url(#m)">
+<path d="M10 10"/><path d="M30 10L30 10"/><path d="M50 10Z"/>
+<path d="M10 28L10 28L30 28L30 28L50 28L50 28"/>
+<path d="M10 46A6 6 0 0 0 10 46L30 46"/>
+<path d="M44 46C44 46 52 46 52 46"/>
+</g></svg>

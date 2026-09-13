@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<pattern id="rotate" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(30)"><rect width="4" height="8" fill="#167cc1"/></pattern>
+<pattern id="box" width=".25" height=".5" patternContentUnits="objectBoundingBox" patternTransform="rotate(30)"><rect width=".125" height=".5" fill="#cc563d"/></pattern>
+<pattern id="skew" patternUnits="userSpaceOnUse" x="-2" y="-3" width="8" height="8" patternTransform="translate(1 2) skewX(20) scale(.8 1.2)"><rect x="1" y="1" width="4" height="5" fill="#a34daf"/></pattern>
+</defs>
+<rect x="2" y="2" width="28" height="28" fill="url(#rotate)"/>
+<rect x="34" y="2" width="28" height="20" fill="url(#box)"/>
+<path d="M5 40H28V58H5Z" fill="none" stroke="url(#rotate)" stroke-width="5" stroke-linejoin="round"/>
+<rect x="34" y="34" width="28" height="28" fill="url(#skew)"/>
+</svg>

@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "check": "Saved C and JavaScript renderers produce byte-identical 64x64 AA8 pattern matrices",
+  "svgSourceSHA256": "00d7c49de1a0d77699586e364df37ba5ab1ce2fa74d11eedaf08f6cabfda0cb0",
+  "results": [
+    {
+      "fixture": "pattern-units.svg",
+      "passed": true,
+      "sha256": "c19c61c55862b3e642f3a6d350fdb6cbc06a3d884beb1a63404e43cb81615a39"
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "passed": true,
+      "sha256": "c85d7cb6590740c272e69e12b9556554f034eff6d476080e4fb87bcb70f83a4f"
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "passed": true,
+      "sha256": "21463a362613456f71c61f30e4a627a29ec5bc6eb5bf921cba2cb030ef3b4d4c"
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "passed": true,
+      "sha256": "e672a7fd9c8283dad90ca0bd00dc5b72dfde17e809c8a60d737716dce78b0f0c"
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "passed": true,
+      "sha256": "238adbbee9afa8f5061a05cd933f4fac669ce6a7ec1cfb7048cb4e354c22ff8a"
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "passed": true,
+      "sha256": "3ca61f7417b39a4fe500f6f79c25dcffed8882776c1082fb01fb562cadfdcc85"
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "passed": true,
+      "sha256": "5d30c21adeaeae443299920306f4630a8a069e5c71987bc9d19e1e995b8eb594"
+    }
+  ]
+}

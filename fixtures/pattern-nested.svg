@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="fade"><stop stop-color="#1679c4"/><stop offset="1" stop-color="#c84479"/></linearGradient>
+<pattern id="tiny" patternUnits="userSpaceOnUse" width="4" height="4"><rect width="2" height="4" fill="#d97b2c"/></pattern>
+<mask id="cut" mask-type="alpha"><circle cx="8" cy="8" r="7" fill="white"/></mask>
+<g id="tile"><rect width="16" height="16" fill="url(#fade)"/><rect y="9" width="16" height="7" fill="url(#tiny)"/></g>
+<pattern id="large" patternUnits="userSpaceOnUse" width="16" height="16"><use href="#tile" mask="url(#cut)"/></pattern>
+</defs>
+<rect x="2" y="2" width="60" height="60" fill="url(#large)"/>
+</svg>

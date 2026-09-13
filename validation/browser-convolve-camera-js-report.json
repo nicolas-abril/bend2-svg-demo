@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "serverBackend": "javascript",
+  "binarySHA256": null,
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "durationSeconds": 848.771355209,
+  "checks": [
+    "three complete 65536-pixel fitted headless AA4 matrices",
+    "no SVG presentation DOM",
+    "fit, actual size, center zoom and inverse zoom",
+    "four pan directions and exact inverse pan",
+    "pick, recolor, drag, nudge and undo after pan",
+    "navigation preserves document source and edit history",
+    "source editing and unchanged apply after pan",
+    "keyboard zoom and fit",
+    "opening a file resets history",
+    "save excludes view changes"
+  ]
+}

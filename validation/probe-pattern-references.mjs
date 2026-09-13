@@ -1,0 +1,7 @@
+// Isolate discrepancies in SVG2 descriptive pattern children and transformed tiles.
+import{chromium}from'playwright';import{Resvg}from'@resvg/resvg-js';import{PNG}from'pngjs';import{readFileSync,writeFileSync}from'node:fs';import{resolve,dirname}from'node:path';
+const here=dirname(import.meta.filename),browser=await chromium.launch({headless:true});
+try{const page=await browser.newPage({viewport:{width:64,height:64}});const output=[];
+for(const fixture of ['pattern-reference.svg','pattern-transform.svg']){const text=readFileSync(resolve(here,'../fixtures',fixture),'utf8');const sources=fixture.includes('reference')?[text,text.replace(/<title>.*?<\/title>/,'')]:[text,text.replace('x="-2" y="-3"','x="0" y="0"')];const engines={chromium:[],resvg:[]};for(const source of sources){await page.goto('data:image/svg+xml,'+encodeURIComponent(source));engines.chromium.push(PNG.sync.read(await page.screenshot()).data);engines.resvg.push(new Resvg(source,{background:'white'}).render().pixels);}const changes={};for(const[name,[a,b]]of Object.entries(engines)){let pixels=0;for(let i=0;i<4096;i++)pixels+=a.slice(i*4,i*4+3).some((v,c)=>v!==b[i*4+c]);changes[name]=pixels;}output.push({fixture,change:fixture.includes('reference')?'remove descriptive title child':'set negative pattern origin to zero',changedPixels:changes});}
+writeFileSync(resolve(here,'pattern-reference-probe.json'),JSON.stringify(output,null,2)+'\n');console.log(output);
+}finally{await browser.close();}

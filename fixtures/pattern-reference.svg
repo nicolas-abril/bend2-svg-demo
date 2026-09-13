@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64" viewBox="0 0 64 64">
+<defs fill="#267abc">
+<pattern id="base" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="4" height="6"/></pattern>
+<pattern id="copy" href="#base" x="2" y="1"><title>Descriptive child does not hide template</title></pattern>
+<pattern id="override" xlink:href="#copy" width="10"><circle cx="5" cy="4" r="3" fill="#df7434"/></pattern>
+<pattern id="again" href="#copy" patternTransform="translate(0 1)"/>
+</defs>
+<rect x="2" y="2" width="28" height="28" fill="url(#copy)"/>
+<rect x="34" y="2" width="28" height="28" fill="url(#override)"/>
+<rect x="2" y="34" width="60" height="28" fill="url(#again)" fill-opacity=".5"/>
+</svg>

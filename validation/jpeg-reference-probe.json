@@ -1,0 +1,161 @@
+{
+  "purpose": "Characterize standalone JPEG chroma reconstruction differences; no application decoder dependency",
+  "results": [
+    {
+      "name": "one-pixel",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      }
+    },
+    {
+      "name": "narrow",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      }
+    },
+    {
+      "name": "narrow-2",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.029411764705882353,
+        "rmse": 0.17149858514250885,
+        "max": 1
+      }
+    },
+    {
+      "name": "narrow-3",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.05228758169934641,
+        "rmse": 0.3233808333817773,
+        "max": 2
+      }
+    },
+    {
+      "name": "narrow-4",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.029411764705882353,
+        "rmse": 0.17149858514250885,
+        "max": 1
+      }
+    },
+    {
+      "name": "short",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.19607843137254902,
+        "rmse": 0.44280744277004763,
+        "max": 1
+      }
+    },
+    {
+      "name": "partial-mcu",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.3333333333333333,
+        "rmse": 0.5773502691896257,
+        "max": 1
+      }
+    },
+    {
+      "name": "progressive-flat",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      }
+    },
+    {
+      "name": "restart-wrap",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.3587239583333333,
+        "rmse": 0.6086400482496476,
+        "max": 2
+      }
+    },
+    {
+      "name": "low-quality",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.017396707051879467,
+        "rmse": 0.14100337200377044,
+        "max": 2
+      }
+    },
+    {
+      "name": "high-quality",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.0260950605778192,
+        "rmse": 0.18485698022422734,
+        "max": 2
+      }
+    },
+    {
+      "name": "progressive-large",
+      "chromiumVersusPillow": {
+        "mae": 0,
+        "rmse": 0,
+        "max": 0
+      },
+      "bendVersusChromium": {
+        "mae": 0.3512641059027778,
+        "rmse": 0.6029756579640858,
+        "max": 3
+      }
+    }
+  ]
+}

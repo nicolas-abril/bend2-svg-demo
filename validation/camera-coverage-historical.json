@@ -1,0 +1,984 @@
+{
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "referencePolicy": "Use resvg for the basic geometry, opacity, clipping and cap/join/dash fixtures. Use Chromium for gradients, use/symbol/nested viewports, pathLength, non-scaling strokes and isolated dashed subpaths. The installed resvg binding omits fr, linearRGB, pathLength, vector-effect and symbol default dimensions; it also differs on quoted/empty gradient paint, zero-sized nested viewports and cyclic references. Keep all raw errors and alternate comparisons, including disagreements at clipped edges and the unresolved zero-length closed dash. Classic mask fixtures use resvg; mask-mode and linearRGB fixtures use Chromium because the resvg probes show those properties are ignored. Invalid/cyclic masks use Chromium for comparison but remain a failure: Bend applies transparent black to invalid mask sources per CSS Masking, while reference engines render some of those targets unmasked. Patterns use resvg except transformed patterns, where Chromium is selected. Removing the descriptive title from pattern-reference changes 1056 Chromium pixels but no resvg pixels; SVG2 explicitly permits descriptive children in templates. Transformed patterns retain a failure against Chromium; resvg also differs more substantially on the skewed tile. CSS fixtures use Chromium, with isolated CSS reference probes and all raw resvg results retained; the resvg binding omits several tested cascade, selector, media-query and geometry behaviors. Text fixtures use resvg with the exact bundled Noto Sans font files; Chromium uses those same font files via FontFace. Browser glyph hinting and antialiasing produce additional differences. All initial text errors remain recorded, including baseline/anchored-spacing disagreements; neither reference is treated as an exact font-rasterization oracle. Fitted-text comparisons remain failures. Nested fitting differs substantially across engines; Bend preserves independently fitted descendants as fixed units per the SVG2 resolve-text-length procedure. Following-character advancement and combinations with explicit positions remain under investigation. Expanded color fixtures use Chromium. All148 named values match the official CSS table and Chromium exactly; functional/resource color fixtures differ by at most one channel level. Isolated colors-reference-probe.json records older resvg color-syntax limitations; all alternate results are retained. Marker fixtures use Chromium: the resvg binding treats auto-start-reverse as zero orientation, omits context paints, and differs on shorthand priority and subpath tangents. Keep all resvg results. Transformed marker viewport edges and composited context-paint edges remain failed comparisons with the original thresholds. Filter fixtures use Chromium consistently. Keep resvg alternate comparisons, including its shifted offset subregions and missing context paints in filtered markers. Gaussian kernels, transformed filter buffers and nested patterned filtering differ between reference engines; transformed and nested filter failures remain recorded without changing thresholds. Embedded PNG fixtures use Chromium. Isolated image-reference-probe.json shows resvg 2.6.2 ignores image-rendering:pixelated (optimizeSpeed gives exact nearest-neighbor pixels) and omits intrinsically sized image elements. Both complete raw comparisons are retained. The image aspect-ratio fixture now passes after stabilizing F32 texel-boundary ties; prior and corrected measurements are recorded in sampling.md. Embedded JPEG fixtures use Chromium, retaining resvg alternate comparisons. Standalone JPEG decoder probes also compare every pixel against Pillow/libjpeg. Extended feBlend fixtures use Chromium consistently with the other filter fixtures. All sixteen modes are compared on sixteen color pairs in opaque sRGB, varying-alpha sRGB and linearRGB. Raw resvg comparisons are retained, including nonseparable-mode and boundary differences. Embedded SVG sizing uses resvg: the independent 12-case probe records Chromium ignoring slice fitting and changing no-viewBox behavior. Other SVG image fixtures use Chromium, keeping both complete reports. The root stylesheet intrinsic-size discrepancy and embedded stroke antialiasing remain failures; neither thresholds nor prior reference choices are changed. The embedded SVG text fixture includes matching subset font data for Chromium; Bend uses its bundled Noto outlines. The tested resvg binding paints no text in this embedded SVG image. Chromium remains primary and its residual text antialiasing error remains a failure. Text-path fixtures retain the existing resvg text policy except positions and references, where independent probes demonstrate omitted pathLength offset calibration and direct path data. The basic-shape fixture uses resvg because Chromium paints no text for that reference. All five failures and both alternate reports are retained; no thresholds are changed. Morphology fixtures use Chromium, consistent with the existing filter group. The independent morphology-reference-probe.json records fractional-radius quantization, zero axes and the older resvg binding\u2019s shifted morphology kernel. All alternate comparisons and transformed-edge failures are retained.",
+  "fixtures": {
+    "basic.svg": {
+      "reference": "resvg",
+      "features": [
+        "rect",
+        "circle",
+        "quadratic paths"
+      ]
+    },
+    "paths.svg": {
+      "reference": "resvg",
+      "features": [
+        "path commands",
+        "arcs",
+        "fill rules"
+      ]
+    },
+    "transforms.svg": {
+      "reference": "resvg",
+      "features": [
+        "transforms",
+        "viewBox",
+        "rounded rect",
+        "ellipse"
+      ]
+    },
+    "opacity.svg": {
+      "reference": "resvg",
+      "features": [
+        "group opacity",
+        "fill opacity",
+        "inline styles",
+        "inheritance"
+      ]
+    },
+    "gradient-linear.svg": {
+      "reference": "chromium",
+      "features": [
+        "linear gradients",
+        "alpha interpolation",
+        "duplicate stops"
+      ]
+    },
+    "gradient-radial.svg": {
+      "reference": "chromium",
+      "features": [
+        "radial gradients",
+        "focal point",
+        "focal radius",
+        "gradient transform"
+      ]
+    },
+    "gradient-strokes.svg": {
+      "reference": "chromium",
+      "features": [
+        "gradient strokes",
+        "linearRGB",
+        "stop offset clamping"
+      ]
+    },
+    "gradient-transforms.svg": {
+      "reference": "chromium",
+      "features": [
+        "gradient references",
+        "gradient units",
+        "repeat",
+        "reflect",
+        "gradient transform"
+      ]
+    },
+    "gradient-stops.svg": {
+      "reference": "chromium",
+      "features": [
+        "currentColor",
+        "explicit inheritance",
+        "quoted URLs",
+        "single/empty stops",
+        "URL fallback"
+      ]
+    },
+    "clipping.svg": {
+      "reference": "resvg",
+      "features": [
+        "clip union",
+        "clip-rule",
+        "objectBoundingBox clips",
+        "group clipping",
+        "nested intersection"
+      ]
+    },
+    "clipping-transforms.svg": {
+      "reference": "resvg",
+      "features": [
+        "transformed clipping",
+        "group bounding boxes",
+        "empty clips",
+        "invalid clip references"
+      ]
+    },
+    "stroke-caps.svg": {
+      "reference": "resvg",
+      "features": [
+        "butt/round/square caps",
+        "zero-length subpaths",
+        "moveto-only"
+      ]
+    },
+    "stroke-joins.svg": {
+      "reference": "resvg",
+      "features": [
+        "miter/round/bevel joins",
+        "miter limits",
+        "explicit closure"
+      ]
+    },
+    "stroke-dashes.svg": {
+      "reference": "resvg",
+      "features": [
+        "even/odd dash arrays",
+        "offsets",
+        "percentages",
+        "zero dashes"
+      ]
+    },
+    "stroke-dash-curves.svg": {
+      "reference": "resvg",
+      "features": [
+        "curved dashes",
+        "closed dash seam",
+        "square caps"
+      ]
+    },
+    "stroke-calibration.svg": {
+      "reference": "chromium",
+      "features": [
+        "pathLength",
+        "multiple subpath dash resets"
+      ]
+    },
+    "stroke-vector.svg": {
+      "reference": "chromium",
+      "features": [
+        "non-scaling-stroke",
+        "nonuniform transforms"
+      ]
+    },
+    "stroke-dash-zero.svg": {
+      "reference": "chromium",
+      "features": [
+        "zero-length dash caps",
+        "zero-length subpaths",
+        "all-zero arrays"
+      ]
+    },
+    "compact-paths.svg": {
+      "reference": "resvg",
+      "features": [
+        "adjacent decimals",
+        "compact arc flags",
+        "exponents"
+      ]
+    },
+    "viewports.svg": {
+      "reference": "chromium",
+      "features": [
+        "nested viewport dimensions",
+        "percentage geometry",
+        "meet/slice/none",
+        "overflow clipping"
+      ]
+    },
+    "viewports-nested.svg": {
+      "reference": "chromium",
+      "features": [
+        "recursive viewports",
+        "percentage dimensions",
+        "transformed viewport",
+        "visible overflow",
+        "zero viewport"
+      ]
+    },
+    "use.svg": {
+      "reference": "chromium",
+      "features": [
+        "local href/xlink references",
+        "instance styles",
+        "reference chains",
+        "use positioning"
+      ]
+    },
+    "symbols.svg": {
+      "reference": "chromium",
+      "features": [
+        "symbol viewBox",
+        "instance dimensions",
+        "SVG references",
+        "symbol clipping"
+      ]
+    },
+    "use-clips.svg": {
+      "reference": "chromium",
+      "features": [
+        "use inside clips",
+        "userSpaceOnUse clip positioning",
+        "instance opacity"
+      ]
+    },
+    "use-inheritance.svg": {
+      "reference": "chromium",
+      "features": [
+        "explicit inheritance",
+        "currentColor in instances",
+        "symbol default size"
+      ]
+    },
+    "use-cycles.svg": {
+      "reference": "chromium",
+      "features": [
+        "direct self reference",
+        "indirect reference cycles",
+        "independent instances"
+      ]
+    },
+    "masks.svg": {
+      "reference": "resvg",
+      "features": [
+        "luminance masks",
+        "mask opacity",
+        "group masking"
+      ]
+    },
+    "mask-units.svg": {
+      "reference": "resvg",
+      "features": [
+        "maskUnits",
+        "maskContentUnits",
+        "group bounding boxes",
+        "transformed masks"
+      ]
+    },
+    "mask-alpha.svg": {
+      "reference": "chromium",
+      "features": [
+        "alpha mask type",
+        "mask-mode override"
+      ]
+    },
+    "mask-gradients.svg": {
+      "reference": "resvg",
+      "features": [
+        "gradient masks",
+        "bbox mask content",
+        "masking groups"
+      ]
+    },
+    "mask-nested.svg": {
+      "reference": "resvg",
+      "features": [
+        "nested masks",
+        "clipping plus masking",
+        "use in masks"
+      ]
+    },
+    "mask-linear-rgb.svg": {
+      "reference": "chromium",
+      "features": [
+        "linearRGB mask luminance"
+      ]
+    },
+    "mask-errors.svg": {
+      "reference": "chromium",
+      "features": [
+        "missing/wrong mask references",
+        "empty and zero masks",
+        "direct/indirect cycles"
+      ]
+    },
+    "mask-inheritance.svg": {
+      "reference": "resvg",
+      "features": [
+        "mask definition inheritance",
+        "explicit mask paint override"
+      ]
+    },
+    "mask-compositing.svg": {
+      "reference": "chromium",
+      "features": [
+        "overlapping translucent mask shapes",
+        "sRGB/linearRGB luminance"
+      ]
+    },
+    "pattern-units.svg": {
+      "reference": "resvg",
+      "features": [
+        "patternUnits",
+        "patternContentUnits",
+        "tile origin",
+        "percentage tile dimensions"
+      ]
+    },
+    "pattern-transform.svg": {
+      "reference": "chromium",
+      "features": [
+        "pattern transforms",
+        "bounding-box transforms",
+        "pattern stroke",
+        "negative tile origin"
+      ]
+    },
+    "pattern-viewbox.svg": {
+      "reference": "resvg",
+      "features": [
+        "pattern viewBox",
+        "meet/slice/none",
+        "tile clipping"
+      ]
+    },
+    "pattern-reference.svg": {
+      "reference": "resvg",
+      "features": [
+        "href/xlink pattern templates",
+        "descriptive children",
+        "geometry overrides",
+        "fill opacity"
+      ]
+    },
+    "pattern-nested.svg": {
+      "reference": "resvg",
+      "features": [
+        "nested patterns",
+        "gradients inside patterns",
+        "mask inside pattern",
+        "use inside pattern"
+      ]
+    },
+    "pattern-errors.svg": {
+      "reference": "resvg",
+      "features": [
+        "zero/negative tile dimensions",
+        "template cycles",
+        "paint recursion"
+      ]
+    },
+    "pattern-inheritance.svg": {
+      "reference": "resvg",
+      "features": [
+        "template definition inheritance",
+        "explicit inherited paint",
+        "local pattern override"
+      ]
+    },
+    "css-cascade.svg": {
+      "reference": "chromium",
+      "features": [
+        "type/id/class selectors",
+        "specificity",
+        "source order",
+        "inline priority",
+        "important declarations"
+      ]
+    },
+    "css-selectors.svg": {
+      "reference": "chromium",
+      "features": [
+        "descendant/child/adjacent/general sibling combinators",
+        "attribute operators",
+        "case-insensitive attribute flag"
+      ]
+    },
+    "css-structural.svg": {
+      "reference": "chromium",
+      "features": [
+        "root",
+        "first/last/only child",
+        "nth-child formulas",
+        "nth-last-child",
+        "not",
+        "empty"
+      ]
+    },
+    "css-resources.svg": {
+      "reference": "chromium",
+      "features": [
+        "CSS paint servers",
+        "CSS clip geometry",
+        "CSS pattern content",
+        "CSS use inheritance",
+        "CSS mask"
+      ]
+    },
+    "css-media.svg": {
+      "reference": "chromium",
+      "features": [
+        "CDATA stylesheet",
+        "media type",
+        "viewport media queries",
+        "nested media rules",
+        "style media/type attributes",
+        "at-rule skipping"
+      ]
+    },
+    "text-basic.svg": {
+      "reference": "resvg",
+      "features": [
+        "glyph outlines",
+        "kerning",
+        "font sizes"
+      ]
+    },
+    "text-style.svg": {
+      "reference": "resvg",
+      "features": [
+        "regular/bold/italic/bold italic",
+        "CSS font inheritance"
+      ]
+    },
+    "text-spans.svg": {
+      "reference": "resvg",
+      "features": [
+        "tspan paint and size",
+        "mixed-font anchors",
+        "baseline shifts"
+      ]
+    },
+    "text-position.svg": {
+      "reference": "resvg",
+      "features": [
+        "per-character x",
+        "text anchors",
+        "letter spacing",
+        "repeated rotation"
+      ]
+    },
+    "text-paints.svg": {
+      "reference": "resvg",
+      "features": [
+        "gradient text",
+        "stroked glyph outlines",
+        "clipped text"
+      ]
+    },
+    "text-whitespace.svg": {
+      "reference": "resvg",
+      "features": [
+        "collapsed whitespace",
+        "tspan whitespace",
+        "xml:space preservation"
+      ]
+    },
+    "text-unicode.svg": {
+      "reference": "resvg",
+      "features": [
+        "accented Latin",
+        "Greek",
+        "Cyrillic"
+      ]
+    },
+    "text-length.svg": {
+      "reference": "resvg",
+      "features": [
+        "textLength",
+        "spacing",
+        "spacingAndGlyphs",
+        "middle/end anchors"
+      ]
+    },
+    "text-length-spans.svg": {
+      "reference": "resvg",
+      "features": [
+        "nested textLength",
+        "fixed descendant lengths",
+        "percent textLength",
+        "mixed fonts and whitespace"
+      ]
+    },
+    "colors-named.svg": {
+      "reference": "chromium",
+      "features": [
+        "all 148 CSS named colors",
+        "ASCII case folding",
+        "transparent"
+      ]
+    },
+    "colors-rgb.svg": {
+      "reference": "chromium",
+      "features": [
+        "legacy percentage RGB",
+        "space-separated RGB",
+        "mixed modern number/percent channels",
+        "slash alpha",
+        "percentage alpha",
+        "clamping",
+        "missing components",
+        "hex alpha"
+      ]
+    },
+    "colors-hsl.svg": {
+      "reference": "chromium",
+      "features": [
+        "legacy/modern HSL",
+        "deg/rad/grad/turn hue",
+        "hue wrapping",
+        "numeric/percentage saturation and lightness",
+        "missing components",
+        "alpha"
+      ]
+    },
+    "colors-hwb.svg": {
+      "reference": "chromium",
+      "features": [
+        "HWB conversion",
+        "gray normalization",
+        "hue units",
+        "numeric/percentage whiteness and blackness",
+        "missing components",
+        "alpha"
+      ]
+    },
+    "colors-resources.svg": {
+      "reference": "chromium",
+      "features": [
+        "functional gradient stops",
+        "functional mask colors",
+        "named pattern colors",
+        "case-insensitive currentColor",
+        "group/fill/stroke percentage opacity"
+      ]
+    },
+    "markers-basic.svg": {
+      "reference": "chromium",
+      "features": [
+        "marker-start/mid/end",
+        "auto-start-reverse",
+        "strokeWidth/userSpaceOnUse units",
+        "curve endpoint tangents"
+      ]
+    },
+    "markers-vertices.svg": {
+      "reference": "chromium",
+      "features": [
+        "closed-path angle bisectors",
+        "subpath endpoints",
+        "quadratic/smooth/arc tangents",
+        "polyline markers"
+      ]
+    },
+    "markers-viewports.svg": {
+      "reference": "chromium",
+      "features": [
+        "marker viewBox",
+        "refX/refY",
+        "meet/slice/none",
+        "overflow clips",
+        "nonuniform transforms"
+      ]
+    },
+    "markers-styles.svg": {
+      "reference": "chromium",
+      "features": [
+        "inherited marker properties",
+        "marker shorthand source order",
+        "important marker declarations",
+        "marker definition styles"
+      ]
+    },
+    "markers-recursive.svg": {
+      "reference": "chromium",
+      "features": [
+        "direct and indirect recursive markers",
+        "invalid references",
+        "zero-size marker viewport"
+      ]
+    },
+    "markers-context.svg": {
+      "reference": "chromium",
+      "features": [
+        "context-fill/context-stroke",
+        "solid/gradient/pattern context paint",
+        "independent paint opacity"
+      ]
+    },
+    "markers-compositing.svg": {
+      "reference": "chromium",
+      "features": [
+        "group opacity includes markers",
+        "objectBoundingBox excludes markers",
+        "clipping and masking marker paint",
+        "transformed context gradient"
+      ]
+    },
+    "markers-zero.svg": {
+      "reference": "chromium",
+      "features": [
+        "moveto-only paths",
+        "zero-length segments",
+        "omitted equal-endpoint arcs",
+        "degenerate curve tangents"
+      ]
+    },
+    "filters-basic.svg": {
+      "reference": "chromium",
+      "features": [
+        "feFlood",
+        "feOffset",
+        "feColorMatrix",
+        "feComponentTransfer",
+        "sRGB filter processing"
+      ]
+    },
+    "filters-blur.svg": {
+      "reference": "chromium",
+      "features": [
+        "feGaussianBlur",
+        "anisotropic blur",
+        "linearRGB versus sRGB",
+        "SourceAlpha shadow chain",
+        "feMerge"
+      ]
+    },
+    "filters-composite.svg": {
+      "reference": "chromium",
+      "features": [
+        "feComposite in/out/xor/arithmetic",
+        "named results",
+        "premultiplied alpha"
+      ]
+    },
+    "filters-regions.svg": {
+      "reference": "chromium",
+      "features": [
+        "filterUnits",
+        "primitiveUnits",
+        "numeric and percentage bounding-box units",
+        "primitive subregions",
+        "post-filter clip/mask/opacity"
+      ]
+    },
+    "filters-transforms.svg": {
+      "reference": "chromium",
+      "features": [
+        "rotated/skewed filters",
+        "objectBoundingBox blur",
+        "feDropShadow"
+      ]
+    },
+    "filters-nested.svg": {
+      "reference": "chromium",
+      "features": [
+        "nested group filters",
+        "filters inside patterns",
+        "filtered context-paint markers",
+        "filtered mask content"
+      ]
+    },
+    "filters-blend.svg": {
+      "reference": "chromium",
+      "features": [
+        "feBlend multiply/screen/darken/lighten",
+        "translucent blending",
+        "default linearRGB"
+      ]
+    },
+    "images-basic.svg": {
+      "reference": "chromium",
+      "features": [
+        "embedded PNG",
+        "bilinear and nearest sampling",
+        "opacity",
+        "image ignores fill/stroke styles",
+        "href/xlink:href"
+      ]
+    },
+    "images-aspect.svg": {
+      "reference": "chromium",
+      "features": [
+        "preserveAspectRatio meet/slice/none",
+        "alignment",
+        "intrinsic dimensions",
+        "one automatic dimension"
+      ]
+    },
+    "images-compositing.svg": {
+      "reference": "chromium",
+      "features": [
+        "image clipping",
+        "image masks",
+        "image filters",
+        "images in patterns"
+      ]
+    },
+    "images-transforms.svg": {
+      "reference": "chromium",
+      "features": [
+        "rotated/skewed images",
+        "inherited CSS image-rendering",
+        "percentage dimensions"
+      ]
+    },
+    "images-uris.svg": {
+      "reference": "chromium",
+      "features": [
+        "base64 PNG data URI",
+        "percent-encoded PNG data URI",
+        "xlink:href fallback",
+        "href precedence"
+      ]
+    },
+    "images-png-formats.svg": {
+      "reference": "chromium",
+      "features": [
+        "all legal PNG color types and bit depths",
+        "Adam7 interlacing",
+        "tRNS transparency",
+        "all PNG row filters",
+        "multiple IDAT chunks"
+      ]
+    },
+    "images-compression.svg": {
+      "reference": "chromium",
+      "features": [
+        "stored DEFLATE",
+        "fixed Huffman DEFLATE",
+        "dynamic Huffman DEFLATE",
+        "multiple compression blocks"
+      ]
+    },
+    "jpeg-sequential.svg": {
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG gray",
+        "embedded JPEG 444",
+        "embedded JPEG 422",
+        "embedded JPEG 420"
+      ]
+    },
+    "jpeg-progressive.svg": {
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG progressive-gray",
+        "embedded JPEG progressive-444",
+        "embedded JPEG progressive-422",
+        "embedded JPEG progressive-420"
+      ]
+    },
+    "jpeg-color.svg": {
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG rgb",
+        "embedded JPEG cmyk",
+        "embedded JPEG ycck",
+        "embedded JPEG progressive-cmyk"
+      ]
+    },
+    "jpeg-encoding.svg": {
+      "reference": "chromium",
+      "features": [
+        "embedded JPEG restart",
+        "embedded JPEG progressive-restart",
+        "embedded JPEG quant16",
+        "embedded JPEG huffman16"
+      ]
+    },
+    "jpeg-uris.svg": {
+      "reference": "chromium",
+      "features": [
+        "JPEG base64 and percent data URIs",
+        "xlink:href JPEG",
+        "separate sequential scans"
+      ]
+    },
+    "jpeg-compositing.svg": {
+      "reference": "chromium",
+      "features": [
+        "JPEG scaling and intrinsic aspect ratio",
+        "JPEG clipping and mask",
+        "JPEG filtering",
+        "JPEG inside pattern"
+      ]
+    },
+    "filters-blend-opaque.svg": {
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "opaque sRGB color pairs",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ]
+    },
+    "filters-blend-alpha.svg": {
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "independent source and backdrop alpha",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ]
+    },
+    "filters-blend-linear.svg": {
+      "reference": "chromium",
+      "features": [
+        "all sixteen feBlend modes",
+        "linearRGB blending",
+        "achromatic and black/white limits",
+        "nonseparable gamut clipping"
+      ]
+    },
+    "filters-blend-compositing.svg": {
+      "reference": "chromium",
+      "features": [
+        "nonseparable hue",
+        "soft-light and color-burn",
+        "overlay",
+        "partial alpha and curved coverage",
+        "post-filter clip, mask and group opacity"
+      ]
+    },
+    "svg-image-sizing.svg": {
+      "reference": "resvg",
+      "features": [
+        "embedded SVG data URIs",
+        "image aspect alignment/meet/slice/none",
+        "independent document viewport"
+      ]
+    },
+    "svg-image-resources.svg": {
+      "reference": "chromium",
+      "features": [
+        "SVG image style isolation",
+        "local paint resources",
+        "local use references",
+        "same IDs in separate documents"
+      ]
+    },
+    "svg-image-nested.svg": {
+      "reference": "chromium",
+      "features": [
+        "nested SVG images",
+        "transforms",
+        "outer clipping and group opacity"
+      ]
+    },
+    "svg-image-auto.svg": {
+      "reference": "chromium",
+      "features": [
+        "intrinsic dimensions",
+        "automatic width/height",
+        "viewBox aspect ratio",
+        "root stylesheet sizing disagreement"
+      ]
+    },
+    "svg-image-percent.svg": {
+      "reference": "chromium",
+      "features": [
+        "SVG image percentages",
+        "nested viewports",
+        "width percentage with automatic height"
+      ]
+    },
+    "svg-image-contexts.svg": {
+      "reference": "chromium",
+      "features": [
+        "SVG images in patterns",
+        "SVG images in masks and markers",
+        "use instances",
+        "embedded vector stroke antialiasing"
+      ]
+    },
+    "svg-image-text.svg": {
+      "reference": "chromium",
+      "features": [
+        "font loading for text inside SVG data images",
+        "isolated image font context",
+        "matching bundled and embedded reference Noto outlines",
+        "image text opacity"
+      ]
+    },
+    "text-path-basic.svg": {
+      "reference": "resvg",
+      "features": [
+        "straight and curved text paths",
+        "arcs",
+        "startOffset and anchors"
+      ]
+    },
+    "text-path-positions.svg": {
+      "reference": "chromium",
+      "features": [
+        "numeric and percentage startOffset",
+        "pathLength calibration",
+        "position lists and glyph rotation"
+      ]
+    },
+    "text-path-styles.svg": {
+      "reference": "resvg",
+      "features": [
+        "path text spans",
+        "bold and italic faces",
+        "gradient paint",
+        "textLength fitting"
+      ]
+    },
+    "text-path-references.svg": {
+      "reference": "chromium",
+      "features": [
+        "referenced path transforms",
+        "direct path data",
+        "ordinary text before and after a textPath"
+      ]
+    },
+    "text-path-shapes.svg": {
+      "reference": "resvg",
+      "features": [
+        "text on a basic-shape equivalent path"
+      ]
+    },
+    "paint-order-shapes.svg": {
+      "reference": "chromium",
+      "features": [
+        "all paint-order permutations",
+        "translucent fill/stroke composition"
+      ]
+    },
+    "paint-order-markers.svg": {
+      "reference": "chromium",
+      "features": [
+        "all six fill/stroke/marker orders",
+        "translucent marker overlap",
+        "owner opacity isolation"
+      ]
+    },
+    "text-paint-order.svg": {
+      "reference": "resvg",
+      "features": [
+        "stroke under text fill",
+        "overlapping glyphs painted as one run",
+        "inherited paint-order",
+        "text ignores fill-rule"
+      ]
+    },
+    "morphology-basic.svg": {
+      "reference": "chromium",
+      "features": [
+        "erode",
+        "dilate",
+        "premultiplied channels",
+        "SourceAlpha"
+      ]
+    },
+    "morphology-units.svg": {
+      "reference": "chromium",
+      "features": [
+        "objectBoundingBox radii",
+        "nonuniform scale",
+        "rotation",
+        "skew"
+      ]
+    },
+    "morphology-graph.svg": {
+      "reference": "chromium",
+      "features": [
+        "named results",
+        "outline composition",
+        "opening",
+        "primitive subregions",
+        "merge"
+      ]
+    },
+    "morphology-radius.svg": {
+      "reference": "chromium",
+      "features": [
+        "fractional radii",
+        "zero axes",
+        "negative axes"
+      ]
+    }
+  }
+}

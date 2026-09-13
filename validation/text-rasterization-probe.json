@@ -1,0 +1,54 @@
+{
+  "diagnostic": "Bend text versus resvg-converted glyph outlines, both rasterized by Bend. This does not replace independent renderer comparisons.",
+  "results": [
+    {
+      "fixture": "text-spans.svg",
+      "meanAbsoluteError": 0.54541015625,
+      "rootMeanSquareError": 5.846993863480903,
+      "maxChannelError": 125,
+      "pixelsAbove32": 33
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "meanAbsoluteError": 0.023600260416666668,
+      "rootMeanSquareError": 0.2522683549648403,
+      "maxChannelError": 6,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "text-paints.svg",
+      "meanAbsoluteError": 8.943766276041666,
+      "rootMeanSquareError": 33.1084581829962,
+      "maxChannelError": 206,
+      "pixelsAbove32": 343
+    },
+    {
+      "fixture": "text-position.svg",
+      "meanAbsoluteError": 2.3085123697916665,
+      "rootMeanSquareError": 14.619097700546535,
+      "maxChannelError": 183,
+      "pixelsAbove32": 111
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "meanAbsoluteError": 0.006998697916666667,
+      "rootMeanSquareError": 0.15831962659969442,
+      "maxChannelError": 7,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "text-basic.svg",
+      "meanAbsoluteError": 0.022705078125,
+      "rootMeanSquareError": 0.25467631621661774,
+      "maxChannelError": 7,
+      "pixelsAbove32": 0
+    },
+    {
+      "fixture": "text-style.svg",
+      "meanAbsoluteError": 0.027262369791666668,
+      "rootMeanSquareError": 0.29960368788061786,
+      "maxChannelError": 7,
+      "pixelsAbove32": 0
+    }
+  ]
+}

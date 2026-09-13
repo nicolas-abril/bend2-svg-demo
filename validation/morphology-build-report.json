@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+    "state.bend": "dce62cd3153c062a2181f3221e029f761c6637b313df569beeb740efbd912bd6",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "c53c3fa3c4ddb7c5670592ec3556be50c91277e6f432c923c07efc3a75ede2ba",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 47,
+  "exactBackendFixtureCount": 112,
+  "primaryPassing": 89,
+  "primaryTotal": 112,
+  "binaries": {
+    "native": {
+      "binarySHA256": "8f16b4eb6cd0f5178587d65764663426002ff4c1b6449f198efa955a82c718b6",
+      "generatedCSHA256": "f84140e21b6b28b64d23661450ad8de186bca8f9f49bade0248c948fb8287ba8",
+      "builtFrom": "Frozen morphology sources; independent C compilation"
+    },
+    "web": {
+      "binarySHA256": "00d713aca1d89301669c047e843bb8bc2e39c34ca2295ade14586947723a8ce8",
+      "generatedCSHA256": "65013eeb2e0c678ab101440fdd1c8f05582cc8c60bd410850a95529d9dd5c089",
+      "builtFrom": "Frozen morphology sources; independent C compilation"
+    },
+    "render": {
+      "binarySHA256": "7a162c92e8ca4717e4dfc5a45404b645aa64776f742d468b955c6c3b4f7c50e7",
+      "generatedCSHA256": "62882a7332344e78bb728dc39f67618e762bbc0a4f091e8b58bef813b5f59333",
+      "builtFrom": "Frozen morphology sources; independent C compilation"
+    }
+  }
+}

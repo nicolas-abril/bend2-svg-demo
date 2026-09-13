@@ -1,0 +1,870 @@
+{
+  "sourceSHA256": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+  "previousSourceSHA256": "8049f793b502babb9461a25cd08f67cfbbbba86869baf4f26b252d67e60a6d98",
+  "results": [
+    {
+      "fixture": "basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.041776542,
+      "sha256": "bb4c3fa3a8789b9f0f6291b0e6839e25b30977bd66284953dfb00a97b4f8dbe5"
+    },
+    {
+      "fixture": "clipping-transforms.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.8351186660000005,
+      "sha256": "f4ebc931fb48e157544452e76ff5223545fbfc61f6ddb112d36402634b388831"
+    },
+    {
+      "fixture": "clipping.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.514683667,
+      "sha256": "75d238d8d927e957bf106ceed6383bf480df0b99093998d1a1970ec399c65694"
+    },
+    {
+      "fixture": "colors-hsl.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.073312167,
+      "sha256": "076a9dd8b8bdb5aa89c388c5b1a3d2357e81e9ef69d901a37f9cba4eba747c3b"
+    },
+    {
+      "fixture": "colors-hwb.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 12.863009624999998,
+      "sha256": "39f41c3c99b2f89f701af569c73aa8ae7c8c808ff99d8be2a83f16a59f8e2819"
+    },
+    {
+      "fixture": "colors-named.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 15.639043375000002,
+      "sha256": "ba084526a4d9d4febef010b30ff140f0ec89916c7babed95ed828fd55d81692f"
+    },
+    {
+      "fixture": "colors-resources.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 10.901133,
+      "sha256": "976ba1b49b6da7d83e60a9ad233b03c6af2e54a3253121b07cacc47305e60468"
+    },
+    {
+      "fixture": "colors-rgb.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.246477292,
+      "sha256": "a4828f725f9665a96d8087fe7e001b9976693432bc4f2541840b65034968040d"
+    },
+    {
+      "fixture": "compact-paths.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 5.700769207999998,
+      "sha256": "6a30f033b05fa6393deeb976484c7577f96a0a641497bcf6dc61f04164625636"
+    },
+    {
+      "fixture": "css-cascade.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 5.811194000000003,
+      "sha256": "e14b75ce2950f9d6281e38f3e2440c986c69ccde62ad2bab71cb774618d711d5"
+    },
+    {
+      "fixture": "css-media.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 5.659870583,
+      "sha256": "b554e5aeb25890dec6c1554451c9bbc0df6d7f6f1bb4459a643b92cc7273fd19"
+    },
+    {
+      "fixture": "css-resources.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.176806958000001,
+      "sha256": "855ab4fc01eddd87806e1dd16ebd376afa12ef128508d6924a5471328358187a"
+    },
+    {
+      "fixture": "css-selectors.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.0657911659999995,
+      "sha256": "7bbc75b48d8081119e17ef59fad0720983aed36774ad85963653c0df65143fc0"
+    },
+    {
+      "fixture": "css-structural.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.415386290999999,
+      "sha256": "0ca540453186eea6bd64b20b8f82fcbd2fec9a95e2698d79e8846cf780f7750f"
+    },
+    {
+      "fixture": "filters-basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.360758208000003,
+      "sha256": "1f99fd1b89d52f56456a68bb17dfded23983de7672860a8d753749e80af1b8df"
+    },
+    {
+      "fixture": "filters-blend-alpha.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 254.33891200000002,
+      "sha256": "0d598b332997d1f829976f71454fba3d105281a82e9673203401bae82934e1f9"
+    },
+    {
+      "fixture": "filters-blend-compositing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 103.07217854199999,
+      "sha256": "8751f8de46cd57cb8a1c936a588a8b347aedaf2991c7b03a460836e1ec55e15e"
+    },
+    {
+      "fixture": "filters-blend-linear.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 277.758039375,
+      "sha256": "69b88199d98dd39f71e28c38ffd146aed656cb05979fb8962fe81cd5eecea3b5"
+    },
+    {
+      "fixture": "filters-blend-opaque.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 310.626081084,
+      "sha256": "6a499fee03589aea5429078f506880e800f478a3e0c6b2c18235cac682429abf"
+    },
+    {
+      "fixture": "filters-blend.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 10.739980416999984,
+      "sha256": "19cc665b2ff6fee736e45ccb272e238f7d3b883b99edef9d2ae6f9e0f51a7fd2"
+    },
+    {
+      "fixture": "filters-blur.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 21.87603925,
+      "sha256": "78a7f6e3aab19b6d960d4d3b40fbab117407e776ab8a8374b4b2b66561c149de"
+    },
+    {
+      "fixture": "filters-composite.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 28.295623083000013,
+      "sha256": "d51b714b7cb8a96854fbe314703db6ccfe70a022eaa0024e3beef80fa4c8b46d"
+    },
+    {
+      "fixture": "filters-nested.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 41.14964320799999,
+      "sha256": "a538ba571dd47e42dde890989451243ec65a1a40ba3b8ca0ac55f9b417e64414"
+    },
+    {
+      "fixture": "filters-regions.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 24.35439516700001,
+      "sha256": "619271c89a7cc5b89dbf6d3560a5fa8be1bf0fc9304ce752c3180dc5506ac875"
+    },
+    {
+      "fixture": "filters-transforms.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 34.85982587500001,
+      "sha256": "a7ec41474edf2dd6d7adff7d0142a799105c5daa69d541f0dfdd01af9849af76"
+    },
+    {
+      "fixture": "gradient-linear.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 20.84294512500003,
+      "sha256": "f171befb7316578194c216b90618328c83fca00ba4befb01a96741f5e38ee709"
+    },
+    {
+      "fixture": "gradient-radial.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 25.54795074999996,
+      "sha256": "19747a72ba5363e2017116684337c690ecb05df4964086cf11d6c286a21ae8b3"
+    },
+    {
+      "fixture": "gradient-stops.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 19.496067207999992,
+      "sha256": "c0a36651503fed5d94ea750797f4f080565d34772d9c23b26d7be3a8842b1138"
+    },
+    {
+      "fixture": "gradient-strokes.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 17.248461707999986,
+      "sha256": "fa11fd74c3a713c67017526a343add80814796621a7e95761f027c93ce197eeb"
+    },
+    {
+      "fixture": "gradient-transforms.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 21.870713916000035,
+      "sha256": "e1f876f7584b06c555becf6bca152745e2f8b47f7644256f211ed438a3cc6459"
+    },
+    {
+      "fixture": "images-aspect.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 19.559690082999992,
+      "sha256": "3c8dc088f9c75787c961a03677b44574b7ad3e967bb89e2dcc46bbfb06e94a13"
+    },
+    {
+      "fixture": "images-basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 15.385872291999986,
+      "sha256": "5707bd0e1b9a03261a64f407cd3c7e49e4bc8dee1e1d445140ff777fac0c2a7d"
+    },
+    {
+      "fixture": "images-compositing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 26.030205874999986,
+      "sha256": "81c6f1c8c6efe57071bc03edebabc0ef99c155726bc9ad8f459924b0a995a6dd"
+    },
+    {
+      "fixture": "images-compression.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 22.124558040999982,
+      "sha256": "0284eae815fc62e642aeb29b069ba9030d4ac86314fc4eec05008f50543dbfca"
+    },
+    {
+      "fixture": "images-png-formats.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 37.371027790999975,
+      "sha256": "b506d698068ed9ebb1dbc5d06331ee836da80bcc5d9595de7bd83695c816d942"
+    },
+    {
+      "fixture": "images-transforms.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 23.260306207999996,
+      "sha256": "506cbb3557d1b72370d8892dc8c0f717d7f2a0ed4c575f8bd72d2ee1b24d4cc8"
+    },
+    {
+      "fixture": "images-uris.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 27.669718541999988,
+      "sha256": "1f5acfde57977f331f09df28a70c21ce4817d44287ccc682b2ddaf0b3c64ef13"
+    },
+    {
+      "fixture": "jpeg-color.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 17.93464633399999,
+      "sha256": "2f78d23264cb1f3c528d8ba2925f9b37915ba79fe3d809d81fe8f1cf2a95cfd7"
+    },
+    {
+      "fixture": "jpeg-compositing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 26.365262958000006,
+      "sha256": "2245c849083548e11237e5b64487bf2865ae63d7842fcc853a9c05265b0ae9d4"
+    },
+    {
+      "fixture": "jpeg-encoding.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 13.606762499999954,
+      "sha256": "56a30ba1581a171a54a455ccfa9c53410f0f9df18cef4f365ebb944b3134f4c2"
+    },
+    {
+      "fixture": "jpeg-progressive.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 21.146194416999993,
+      "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
+    },
+    {
+      "fixture": "jpeg-sequential.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 13.765970458000025,
+      "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
+    },
+    {
+      "fixture": "jpeg-uris.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.099676625000022,
+      "sha256": "9dac9761f33ccd68f26420d4a6b32f7d958ee7c00dbc76eaa49ea4fc66b4a061"
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 13.270232334000001,
+      "sha256": "68d9a05f5929dde229b8e5e8e2705c6a149b6b10e47f80690d01cc8d68a9b1ba"
+    },
+    {
+      "fixture": "markers-compositing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 12.21324766600004,
+      "sha256": "88b075a5e3438b688eb844bedbeee70addb5d5bba58fd44632470549f350af6e"
+    },
+    {
+      "fixture": "markers-context.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 9.925532624999992,
+      "sha256": "609d0d1ce8ed53e003fef1e6667e9491ceeb7a174e921f3a71fed5e9e501dab5"
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.1401775410000115,
+      "sha256": "9f78ad98eb10cb0005878998754e04fb08a192fb7c905296401a009d034fb5e9"
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 19.25694083400001,
+      "sha256": "f60c0d0c608d82a334ce26161e1276c25811b82cbd2679170b369bda2cb3f089"
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.490412041999981,
+      "sha256": "2293ca8748ef344b030e31ad2f67b51a20cd098b185241c1e2cb5d03e22779f9"
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.339222499999975,
+      "sha256": "a759c35038af5854384b74e349807250d9c2c8dfb3255a756a2516c3ba3b7841"
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 22.27227212500002,
+      "sha256": "eff4109ee9b04e2f66e3aedad92784b35e01421d039a9d4f3259789ce1a22f0d"
+    },
+    {
+      "fixture": "mask-alpha.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 19.18702354199998,
+      "sha256": "2effc9c0b4e1e044c1d5f720a97e9d8fef4a5611e8ab8966f1c1691588c2454a"
+    },
+    {
+      "fixture": "mask-compositing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 16.149368290999963,
+      "sha256": "501009410e0670f7740e71e32926627de3446e72111c1635f670cd894ae4d246"
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 12.322733499999973,
+      "sha256": "b740b612877e52fb64b0844ebb5e1d1f566435020887040905d074c021115830"
+    },
+    {
+      "fixture": "mask-gradients.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 38.25842320900003,
+      "sha256": "32a8ccde5717e98760c3c185f9430e6aac860112bdbb66bd2582af9f355d36d3"
+    },
+    {
+      "fixture": "mask-inheritance.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 38.529483083,
+      "sha256": "ad4b6cce0000128725dc2ca08a0cd06b73b94a479575553da21dc218937c7390"
+    },
+    {
+      "fixture": "mask-linear-rgb.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 38.35084508299996,
+      "sha256": "4b6a3d8982cc58d726d689fe815bb5b97b82ca7a1eeb8424d100503dcc733d90"
+    },
+    {
+      "fixture": "mask-nested.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 40.50088995799999,
+      "sha256": "fbf927d814a2951da2194108b39e349d6ba60867763abf184afc3b80df86c172"
+    },
+    {
+      "fixture": "mask-units.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.848415957999999,
+      "sha256": "b33162a4548699b35ab23d79a754f8f157c93b044d2a9a95f24480d56f8482a2"
+    },
+    {
+      "fixture": "masks.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 11.665574916000013,
+      "sha256": "1cb5d0f092270a2d00f04afb08948bc3380ca3c3a0aa04a6f9fbe775a69cdfb0"
+    },
+    {
+      "fixture": "opacity.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 13.719145541000005,
+      "sha256": "add613be1e8f11d233b6d3ae8345b860faaad543ea7fc5a604bc93b2a678e0b4"
+    },
+    {
+      "fixture": "paint-order-markers.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 9.23991658399999,
+      "sha256": "880bfd12a234e46b9500e186e59033318238d50d05240dac298140e3185b9c66"
+    },
+    {
+      "fixture": "paint-order-shapes.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.604051832999976,
+      "sha256": "08192a3ec3d9c2b1841c4a4ed5588e9b95dfa9d6343177368823f8000a0272b7"
+    },
+    {
+      "fixture": "paths.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.2650762919999545,
+      "sha256": "44be2fc65392032c1b7f1a97f6a71b1b111d9a09b7483115736d45e7ccea1714"
+    },
+    {
+      "fixture": "pattern-errors.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.157039624999976,
+      "sha256": "5d30c21adeaeae443299920306f4630a8a069e5c71987bc9d19e1e995b8eb594"
+    },
+    {
+      "fixture": "pattern-inheritance.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 9.64021758300002,
+      "sha256": "238adbbee9afa8f5061a05cd933f4fac669ce6a7ec1cfb7048cb4e354c22ff8a"
+    },
+    {
+      "fixture": "pattern-nested.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 21.616864624999987,
+      "sha256": "3ca61f7417b39a4fe500f6f79c25dcffed8882776c1082fb01fb562cadfdcc85"
+    },
+    {
+      "fixture": "pattern-reference.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.687401708999998,
+      "sha256": "e672a7fd9c8283dad90ca0bd00dc5b72dfde17e809c8a60d737716dce78b0f0c"
+    },
+    {
+      "fixture": "pattern-transform.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 13.92721395799995,
+      "sha256": "c85d7cb6590740c272e69e12b9556554f034eff6d476080e4fb87bcb70f83a4f"
+    },
+    {
+      "fixture": "pattern-units.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.106309042000037,
+      "sha256": "c19c61c55862b3e642f3a6d350fdb6cbc06a3d884beb1a63404e43cb81615a39"
+    },
+    {
+      "fixture": "pattern-viewbox.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 10.785214541999972,
+      "sha256": "21463a362613456f71c61f30e4a627a29ec5bc6eb5bf921cba2cb030ef3b4d4c"
+    },
+    {
+      "fixture": "stroke-calibration.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 5.932223583999963,
+      "sha256": "6ce5f1ca84d38f63d21a0f678832a55e948af0e611d64f2707e60e73a5c36890"
+    },
+    {
+      "fixture": "stroke-caps.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.633792000000016,
+      "sha256": "2f60f7006038e52020054f71d7795edc211be9ca40db9668868d0766e6b61441"
+    },
+    {
+      "fixture": "stroke-dash-curves.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.50583474999998,
+      "sha256": "d398a844cb4e069045e27fc1473037d0ffa5325f6276ee66f7d35f3113a01010"
+    },
+    {
+      "fixture": "stroke-dash-zero.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 6.749078917000035,
+      "sha256": "5fba595d6d7555ced2feec7d5ffa8c0dcc4c7ec3e8e4b9c917d428fa0445af64"
+    },
+    {
+      "fixture": "stroke-dashes.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.816595583999995,
+      "sha256": "a0ee36cbd1b1af2a7e5ddf533bb8a3d174a2e9f8ae3d0de1892e18f6651e4bb1"
+    },
+    {
+      "fixture": "stroke-joins.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.962752583000052,
+      "sha256": "c679001019fbda1b7680729f48ef22157713055ecdfe72c587205c0410ee30f7"
+    },
+    {
+      "fixture": "stroke-vector.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 18.609570917000006,
+      "sha256": "935542f4ef2040cd336ce4806479291df68557f205c06bef8d6819dcc9eb6305"
+    },
+    {
+      "fixture": "svg-image-auto.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 72.33390858300007,
+      "sha256": "5a7badb0d6b0eab3bfe60651b70ae57a89205bcec7fca08eef1293ff32d441ac"
+    },
+    {
+      "fixture": "svg-image-contexts.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 68.68996424999996,
+      "sha256": "ec28f6c5811c6978b52869b8f7bd7e7058ae18944f0ec54b14b16e0b62f31080"
+    },
+    {
+      "fixture": "svg-image-nested.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 77.77566420800007,
+      "sha256": "bac7ff3f6523d90d25e180e5d5e3aca939654558004083b82e2190e219ae5667"
+    },
+    {
+      "fixture": "svg-image-percent.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 53.41515241700004,
+      "sha256": "9817900f7ae434aeea34b35aba0dc7408dab97fd38611fe1941d64b6612fea55"
+    },
+    {
+      "fixture": "svg-image-resources.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 39.29995720900001,
+      "sha256": "9f380f7dbf65cf42c2d537569256b66f375fb82148a7cdffea5258a967a3b20e"
+    },
+    {
+      "fixture": "svg-image-sizing.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 35.50773041600001,
+      "sha256": "143d2c2a9ce2651c8e4e25c7a0566d4e3a2a8bf170b762e78068e18f6738a7fe"
+    },
+    {
+      "fixture": "svg-image-text.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 36.76132104199997,
+      "sha256": "12883ac9c73cce932b6997413aafc84c6e3c80d2bb36b8a06320076633d30f61"
+    },
+    {
+      "fixture": "symbols.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 20.50703454200004,
+      "sha256": "fc314b6d903578642f6344b941485491b042ee21aec850735ae3bed72f8c5efd"
+    },
+    {
+      "fixture": "text-basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 22.974576457999994,
+      "sha256": "da37242776b780c85de4c0e6e9e97f98365a2c9b8d4233fb4155681905e6c349"
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 37.508913124999964,
+      "sha256": "7dcb1eb799cc76be03e6c44f82f3e9d6bca605c34c070bc553d8815a6f04c921"
+    },
+    {
+      "fixture": "text-length.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 58.21770316699997,
+      "sha256": "5ebcb14c80c34c58c7728a2223d340d6a63e7ba8fe1ddbbb6bb3a4609980aa04"
+    },
+    {
+      "fixture": "text-paint-order.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 59.451591000000015,
+      "sha256": "1320b362388c5bf45979686209eb6be77ce5397e13288caeef82f9c6aeb15dcd"
+    },
+    {
+      "fixture": "text-paints.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 44.98298233299993,
+      "sha256": "238612973d92616500134d47cb1ba0df77b9309f112b8f3ee7a9300f1ae07ed5"
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 143.64972566700004,
+      "sha256": "88d71f72d4d43d308c02a2dcb3abaed7419a6d438974374ccb531865da8c99f8"
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 94.052196,
+      "sha256": "2b4e20903527d15a0e7c48af132fb61f30af629eab4c7c4e2d41dfecf46e9b46"
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 110.31286975000008,
+      "sha256": "2f54f45c2a0ed9bed6aa7ac27285f35e97015b64a7e856457fd709cccaa188c6"
+    },
+    {
+      "fixture": "text-path-shapes.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 83.06321120800008,
+      "sha256": "6c42aa3a342acb02aba50f77e4a67606a07689f165ebb8d06dbaea0dbe53e3de"
+    },
+    {
+      "fixture": "text-path-styles.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 85.41124433300004,
+      "sha256": "f9f9e69dbd4d5d6ff7b5b7a403170051e5f6d87d464893f737fa9fd0162b6273"
+    },
+    {
+      "fixture": "text-position.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 60.43401204200008,
+      "sha256": "aeaffa7f7436e7eba80ea92cd861a318e8735c058431b85cd579799d6e9256f2"
+    },
+    {
+      "fixture": "text-spans.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 50.85307449999999,
+      "sha256": "34b19a6889762542052737e98f06c101b2eeea034970954daf7b4350528ebb20"
+    },
+    {
+      "fixture": "text-style.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 51.224840124999986,
+      "sha256": "97e28f8bf461efd67e0ae2ac6d78eae5dd2411b1d479d9c719c376e846d75d57"
+    },
+    {
+      "fixture": "text-unicode.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 42.87461612499994,
+      "sha256": "81d01c6b66ecd6e81be6532dda75bba1f9bbf5438089b6fefbe4d800ffd344de"
+    },
+    {
+      "fixture": "text-whitespace.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 28.050267959000077,
+      "sha256": "e6abaa2d4ed482841809cdca8eef1e429e96d8da0a6310125e6957daf8261f8d"
+    },
+    {
+      "fixture": "transforms.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 12.857991042000009,
+      "sha256": "494cba0041955cf6ef68881f4ee27d07dbb0151bd8f11a7113b86be5ee8facad"
+    },
+    {
+      "fixture": "use-clips.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 14.141458667000057,
+      "sha256": "557f50b3261a3688a23b143b6fdca11b327d44768cb234bf3a027879b87a47c3"
+    },
+    {
+      "fixture": "use-cycles.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 15.813150249999948,
+      "sha256": "210a33e02eff5a3ef4b2eff6f96a2aa9b3b2c89920f78f7bebea9af76baf4009"
+    },
+    {
+      "fixture": "use-inheritance.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 7.98886629200005,
+      "sha256": "5c860f043a8f8eae44503606cd750347d98614ba91da6d2e65caedd48c0b3199"
+    },
+    {
+      "fixture": "use.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 5.911871082999976,
+      "sha256": "ae1aa1cc97f775c67bfdf441fd196ce81f0317f72fdcde5edece39023899657d"
+    },
+    {
+      "fixture": "viewports-nested.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 11.051738875000039,
+      "sha256": "0870c6e092dd8ed1ef910d0cf339150c7b605ccbde22efe43496309ac567de7f"
+    },
+    {
+      "fixture": "viewports.svg",
+      "unchanged": true,
+      "maxChannelChange": 0,
+      "changedPixels": 0,
+      "durationSeconds": 8.116316207999946,
+      "sha256": "f0c6c8b3ca3c8bef210a1e6334d60e1fb309a7186c7edc7cbd4f2c92639d55c8"
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "results": [
+    {
+      "fixture": "text-path-styles.svg",
+      "primary": "resvg",
+      "bend": {
+        "resvg": {
+          "mae": 1.6904296875,
+          "rmse": 8.386894926635046,
+          "pixelsAbove32": 124
+        },
+        "chromium": {
+          "mae": 0.8155924479166666,
+          "rmse": 3.641999472302268,
+          "pixelsAbove32": 19
+        },
+        "firefox": {
+          "mae": 4.4189453125,
+          "rmse": 22.24482398245526,
+          "pixelsAbove32": 195
+        }
+      },
+      "engines": {
+        "chromium~firefox": 4.908528645833333,
+        "chromium~resvg": 1.8001302083333333,
+        "firefox~resvg": 5.21240234375
+      }
+    },
+    {
+      "fixture": "text-length.svg",
+      "primary": "resvg",
+      "bend": {
+        "resvg": {
+          "mae": 1.2044270833333333,
+          "rmse": 5.38442427187748,
+          "pixelsAbove32": 70
+        },
+        "chromium": {
+          "mae": 1.1605631510416667,
+          "rmse": 3.5220080942020844,
+          "pixelsAbove32": 0
+        },
+        "firefox": {
+          "mae": 1.1624348958333333,
+          "rmse": 3.5316187123140383,
+          "pixelsAbove32": 0
+        }
+      },
+      "engines": {
+        "chromium~firefox": 0.015869140625,
+        "chromium~resvg": 1.7954915364583333,
+        "firefox~resvg": 1.7986653645833333
+      }
+    },
+    {
+      "fixture": "convolve-alpha.svg",
+      "primary": "chromium",
+      "bend": {
+        "resvg": {
+          "mae": 2.0436197916666665,
+          "rmse": 10.497984677625828,
+          "pixelsAbove32": 180
+        },
+        "chromium": {
+          "mae": 4.1357421875,
+          "rmse": 12.370619489843667,
+          "pixelsAbove32": 356
+        },
+        "firefox": {
+          "mae": 4.141276041666667,
+          "rmse": 12.370843157063574,
+          "pixelsAbove32": 356
+        }
+      },
+      "engines": {
+        "chromium~firefox": 0.0107421875,
+        "chromium~resvg": 6.081380208333333,
+        "firefox~resvg": 6.090494791666667
+      }
+    },
+    {
+      "fixture": "text-length-spans.svg",
+      "primary": "resvg",
+      "bend": {
+        "resvg": {
+          "mae": 14.972412109375,
+          "rmse": 41.55094705505369,
+          "pixelsAbove32": 627
+        },
+        "chromium": {
+          "mae": 9.302164713541666,
+          "rmse": 32.13130587226874,
+          "pixelsAbove32": 358
+        },
+        "firefox": {
+          "mae": 11.96630859375,
+          "rmse": 36.090191924191814,
+          "pixelsAbove32": 495
+        }
+      },
+      "engines": {
+        "chromium~firefox": 13.851806640625,
+        "chromium~resvg": 13.934733072916666,
+        "firefox~resvg": 16.892985026041668
+      }
+    },
+    {
+      "fixture": "text-path-positions.svg",
+      "primary": "chromium",
+      "bend": {
+        "resvg": {
+          "mae": 7.390380859375,
+          "rmse": 30.698226390389802,
+          "pixelsAbove32": 248
+        },
+        "chromium": {
+          "mae": 1.106201171875,
+          "rmse": 4.414636301200248,
+          "pixelsAbove32": 2
+        },
+        "firefox": {
+          "mae": 7.0244140625,
+          "rmse": 30.106759908490652,
+          "pixelsAbove32": 220
+        }
+      },
+      "engines": {
+        "chromium~firefox": 7.183349609375,
+        "chromium~resvg": 7.81787109375,
+        "firefox~resvg": 8.805908203125
+      }
+    },
+    {
+      "fixture": "mask-errors.svg",
+      "primary": "chromium",
+      "bend": {
+        "resvg": {
+          "mae": 31.875,
+          "rmse": 90.15611460128481,
+          "pixelsAbove32": 768
+        },
+        "chromium": {
+          "mae": 42.5,
+          "rmse": 104.10331406828507,
+          "pixelsAbove32": 1024
+        },
+        "firefox": {
+          "mae": 31.875,
+          "rmse": 90.15611460128481,
+          "pixelsAbove32": 768
+        }
+      },
+      "engines": {
+        "chromium~firefox": 10.625,
+        "chromium~resvg": 10.625,
+        "firefox~resvg": 21.25
+      }
+    },
+    {
+      "fixture": "text-path-references.svg",
+      "primary": "chromium",
+      "bend": {
+        "resvg": {
+          "mae": 6.301106770833333,
+          "rmse": 22.06498230251764,
+          "pixelsAbove32": 342
+        },
+        "chromium": {
+          "mae": 1.51123046875,
+          "rmse": 5.15487671106206,
+          "pixelsAbove32": 15
+        },
+        "firefox": {
+          "mae": 2.0374348958333335,
+          "rmse": 10.341058939973218,
+          "pixelsAbove32": 45
+        }
+      },
+      "engines": {
+        "chromium~firefox": 1.6800130208333333,
+        "chromium~resvg": 7.101888020833333,
+        "firefox~resvg": 6.0703125
+      }
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "primary": "chromium",
+      "bend": {
+        "resvg": {
+          "mae": 0.8658854166666666,
+          "rmse": 8.939448359891491,
+          "pixelsAbove32": 48
+        },
+        "chromium": {
+          "mae": 0.7471516927083334,
+          "rmse": 6.769713449053192,
+          "pixelsAbove32": 54
+        },
+        "firefox": {
+          "mae": 0.5515950520833334,
+          "rmse": 6.2205818072615475,
+          "pixelsAbove32": 34
+        }
+      },
+      "engines": {
+        "chromium~firefox": 0.198486328125,
+        "chromium~resvg": 0.441650390625,
+        "firefox~resvg": 0.63330078125
+      }
+    },
+    {
+      "fixture": "text-path-basic.svg",
+      "primary": "resvg",
+      "bend": {
+        "resvg": {
+          "mae": 2.6451009114583335,
+          "rmse": 9.868079226992876,
+          "pixelsAbove32": 166
+        },
+        "chromium": {
+          "mae": 1.82177734375,
+          "rmse": 5.975917380759766,
+          "pixelsAbove32": 53
+        },
+        "firefox": {
+          "mae": 1.27880859375,
+          "rmse": 3.9951753129556153,
+          "pixelsAbove32": 2
+        }
+      },
+      "engines": {
+        "chromium~firefox": 1.2350260416666667,
+        "chromium~resvg": 3.516845703125,
+        "firefox~resvg": 3.1055501302083335
+      }
+    }
+  ]
+}

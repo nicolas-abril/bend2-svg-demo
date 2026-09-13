@@ -1,0 +1,6 @@
+build/
+validation/node_modules/
+validation/browsers/
+edited.svg
+validation/venv/
+validation/*.tmp

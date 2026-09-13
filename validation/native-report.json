@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "checks": [
+    "native/web/render build successfully",
+    "seven Bend regression files pass",
+    "native stroke-join window captured and visually inspected",
+    "native and JavaScript stroke-dashes AA8 PPM byte-identical"
+  ],
+  "nativeInputCoverage": false,
+  "svgSourceSHA256": "387bae6f9c864b4399cde8a9b715f7e880e81b3c45a876cffd2cdaf4f9e00f03"
+}

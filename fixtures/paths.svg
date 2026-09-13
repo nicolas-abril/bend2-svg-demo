@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<path d="M2 3 h15 v14 h-15 z m3 3 v8 h9 v-8z" fill="tomato" fill-rule="evenodd"/>
+<path d="M24 3 C26 19 40 -2 42 17 S57 15 59 3 L59 21 H24 Z" fill="#58a"/>
+<path d="M5 38 A18 10 25 1 1 35 48 L5 58Z" fill="gold"/>
+<path d="M42 29 a9 16 45 0 0 13 28z" fill="#595"/>
+</svg>

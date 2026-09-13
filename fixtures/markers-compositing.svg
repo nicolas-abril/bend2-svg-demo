@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs>
+<marker id="m" markerWidth="10" markerHeight="10" refX="5" refY="5" markerUnits="userSpaceOnUse"><rect width="10" height="10" fill="context-fill"/></marker>
+<linearGradient id="g"><stop stop-color="#e33"/><stop offset="1" stop-color="#36c"/></linearGradient>
+<clipPath id="c" clipPathUnits="objectBoundingBox"><rect width=".75" height="1"/></clipPath>
+<mask id="mask" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="white"/><rect x="6" y="38" width="20" height="8" fill="#808080"/></mask>
+</defs><g marker-start="url(#m)" marker-mid="url(#m)" marker-end="url(#m)" fill="url(#g)">
+<path d="M10 10L30 10L30 22L10 22Z" opacity=".5"/>
+<path d="M40 10L56 10L56 22L40 22Z" clip-path="url(#c)"/>
+<path d="M10 40L28 40L28 52L10 52Z" mask="url(#mask)"/>
+<path d="M2 2L14 2L14 14L2 14Z" transform="translate(36 34) rotate(10) scale(1.2)"/>
+</g></svg>

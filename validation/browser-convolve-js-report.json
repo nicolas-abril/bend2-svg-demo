@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "58e74e3e77c2111de9ad5234dbab4287a40f099b40293edda6a84b9392b2701e",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "c1022e282d07828840d8dbaf620af6a2f3743638a790f3df22cce05dc91b7163",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": null,
+  "backend": "javascript",
+  "durationSeconds": 84.31686608300001,
+  "results": [
+    {
+      "stage": "open convolution kernels",
+      "pixelsCompared": 65536,
+      "changedPixels": 0,
+      "maxChannelError": 0,
+      "passed": true
+    },
+    {
+      "stage": "edit kernel through shared source reducer",
+      "pixelsCompared": 65536,
+      "changedPixels": 0,
+      "maxChannelError": 0,
+      "passed": true
+    },
+    {
+      "stage": "undo kernel edit",
+      "pixelsCompared": 65536,
+      "changedPixels": 0,
+      "maxChannelError": 0,
+      "passed": true
+    },
+    {
+      "stage": "open fractional kernel spacing",
+      "pixelsCompared": 65536,
+      "changedPixels": 0,
+      "maxChannelError": 0,
+      "passed": true
+    },
+    {
+      "stage": "new file resets history",
+      "pixelsCompared": 65536,
+      "changedPixels": 0,
+      "maxChannelError": 0,
+      "passed": true
+    }
+  ],
+  "savePassed": true,
+  "noSVGDOM": true
+}

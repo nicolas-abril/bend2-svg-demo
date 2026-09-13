@@ -1,0 +1,2 @@
+import{Resvg}from'@resvg/resvg-js';import{readFileSync,readdirSync}from'node:fs';import{dirname,resolve}from'node:path';
+const here=dirname(import.meta.filename);for(const f of readdirSync(here).filter(x=>/^pattern-.*-diff.ppm$/.test(x))){const x=readFileSync(resolve(here,f),'utf8').trim().split(/\s+/).slice(4).map(Number);console.log(f,'scaled clipped diff mean',x.reduce((a,b)=>a+b,0)/x.length);}

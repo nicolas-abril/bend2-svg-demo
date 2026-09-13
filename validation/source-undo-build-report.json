@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+    "state.bend": "83513370e590e7df992d0daa684a142890585fa1e00bcd8cefa823bf9272a036",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "2a238b67675052aff38b2bf30d473493bcdc10495d147ed46598ba4c4a0e5136",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "checks": 48,
+  "exactBackendFixtureCount": 112,
+  "primaryPassing": 89,
+  "primaryTotal": 112,
+  "headlessEquivalence": "source-undo-headless-equivalence.json",
+  "binaries": {
+    "native": {
+      "binarySHA256": "fda113054fbb23758eda0d41fd2cd88d46ce7cd5732adf6323a89f713bf28a59",
+      "generatedCSHA256": "41b8339979a34006ff05120177dd3d889c7fd0c110d43523e3bdc5a368db2803",
+      "builtFrom": "Frozen source-undo state; freshly compiled native/web C"
+    },
+    "web": {
+      "binarySHA256": "36769fca1db1c7722fbc6073ee59f0214e534ce97f434c7f4ee16c2b0de45f02",
+      "generatedCSHA256": "ed9cc81afb2fbdf721d67ea38aeb795fc63c428c63ca31cddc5a502e30218376",
+      "builtFrom": "Frozen source-undo state; freshly compiled native/web C"
+    },
+    "render": {
+      "binarySHA256": "7a162c92e8ca4717e4dfc5a45404b645aa64776f742d468b955c6c3b4f7c50e7",
+      "generatedCSHA256": "62882a7332344e78bb728dc39f67618e762bbc0a4f091e8b58bef813b5f59333",
+      "builtFrom": "Independently emitted identical C; reused verified morphology renderer"
+    }
+  }
+}

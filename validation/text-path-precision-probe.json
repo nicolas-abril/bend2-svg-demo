@@ -1,0 +1,160 @@
+{
+  "experimental": true,
+  "sourceSHA256": "3b2ecfb5fdedc25bc04dfe061c4074d7d8cc81fce860be8de359b8fe4da4b4b4",
+  "results": [
+    {
+      "reference": "reference",
+      "meanAbsoluteError": 2.7831217447916665,
+      "rootMeanSquareError": 9.958944857879859,
+      "maxChannelError": 110,
+      "pixelsAbove32": 154
+    },
+    {
+      "reference": "chromium",
+      "meanAbsoluteError": 3.0944010416666665,
+      "rootMeanSquareError": 10.147841070169392,
+      "maxChannelError": 117,
+      "pixelsAbove32": 176
+    }
+  ],
+  "errors": [
+    {
+      "character": "B",
+      "positionError": 0,
+      "angleError": 0
+    },
+    {
+      "character": "e",
+      "positionError": 0,
+      "angleError": 0
+    },
+    {
+      "character": "n",
+      "positionError": 0.0006260000000004595,
+      "angleError": 0
+    },
+    {
+      "character": "d",
+      "positionError": 0.008124999999999716,
+      "angleError": 0
+    },
+    {
+      "character": " ",
+      "positionError": 0.014375000000001137,
+      "angleError": 0
+    },
+    {
+      "character": "S",
+      "positionError": 0.023749999999999716,
+      "angleError": 0
+    },
+    {
+      "character": "V",
+      "positionError": 0.03375199999999978,
+      "angleError": 0
+    },
+    {
+      "character": "G",
+      "positionError": 0.03999999999999915,
+      "angleError": 0
+    },
+    {
+      "character": "C",
+      "positionError": 0.17706529083812989,
+      "angleError": 0.11742917872198433
+    },
+    {
+      "character": "u",
+      "positionError": 0.12315479529176812,
+      "angleError": 0.17827850876560092
+    },
+    {
+      "character": "r",
+      "positionError": 0.12985982316654157,
+      "angleError": 0.26211843813631575
+    },
+    {
+      "character": "v",
+      "positionError": 0.14430943215852796,
+      "angleError": 0.1495382083860619
+    },
+    {
+      "character": "e",
+      "positionError": 0.083806695086489,
+      "angleError": 0.245618362732408
+    },
+    {
+      "character": "d",
+      "positionError": 0.11984046463780706,
+      "angleError": 0.2228912415206925
+    },
+    {
+      "character": " ",
+      "positionError": 0.08998892303519344,
+      "angleError": 0.23438240085561812
+    },
+    {
+      "character": "t",
+      "positionError": 0.10817749514995587,
+      "angleError": 0.30987380221302274
+    },
+    {
+      "character": "e",
+      "positionError": 0.07916964710234904,
+      "angleError": 0.029197936200361596
+    },
+    {
+      "character": "x",
+      "positionError": 0.189785264136218,
+      "angleError": 0.29027960603469083
+    },
+    {
+      "character": "t",
+      "positionError": 0.05742134778136632,
+      "angleError": 0.06711679227061751
+    },
+    {
+      "character": "A",
+      "positionError": 0.09579474649736762,
+      "angleError": 0.056344823827981116
+    },
+    {
+      "character": "r",
+      "positionError": 0.06866170086749657,
+      "angleError": 0.20741040532790578
+    },
+    {
+      "character": "c",
+      "positionError": 0.03530272260581463,
+      "angleError": 0.047585750586582876
+    },
+    {
+      "character": " ",
+      "positionError": 0.0215054953020304,
+      "angleError": 0.05166335334914862
+    },
+    {
+      "character": "p",
+      "positionError": 0.013801617559322571,
+      "angleError": 0.022403624514391263
+    },
+    {
+      "character": "a",
+      "positionError": 0.044371742807197016,
+      "angleError": 0.08072225185959248
+    },
+    {
+      "character": "t",
+      "positionError": 0.08840267032479188,
+      "angleError": 0.07434625554507868
+    },
+    {
+      "character": "h",
+      "positionError": 0.09351117669563623,
+      "angleError": 0.06465029679175238
+    }
+  ],
+  "integrated": false,
+  "check": "Straight path, calibrated offset, direct path, non-fragment reference regression passed",
+  "scope": "One fixture JavaScript pixel/position experiment; no full-suite or C build claim"
+}

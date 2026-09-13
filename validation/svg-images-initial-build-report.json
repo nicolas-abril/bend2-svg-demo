@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "scope": "Integrated SVG image library, before the aspect-ratio/href editor attribute correction",
+  "sourceSHA256": {
+    "svg.bend": "cd77a3f56536818426710c872f4e95e63252883a0e12d36a12dce25d1cdbf736",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": {
+    "native": "c3cbbf93150da26b47ae5d629350f619a9335eccadd6cdf8bedab33ed96e0777",
+    "web": "59c90c934d50f41a3b38998c1ac744a0b9ae349094ee2c22a8d95059f6f68e24",
+    "render": "e35461ef38241468ab8ae3d3006da1ee61555d51c86d5be319363f57f8b6846a"
+  },
+  "checks": 40,
+  "backendMatrices": 99,
+  "backendParityReport": "svg-images-native-before-state-fix-report.json",
+  "currentEditorRebuild": "pending"
+}

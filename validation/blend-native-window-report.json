@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    "rebuilt native frontend opened the blend compositing fixture",
+    "hue, soft-light, color-burn and overlay with clip/mask/group opacity visually inspected",
+    "native test window closed"
+  ],
+  "screenshot": "native-blends.png",
+  "input": "filters-blend-compositing.svg with viewBox 0 0 64 64 added for a 256px preview",
+  "sourceSHA256": {
+    "svg.bend": "69b50e1805de569e1841b8da0207c29083db1bdabd5689299074f4a6030b8c8c",
+    "state.bend": "fd53436e041be8cc05fe3330cdf54fac44d7bf6290d50225b02c999a70258347",
+    "native.bend": "a6e462e4be9d4328ec56643351c56b266811188783d839900c999048eb0d74a9",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "render.bend": "1fdba48b4cf5a548fd2ff33004b1ec5cf1a1bcdf0efc47e83c89839fef7b444f",
+    "web.html": "6b63b2963416390c1b62328e163f91741ad6bf87611cbb8907ca32f131365056",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "0ebb56b88bf6eca7cad9b0161cdbd1b058fe114402e139f5a377825fa31c8772"
+}

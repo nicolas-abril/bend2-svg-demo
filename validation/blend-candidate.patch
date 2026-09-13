@@ -1,0 +1,90 @@
+--- svg.bend
++++ svg.bend
+@@ -5271,14 +5271,75 @@
+         _ => branch(Color, U32.is_eq(kind, 3), _ => color.add(color.fade(a, ba), color.fade(b, (1.0 - aa : F32))),
+           _ => branch(Color, U32.is_eq(kind, 4), _ => color.add(color.fade(a, (1.0 - ba : F32)), color.fade(b, (1.0 - aa : F32))), _ => color.over(a, b))))))
+ 
+-def filter.blend.channel(+a: F32, +b: F32, +kind: U32) -> F32:
+-  choose(F32, U32.is_eq(kind, 1), (a * b : F32), choose(F32, U32.is_eq(kind, 2), (a + b - a * b : F32), choose(F32, U32.is_eq(kind, 3), min(a, b), choose(F32, U32.is_eq(kind, 4), max(a, b), a))))
++def filter.blend.hard(+a: F32, +b: F32) -> F32:
++  choose(F32, F32.is_le(a, 0.5), (2.0 * a * b : F32), (1.0 - 2.0 * (1.0 - a) * (1.0 - b) : F32))
++
++def filter.blend.soft(+a: F32, +b: F32) -> F32:
++  +curve = choose(F32, F32.is_le(b, 0.25), (((16.0 * b - 12.0) * b + 4.0) * b : F32), F32.sqrt(b))
++  choose(F32, F32.is_le(a, 0.5), (b - (1.0 - 2.0 * a) * b * (1.0 - b) : F32), (b + (2.0 * a - 1.0) * (curve - b) : F32))
++
++def filter.blend.channel(+a: F32, +b: F32, kind: U32) -> F32:
++  match kind:
++    case 1: (a * b : F32)
++    case 2: (a + b - a * b : F32)
++    case 3: min(a, b)
++    case 4: max(a, b)
++    case 5: filter.blend.hard(b, a)
++    case 6: choose(F32, F32.is_le(b, 0.0), 0.0, choose(F32, F32.is_ge(a, 1.0), 1.0, min(1.0, (b / max(0.0000001, (1.0 - a : F32)) : F32))))
++    case 7: choose(F32, F32.is_ge(b, 1.0), 1.0, choose(F32, F32.is_le(a, 0.0), 0.0, (1.0 - min(1.0, ((1.0 - b) / max(0.0000001, a) : F32)) : F32)))
++    case 8: filter.blend.hard(a, b)
++    case 9: filter.blend.soft(a, b)
++    case 10: F32.abs((a - b : F32))
++    case 11: (a + b - 2.0 * a * b : F32)
++    case _: a
++
++def filter.blend.lum(c: Color) -> F32:
++  Color{r, g, b, a} = c
++  (0.3 * r + 0.59 * g + 0.11 * b : F32)
++
++def filter.blend.sat(+c: Color) -> F32:
++  Color{r, g, b, a} = c
++  (max(r, max(g, b)) - min(r, min(g, b)) : F32)
++
++def filter.blend.setsat(+c: Color, +s: F32) -> Color:
++  Color{r, g, b, a} = c
++  +lo = min(r, min(g, b))
++  +span = (max(r, max(g, b)) - lo : F32)
++  +scale = choose(F32, F32.is_gt(span, 0.0), (s / max(span, 0.0000001) : F32), 0.0)
++  Color{((r - lo) * scale : F32), ((g - lo) * scale : F32), ((b - lo) * scale : F32), 1.0}
++
++def filter.blend.clip.scale(c: Color, +l: F32, +scale: F32) -> Color:
++  Color{r, g, b, a} = c
++  Color{(l + (r - l) * scale : F32), (l + (g - l) * scale : F32), (l + (b - l) * scale : F32), 1.0}
++
++def filter.blend.clip(+c: Color) -> Color:
++  Color{r, g, b, a} = c
++  +l = filter.blend.lum(c)
++  +lo = min(r, min(g, b))
++  +hi = max(r, max(g, b))
++  +scaleLow = choose(F32, F32.is_lt(lo, 0.0), (l / max(0.0000001, (l - lo : F32)) : F32), 1.0)
++  +scaleHigh = choose(F32, F32.is_gt(hi, 1.0), ((1.0 - l) / max(0.0000001, (hi - l : F32)) : F32), 1.0)
++  filter.blend.clip.scale(c, l, (scaleLow * scaleHigh : F32))
++
++def filter.blend.setlum(+c: Color, l: F32) -> Color:
++  Color{r, g, b, a} = c
++  +delta = (l - filter.blend.lum(c) : F32)
++  filter.blend.clip(Color{(r + delta : F32), (g + delta : F32), (b + delta : F32), 1.0})
++
++def filter.blend.rgb(+a: Color, +b: Color, +kind: U32) -> Color:
++  Color{ar, ag, ab, aa} = a
++  Color{br, bg, bb, ba} = b
++  branch(Color, U32.is_eq(kind, 12), _ => filter.blend.setlum(filter.blend.setsat(a, filter.blend.sat(b)), filter.blend.lum(b)),
++    _ => branch(Color, U32.is_eq(kind, 13), _ => filter.blend.setlum(filter.blend.setsat(b, filter.blend.sat(a)), filter.blend.lum(b)),
++      _ => branch(Color, U32.is_eq(kind, 14), _ => filter.blend.setlum(a, filter.blend.lum(b)),
++        _ => branch(Color, U32.is_eq(kind, 15), _ => filter.blend.setlum(b, filter.blend.lum(a)),
++          _ => Color{filter.blend.channel(ar, br, kind), filter.blend.channel(ag, bg, kind), filter.blend.channel(ab, bb, kind), 1.0}))))
+ 
+ def filter.blend(+a: Color, +b: Color, +kind: U32) -> Color:
+   Color{ar, ag, ab, aa} = a
+   Color{br, bg, bb, ba} = b
+   +alpha = (aa * ba : F32)
+-  color.add(color.add(color.fade(a, (1.0 - ba : F32)), color.fade(b, (1.0 - aa : F32))), Color{(alpha * filter.blend.channel((ar / max(aa, 0.0000001) : F32), (br / max(ba, 0.0000001) : F32), kind) : F32), (alpha * filter.blend.channel((ag / max(aa, 0.0000001) : F32), (bg / max(ba, 0.0000001) : F32), kind) : F32), (alpha * filter.blend.channel((ab / max(aa, 0.0000001) : F32), (bb / max(ba, 0.0000001) : F32), kind) : F32), alpha})
++  color.add(color.add(color.fade(a, (1.0 - ba : F32)), color.fade(b, (1.0 - aa : F32))), color.fade(filter.blend.rgb(Color{(ar / max(aa, 0.0000001) : F32), (ag / max(aa, 0.0000001) : F32), (ab / max(aa, 0.0000001) : F32), 1.0}, Color{(br / max(ba, 0.0000001) : F32), (bg / max(ba, 0.0000001) : F32), (bb / max(ba, 0.0000001) : F32), 1.0}, kind), alpha))
+ 
+ type FilterTap is Data:
+   FilterTap{delta: Point, weight: F32}
+@@ -5455,7 +5516,7 @@
+   choose(U32, String.eq(name, "in"), 1, choose(U32, String.eq(name, "out"), 2, choose(U32, String.eq(name, "atop"), 3, choose(U32, String.eq(name, "xor"), 4, choose(U32, String.eq(name, "arithmetic"), 5, 0)))))
+ 
+ def filter.blend.mode(+name: String) -> U32:
+-  choose(U32, String.eq(name, "multiply"), 1, choose(U32, String.eq(name, "screen"), 2, choose(U32, String.eq(name, "darken"), 3, choose(U32, String.eq(name, "lighten"), 4, 0))))
++  choose(U32, String.eq(name, "multiply"), 1, choose(U32, String.eq(name, "screen"), 2, choose(U32, String.eq(name, "darken"), 3, choose(U32, String.eq(name, "lighten"), 4, choose(U32, String.eq(name, "overlay"), 5, choose(U32, String.eq(name, "color-dodge"), 6, choose(U32, String.eq(name, "color-burn"), 7, choose(U32, String.eq(name, "hard-light"), 8, choose(U32, String.eq(name, "soft-light"), 9, choose(U32, String.eq(name, "difference"), 10, choose(U32, String.eq(name, "exclusion"), 11, choose(U32, String.eq(name, "hue"), 12, choose(U32, String.eq(name, "saturation"), 13, choose(U32, String.eq(name, "color"), 14, choose(U32, String.eq(name, "luminosity"), 15, 0)))))))))))))))
+ 
+ def filter.flood(+as: List<&2, Attr>) -> Color:
+   +ink = attr.get(as, "flood-color", "black")

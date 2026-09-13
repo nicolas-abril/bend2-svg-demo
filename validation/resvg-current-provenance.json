@@ -1,0 +1,8 @@
+{
+  "version": "0.47.0",
+  "release": "https://github.com/linebender/resvg/releases/tag/v0.47.0",
+  "download": "https://github.com/linebender/resvg/releases/download/v0.47.0/resvg-macos-aarch64.zip",
+  "archiveSHA256": "049f8cc5666ff6395987798feae04f7f31525b0047b063d8e07fcbb8d22f3675",
+  "binarySHA256": "7824e2e3accc2a7d306443d80f117ed0cef14147970d69b33e753390a38fcd9a",
+  "scope": "Independent validation only. Binary is kept in the temporary tools directory, not linked into the Bend application. Set RESVG_BINARY when rerunning compare-resvg-current.mjs."
+}

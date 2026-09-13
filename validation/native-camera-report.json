@@ -1,0 +1,889 @@
+{
+  "renderingPassed": true,
+  "inputPassed": false,
+  "inputStatus": "Screenshot validation only; no mouse or keyboard events sent. Native input remains unverified.",
+  "sourceSHA256": "acbc0c3c9275fe6c0901244c2568c305fd619b89f1e06a717a89d8f1430d5b65",
+  "stateSHA256": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+  "binarySHA256": "d67764a86c1fa1f57f7105b56913c98d099fc2d9d007759efa8d6cba40c47a91",
+  "screenshot": "native-camera-preview.png",
+  "expected": "camera-wide-expected.ppm",
+  "width": 256,
+  "height": 256,
+  "pixelsCompared": 65536,
+  "differingPixels": 174,
+  "meanAbsoluteError": 0.452880859375,
+  "maxChannelError": 255,
+  "differencesOnlyInOSRoundedBottomCorners": true,
+  "differences": [
+    {
+      "x": 0,
+      "y": 233,
+      "maxChannelError": 1
+    },
+    {
+      "x": 255,
+      "y": 233,
+      "maxChannelError": 1
+    },
+    {
+      "x": 0,
+      "y": 234,
+      "maxChannelError": 2
+    },
+    {
+      "x": 255,
+      "y": 234,
+      "maxChannelError": 2
+    },
+    {
+      "x": 0,
+      "y": 235,
+      "maxChannelError": 2
+    },
+    {
+      "x": 255,
+      "y": 235,
+      "maxChannelError": 2
+    },
+    {
+      "x": 0,
+      "y": 236,
+      "maxChannelError": 5
+    },
+    {
+      "x": 255,
+      "y": 236,
+      "maxChannelError": 5
+    },
+    {
+      "x": 0,
+      "y": 237,
+      "maxChannelError": 7
+    },
+    {
+      "x": 255,
+      "y": 237,
+      "maxChannelError": 7
+    },
+    {
+      "x": 0,
+      "y": 238,
+      "maxChannelError": 14
+    },
+    {
+      "x": 255,
+      "y": 238,
+      "maxChannelError": 14
+    },
+    {
+      "x": 0,
+      "y": 239,
+      "maxChannelError": 24
+    },
+    {
+      "x": 255,
+      "y": 239,
+      "maxChannelError": 24
+    },
+    {
+      "x": 0,
+      "y": 240,
+      "maxChannelError": 40
+    },
+    {
+      "x": 255,
+      "y": 240,
+      "maxChannelError": 41
+    },
+    {
+      "x": 0,
+      "y": 241,
+      "maxChannelError": 72
+    },
+    {
+      "x": 255,
+      "y": 241,
+      "maxChannelError": 72
+    },
+    {
+      "x": 0,
+      "y": 242,
+      "maxChannelError": 120
+    },
+    {
+      "x": 255,
+      "y": 242,
+      "maxChannelError": 120
+    },
+    {
+      "x": 0,
+      "y": 243,
+      "maxChannelError": 175
+    },
+    {
+      "x": 255,
+      "y": 243,
+      "maxChannelError": 175
+    },
+    {
+      "x": 0,
+      "y": 244,
+      "maxChannelError": 224
+    },
+    {
+      "x": 255,
+      "y": 244,
+      "maxChannelError": 224
+    },
+    {
+      "x": 0,
+      "y": 245,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 245,
+      "maxChannelError": 23
+    },
+    {
+      "x": 254,
+      "y": 245,
+      "maxChannelError": 24
+    },
+    {
+      "x": 255,
+      "y": 245,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 246,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 246,
+      "maxChannelError": 122
+    },
+    {
+      "x": 254,
+      "y": 246,
+      "maxChannelError": 122
+    },
+    {
+      "x": 255,
+      "y": 246,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 247,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 247,
+      "maxChannelError": 226
+    },
+    {
+      "x": 2,
+      "y": 247,
+      "maxChannelError": 5
+    },
+    {
+      "x": 253,
+      "y": 247,
+      "maxChannelError": 4
+    },
+    {
+      "x": 254,
+      "y": 247,
+      "maxChannelError": 226
+    },
+    {
+      "x": 255,
+      "y": 247,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 248,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 248,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 248,
+      "maxChannelError": 121
+    },
+    {
+      "x": 253,
+      "y": 248,
+      "maxChannelError": 121
+    },
+    {
+      "x": 254,
+      "y": 248,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 248,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 249,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 249,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 249,
+      "maxChannelError": 241
+    },
+    {
+      "x": 3,
+      "y": 249,
+      "maxChannelError": 46
+    },
+    {
+      "x": 252,
+      "y": 249,
+      "maxChannelError": 45
+    },
+    {
+      "x": 253,
+      "y": 249,
+      "maxChannelError": 241
+    },
+    {
+      "x": 254,
+      "y": 249,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 249,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 250,
+      "maxChannelError": 211
+    },
+    {
+      "x": 4,
+      "y": 250,
+      "maxChannelError": 21
+    },
+    {
+      "x": 251,
+      "y": 250,
+      "maxChannelError": 21
+    },
+    {
+      "x": 252,
+      "y": 250,
+      "maxChannelError": 211
+    },
+    {
+      "x": 253,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 250,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 4,
+      "y": 251,
+      "maxChannelError": 202
+    },
+    {
+      "x": 5,
+      "y": 251,
+      "maxChannelError": 21
+    },
+    {
+      "x": 250,
+      "y": 251,
+      "maxChannelError": 21
+    },
+    {
+      "x": 251,
+      "y": 251,
+      "maxChannelError": 202
+    },
+    {
+      "x": 252,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 253,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 251,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 4,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 5,
+      "y": 252,
+      "maxChannelError": 211
+    },
+    {
+      "x": 6,
+      "y": 252,
+      "maxChannelError": 46
+    },
+    {
+      "x": 249,
+      "y": 252,
+      "maxChannelError": 46
+    },
+    {
+      "x": 250,
+      "y": 252,
+      "maxChannelError": 211
+    },
+    {
+      "x": 251,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 252,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 253,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 252,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 4,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 5,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 6,
+      "y": 253,
+      "maxChannelError": 241
+    },
+    {
+      "x": 7,
+      "y": 253,
+      "maxChannelError": 121
+    },
+    {
+      "x": 8,
+      "y": 253,
+      "maxChannelError": 5
+    },
+    {
+      "x": 247,
+      "y": 253,
+      "maxChannelError": 5
+    },
+    {
+      "x": 248,
+      "y": 253,
+      "maxChannelError": 122
+    },
+    {
+      "x": 249,
+      "y": 253,
+      "maxChannelError": 241
+    },
+    {
+      "x": 250,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 251,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 252,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 253,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 253,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 4,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 5,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 6,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 7,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 8,
+      "y": 254,
+      "maxChannelError": 227
+    },
+    {
+      "x": 9,
+      "y": 254,
+      "maxChannelError": 124
+    },
+    {
+      "x": 10,
+      "y": 254,
+      "maxChannelError": 24
+    },
+    {
+      "x": 245,
+      "y": 254,
+      "maxChannelError": 24
+    },
+    {
+      "x": 246,
+      "y": 254,
+      "maxChannelError": 124
+    },
+    {
+      "x": 247,
+      "y": 254,
+      "maxChannelError": 227
+    },
+    {
+      "x": 248,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 249,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 250,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 251,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 252,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 253,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 254,
+      "maxChannelError": 255
+    },
+    {
+      "x": 0,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 1,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 2,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 3,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 4,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 5,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 6,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 7,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 8,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 9,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 10,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 11,
+      "y": 255,
+      "maxChannelError": 224
+    },
+    {
+      "x": 12,
+      "y": 255,
+      "maxChannelError": 178
+    },
+    {
+      "x": 13,
+      "y": 255,
+      "maxChannelError": 121
+    },
+    {
+      "x": 14,
+      "y": 255,
+      "maxChannelError": 74
+    },
+    {
+      "x": 15,
+      "y": 255,
+      "maxChannelError": 42
+    },
+    {
+      "x": 16,
+      "y": 255,
+      "maxChannelError": 25
+    },
+    {
+      "x": 17,
+      "y": 255,
+      "maxChannelError": 14
+    },
+    {
+      "x": 18,
+      "y": 255,
+      "maxChannelError": 7
+    },
+    {
+      "x": 19,
+      "y": 255,
+      "maxChannelError": 5
+    },
+    {
+      "x": 20,
+      "y": 255,
+      "maxChannelError": 2
+    },
+    {
+      "x": 21,
+      "y": 255,
+      "maxChannelError": 2
+    },
+    {
+      "x": 22,
+      "y": 255,
+      "maxChannelError": 1
+    },
+    {
+      "x": 233,
+      "y": 255,
+      "maxChannelError": 1
+    },
+    {
+      "x": 234,
+      "y": 255,
+      "maxChannelError": 2
+    },
+    {
+      "x": 235,
+      "y": 255,
+      "maxChannelError": 2
+    },
+    {
+      "x": 236,
+      "y": 255,
+      "maxChannelError": 5
+    },
+    {
+      "x": 237,
+      "y": 255,
+      "maxChannelError": 7
+    },
+    {
+      "x": 238,
+      "y": 255,
+      "maxChannelError": 14
+    },
+    {
+      "x": 239,
+      "y": 255,
+      "maxChannelError": 24
+    },
+    {
+      "x": 240,
+      "y": 255,
+      "maxChannelError": 44
+    },
+    {
+      "x": 241,
+      "y": 255,
+      "maxChannelError": 74
+    },
+    {
+      "x": 242,
+      "y": 255,
+      "maxChannelError": 121
+    },
+    {
+      "x": 243,
+      "y": 255,
+      "maxChannelError": 178
+    },
+    {
+      "x": 244,
+      "y": 255,
+      "maxChannelError": 224
+    },
+    {
+      "x": 245,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 246,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 247,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 248,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 249,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 250,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 251,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 252,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 253,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 254,
+      "y": 255,
+      "maxChannelError": 255
+    },
+    {
+      "x": 255,
+      "y": 255,
+      "maxChannelError": 255
+    }
+  ]
+}

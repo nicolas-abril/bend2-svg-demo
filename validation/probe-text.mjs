@@ -1,0 +1,2 @@
+import {Resvg} from '@resvg/resvg-js';import {readFileSync,writeFileSync} from 'node:fs';import {resolve} from 'node:path';
+for(const name of ['position','spans','style']){const svg=new Resvg(readFileSync(`fixtures/text-${name}.svg`),{font:{fontFiles:['Regular','Bold','Italic','BoldItalic'].map(s=>resolve(`validation/fonts/NotoSans-${s}.ttf`)),loadSystemFonts:false,defaultFontFamily:'Noto Sans'}});writeFileSync(`validation/text-${name}-resvg-outlines.svg`,svg.toString());}

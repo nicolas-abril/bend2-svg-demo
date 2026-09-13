@@ -1,0 +1,105 @@
+{
+  "sourceSHA256": "51cbfe5f0bf707280ff8d231c68f6d45ccbadf13d1f79038f9b878849e495834",
+  "reference": "Pillow 12.3.0 / libjpeg",
+  "cases": [
+    {
+      "nativeEqual": true,
+      "name": "one-pixel",
+      "width": 1,
+      "height": 1,
+      "mae": 0,
+      "rmse": 0,
+      "max": 0,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "narrow",
+      "width": 1,
+      "height": 17,
+      "mae": 8.156862745098039,
+      "rmse": 10.337443837721162,
+      "max": 23,
+      "channelsAbove3": 37,
+      "pass": false
+    },
+    {
+      "nativeEqual": true,
+      "name": "short",
+      "width": 17,
+      "height": 1,
+      "mae": 0.19607843137254902,
+      "rmse": 0.44280744277004763,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "partial-mcu",
+      "width": 5,
+      "height": 9,
+      "mae": 0.3333333333333333,
+      "rmse": 0.5773502691896257,
+      "max": 1,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-flat",
+      "width": 64,
+      "height": 64,
+      "mae": 0,
+      "rmse": 0,
+      "max": 0,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "restart-wrap",
+      "width": 64,
+      "height": 80,
+      "mae": 0.3587239583333333,
+      "rmse": 0.6086400482496476,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "low-quality",
+      "width": 37,
+      "height": 29,
+      "mae": 0.017396707051879467,
+      "rmse": 0.14100337200377044,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "high-quality",
+      "width": 37,
+      "height": 29,
+      "mae": 0.0260950605778192,
+      "rmse": 0.18485698022422734,
+      "max": 2,
+      "channelsAbove3": 0,
+      "pass": true
+    },
+    {
+      "nativeEqual": true,
+      "name": "progressive-large",
+      "width": 128,
+      "height": 96,
+      "mae": 0.3512641059027778,
+      "rmse": 0.6029756579640858,
+      "max": 3,
+      "channelsAbove3": 0,
+      "pass": true
+    }
+  ]
+}

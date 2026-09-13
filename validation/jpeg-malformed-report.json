@@ -1,0 +1,908 @@
+{
+  "sourceSHA256": "51cbfe5f0bf707280ff8d231c68f6d45ccbadf13d1f79038f9b878849e495834",
+  "seed": 58137,
+  "check": "100 deterministic truncations and byte mutations; successful bounded process completion, not validity classification",
+  "passed": true,
+  "results": [
+    {
+      "index": 0,
+      "base": "gray",
+      "inputSHA256": "f3900c8a561aad29564c80895a6c5926360a6c6b2b57f16a47d673cd9fb8a303",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013873125000000002
+    },
+    {
+      "index": 1,
+      "base": "444",
+      "inputSHA256": "83bbd6cd4853b3a884feaa473a61bdf85d814463a65c9ae2aacf65117719d9d3",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017589208999999998
+    },
+    {
+      "index": 2,
+      "base": "422",
+      "inputSHA256": "c8236277ea2ce9644db8a4b96a31087243d09896ee553e8c505bca1fa52c52d8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02084112499999999
+    },
+    {
+      "index": 3,
+      "base": "420",
+      "inputSHA256": "2bcc7f4f7a0c68980f38bb2307a87a4974f552e5b6256d53528978324dda6741",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01529316700000001
+    },
+    {
+      "index": 4,
+      "base": "restart",
+      "inputSHA256": "eb564ee2959d06b61faf6922614988d072fd98a6a27bbd4cccd0b50060af6e12",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020388083000000008
+    },
+    {
+      "index": 5,
+      "base": "progressive-gray",
+      "inputSHA256": "0403e336ca61321dc4f3609bf150cb1dc09b581e5f1ba1159ad064d2b5e40a48",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.018748290999999993
+    },
+    {
+      "index": 6,
+      "base": "progressive-444",
+      "inputSHA256": "6bf9e54782b23a4065a36bd765d0c7747f4c8daa452649a4e7d3ba7b81be9ad9",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01676474999999999
+    },
+    {
+      "index": 7,
+      "base": "progressive-422",
+      "inputSHA256": "1f889f292ce3e81c19ed034601f4355c0123e0a80573e5acaddad40c264c7aff",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01378762499999999
+    },
+    {
+      "index": 8,
+      "base": "progressive-420",
+      "inputSHA256": "0728799b071c91c9c62031c62c105fa62d6e693bee55b8e6eefaeff05dff2a92",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014877207999999996
+    },
+    {
+      "index": 9,
+      "base": "progressive-restart",
+      "inputSHA256": "c50112d2e6184ff37bcf329c36415446f2c9b29283e5000c1a3d6f2e8fa024a4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017425166999999988
+    },
+    {
+      "index": 10,
+      "base": "rgb",
+      "inputSHA256": "a2550efa3cdd2009264a5cfe19efb504ee5dade2207d76d21239ebb0d7e22ee4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01837058400000001
+    },
+    {
+      "index": 11,
+      "base": "cmyk",
+      "inputSHA256": "73ba695680045eeab4d9f5139813847ed7f607424c4e5e48994217ad3e7596df",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02243629200000001
+    },
+    {
+      "index": 12,
+      "base": "ycck",
+      "inputSHA256": "6b39a075a80b732e79d3157d0a7c32d443c086c1292b7379f432bf2c91bb7c59",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021646833999999983
+    },
+    {
+      "index": 13,
+      "base": "progressive-cmyk",
+      "inputSHA256": "c3e98aaa896152ea5399e1d418c5add150a65d6f3c58c40b275968e059425e1d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017500291000000005
+    },
+    {
+      "index": 14,
+      "base": "noise",
+      "inputSHA256": "aeabfda8849e27a1304a1646422c68c940e843f4b35b718aa6138fcbc2613c3b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021417417
+    },
+    {
+      "index": 15,
+      "base": "progressive-noise",
+      "inputSHA256": "57fdba86f9b9debe5a5e2c292417a89d3e7d56d7c87def58a58290b8ad44f9fa",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020318624999999996
+    },
+    {
+      "index": 16,
+      "base": "separate",
+      "inputSHA256": "65460b823ef023e0a19e49fd5950145715f4b08ffa7bb76d51c3265acba7e0bc",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019091834000000005
+    },
+    {
+      "index": 17,
+      "base": "quant16",
+      "inputSHA256": "5b2f684fbac0c7d273eafc4592acd077bb99f45187dc7b75d0a415b95d39135a",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019645917
+    },
+    {
+      "index": 18,
+      "base": "huffman16",
+      "inputSHA256": "0c9c696b4a0809a04f9bc52d2c0019dc6bed4245983bdc05aa500db07bd7518b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.018569165999999995
+    },
+    {
+      "index": 19,
+      "base": "gray",
+      "inputSHA256": "f75a6c81e07aa89f44f1e1c609253702f2bc5a44277f74e4920d0892a289eed1",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019297375000000044
+    },
+    {
+      "index": 20,
+      "base": "444",
+      "inputSHA256": "fa2e0f74e2f847296ec12a7b4840961c0057a279777137d1ab864e65010b673a",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021326582999999972
+    },
+    {
+      "index": 21,
+      "base": "422",
+      "inputSHA256": "3734905ceea2a0401f81933c9afa337efb1f3882abf468f9a4bf173553efa833",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.011058415999999965
+    },
+    {
+      "index": 22,
+      "base": "420",
+      "inputSHA256": "870e0e693bc3e7382053ba0b950693c022a4f36bc8efae166e22b27395e5e357",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02226574999999997
+    },
+    {
+      "index": 23,
+      "base": "restart",
+      "inputSHA256": "bb79c29066a7927e40e7463769ed65c86a164e447952681fa18bd0ece1f583b5",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.016500916000000018
+    },
+    {
+      "index": 24,
+      "base": "progressive-gray",
+      "inputSHA256": "d94271944f8975d989c081eb80870270ec02ccdd95838a4179f129cdf222259d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01447958299999999
+    },
+    {
+      "index": 25,
+      "base": "progressive-444",
+      "inputSHA256": "da942ab24e73fca242abf5f8de0bdb6ce66e4be855efd8774f9bae4f968700d4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014211041999999964
+    },
+    {
+      "index": 26,
+      "base": "progressive-422",
+      "inputSHA256": "dbbf41c0fbe66a9d07ac19431b01a7602651f9bfc554fc57189e113d8fcb824b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017000917000000015
+    },
+    {
+      "index": 27,
+      "base": "progressive-420",
+      "inputSHA256": "1178e488794780ddc5206ac3d433b5dc3d725ce35cc7d34a5b98f3dc90ee80a7",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02028441700000002
+    },
+    {
+      "index": 28,
+      "base": "progressive-restart",
+      "inputSHA256": "bd08065b24850f7860246c63ffd646d2e2016ca077961b75d8bdb32476c318b4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020300542000000064
+    },
+    {
+      "index": 29,
+      "base": "rgb",
+      "inputSHA256": "9d5e7d2f10c640138a052f13ca9572ea825048de0a89650f7a020382cf71e688",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.025552041000000032
+    },
+    {
+      "index": 30,
+      "base": "cmyk",
+      "inputSHA256": "2925e83329ed8dc165cc2ca152f93d8b8e44f15c41684a2cbd48ccebf4e2528d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02769737500000008
+    },
+    {
+      "index": 31,
+      "base": "ycck",
+      "inputSHA256": "1ec7ef4c6710ea0ebca20c3c912933d6f2eb8e1e72205c712048bef3cbbb3f4b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.027195875
+    },
+    {
+      "index": 32,
+      "base": "progressive-cmyk",
+      "inputSHA256": "fd7303f9902ce56e840cc5011b05db5a36dd841eadd04396e1c92280b8dd32ee",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020961958000000096
+    },
+    {
+      "index": 33,
+      "base": "noise",
+      "inputSHA256": "3993957d486d1e71e1964f0a6f6cb7fda66ff819dce7713ea861d453911e1583",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02596970799999997
+    },
+    {
+      "index": 34,
+      "base": "progressive-noise",
+      "inputSHA256": "87f28cde9da401243300f70bc0b86f6a5a8e9b56dc257b3c4fd40c68e3d6b07d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02062962499999992
+    },
+    {
+      "index": 35,
+      "base": "separate",
+      "inputSHA256": "c236d380d142e50c6b815e03176c4dd207c4f74870268ba8019c97a21b3cc82b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017677749999999947
+    },
+    {
+      "index": 36,
+      "base": "quant16",
+      "inputSHA256": "dfe41ab4cb763d4b3b60fbb25f3fe7002481f5c052ee011400ce14fc29f92d68",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01582125000000008
+    },
+    {
+      "index": 37,
+      "base": "huffman16",
+      "inputSHA256": "8614863382d6a6b5986c6a014d49d6afaa878e8c81c77c61969582cee4bc77ca",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01711120900000003
+    },
+    {
+      "index": 38,
+      "base": "gray",
+      "inputSHA256": "caa49db54759dbc965594071b4668f1afffff57e0bcef644d400202843889b78",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020276540999999954
+    },
+    {
+      "index": 39,
+      "base": "444",
+      "inputSHA256": "d416933e4771e47b33f43b3c6c15ccdfcba1eefac0f0ab87f6e34bcf373f2ef0",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.027202583000000006
+    },
+    {
+      "index": 40,
+      "base": "422",
+      "inputSHA256": "0c7b30720eb3678690ea831ea3752c86ae6a3ea442d835134b3ec1d1cabdd607",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.015941208000000075
+    },
+    {
+      "index": 41,
+      "base": "420",
+      "inputSHA256": "c476fb0f4f2555bb2ae181102352af0115e1443ffcf3cdb20b3f6dab2b588bb8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021514124999999922
+    },
+    {
+      "index": 42,
+      "base": "restart",
+      "inputSHA256": "ff5aae5b7b117d2e03213b95d254f482073215e2c11c76259b0c4d5d77c6f2e5",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01916883299999995
+    },
+    {
+      "index": 43,
+      "base": "progressive-gray",
+      "inputSHA256": "813731d3f60b04744c1a00e1fe8f63e8a0a683be5cfbda49b01a7b3527e3b16a",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.016953833000000033
+    },
+    {
+      "index": 44,
+      "base": "progressive-444",
+      "inputSHA256": "34acafb5bd156f63806a4b84846962a616c0b04eb0e4da34060a73dedb5d7eb4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.023631582999999977
+    },
+    {
+      "index": 45,
+      "base": "progressive-422",
+      "inputSHA256": "49b7e2721ff8ce89b02b9e214d6f4c37438e64c16cccac9429524cee31109bcc",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.012854167000000074
+    },
+    {
+      "index": 46,
+      "base": "progressive-420",
+      "inputSHA256": "9a21a2330e334bcb0118bad71bb4263f5888839deb7c0c81495e456f1921c62d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014589958000000024
+    },
+    {
+      "index": 47,
+      "base": "progressive-restart",
+      "inputSHA256": "d23752ac2672d3ec3250f6622faba48e099cad2deceb42463e8a75e3b6a29d52",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.022594458000000033
+    },
+    {
+      "index": 48,
+      "base": "rgb",
+      "inputSHA256": "4e0582b09c8b9f8ea19da01a2c3706131e061da90e2995d95f7396163b3afd95",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02115533300000004
+    },
+    {
+      "index": 49,
+      "base": "cmyk",
+      "inputSHA256": "71bbf68de64252249ea2023cd3d5a48f0e5cbba99f1152fc5973f419dd8a569e",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.016569041999999968
+    },
+    {
+      "index": 50,
+      "base": "ycck",
+      "inputSHA256": "7e2cbab0b9411b6a995434b02c62888909ca5a2618f2e7130c29498a467c312d",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.024018124999999942
+    },
+    {
+      "index": 51,
+      "base": "progressive-cmyk",
+      "inputSHA256": "f20adcc4681ee8a2815a5ada67548cd5240cc8f33049b1853882a08151c39104",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.023017749999999865
+    },
+    {
+      "index": 52,
+      "base": "noise",
+      "inputSHA256": "442c2e40e6022a6bec5a2470b264b60e88a41c0661c7c88c1cccd719eae015f5",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.012881041000000096
+    },
+    {
+      "index": 53,
+      "base": "progressive-noise",
+      "inputSHA256": "7a4f78d6a108dc08e12c868874b4df24a3cb85785dbb713c8359b148c4923f55",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01308137499999998
+    },
+    {
+      "index": 54,
+      "base": "separate",
+      "inputSHA256": "9d009cd8701bdbd896dcc8d0effeb1b3bf546655acc61b8c47a0b3e503015c3b",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.022223417000000155
+    },
+    {
+      "index": 55,
+      "base": "quant16",
+      "inputSHA256": "115eb9484850bab464fc600fd8ae7c68e753e1231cf49bf68b5b8c1db238fb37",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.018399083999999902
+    },
+    {
+      "index": 56,
+      "base": "huffman16",
+      "inputSHA256": "69bb9b8d07e091c5820889c37f2d33ba432534be179003a8c6acc47c35977cc8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014332542000000103
+    },
+    {
+      "index": 57,
+      "base": "gray",
+      "inputSHA256": "c6b4819b937a901d41dcb6a3a82ca613bcfd164de9f7a2c0af8e1271dfd87081",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017294542000000093
+    },
+    {
+      "index": 58,
+      "base": "444",
+      "inputSHA256": "fcdcbdc3223a1845bcfc98ff9bf856963ff8c254c73abd2ab6b0d0d3e7b4105e",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.024850417000000107
+    },
+    {
+      "index": 59,
+      "base": "422",
+      "inputSHA256": "394701cffeb4d4e56d0b965213bdb7adef5f5333dee636be73876b82237b02f7",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013762165999999978
+    },
+    {
+      "index": 60,
+      "base": "420",
+      "inputSHA256": "3719f8d5974bf85c2aca6cab92719ba3628d372c835cab2f639c68b26564a28a",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.015168666999999914
+    },
+    {
+      "index": 61,
+      "base": "restart",
+      "inputSHA256": "5f1b02faeb60271ca244419f6fa0d2aac8050669c212cbcf3cb251a3ae5da4dc",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.011285333999999921
+    },
+    {
+      "index": 62,
+      "base": "progressive-gray",
+      "inputSHA256": "8cf4b5de615545b41a257fbdc354b215dbc888752e7dac39c3f1191250029bf3",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013128582999999935
+    },
+    {
+      "index": 63,
+      "base": "progressive-444",
+      "inputSHA256": "cf73fa2eefc765754daa7b3990eb4eb65ae093a293c0b2685f7f8d990efd0a52",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014556957999999894
+    },
+    {
+      "index": 64,
+      "base": "progressive-422",
+      "inputSHA256": "d350838349a99b5e1b46c196f4df415b15633f45dd1305ee72e17bfc4d4344cf",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.010737333000000035
+    },
+    {
+      "index": 65,
+      "base": "progressive-420",
+      "inputSHA256": "5fca57d21a7597a8261154992364b42d464b476755bbc3f61fe5b6e770f5fe57",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.015055458000000044
+    },
+    {
+      "index": 66,
+      "base": "progressive-restart",
+      "inputSHA256": "6ff8ca9c6c6a9fafad2f17d460f75cee140ce3099436b6fe2f9823072865ea08",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013613000000000056
+    },
+    {
+      "index": 67,
+      "base": "rgb",
+      "inputSHA256": "3fc75d73ab4158555327e6972d6e4ede3aef7a8094add4c1d77983236e38680c",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013786207999999987
+    },
+    {
+      "index": 68,
+      "base": "cmyk",
+      "inputSHA256": "2e03b0ba483b54f0ff888eea666be72feb935673eda8ba5395bb4d3f88369748",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014145917000000055
+    },
+    {
+      "index": 69,
+      "base": "ycck",
+      "inputSHA256": "c84ca3db9f51d02e6911b6bcefb334556ad72838893abed66df24b671ca1ce74",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.022234916999999996
+    },
+    {
+      "index": 70,
+      "base": "progressive-cmyk",
+      "inputSHA256": "fb106110880164e4b9f36c41a5f51b72b787cef43352b69545273db9f6c869e9",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.014660540999999966
+    },
+    {
+      "index": 71,
+      "base": "noise",
+      "inputSHA256": "6cf4c2b2a24234a4982722517ebfc32fdf49bf80086d74ed303239cc8d352595",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013819708999999875
+    },
+    {
+      "index": 72,
+      "base": "progressive-noise",
+      "inputSHA256": "61195e0654f6a7bb41214317cd1bb0c3e5bba1455b4cadcec47619020c3b88f0",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.011491917000000058
+    },
+    {
+      "index": 73,
+      "base": "separate",
+      "inputSHA256": "62dcdfca11cfdbf3f167ec6869dec0d21d253253a3ad220b41fc680a5f75df34",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.015800874999999905
+    },
+    {
+      "index": 74,
+      "base": "quant16",
+      "inputSHA256": "bc2e48d51f689dc459435b65388988b09b417afd89542462314b86d0ae2f9ab4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021773417000000107
+    },
+    {
+      "index": 75,
+      "base": "huffman16",
+      "inputSHA256": "baef895c175ecca2ca478fadb70500f51a28944a8ab74e5c9846477f38a35206",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.022773458000000118
+    },
+    {
+      "index": 76,
+      "base": "gray",
+      "inputSHA256": "34db48aaada05cc24e8b110b0a5d13ab670000a871db271620f145d879160e99",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013637333000000126
+    },
+    {
+      "index": 77,
+      "base": "444",
+      "inputSHA256": "7f8705dad3ebce583827fc1b68a5f7b8206458bc6ebf21ffb8b523d7900baaf8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017836041999999906
+    },
+    {
+      "index": 78,
+      "base": "422",
+      "inputSHA256": "c6e1d9837254b03b1a893edfe84064bf6fa65a76aa4c7f112c30a9646e39ff29",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021765499999999976
+    },
+    {
+      "index": 79,
+      "base": "420",
+      "inputSHA256": "aeb587e9d42fb6ad44b323f8296bfc763899997adf00eacdecf45604c50902e4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.026553207999999814
+    },
+    {
+      "index": 80,
+      "base": "restart",
+      "inputSHA256": "d6f3540a019c8e9a82d4c32a9a5bb4f4ba13ed5acfc387e692a6ebc7d95a74a4",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01936345799999981
+    },
+    {
+      "index": 81,
+      "base": "progressive-gray",
+      "inputSHA256": "0f230e3c0e31be49aae7e2118ab27d2501fbb76ee431e7a676b58a492a1cb67c",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.023718667000000096
+    },
+    {
+      "index": 82,
+      "base": "progressive-444",
+      "inputSHA256": "ea61e8df850ba516fe3c9a42925f675ec54dc47f0932f0f731872008b02a52cf",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.013664625000000114
+    },
+    {
+      "index": 83,
+      "base": "progressive-422",
+      "inputSHA256": "d7108ed67e8adb362c473e2c1200a176bf873f17e931b261c6cc1822311629f8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.012799666000000116
+    },
+    {
+      "index": 84,
+      "base": "progressive-420",
+      "inputSHA256": "41d354fab389c0fce7d86f12c1e142104ec71383510e58780bb5b91f6bb336b2",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.015420875000000023
+    },
+    {
+      "index": 85,
+      "base": "progressive-restart",
+      "inputSHA256": "0c8c07664f69892ae417af1cbe5a7de8324887d722beb5ca0173d15b4f0c51b5",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.02026408400000014
+    },
+    {
+      "index": 86,
+      "base": "rgb",
+      "inputSHA256": "9dd7810570d68de61c1364659518d057ea92674635e3ec56cc77e623f58a4e82",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020400082999999996
+    },
+    {
+      "index": 87,
+      "base": "cmyk",
+      "inputSHA256": "f67cd96f50304d1ba84a2b24762121046c2c5235c594a71cb09603f81bbd996f",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.017355374999999867
+    },
+    {
+      "index": 88,
+      "base": "ycck",
+      "inputSHA256": "7a032f946771d8a2e4620b2ef2b16eb0f45e55a683431dda78725e67df5706b2",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019339917000000015
+    },
+    {
+      "index": 89,
+      "base": "progressive-cmyk",
+      "inputSHA256": "7614f0e3ecd246dc947c0300a066adbb23f2e38f5afa881448f969d70ea3b870",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020173000000000003
+    },
+    {
+      "index": 90,
+      "base": "noise",
+      "inputSHA256": "98e63c199e6687b219e5a1837d1c012ac15c0d0e001961ee738db2be85935e14",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019496667000000117
+    },
+    {
+      "index": 91,
+      "base": "progressive-noise",
+      "inputSHA256": "c8f110d1ba3522cee191c01aae0964c7e54b5735a7a57755de47ab5eb3cb5c4c",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.021348042000000077
+    },
+    {
+      "index": 92,
+      "base": "separate",
+      "inputSHA256": "e7311f39adf1075633805ac1c413077e19406e5013418575fd9a0dd584175a53",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01830724999999984
+    },
+    {
+      "index": 93,
+      "base": "quant16",
+      "inputSHA256": "74409ee36f17237fa47e395e81141fe0e5c1ad373eebdf718c9b2f2936c55571",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.024046041999999945
+    },
+    {
+      "index": 94,
+      "base": "huffman16",
+      "inputSHA256": "7ffc952b452229f719faee6e92fdf60b559cd0972ad62fc7b20840d2e7e1bc11",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.019112416999999823
+    },
+    {
+      "index": 95,
+      "base": "gray",
+      "inputSHA256": "464f0ac3e26f43ee5de779e205d2976c38a39d3a7ea044bc188f73d120b9b30f",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020527999999999793
+    },
+    {
+      "index": 96,
+      "base": "444",
+      "inputSHA256": "481d9156d6e7f516099edc1ec692f374db026c5e9bb606ac4778617e1f484137",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.01889208399999984
+    },
+    {
+      "index": 97,
+      "base": "422",
+      "inputSHA256": "7336e55f5323583b99d0b7e92aff94ff7a376bf5ca90969a41fa3a57520b2d82",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.025936459000000012
+    },
+    {
+      "index": 98,
+      "base": "420",
+      "inputSHA256": "fa675fa7563ba1eecd8b2034aa6f3dd49e9ac10cf2c1ab145202c47af2856bcb",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.025555207999999992
+    },
+    {
+      "index": 99,
+      "base": "restart",
+      "inputSHA256": "b8eb6249182ceb03786ea72253b38113e7597c6e35adb0c2ebbb46723f0126e8",
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "durationSeconds": 0.020970332999999983
+    }
+  ]
+}

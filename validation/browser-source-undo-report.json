@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "serverBackend": "native",
+  "binarySHA256": "36769fca1db1c7722fbc6073ee59f0214e534ce97f434c7f4ee16c2b0de45f02",
+  "sourceSHA256": {
+    "svg.bend": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+    "state.bend": "83513370e590e7df992d0daa684a142890585fa1e00bcd8cefa823bf9272a036",
+    "web.bend": "76d60c855906a7f74a155524466cb6d2352d3df8d41a4ea848b6031fe174402a",
+    "web.html": "2a238b67675052aff38b2bf30d473493bcdc10495d147ed46598ba4c4a0e5136",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "durationSeconds": 17.043951790999998,
+  "checks": [
+    "two complete 65536-pixel headless AA4 matrices",
+    "no SVG presentation DOM",
+    "source edit preserves prior property history",
+    "exact source and matrix undo",
+    "unchanged source apply is a no-op",
+    "successive source edits undo independently",
+    "opening a file resets history",
+    "save preserves serialized source"
+  ]
+}

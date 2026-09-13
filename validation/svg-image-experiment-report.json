@@ -1,0 +1,52 @@
+{
+  "experimental": true,
+  "sourceSHA256": "cd77a3f56536818426710c872f4e95e63252883a0e12d36a12dce25d1cdbf736",
+  "reference": "153.0.8010.12",
+  "results": [
+    {
+      "name": "sizing",
+      "chromium": {
+        "meanAbsoluteError": 11.622233072916666,
+        "rootMeanSquareError": 44.085130122487634,
+        "maxChannelError": 255,
+        "pixelsAbove32": 375
+      },
+      "resvg": {
+        "meanAbsoluteError": 0.17789713541666666,
+        "rootMeanSquareError": 1.3525029844390979,
+        "maxChannelError": 24,
+        "pixelsAbove32": 0
+      }
+    },
+    {
+      "name": "resources",
+      "chromium": {
+        "meanAbsoluteError": 0.3138020833333333,
+        "rootMeanSquareError": 1.7051545628867002,
+        "maxChannelError": 14,
+        "pixelsAbove32": 0
+      },
+      "resvg": {
+        "meanAbsoluteError": 0.7423502604166666,
+        "rootMeanSquareError": 4.644192301726606,
+        "maxChannelError": 44,
+        "pixelsAbove32": 74
+      }
+    },
+    {
+      "name": "nested",
+      "chromium": {
+        "meanAbsoluteError": 0.482421875,
+        "rootMeanSquareError": 3.383909921107042,
+        "maxChannelError": 69,
+        "pixelsAbove32": 25
+      },
+      "resvg": {
+        "meanAbsoluteError": 8.617919921875,
+        "rootMeanSquareError": 33.43315903480966,
+        "maxChannelError": 158,
+        "pixelsAbove32": 440
+      }
+    }
+  ]
+}

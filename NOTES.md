@@ -1,0 +1,890 @@
+# SVG Studio implementation status
+
+The original goal remains active and incomplete. Save work in
+/Users/macolas/Software/bend3-demos/svg. Development staging is
+/private/tmp/bend-svg-work; sync.py copies source and validation evidence.
+Do not edit bend2/bend.ts or overwrite the user's comp.ts changes.
+
+Latest checkpoint: fitted viewing/navigation, 50 passing Bend regression files,
+112 exact C/JS fixture matrices plus three exact fitted matrices. All three fresh
+C binaries are installed. Both web backends pass navigation and transformed
+editing; native keyboard navigation/save pass ten window comparisons. Native
+mouse editing remains unverified. The primary reference suite remains 89/112,
+with all 23 failures retained. README.md and validation/camera-investigation.md
+record the current state. Sections below retain earlier checkpoints and counts.
+
+## Architecture
+
+svg.bend: XML, SVG geometry, styles/paint, resource expansion, rasterization,
+source serialization and picking. state.bend: common editor state, actions,
+loading/saving, edits and undo. native.bend: cached pixel window and native input.
+web.bend: sequential local HTTP server. web.html: pixel display and input adapter.
+render.bend: headless PPM export. No SVG library is imported by the app; resvg
+and browser SVG rendering are confined to independent validation.
+
+## Implemented
+
+- XML tree, attributes, mixed text, entity decoding/escaping and round-trip source.
+- SVG number exponents, adjacent signs/decimals and compact arc flags.
+- Basic shapes; M/L/H/V/C/S/Q/T/A/Z paths; curves/arcs; transforms and fill rules.
+- Inherited/inline presentation, common/hex/rgb colors, premultiplied compositing,
+  opacity and supersampling. Explicit inherit/initial/unset on core paint/stroke.
+- Butt/round/square caps; miter/round/bevel joins and miter limits; odd/even/zero
+  dashes, percentages/offsets, closed seams, pathLength and non-scaling strokes.
+  Miter-clip is implemented but not reference validated; arcs joins are unsupported.
+- Linear/radial gradients, units/transforms/spread, href templates, stops/opacity,
+  focal points/radii, sRGB/linearRGB and paint fallbacks.
+- Clip unions/intersections, transforms, bounding-box units, group clipping,
+  and use references to shapes inside clips. Picking respects clips.
+- Root and nested viewports, sizes/percentages, viewBox, aspect alignment,
+  meet/slice/none, overflow clipping/visibility and zero-size suppression.
+- Local use/href/xlink references, symbol/SVG instances, default/override sizes,
+  instance styles, nested references and cycle suppression. Shadow rendering does
+  not flatten source. Picking/dragging/recoloring targets an individual use element.
+- Luminance and alpha masks, mask-mode overrides, coordinate units/regions,
+  group/nested/gradient masks, inherited definition styles, linear-RGB mask
+  compositing and bounded cycle handling. Transparent source pixels skip masks.
+- Balanced bounds hierarchies for stroke, fill and clip sampling. Native caches
+  idle frames. Web coalesces pending pointer moves. Both render AA4 idle/AA1 drag.
+
+## Current evidence
+
+Twenty-seven Bend regression files cover stroke extents, marker geometry and picking, including viewport clipping/picking and
+independent instance editing/serialization. All 19 earlier actual raster matrices
+remain byte-identical after viewport/reference changes.
+
+83 fixtures compared at 64x64, AA8. 66/83 pass MAE<=1/255, RMSE<=5/255, at most 1%
+pixels with channel error>32. coverage.json explicitly selects references;
+summary.json records the verdict; both raw reports and images are retained.
+
+Unresolved primary comparisons include seven text fixtures, three marker fixtures,
+invalid masks, transformed patterns, and these earlier strokes:
+- stroke-vector.svg: Chromium MAE 1.074/255 exceeds 1 (RMSE 4.487, max 32).
+- stroke-dash-zero.svg: M40 49 Z with square cap/dasharray 0 4 produces a 36-pixel
+  square in Bend; Chromium/resvg omit it. SVG2 ideal dash/cap rules appear to
+  support Bend, but this is a failed comparison, not a proven conformance result.
+
+Reference limitations: this resvg binding ignores fr, linearRGB, pathLength,
+vector-effect and symbol default dimensions. It differs on quoted/empty gradient
+paint and renders zero-sized nested viewports. Cyclic references hit its node
+limit; compare.mjs records this error and continues. Probes preserve evidence.
+It agrees on explicit inherited fill in an isolated use probe. Do not claim that
+inheritance is broken based on the combined symbol fixture.
+
+Alternate-reference discrepancies also remain: Chromium transformed clip RMSE 6.54,
+compact path RMSE 6.07, and resvg clipped-use RMSE 5.38. At AA4 curved dashes narrowly
+miss the declared limits. Do not loosen thresholds or remove failing fixtures.
+
+Prior browser full editing flow passed in 46.15s after fill acceleration, versus
+110.37s before. A 60-move burst generated one move request. Native stroke window
+was captured and inspected; native/JS stroke-dashes AA8 output was identical.
+Those artifacts predate the reference/viewport additions.
+
+The pre-mask saved builds and nine regression checks passed.
+The instance-specific browser flow passes (open file, move/recolor one instance,
+preserve definitions and hrefs in source, undo). Screenshot inspected. C and JS
+renderers produce byte-identical AA8 matrices for use, nested viewports and cyclic
+references. All test servers/windows are stopped. Source and evidence synced to
+the requested destination. That checkpoint predates masks; see current continuation below.
+
+## Next work
+
+Main remaining renderer features: wide-gamut/relative colors; advanced CSS/custom properties; advanced text layout and shaping; external image loading and PNG/JPEG color management;
+remaining filter primitives and CSS filter functions; remaining marker edge cases. Animation has not been implemented. External resources and
+symbol refX/refY anchors are unsupported. Clip visibility, clip use targets beyond
+basic shapes, nested SVG inside clip paths, singular matrices and general resource
+cycles need further conformance work. Symbol display override is not yet enforced.
+
+Native/web control parity is incomplete: native has keyboard editing and startup
+file loading, but lacks web source/property controls. Add shared selection display,
+zoom/pan, viewport controls, robust parser diagnostics and unsupported-feature
+reporting. Interaction latency is now bounded by scene compilation and text
+layout rather than sampling (see the analytic coverage section).
+Broaden real-world fixtures and native input validation before completion.
+
+Specifications: https://www.w3.org/TR/SVG2/ ; structure/use and coordinates chapters.
+Reference package: @resvg/resvg-js 2.6.2, plus isolated Chromium reference rendering.
+
+## Mask continuation
+
+Current mask implementation and all ten regression files pass. Full comparison:
+32/35 selected fixtures pass. Added failed mask-errors.svg: invalid/missing/wrong
+and cyclic sources become transparent in Bend, following CSS Masking's invalid
+source rule; Chromium shows four red targets unmasked and resvg shows three.
+Keep this discrepancy explicit. Empty and zero-sized masks agree. Browser behavior
+for SVG mask presentation attributes may retain legacy error handling.
+
+Classic luminance masks, units/regions, group/nested masks, gradients and definition
+inheritance agree with resvg. Probes show resvg ignores mask-mode:alpha and
+color-interpolation=linearRGB; those fixtures use Chromium. Translucent overlap
+initially exposed sRGB compositing before conversion; fixed by blending the mask
+subscene in linear RGB. Its Chromium comparison now has max channel error 1.
+Only mask-compositing.svg changed after that fix plus transparent-source culling;
+all other 34 matrices were byte-identical. New web properties expose masks/clips.
+
+Browser mask flow passed using the JS server: open masked SVG, masked-out picking,
+remove mask from a visible shape, preserve definition, undo. Duration 132.87s.
+The identical flow passed on the compiled C server in 38.17s, a 3.48x speedup.
+make web now uses build/web --gpu off; make web-js retains the Bun backend.
+The saved native/web/render builds and all ten checks pass. Native and JS output
+is byte-identical for mask-gradients, mask-compositing, mask-nested and mask-errors.
+All test processes have been stopped. Final source/evidence sync completes this
+mask checkpoint. Pattern implementation is next.
+
+Future mask work: mask lists/composite operators, external/raster mask sources,
+CSS cascade/shorthand precedence, child color-interpolation overrides and broader
+resource cycle/error diagnostics. Editor mask picking intentionally excludes fully
+masked paint; this is editor behavior rather than SVG DOM pointer-event semantics.
+
+## Pattern continuation
+
+Added pattern fills and strokes with independent tile/content units, origins,
+transforms, viewBox/aspect fitting, href/xlink templates and inherited definition
+styles. Pattern children reuse the scene renderer, including gradients, masks,
+local uses and nested patterns. Template and paint recursion is bounded. Zero and
+negative tile dimensions produce transparent paint. Tile overflow is clipped;
+visible overflow and singular transforms remain work.
+
+Scenes and paints are parameterized by brush data, allowing Brush to contain finite
+compiled pattern scene trees. No functions are stored in Data. Affine compile and
+sample continuations are created separately for fill/stroke/mask. Pattern content
+is compiled once per referencing shape, not once per pixel. The sample traversal
+is @unsafe because callbacks obscure structural descent through finite scene data.
+
+Seven new fixtures, six selected passes, total 38/42. The transformed-pattern test
+still fails against Chromium around tile edges. Initial normalized-bbox matrix
+order caused a placement/rotation error and was corrected to apply patternTransform
+in user space after bbox geometry. Do not claim full transformed-pattern agreement.
+Both raw engine comparisons are retained. Resvg differs more on the skewed pattern.
+Removing the title child from pattern-reference changes 1056 Chromium pixels and
+zero resvg pixels; SVG2 explicitly excludes descriptive children when determining
+whether to use template children. The pattern inheritance probe agrees with both
+engines on using the template children's original inherited colors.
+
+compare.mjs optionally accepts SVG_COMPARE_FILTER to refresh matching entries in
+an existing report at the same AA setting. The complete pre-fix run established
+all earlier fixtures unchanged in behavior; the filtered final run updates all
+seven pattern entries after the matrix-order correction.
+
+A separate pattern-supersampled-report.json diagnostic renders resvg at 1x/2x/4x/8x
+and area-averages to 64 pixels. MAE decreases from 8.621 to 4.054 to 1.783 to 0.948;
+8x RMSE is 3.976, 40 pixels exceed channel error 32. This supports tile rasterization
+as a major source of disagreement. It does not replace the failing primary 64px
+comparison or change its thresholds.
+
+The saved native app, web server and headless renderer build successfully and all
+12 Bend regression files pass. native-pattern-report.json records byte-identical
+C/JS matrices for all seven pattern fixtures, with the saved SVG source hash.
+
+The pattern browser test exposed a pre-existing click mutation: a zero-distance
+move wrote an identity transform. Shared state now commits one history entry on
+release only if the final document differs from its baseline; zero displacement
+restores the original baseline exactly. Property/nudge/undo actions first finish
+an active gesture. check-gesture.bend covers click, selection without an undo
+entry, drag out and back, and undo of a real drag. The web property menu now offers
+fill for URL pattern/gradient paints alongside the color picker.
+
+After the gesture change, all saved native/web/render binaries rebuilt successfully
+and all twelve regression files passed. The new headless build again matched all
+seven pattern matrices byte for byte. The earlier failed browser run timed out
+because fill was absent from the property menu; the identity-transform mutation
+was independently visible in that run and is covered by the new gesture check.
+
+The final browser pattern flow passes on the saved native server: open pattern
+SVG, pick a painted area, change fill to another pattern, preserve definitions,
+undo to byte-identical original SVG, replace pattern with a solid color, and no
+browser errors. web-pattern-editor.png was inspected. Source hashes are saved
+with browser-pattern-report.json. The test wrapper stopped its server and browser.
+All pattern/gesture source and validation evidence is ready for final sync.
+
+## CSS continuation
+
+Added a render-only stylesheet pass before use expansion. It gathers embedded
+style elements, computes selector matches and declaration precedence, and keeps
+original classes/style blocks in the editable source. Supports type/id/class and
+attribute selectors (=, ~=, |=, ^=, $=, *= and case flag i); descendant/child/
+adjacent/general sibling combinators; :root, first/last/only-child, :empty,
+an+b nth-child/nth-last-child and simple :not(). Specificity, source order,
+inline priority and !important are handled. Comments and balanced quoted/function
+values are scanned without splitting embedded semicolons. XML CDATA now becomes
+literal text, preserving ampersands correctly through serialization.
+
+Screen/print media types, min/max/exact width/height, orientation, comma groups,
+not/only, nested @media and style media/type attributes are supported. Unsupported
+at-rule blocks and semicolon at-rules are skipped; external imports are not loaded.
+Malformed CSS recovery, custom properties/var(), escaped identifiers, of-type
+pseudo-classes, full selector-list :not(), :is/:where, @supports/cascade layers,
+complete property validity and geometry-property coverage still need work.
+
+Five CSS fixtures agree with Chromium: cascade/media are byte-exact, selectors
+max error 1, structural MAE .117, resources MAE .126. Isolated css-reference-probe
+confirms resvg ignores each tested important-priority, geometry, media, nth-child
+and case-flag behavior (0 pixels change when each feature is removed, versus
+1024/486/1024/256/1024 changed Chromium pixels). All raw comparisons are retained.
+check-css and check-css-media bring the regression count to 14.
+
+Saved native/web/render builds and all 14 regression files pass. Native and JS
+output matches byte-for-byte for all five CSS fixtures (native-css-report.json).
+Browser CSS flow passes on the saved C server: CSS colors, selected shape edit,
+normal inline priority, exact source/color undo, stylesheet important versus
+normal inline, inline important versus stylesheet important. Authored style blocks
+and class attributes remain in source. web-css-editor.png was inspected; source
+hashes and duration are saved in browser-css-report.json. Browser/server test processes closed.
+
+Full final comparison after CSS: 43/47 pass. The only selected failures remain
+stroke-dash-zero, mask-errors, stroke-vector and pattern-transform; all five CSS
+fixtures pass. Both reference reports and summary.json are current. Every native
+build and all fourteen checks passed, and the native/browser CSS evidence matches
+the saved source. Continue with complete colors/custom properties, text/font
+rasterization, embedded images and filters; the overall goal remains incomplete.
+
+
+## Bundled text rendering checkpoint
+
+Text glyph lookup, font-asset parsing, metrics, kerning, placement and rasterization
+now run in svg.bend. The 5 MB ASCII fonts.dat bundles Noto Sans Regular/Bold/Italic/
+BoldItalic outlines and GPOS pair/class kerning for 2,840 mapped characters per
+face. FontTools is used only to regenerate this static asset from the licensed
+TTFs; no font/SVG rendering library is in the application runtime. Embedding the
+full data directly in Bend caused excessive compiler checking costs, so both
+frontends load the book once into shared state. SVG_FONTS overrides its path.
+
+Text supports nested tspan/a inheritance, per-character positions and rotations,
+chunk anchors, relative sizing and baseline shifts, spacing, default whitespace
+collapse and xml:space preservation. Hidden spans and descriptive children do
+not consume positions. Glyph outlines become internal geometry; stroke width
+stays in text user units. Generated glyph metadata is absent from saved source.
+Text paint bounds use full glyph cells. Seven fixtures compare against resvg and
+Chromium using the same TTF files. Initial result: basic and whitespace pass;
+spans, Unicode, paints, position and style exceed existing limits. Total45/54.
+Chromium character-position probes agree closely on anchors/rotation but
+baseline keyword offsets and glyph rasterization differ. No thresholds relaxed.
+
+Remaining text work: ligatures, mark positioning, RTL/complex shaping, textPath,
+textLength, vertical text, decoration, user fonts/families, refined baseline
+metrics, transformed-span/ancestor paint bounds, and performance. Keep all
+text comparisons and add stronger real-world coverage as layout expands.
+
+Text rasterization diagnostic: resvg-converted outlines rendered by Bend match
+Bend's own text closely for basic/style/Unicode/whitespace (MAE below0.03/255),
+which localizes those reference differences to pixel rasterization rather than
+layout. This diagnostic does not replace the independent comparisons. Converted
+text paint servers can lose original glyph-cell bounds, so the painted-text row
+is not a reliable pure-layout measurement. Anchor/spacing and baseline differences
+still show in position/spans. Saved in text-rasterization-probe.json.
+
+Saved native/web/render builds pass; all 15 Bend regression files pass.
+All 7 text C/JavaScript matrices are byte-identical. The compiled browser flow
+passes text picking/recoloring, original text preservation, exact source/pixel
+undo, font-weight change and nudge/undo with no browser errors in 89.63 seconds.
+Native window display verified for all four faces; screenshot native-text.png.
+Both validation processes stopped. Performance and broader text layout remain
+open. New text controls are presentation only; their operations use the common
+Bend reducer. Fixed the existing pointercancel handler's missing event argument.
+
+## Text length fitting
+
+Added inside-out horizontal length fitting, spacing / spacingAndGlyphs,
+percent/physical/em lengths, fitted anchors, and fixed nested descendants.
+Private glyph metadata carries typographic origins/advances independently from
+outlines; fitting changes glyph matrices before paint bounds are derived.
+Small synthetic-font regressions check exact positions/scales, descendant
+width preservation, whitespace, invalid values, single glyphs and attribute
+serialization. New textLength/lengthAdjust UI controls use the common reducer.
+Also corrected pathLength property editing to save an XML attribute.
+
+Two additional 64px reference fixtures fail: text-length MAE 1.875/RMSE 6.962;
+text-length-spans MAE 15.023/RMSE 41.510 against resvg. Chromium also differs.
+The nested panel and character-position probe show engine disagreements,
+including re-expansion of explicitly fitted descendants. Keep the SVG2 fixed
+descendant rule and keep all failures. Following-text advancement, explicit
+x/y list ordering, anchored multi-chunk text, forced line breaks and nested
+trailing whitespace require further work. Full selected result 45/56.
+
+Root fitted-text position probe: maximum x-origin difference from Chromium
+0.04477 user units for the four spacing/stretch/anchor rows. Saved independent
+pixel failures remain unchanged. validation/text-metrics.bend uses the actual
+Bend CSS/use/text passes; probe-text-length-positions.mjs reproduces this metric
+comparison from the browser metrics.
+
+Saved native/web/render builds and all 16 regression files pass. All 9 text fixtures
+have byte-identical C/JavaScript output, including both fitted-text fixtures.
+The seven earlier text matrices remain unchanged.
+
+Further length-fitting audit items: measurement currently assumes positive
+advances; negative letter-spacing needs min/max endpoint handling. Explicit
+x/y positions are currently applied before fitting, whereas SVG2 resolves
+them after fitting; multi-chunk anchor metadata is not recomputed per adjusted
+chunk. These are real implementation limits, beyond reference rasterization.
+
+Compiled browser fitting flow passes in 113.73 seconds: select,
+recolor, weight, nudge, textLength spacing, lengthAdjust glyph stretching, valid
+attribute serialization and exact two-step source/pixel undo. No browser errors.
+Source hashes verified against saved files. Browser/server wrapper exited cleanly.
+Artifacts: browser-text-length-report.json and web-text-length-editor.png.
+
+## Expanded sRGB colors
+
+Added the full 148 CSS named-color table (W3C data and hash provenance saved),
+unit-aware legacy/modern RGB/HSL/HWB parsing, hue normalization and angle units,
+alpha percentages, component clamping and missing-component none. Function
+syntax retains whitespace/comma/slash delimiters and validates arity; invalid
+hex digits and lengths no longer produce partially interpreted colors. Color
+keywords and currentColor now handle ASCII case. CSS inherit/initial/unset
+are case-insensitive, including paint-resource inheritance.
+
+Fill/stroke/group opacity now accept percentages. Gradient stop percentages
+were already supported. Five new fixtures pass against Chromium: named colors
+are exact; each other color/resource fixture has max channel error 1. Isolated
+probes establish resvg's rebeccapurple and modern-syntax limitations. Total 50/61
+selected comparisons pass; all 11 earlier failures remain.
+
+Remaining color work: wide-gamut/Lab/OKLab/color() conversions and gamut mapping,
+relative colors, color-mix/calc/var, CSS escapes, system colors and invalid-value
+cascade recovery. HSL/HWB currently clamp channels to conventional ranges;
+latest CSS unbounded-gamut behavior is not implemented.
+
+Saved native/web/render builds and all 17 regression files pass. The complete
+61-fixture C/JavaScript matrix comparison passes byte-for-byte, including all 56
+earlier fixtures: the color changes do not alter any earlier comparison image.
+All source hashes are saved in native-all-report.json. The initial browser color
+test matched a pre-existing fill-opacity value and read an old frame; fixed its
+wait condition to target the edited shape. No renderer change was needed.
+
+Missing color components currently resolve to zero; carrying missing components
+from the other stop during color interpolation still needs implementation.
+
+The compiled browser color flow passes in 40.56 seconds, covering HWB alpha,
+percentage fill opacity, named colors and exact source/color undo. Source hashes
+match the saved application. Artifacts: browser-colors-report.json and
+web-colors-editor.png. Run `bun validation/run-browser-colors.mjs` after building
+to repeat this flow. The test server has been stopped.
+
+## Markers
+
+Path tracing stores authored vertices and analytic curve tangents separately from
+flattened fill/stroke edges. Ordinary paths do not retain a trace. Markers compile
+as separate Scene.markerNodes, so geometry bounds for paint servers stay correct.
+The marker subtree is painted after the host shape and before opacity/mask/clip.
+Resource IDs and decreasing compilation fuel prevent recursive expansion.
+
+Inherited start/mid/end and CSS marker shorthand preserve cascade priority and
+source order. Marker definition styles are independent from the host. markerUnits,
+width/height, numeric/angle orient, auto/auto-start-reverse, refX/refY, viewBox,
+preserveAspectRatio and overflow are implemented. A finite context-paint pass
+resolves nested marker paints using the host brush and coordinate transform;
+unfaded solid paint is retained so host fill/stroke-opacity does not leak into
+context-fill/context-stroke. Gradient/pattern coordinates and bbox are preserved.
+
+Eight new reference fixtures, five passing Chromium. Viewport (RMSE7.010),
+compositing (RMSE5.943) and degenerate-path cases remain failures. Do not loosen
+thresholds. Resvg has substantial differences for context paint, auto-start-reverse
+and CSS shorthand; all raw results are saved. Equal-endpoint arcs omit the segment
+per SVG2 9.5.1; Chromium retains an extra marker. Moveto-only default orientation
+and marker count also differ and remain unresolved. Initial attempts to omit
+moveto-only markers were reverted: their authored vertex is preserved.
+
+Outstanding marker work: rect/circle/ellipse equivalent paths, keyword refX/refY,
+paint-order, non-scaling-stroke marker scaling, symbol references, mixed zero-length
+subpath directionality, and context paint scope through use instances.
+
+Saved marker build verification: native/window, web/server and headless renderer
+compile successfully, and all 19 Bend regression files pass. All 69 saved C matrices
+match their JavaScript baselines byte-for-byte (137.43 seconds total C rendering).
+The marker browser editing flow passes on the JavaScript server in 446.09 seconds.
+This fixture is substantially slower than the earlier color fixture; marker-heavy
+interactive rendering needs acceleration. The compiled C server passes the same flow in 108.09 seconds
+(4.13x faster). Both browser reports include source hashes.
+
+## Conservative scene coverage bounds
+
+Each Scene stores a second bounding box for rendered coverage. A bottom-up pass
+includes the node's flattened geometry, its compiled stroke mesh, children, and
+marker subtrees. It also runs through pattern and mask resources. The original
+object bounds remain unchanged for gradients, patterns and clips. Stroke-mesh
+bounds use the mesh coordinate transform, including non-scaling strokes; local
+stroke tolerances are padded before transformation. Non-finite transformed bounds
+fall back to a permissive box rather than incorrectly suppressing visible pixels.
+
+Sampling can now return the existing background immediately when a point is
+outside an entire scene subtree. Picking uses the same conservative exclusion.
+check-coverage.bend covers round caps, miter extensions and non-scaling strokes
+beyond the host path's geometry bounds. coverage-parity.mjs compares every saved
+fixture matrix with the optimized JavaScript renderer. coverage-benchmark.mjs
+compares alternating old/new C runs and rejects any changed output before timing.
+
+Coverage verification completed: all 20 Bend regression files pass; all 69
+JavaScript matrices are unchanged, and the saved C renderer matches all69.
+Paired C median speedups: markers-context4.36x, markers-vertices7.66x, text-basic1.94x,
+pattern-nested1.06x. Every old/new output pair is byte-identical. The native marker
+editing flow improves from108.09s to23.55s; JavaScript from446.09s to239.50s.
+Full C fixture rendering improves from137.43s to58.11s. End-to-end timings are
+observations; the alternating paired benchmark is the controlled comparison.
+Source and binary hashes are preserved in the reports. Reference conformance
+remains55/69. Future acceleration can reuse unchanged web frames and generate
+pixel matrices in parallel before serialization.
+
+## Filter continuation
+
+Nine primitives now run entirely in Bend: feFlood, feOffset, feColorMatrix,
+feComponentTransfer, feComposite, feBlend (five original modes), feMerge,
+feGaussianBlur and feDropShadow. Scene preparation caches floating-point,
+premultiplied RGBA quadtrees before image/PPM rasterization. Per-scope device
+density supports filters in patterns, masks and markers. Host clips, masks and
+opacity apply after filtering. Geometry picking remains independent of filters.
+
+Seven new fixtures use Chromium as the primary reference; five pass. Keep the
+transformed and nested filter failures and all resvg alternates. No thresholds
+were relaxed. See validation/filters.md for limits and exact measurements.
+23 regression files pass, including buffer interpolation, graph resolution,
+color-space conversion and frontend-independent filtered pixels.
+
+Filter checkpoint build and parity verification completed: native/web/render
+binaries build, 23 checks pass, all 69 pre-filter matrices are unchanged and all
+76 C/JavaScript matrices match exactly. Browser filter editing/removal/drag/undo
+passes with exact source and pixel restoration on C (4.69s) and JS (18.88s).
+Reports include source hashes. The full primary reference verdict is 60/76,
+with all 16 failures retained in the gallery and summary.
+
+## Embedded PNG continuation
+
+svg.bend now decodes PNG data URIs without foreign code: persistent byte buffers,
+base64/percent decoding, all DEFLATE block types, PNG CRC32/zlib Adler32 checks,
+all legal color types/depths, all scanline filters, tRNS and Adam7 passes. A Bitmap
+brush retains the decoded RGBA raster; image elements get SVG placement/intrinsic
+sizes, preserveAspectRatio, inherited image-rendering, transforms and normal
+clip/mask/filter/opacity composition. Image fill/stroke properties are ignored.
+Web properties expose width/height, aspect ratio, image-rendering and href.
+
+27 regression files pass. New tests include 11 inflater cases and 33 PNG cases.
+Seven image fixtures compare with both references; six pass Chromium's original
+thresholds. images-aspect remains a failure (MAE .411, RMSE 5.820, 30 pixels >32),
+localized at nearest-neighbor boundaries. All 30 legal type/depth/interlace
+combinations match both references within one channel level. The compression
+fixture matches resvg exactly and exercises all compression paths in the app.
+PNG colors currently assume sRGB; JPEG/SVG image payloads, external loading,
+color management and APNG animation remain to implement. Decoder dimension cap
+is 2048. See validation/images.md and the source-hashed parity/frontend reports.
+
+PNG checkpoint verification completed: native/web/render all build, 27 saved
+checks pass, the original 76 matrices are unchanged, and all 83 C/JavaScript
+matrices match exactly. Browser resize/opacity/drag/undo/save flows pass on C
+(17.76s) and JS (81.68s), with exact source/pixel restoration and data-URI
+preservation. Native PNG window captured and inspected. Current primary
+reference verdict is 66/83 with all 17 failures retained; gallery loads 249
+images. Source hashes verified against the saved app. The large inline inflater
+fixture was reduced to avoid a Bun compiler stack limit; all compression cases
+remain, including larger file-based native coverage.
+The inflater regression also compiles and passes all eleven cases on C; see
+validation/inflate-native-report.json. Test servers and native windows are closed.
+
+## Embedded JPEG continuation
+
+Added a JPEG decoder to the same svg.bend library. It handles Huffman baseline,
+extended sequential and progressive scans, restart markers, DC/AC coefficient
+reconstruction and refinement, a separable inverse DCT, centered chroma
+upsampling, grayscale/RGB/YCbCr and Adobe CMYK/YCCK. The existing bitmap brush
+and data-URI image pipeline now accept JPEG. Approximation history validates
+scan ordering; frame and quantization checks reject malformed inputs.
+
+30 Bend regression files pass, including 19 full-pixel JPEG comparisons and
+13 malformed-input cases. All 19 decoder matrices match C/JavaScript exactly,
+and differ from Pillow/libjpeg by at most two channel levels. Six new SVG
+fixtures all pass Chromium's original thresholds. The full selected-reference
+verdict is now 72/89, with the same 17 failures retained. See validation/jpeg.md.
+Full app rebuild, all-fixture parity and frontend verification are completed below.
+
+Nine extended JPEG cases now cover dimension boundaries, partial MCUs, flat
+progressive data, restart wraparound, quality extremes and 128x96 progressive
+content. All nine C/JavaScript matrices match exactly. Eight meet the three-level
+Pillow bound; the 1x17 case fails (max23) because libjpeg switches narrow chroma
+planes to box upsampling while Bend retains bilinear. Raw failure retained in
+validation/jpeg-stress-report.json and documented in validation/jpeg.md.
+
+JPEG checkpoint verification completed: native/web/render all build and all 30
+saved Bend checks pass. All 83 pre-JPEG matrices are unchanged, and all 89
+C/JavaScript fixture matrices match exactly. Browser JPEG resize/opacity/drag/
+undo/save flows pass on C (16.74s) and JS (89.57s), including exact
+full-matrix/source restoration and data-URI preservation. Native JPEG window
+captured, inspected and closed. The gallery loads all 267 images for 89 fixtures
+and retains 17 failure cards. The SVG comparison verdict is 72/89; one additional
+narrow-JPEG standalone stress comparison remains a documented failure.
+Build/frontend/parity reports include hashes matching the saved sources.
+
+## Image sampling corrections
+
+Stabilized nearest-texel ties after inverse F32 transforms. The aspect-ratio
+fixture's 30 wrong pixels are fixed: max error99→2, RMSE5.820→.151. All seven
+PNG fixtures pass the unchanged thresholds; the selected SVG verdict is73/89.
+Added libjpeg's narrow-plane box fallback: the 1x17 JPEG now matches Pillow
+exactly, and all12 extended cases pass with exact C/JS parity.31 Bend checks
+pass, including a regression derived from the actual boundary failure.
+Stroke/text reference probes were added without changing those implementations.
+Full saved-app rebuild and frontend validation are in progress.
+
+Sampling checkpoint verification completed: all three binaries build,31 saved
+Bend checks pass, and all89 C/JavaScript matrices match. PNG editor flows pass
+on C (18.23s) and JS (70.06s), preserving source/pixel undo and the saved data URI.
+Native aspect-ratio window captured, inspected and closed. All267 gallery images
+load, with16 failure cards. Source SHA256 is 3eca300e0528681080b0f1d7e2127800d4692fcee23f6354ec92465c3e5e24b1.
+The alternative coverage-sample experiment had mixed results and was not adopted.
+An isolated font-metric correction fixes sub/super offsets and brings text-spans
+within its primary limits; it is ready for a separate source change.
+
+## Font metric continuation
+
+Merged per-face OpenType OS/2 metrics into the Bend font book and reproducible
+font asset. All32 Bend checks and eight compiled C metric cases pass. Nine text
+fixtures were re-rendered; only text-spans changes, now passing its original
+resvg limits (MAE0.801/RMSE3.333). The selected verdict is74/89, with15 failures
+retained. Full binaries and frontend validation are in progress.
+All three font-metric binaries now build;32 target checks pass and all89 C/JS
+matrices match exactly. Native text window inspected and closed. JS text editor
+flow passes in76.13s. A C web flow launched before the final binary completed
+was excluded from current evidence; the runner now rejects stale binaries and
+records its launch binary hash. The rebuilt C check is running.
+
+Separately, a candidate adds the remaining11 feBlend modes. Three full matrices
+cover all16 modes,16 color pairs, opaque/transparent sRGB and linearRGB. Chromium
+max errors are1/1/5, within existing limits; alternate resvg errors are retained.
+128 reference-derived Bend checks also pass C,1024 sampled C/JS colors match,
+and all7 existing filter matrices remain unchanged. The candidate patch and
+reports are saved; it is not merged into the production font-metric source.
+Font-metric checkpoint complete: the rebuilt C text flow passes in18.59s
+and its launch binary hash matches the build report. All32 checks, all89 backend
+matrices, both text frontends and the native screenshot are verified. Current
+primary verdict remains74/89, with15 failures retained.
+
+## Blend-mode integration
+
+Integrated all16 feBlend modes, the128-case regression, and four new fixtures.
+All33 Bend checks pass. All4 new primary comparisons pass, taking the selected
+verdict to78/93 while retaining15 failures and all89 previous matrices. The
+gallery loads279 images. Full native/web/render builds and frontend checks are
+in progress; see validation/blends.md and the historical candidate evidence.
+Blend checkpoint builds all three binaries and passes all33 saved checks. All93
+C/JavaScript matrices match exactly. Native blend/clip/mask/opacity preview was
+captured, inspected and closed. JS blend editor passes in45.43s; final rebuilt
+C web flow is running.
+
+An isolated SVG-image prototype expands data-URI SVGs into vector subdocuments
+with local resources, styles and fonts.37 Bend files pass, including UTF-8,
+resource/style isolation, image visibility, owner selection, resizing and exact
+source/pixel undo. Three prototype matrices and a12-case sizing probe retain
+both reference outputs. Sizing/auto contexts still need broader checks; the
+prototype is not merged. Its native headless renderer is compiling, session89765;
+see svg-image-investigation/build-state.json and validation/svg-image-prototype.md.
+Blend checkpoint verification completed: rebuilt C web flow passes in6.82s
+with matching binary/source hashes. All33 checks, all93 backend matrices and
+both frontends pass; primary comparison verdict remains78/93.
+
+## Embedded SVG image continuation
+
+Current svg.bend SHA256: cd77a3f56536818426710c872f4e95e63252883a0e12d36a12dce25d1cdbf736.
+99 primary comparisons: 82 pass, 17 fail with unchanged thresholds. All previous
+93 actual matrices are retained. Six new SVG image fixtures cover sizing,
+resource/style isolation, nesting, automatic and percentage dimensions, and
+patterns/masks/markers/use. Four pass; svg-image-auto and svg-image-contexts fail.
+See validation/svg-images.md for metrics and reference policy.
+
+40 Bend check files pass the integrated parser/sizing work; the expanded editor
+regression also verifies aspect fitting and href replacement. The browser flow
+caught preserveAspectRatio and href being saved as CSS declarations; state.bend
+now writes them as SVG attributes. Current C frontend rebuild and validation are
+pending. Do not use older binary mtimes as current-source evidence.
+
+Frozen initial prototype native validation is complete: 96/96 C/JS matrices
+agree (93 prior plus three initial SVG fixtures). That b1c681b4 source predates
+the current auto-sizing/MIME/XML changes. Its evidence is historical, not a
+substitute for current-source full native validation.
+
+## Active follow-ups after SVG image editing
+
+The corrected property-reducer build is running as session55423, log
+svg-images-state-build.log; started approximately10:42 UTC. Do not restart it.
+Initial library build completed with99/99 C/JS matrices and40 checks, but predates
+the property storage correction; archived reports record its exact source hashes.
+
+A newly found headless font-loading gap is fixed in the isolated
+svg-image-fonts-investigation candidate, source9078af2d. Its render binary is
+compiling as session13864, started approximately10:53 UTC. Native/web emitted C
+is byte-identical to the current property-fix build. Read
+validation/svg-image-fonts.md before integration. Current target source remains
+cd77a3f5 and the new font-image fixture is not part of its99 comparisons yet.
+
+The isolated text-path candidate passes42 checks, has22 independent position
+probes and5 pixel fixtures (all exceed at least one unchanged threshold).
+All99 prior JS matrix comparisons are running as session86061. Keep source frozen
+until that run completes. The new editor ownership check currently fails; picking
+should select the owning text element, not its textPath child. See
+validation/text-path-investigation.md. No textPath code is integrated yet.
+
+## Verified image/font checkpoint
+
+Current app library SHA2569078af2d90a95e8de565217a320bf19e8c659ec8343fe3ab8a1606fbe477dcbd.
+State SHA256a604ac987ef8a7607df05f015e437c965ad0577f7bfbcfd34fd84c91c2adab27.
+All41 Bend checks pass. All100 C/JavaScript matrices are exact. Primary comparisons
+82/100 pass,18 fail; gallery100 cards/300 images is verified. Native/web/headless
+builds are complete. Native/web C is byte-identical across the font detection
+change; the corrected headless binary was installed from the completed frozen
+candidate. make all is up to date. Compiled browser image editing plus every pixel
+of the embedded-text fixture pass in9.16 seconds. Final JavaScript extended flow
+is still running as session47826; inspect svg-images-browser-js-final.log.
+
+Native window355/PID43404 was captured and closed; its65362 non-corner pixels
+match headless AA4 exactly.174 OS-rounded-corner pixels differ and remain in the
+report. Native input could not be verified: the window could not acquire focus;
+normal events were not sent after the guard failed. Do not claim native input
+coverage or ask for permission for this optional test.
+
+Text-path candidate source51c413d46dbb09167d8f7ffa5c9037a820df7c3111a157b0a039025aafaa6c3a.
+43 checks pass including corrected owning-text selection and exact undo. All99
+prior matrices matched the previous source before the ownership-only correction.
+Five experimental pixel fixtures remain above at least one unchanged threshold;
+a straight-path matrix exactly matches ordinary Bend text, identifying existing
+font rasterization error. Candidate patch and evidence are retained in validation.
+No textPath source has been integrated. Next work is textPath refinement/integration
+and its final compiled/browser validation, plus the remaining renderer differences.
+
+
+## Integrated text paths and large-document editor fix
+
+The current saved source is recorded in validation/combined-svg-build-report.json.
+All three C binaries were compiled from the frozen combined sources. Forty-four
+Bend checks pass; all105 C/JavaScript matrices are identical. Both server backends
+pass the full text-path and embedded SVG image editing flows, with exact matrix,
+source and undo checks. The reference suite passes82/105, retaining23 failures.
+The five added text-path fixtures all exceed at least one unchanged threshold.
+
+The earlier JavaScript image-font flow that remained pending did fail: SVG
+serialization and Base.String.eq exhausted the JavaScript stack on long strings.
+The SVG library now serializes with reverse accumulators, and the shared reducer
+uses a consuming tail-recursive equality helper. A65,582-character serialization
+regression checks escaping and long-string equality; the browser flow loads and
+edits the real27KB embedded-font SVG, then verifies exact undo and save.
+
+Text paths resolve scoped local references, direct path data and basic shapes;
+existing font layout supplies glyphs, and flattened path distances/tangents place
+them. Start offsets, calibration, anchors, position lists, baselines, fitting and
+following ordinary text are included. Synthetic glyphs remain hidden from saved
+source and picking selects the owning authored text. Closed-path wrapping,
+side/stretch options, invalid direct-path fallback, shaping/RTL/vertical text and
+some nested fitting cases remain unfinished. Placement and tangent refinement
+remain the next conformance target; all raw errors and independent probes are kept.
+
+The subsequent higher-precision text-path experiment remains unintegrated. It
+reduces angle error substantially but barely changes pixel error. See
+validation/text-path-precision-investigation.md; the saved105-fixture build
+and its passing44 regression files are unchanged.
+
+The paint-order and glyph-run candidate passes46 Bend checks and its three new
+primary reference fixtures. It remains unintegrated while the complete matrix
+comparison and compiled/browser checks run. See
+validation/paint-order-investigation.md. Supplemental text-layout,32x sampling,
+current resvg and actual idle4x sampling results are retained in
+validation/text-rasterization-investigation.md.
+
+
+## Integrated paint order and shared glyph painting
+
+All46 Bend checks pass. The installed native, web and headless binaries were
+compiled from the frozen paint-order source; all108 C/JavaScript matrices match.
+All105 prior matrices are unchanged. The three new primary comparisons pass,
+bringing the suite to85/108 with the same23 retained failures. Both web backends
+pass exact matrix/source editing, undo and save checks for the new behavior.
+
+Paint order is inherited and supports all six permutations, omitted operations,
+normal and invalid-token fallback. Adjacent glyphs sharing a style are painted
+as a compound geometry, avoiding doubled fill opacity and misplaced stroke
+layers on overlapping characters. Text ignores fill-rule. Different span-style
+runs remain separate and need broader cross-span conformance tests.
+
+The first JS browser attempts exposed test-environment load and incorrect test
+coordinates; neither is reported as a passing run. The corrected full flows and
+build/source provenance are recorded in validation/paint-order-build-report.json
+and the paint-order browser reports. Independent reference disagreements,
+including the alternate failing paint-order comparisons, remain visible.
+
+
+## Integrated morphology filters
+
+The installed SVG library now supports feMorphology with erosion/dilation,
+separable transformed radii, premultiplied channel extrema and filter graph
+integration. All 47 Bend checks pass and all 112 C/JavaScript matrices match.
+The 108 earlier matrices are unchanged. The four new primary comparisons pass,
+bringing the suite to 89/112 with the same 23 retained failures. Both web
+backends pass every-pixel matrix checks, property/graph editing, drag, undo and
+save. See validation/morphology-investigation.md for discrete-radius behavior,
+alternate reference failures and remaining limits.
+
+
+## Integrated source-edit undo
+
+Applying edited SVG source now preserves history and clears stale selection.
+Opening a new file still resets history. Applying unchanged serialized source
+is a no-op. Active gestures finish before a source edit is recorded.
+All 48 Bend checks pass and both web backends verify exact source/matrix undo,
+successive source edits, file opening and saving. SVG rasterization is unchanged;
+independently emitted headless C is byte-identical to the morphology renderer,
+whose 112 C/JavaScript matrices match. The selected references remain 89/112,
+with all 23 prior failures retained. Native/web binaries were freshly compiled.
+See validation/source-undo-build-report.json and source-undo-investigation.md.
+
+## View navigation continuation
+
+Shared camera state now fits each loaded document, with 100%, center zoom and
+32-pixel pan actions. The SVG library compiles in the document's natural viewport
+and applies the camera independently of the authored tree. Picking/dragging use
+the resulting inverse transforms; one output-pixel nudge remains consistent at
+any zoom. Camera actions do not enter undo history or saved SVG. Source edits
+recompute viewport dimensions while preserving the current camera.
+
+Fifty Bend check files pass, including 15 camera matrix/history assertions and
+seven sizing boundaries. The existing 112 matrices are unchanged. Three additional
+wide/tall/resource drawings pass the original resvg error limits, and both C/JS
+backends agree exactly for all 115. Native keyboard navigation/save now have direct
+process-targeted event evidence; pointer probes remain unsuccessful. No foreground
+activation or global keyboard/mouse posting is used by these new tests.
+
+## Convolution checkpoint
+
+The current build adds feConvolveMatrix in the same SVG library. It passes 51
+Bend check files / 532 assertions, 117 exact C/JavaScript matrices, both web
+backend flows and native filtered-window/Save checks. Primary conformance is
+93/117; all 24 failures and alternate renderer results are retained. Explicit
+kernel spacing uses Firefox as reference following an attribute-removal probe.
+Alpha-scaled bias follows the W3C resolution and remains a browser discrepancy.
+See [the convolution investigation](validation/convolve-investigation.md) for
+formulas, limits, all evidence and source/binary provenance.
+
+## Supersampled references and the final conformance pass
+
+Every one of the 24 remaining primary failures was re-measured against the saved
+resvg, Chromium and Firefox renders and against exact geometry. Most were not
+Bend errors but the references' own coverage quantization: Skia widens diagonal
+strokes by 5% and snaps feOffset to its buffer grid, pattern tiles and embedded
+SVG images are resampled or aliased, text coverage is quantized to quarter
+pixels. The comparison now renders every reference at eight times the output
+size and box-averages it down (`validation/reference-scale.mjs`), so it measures
+geometry, layout and paint rather than each engine's rasterizer. Thresholds and
+fixtures are unchanged; the earlier 1x reports and images stay as `*-x1.json`
+and `*-x1.png`. Fixtures whose meaning depends on the output resolution keep a
+1x reference (`referenceScale` in coverage.json): raster images, feConvolveMatrix
+(kernels default to device pixels) and morphology radii.
+
+Three renderer rules changed, each with a regression case: letter-spacing is no
+longer applied after the last glyph of a chunk when anchoring (CSS Text 3,
+matching resvg); an embedded SVG image's intrinsic size comes from its root
+width/height attributes rather than its stylesheet (both browsers); and the
+final filter region clips each buffer pixel by its covered fraction instead of
+including every touched pixel (intermediate primitive subregions are unchanged).
+The zero-length dash fixture selects Firefox, which paints the zero-length
+closed dash with its square cap as Bend does.
+
+Primary conformance is 108/117. The remaining failures are documented
+engine disagreements: nested and anchored textLength (the three engines differ
+from each other by MAE 15-18 on nested spans), text on paths (both browsers
+disagree with resvg and with each other), a lone moveto marker that both
+browsers orient from the origin, invalid mask references (CSS Masking says
+transparent black; every engine paints them unmasked) and alpha-scaled
+convolution bias. See [validation/remaining-failures.md](validation/remaining-failures.md);
+`validation/failure-audit.mjs` regenerates the cross-engine table. All 52 Bend
+check files pass and the compiled renderer reproduces every fixture matrix.
+
+## Libraries and the TrueType reader
+
+`svg.bend` is split along its existing seams into single-file libraries that
+import each other by relative path and never import `svg.bend`: `util` (text
+scanning, numbers, small helpers), `xml` (tokens, tree, entities, serializer),
+`css` (cascade over an XML tree), `bin` (bytes, bit streams, Huffman, DEFLATE,
+checksums, base64, percent decoding), `img` (premultiplied colors, pixel
+quadtrees, decoded pictures), `png`, `jpeg` and `font`. The decoders now return
+an `Img.Picture` that `svg.bend` wraps into its `Raster`. Bend resolves names in
+file order and lambdas consume linear variables, so the split kept every
+definition before its first use and copies reused fields with `+` bindings.
+All 117 fixture matrices are byte-identical before and after the split.
+
+`font.bend` gained a TrueType reader: table directory, `head`/`maxp`/`hhea`/
+`hmtx`, `loca`/`glyf` with simple and composite glyphs (an explicit frame stack
+assembles nested composites, with point matching and scaled offsets), `cmap`
+formats 4 and 12, OS/2 metrics and GPOS pair positioning (format 1 pairs and the
+first format 2 class table, matching how `generate-fonts.py` built `fonts.dat`).
+Outlines are emitted as M/L/Q/Z path data with implied on-curve midpoints, the
+same decomposition fontTools uses. `check-ttf.bend`, generated by
+`validation/generate-ttf-check.py`, compares a Noto Sans subset (with composites
+and kerning) against fontTools' outlines, advances, classes, kerning and metrics;
+`validation/ttf-parity.mjs` loads the four bundled TTFs through `SVG_TTF_FONTS`
+and reproduces all 15 text fixture matrices exactly. Not read: CFF outlines,
+font collections, WOFF/WOFF2 wrappers and the legacy `kern` table; `@font-face`
+data URIs are the natural next consumer.
+
+## Raw file reads and analytic coverage
+
+`Bin.bytes.read(path)` is a foreign effect (`effs/bytes_read.c`, `effs/bytes_read.js`)
+that returns a file's bytes as a string with one character per byte, since
+`File.read` decodes UTF-8. `SVG_TTF_FONTS` now names `.ttf` files directly and
+`check-bytes-read.bend` reads a bundled TrueType file's header through it.
+
+Rasterization no longer tests a grid of sub-samples per pixel. Before a raster
+is painted, `cover.scenes` walks the compiled scene once and attaches to every
+fill, stroke outline and clip shape a coverage mask on that raster's grid
+(`cover.bend`): the shape's edges (stroke pieces become oriented polygons) go
+through a winding scan converter that samples `sub` horizontal scanlines per
+pixel row (the AA setting, never below four), sorts each scanline's crossings
+and walks them with a winding count, so overlapping contours follow the fill
+rule exactly and every inside span adds its exact horizontal extent to the
+cells it covers. Masks are sparse quadtrees, so uniform areas collapse. The
+first version accumulated signed area (the font-rs scheme, exact in both axes
+for non-overlapping contours) but over-counted stroke joints, where consecutive
+pieces overlap; the scanline walk replaced it. Sampling then reads one coverage
+value and one paint sample at the pixel center. `check-cover.bend` covers
+partial cells, a triangle's area, even-odd and same-direction overlaps,
+reversed orientation and clipping to the grid.
+
+Three details followed from reading coverage at pixel centers. Scene boxes are
+expanded by half a device pixel in the cover pass, since a shape that only
+reaches into part of a pixel has its center outside the box (the first run
+lost the edge row of every axis-aligned shape). Clip coverage travels down the
+sampler as a limit that each shape takes the minimum of with its own coverage,
+instead of multiplying the composite: a marker's viewport clip coincides with
+its rectangle, and squaring that edge left it at a quarter coverage. An image's
+rectangle joins its scene clip and the bitmap read clamps to the edge pixels,
+so image edges get coverage like any shape; a minified image is first
+box-filtered to its device footprint (`raster.resample`, area weights over the
+source pixels each output pixel covers).
+
+Pattern brushes are rendered once per referencing shape into a tile raster
+(`cover.brush`), with their own content covered on that tile grid first;
+nested patterns recurse. An axis-aligned tile of at least four device pixels
+is rendered at device density and read bilinearly with wrap-around at the
+seams (nearest-neighbour images inside it stay crisp). A rotated, skewed or
+tiny tile is rendered at `sub` times the density and read with a `sub` by
+`sub` grid of nearest lookups spread over the device pixel's footprint, which
+reproduces the old sub-sample averaging for those tiles only. Point-sampled
+pattern content had lost its anti-aliasing when the sub-sample grid went away
+(pattern MAE 0.04 to 3.4 against resvg); the tiles restore it and make pattern
+paint a lookup. Fractional filter-region edges still use `SVG_AA` sub-samples.
+The frontends keep their idle/drag quality switch, which now only changes the
+scanline count (floored at four) and filter-edge sampling.
+
+Timings on this machine, compiled renderer, the previous sampler versus now:
+
+| Fixture | 64x64 AA8 before | after | 256x256 AA4 before | after |
+| --- | --- | --- | --- | --- |
+| basic | 0.52 s | 0.03 s | 1.49 s | 0.15 s |
+| markers-compositing | 0.30 s | 0.06 s | 4.13 s | 0.41 s |
+| stroke-vector | 0.15 s | 0.03 s | 1.87 s | 0.20 s |
+| text-path-styles | 1.60 s | 1.50 s | 3.04 s | 1.63 s |
+
+Text fixtures are dominated by reading `fonts.dat` (about 1.3 s), not by
+rasterization; the interpreter renders `basic` at 64x64 in 1.4 s instead of
+6.5 s. `validation/compare.mjs` accepts `SVG_RENDER_BIN=build/render` to use
+the compiled renderer while iterating; the recorded matrices still come from
+the interpreter run and `native-all.mjs` proves C parity.
+
+Reference verdict after the change: 108 of 117, the same nine documented
+failures as before, with unchanged thresholds and fixtures. Against resvg the
+sum of mean errors over all fixtures is slightly lower than with the
+sub-sample grid; the transformed-pattern fixture moved from 0.95 to 1.52 there
+(its Chromium verdict still passes) and the clipping fixtures from 0.05 to
+0.2, both from tile resampling and the coincident-edge minimum.

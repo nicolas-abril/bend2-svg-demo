@@ -1,0 +1,17 @@
+// The browser inspects displayed pixels; all SVG/CSS rendering and edits run in Bend.
+import{chromium}from'playwright';import{writeFileSync}from'node:fs';import{resolve,dirname}from'node:path';import{createHash}from'node:crypto';import{readFileSync}from'node:fs';
+const here=dirname(import.meta.filename),root=process.env.SVG_APP_ROOT||resolve(here,'..'),browser=await chromium.launch({headless:true});
+try{const page=await browser.newPage({viewport:{width:1180,height:850}});page.setDefaultTimeout(180000);const errors=[];page.on('pageerror',e=>errors.push(e.message));const start=performance.now();
+ await page.goto('http://127.0.0.1:8088');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Ready');
+ await page.locator('#file').setInputFiles(resolve(here,'../fixtures/css-cascade.svg'));await page.waitForFunction(()=>document.querySelector('#source').value.includes('id="special"'));console.log('Stylesheet SVG loaded');
+ const before=await page.locator('#source').inputValue(),box=await page.locator('canvas').boundingBox();
+ const click=async(x,y)=>page.mouse.click(box.x+x*box.width/256,box.y+y*box.height/256);
+ const expectPixel=async(x,y,wanted)=>{const got=await page.locator('canvas').evaluate((canvas,[x,y])=>[...canvas.getContext('2d').getImageData(x,y,1,1).data].slice(0,3),[x,y]);if(String(got)!==String(wanted))throw Error(`Pixel ${x},${y}: ${got}, expected ${wanted}`);};
+ await expectPixel(200,40,[92,158,96]);await click(200,40);await page.locator('#property').selectOption('fill',{timeout:10000});await page.locator('#value').fill('#00ff00');await page.locator('#set').click();await page.waitForFunction(()=>document.querySelector('#source').value.includes('fill:#00ff00'));await expectPixel(200,40,[0,255,0]);
+ const after=await page.locator('#source').inputValue();if(!after.includes('<style>')||!after.includes('class="hot"'))throw Error('Authored CSS or class was lost');
+ await page.locator('#undo').click();await page.waitForFunction(expected=>document.querySelector('#source').value===expected,before);await expectPixel(200,40,[92,158,96]);console.log('Inline edit and source-preserving undo passed');
+ await click(106,160);await page.locator('#value').fill('#0000ff');await page.locator('#set').click();await page.waitForFunction(()=>document.querySelector('#source').value.includes('fill:#0000ff'));await expectPixel(106,160,[215,119,53]);
+ await page.locator('#value').fill('#0000ff !important');await page.locator('#set').click();await page.waitForFunction(()=>document.querySelector('#source').value.includes('fill:#0000ff !important'));await expectPixel(106,160,[0,0,255]);
+ if(errors.length)throw Error(errors.join('\n'));await page.screenshot({path:resolve(here,'web-css-editor.png'),fullPage:true});
+ const sourceSHA256=Object.fromEntries(['svg.bend','state.bend','web.bend','web.html'].map(f=>[f,createHash('sha256').update(readFileSync(resolve(root,f))).digest('hex')]));writeFileSync(resolve(here,'browser-css-report.json'),JSON.stringify({passed:true,serverBackend:'native',durationSeconds:(performance.now()-start)/1000,checks:['stylesheet colors rendered in Bend','select styled shape','inline edit wins normal stylesheet rule','preserve style element and class attributes','undo restores exact source and stylesheet color','stylesheet important overrides normal inline edit','inline important overrides stylesheet important','no browser errors'],sourceSHA256,before,after},null,2)+'\n');console.log('CSS browser interactions passed');
+}finally{await browser.close();}

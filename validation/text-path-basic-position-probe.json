@@ -1,0 +1,303 @@
+{
+  "reference": "153.0.8010.12",
+  "rows": [
+    {
+      "character": "B",
+      "x": 2,
+      "y": 16,
+      "angle": 0,
+      "actualX": 2,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0,
+      "angleError": 0
+    },
+    {
+      "character": "e",
+      "x": 8.5,
+      "y": 16,
+      "angle": 0,
+      "actualX": 8.5,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0,
+      "angleError": 0
+    },
+    {
+      "character": "n",
+      "x": 14.140625,
+      "y": 16,
+      "angle": 0,
+      "actualX": 14.139999,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.0006260000000004595,
+      "angleError": 0
+    },
+    {
+      "character": "d",
+      "x": 20.328125,
+      "y": 16,
+      "angle": 0,
+      "actualX": 20.32,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.008124999999999716,
+      "angleError": 0
+    },
+    {
+      "character": " ",
+      "x": 26.484375,
+      "y": 16,
+      "angle": 0,
+      "actualX": 26.47,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.014375000000001137,
+      "angleError": 0
+    },
+    {
+      "character": "S",
+      "x": 29.09375,
+      "y": 16,
+      "angle": 0,
+      "actualX": 29.07,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.023749999999999716,
+      "angleError": 0
+    },
+    {
+      "character": "V",
+      "x": 34.59375,
+      "y": 16,
+      "angle": 0,
+      "actualX": 34.559998,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.03375199999999978,
+      "angleError": 0
+    },
+    {
+      "character": "G",
+      "x": 40.5,
+      "y": 16,
+      "angle": 0,
+      "actualX": 40.46,
+      "actualY": 16,
+      "actualAngle": 0,
+      "positionError": 0.03999999999999915,
+      "angleError": 0
+    },
+    {
+      "character": "C",
+      "x": 4.132431983947754,
+      "y": 42.63997268676758,
+      "angle": -43.1419792175293,
+      "actualX": 4.000029,
+      "actualY": 42.757004,
+      "actualAngle": -42.86516393294605,
+      "positionError": 0.17671128553427196,
+      "angleError": 0.27681528458325033
+    },
+    {
+      "character": "u",
+      "x": 8.700031280517578,
+      "y": 38.3421745300293,
+      "angle": -37.38706970214844,
+      "actualX": 8.638737,
+      "actualY": 38.462185,
+      "actualAngle": -38.33077863153736,
+      "positionError": 0.1347571954544767,
+      "angleError": 0.9437089293889258
+    },
+    {
+      "character": "r",
+      "x": 13.644708633422852,
+      "y": 34.619441986083984,
+      "angle": -31.306655883789062,
+      "actualX": 13.518981,
+      "actualY": 34.659218,
+      "actualAngle": -30.30094564226163,
+      "positionError": 0.13186951538986633,
+      "angleError": 1.0057102415274315
+    },
+    {
+      "character": "v",
+      "x": 17.173696517944336,
+      "y": 32.4317741394043,
+      "angle": -24.643341064453125,
+      "actualX": 17.050316,
+      "actualY": 32.50497,
+      "actualAngle": -24.894247186422426,
+      "positionError": 0.14345865681986064,
+      "angleError": 0.25090612196930095
+    },
+    {
+      "character": "e",
+      "x": 21.732152938842773,
+      "y": 30.297412872314453,
+      "angle": -15.473389625549316,
+      "actualX": 21.66531,
+      "actualY": 30.35951,
+      "actualAngle": -16.287701137776438,
+      "positionError": 0.09123613176770304,
+      "angleError": 0.8143115122271212
+    },
+    {
+      "character": "d",
+      "x": 27.21803855895996,
+      "y": 28.746206283569336,
+      "angle": -3.587470054626465,
+      "actualX": 27.09906,
+      "actualY": 28.720478,
+      "actualAngle": -2.951699480842132,
+      "positionError": 0.12172855896466003,
+      "angleError": 0.6357705737843329
+    },
+    {
+      "character": " ",
+      "x": 33.333438873291016,
+      "y": 28.501678466796875,
+      "angle": 5.512546062469482,
+      "actualX": 33.24459,
+      "actualY": 28.510277,
+      "actualAngle": 4.911788359817373,
+      "positionError": 0.089263974022714,
+      "angleError": 0.6007577026521096
+    },
+    {
+      "character": "t",
+      "x": 35.946319580078125,
+      "y": 28.72782325744629,
+      "angle": 11.845590591430664,
+      "actualX": 35.83599,
+      "actualY": 28.741842,
+      "actualAngle": 10.706113863098292,
+      "positionError": 0.11121664166392561,
+      "angleError": 1.1394767283323723
+    },
+    {
+      "character": "e",
+      "x": 39.47647476196289,
+      "y": 29.40475082397461,
+      "angle": 20.201663970947266,
+      "actualX": 39.39747,
+      "actualY": 29.397562,
+      "actualAngle": 19.84641428927525,
+      "positionError": 0.07933115152921434,
+      "angleError": 0.3552496816720172
+    },
+    {
+      "character": "x",
+      "x": 44.68324279785156,
+      "y": 31.350467681884766,
+      "angle": 28.8167781829834,
+      "actualX": 44.501625,
+      "actualY": 31.293835,
+      "actualAngle": 28.04924810312008,
+      "positionError": 0.19024270065869275,
+      "angleError": 0.7675300798633167
+    },
+    {
+      "character": "t",
+      "x": 49.1843376159668,
+      "y": 33.87286376953125,
+      "angle": 34.40812683105469,
+      "actualX": 49.11565,
+      "actualY": 33.877876,
+      "actualAngle": 33.1495560721237,
+      "positionError": 0.06887024786853704,
+      "angleError": 1.2585707589309862
+    },
+    {
+      "character": "A",
+      "x": 14.512335777282715,
+      "y": 56.01595687866211,
+      "angle": -15.472559928894043,
+      "actualX": 14.601853,
+      "actualY": 55.980785,
+      "actualAngle": -15.246320352275571,
+      "positionError": 0.09617896969524263,
+      "angleError": 0.22623957661847172
+    },
+    {
+      "character": "r",
+      "x": 20.095809936523438,
+      "y": 54.52388381958008,
+      "angle": -10.416297912597656,
+      "actualX": 20.162563,
+      "actualY": 54.509426,
+      "actualAngle": -10.30202367529977,
+      "positionError": 0.0683008054895106,
+      "angleError": 0.11427423729788622
+    },
+    {
+      "character": "c",
+      "x": 23.60693359375,
+      "y": 53.865882873535156,
+      "angle": -6.3108062744140625,
+      "actualX": 23.642025,
+      "actualY": 53.862823,
+      "actualAngle": -6.296539685193952,
+      "positionError": 0.03522455987877941,
+      "angleError": 0.014266589220110149
+    },
+    {
+      "character": " ",
+      "x": 27.917810440063477,
+      "y": 53.4190559387207,
+      "angle": -2.9248580932617188,
+      "actualX": 27.939526,
+      "actualY": 53.423187,
+      "actualAngle": -3.1385338795079996,
+      "positionError": 0.022105004199277346,
+      "angleError": 0.2136757862462808
+    },
+    {
+      "character": "p",
+      "x": 30.290691375732422,
+      "y": 53.24323272705078,
+      "angle": 1.0667469501495361,
+      "actualX": 30.276709,
+      "actualY": 53.257374,
+      "actualAngle": 0.7840969302516742,
+      "positionError": 0.019886740098540016,
+      "angleError": 0.282650019897862
+    },
+    {
+      "character": "a",
+      "x": 35.85832977294922,
+      "y": 53.35852813720703,
+      "angle": 6.446002006530762,
+      "actualX": 35.813572,
+      "actualY": 53.36139,
+      "actualAngle": 6.296788280127381,
+      "positionError": 0.044849174998204164,
+      "angleError": 0.1492137264033806
+    },
+    {
+      "character": "t",
+      "x": 40.91606521606445,
+      "y": 53.96487045288086,
+      "angle": 10.794888496398926,
+      "actualX": 40.826775,
+      "actualY": 53.962185,
+      "actualAngle": 10.302329676439452,
+      "positionError": 0.08933059018058953,
+      "angleError": 0.4925588199594735
+    },
+    {
+      "character": "h",
+      "x": 44.126434326171875,
+      "y": 54.52641296386719,
+      "angle": 15.58397388458252,
+      "actualX": 44.031902,
+      "actualY": 54.518147,
+      "actualAngle": 15.24635871067165,
+      "positionError": 0.0948930284589916,
+      "angleError": 0.33761517391086926
+    }
+  ],
+  "sourceSHA256": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a"
+}

@@ -1,0 +1,17 @@
+{
+  "diagnostic": "Exact emitted C comparison. The image font-detection helper is reachable only from the headless entrypoint. Current app build is still running; no binary freshness claim.",
+  "results": [
+    {
+      "frontend": "native",
+      "identicalEmittedC": true,
+      "candidateCSHA256": "e727cf5438cfa24f6fda9f4c34366f86070f14589636977f230df63d39df4fe9",
+      "currentCSHA256": "e727cf5438cfa24f6fda9f4c34366f86070f14589636977f230df63d39df4fe9"
+    },
+    {
+      "frontend": "web",
+      "identicalEmittedC": true,
+      "candidateCSHA256": "51548e7c37128c3f57cba559ede2831203c27d46a9bfe0b090a2c7bbb8214c89",
+      "currentCSHA256": "51548e7c37128c3f57cba559ede2831203c27d46a9bfe0b090a2c7bbb8214c89"
+    }
+  ]
+}

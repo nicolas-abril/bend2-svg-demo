@@ -1,0 +1,17 @@
+{
+  "reference": "@resvg/resvg-js 2.6.2",
+  "results": [
+    {
+      "probe": "Changing symbol default width/height from 16 to 32",
+      "changedPixels": 0
+    },
+    {
+      "probe": "Removing both zero-size nested viewport elements",
+      "changedPixels": 4096
+    },
+    {
+      "probe": "Removing explicit fill=inherit from referenced content",
+      "changedPixels": 0
+    }
+  ]
+}

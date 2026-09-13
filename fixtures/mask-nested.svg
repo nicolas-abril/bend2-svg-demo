@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+<defs><path id="disc" d="M16 2A14 14 0 1 1 16 30A14 14 0 1 1 16 2Z"/>
+<clipPath id="clip"><rect x="8" width="48" height="64"/></clipPath>
+<mask id="inner" maskContentUnits="objectBoundingBox"><rect width=".75" height="1" fill="white"/></mask>
+<mask id="outer"><g mask="url(#inner)"><use href="#disc" fill="white" x="4" y="4"/><rect x="36" y="8" width="24" height="48" fill="white" opacity=".5"/></g></mask></defs>
+<g mask="url(#outer)" clip-path="url(#clip)" opacity=".8"><rect width="40" height="64" fill="purple"/><rect x="24" width="40" height="64" fill="teal"/></g>
+</svg>

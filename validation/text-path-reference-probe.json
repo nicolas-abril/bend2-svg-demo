@@ -1,0 +1,2217 @@
+{
+  "diagnostic": "Independent textPath behavior for planning the Bend implementation; no Bend conformance claim.",
+  "chromiumVersion": "153.0.8010.12",
+  "fontSHA256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "results": [
+    {
+      "name": "line",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              18.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              18.953125,
+              40
+            ],
+            "end": [
+              28.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              18.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              28.0625,
+              40
+            ],
+            "end": [
+              36.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              28.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              36.921875,
+              40
+            ],
+            "end": [
+              47.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              36.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.706787109375,
+        "rootMeanSquareError": 6.800513872663717,
+        "maxChannelError": 146,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "offset",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"20\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              30,
+              40
+            ],
+            "end": [
+              38.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              30,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              38.953125,
+              40
+            ],
+            "end": [
+              48.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              38.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              48.0625,
+              40
+            ],
+            "end": [
+              56.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              48.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              56.921875,
+              40
+            ],
+            "end": [
+              67.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              56.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.6138509114583334,
+        "rootMeanSquareError": 6.081578389129339,
+        "maxChannelError": 169,
+        "paintChromium": 236,
+        "paintResvg": 201
+      }
+    },
+    {
+      "name": "percent-middle",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" text-anchor=\"middle\"><textPath href=\"#p\" startOffset=\"50%\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              41.421875,
+              40
+            ],
+            "end": [
+              50.375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              41.421875,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              50.375,
+              40
+            ],
+            "end": [
+              59.484375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              50.375,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              59.484375,
+              40
+            ],
+            "end": [
+              68.34375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              59.484375,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              68.34375,
+              40
+            ],
+            "end": [
+              78.578125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              68.34375,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.6420084635416666,
+        "rootMeanSquareError": 5.930677275211351,
+        "maxChannelError": 99,
+        "paintChromium": 236,
+        "paintResvg": 200
+      }
+    },
+    {
+      "name": "pathLength",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\" pathLength=\"50\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"10\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              30,
+              40
+            ],
+            "end": [
+              38.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              30,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              38.953125,
+              40
+            ],
+            "end": [
+              48.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              38.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              48.0625,
+              40
+            ],
+            "end": [
+              56.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              48.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              56.921875,
+              40
+            ],
+            "end": [
+              67.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              56.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 3.5277506510416665,
+        "rootMeanSquareError": 25.55637883873532,
+        "maxChannelError": 255,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "pathLength-percent",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\" pathLength=\"50\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"25%\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              35,
+              40
+            ],
+            "end": [
+              43.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              35,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              43.953125,
+              40
+            ],
+            "end": [
+              53.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              43.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              53.0625,
+              40
+            ],
+            "end": [
+              61.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              53.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              61.921875,
+              40
+            ],
+            "end": [
+              72.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              61.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.5487467447916666,
+        "rootMeanSquareError": 5.06825964798322,
+        "maxChannelError": 105,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "root-xy",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" x=\"7\" y=\"9\"><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              17,
+              40
+            ],
+            "end": [
+              25.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              17,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              25.953125,
+              40
+            ],
+            "end": [
+              35.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              25.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              35.0625,
+              40
+            ],
+            "end": [
+              43.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              35.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              43.921875,
+              40
+            ],
+            "end": [
+              54.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              43.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.5992024739583334,
+        "rootMeanSquareError": 5.837765708174803,
+        "maxChannelError": 130,
+        "paintChromium": 236,
+        "paintResvg": 195
+      }
+    },
+    {
+      "name": "root-dxdy",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" dx=\"7\" dy=\"9\"><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              17,
+              49
+            ],
+            "end": [
+              25.953125,
+              49
+            ],
+            "angle": 0,
+            "extent": [
+              17,
+              34,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              25.953125,
+              49
+            ],
+            "end": [
+              35.0625,
+              49
+            ],
+            "angle": 0,
+            "extent": [
+              25.953125,
+              34,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              35.0625,
+              49
+            ],
+            "end": [
+              43.921875,
+              49
+            ],
+            "angle": 0,
+            "extent": [
+              35.0625,
+              34,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              43.921875,
+              49
+            ],
+            "end": [
+              54.15625,
+              49
+            ],
+            "angle": 0,
+            "extent": [
+              43.921875,
+              34,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.5992024739583334,
+        "rootMeanSquareError": 5.837765708174803,
+        "maxChannelError": 130,
+        "paintChromium": 236,
+        "paintResvg": 195
+      }
+    },
+    {
+      "name": "root-lists",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" x=\"7 25\" y=\"9 15\"><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              17,
+              40
+            ],
+            "end": [
+              25.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              17,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              35,
+              40
+            ],
+            "end": [
+              44.109375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              35,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              44.109375,
+              40
+            ],
+            "end": [
+              52.96875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              44.109375,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              52.96875,
+              40
+            ],
+            "end": [
+              63.203125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              52.96875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.5585123697916666,
+        "rootMeanSquareError": 5.08225793354932,
+        "maxChannelError": 114,
+        "paintChromium": 236,
+        "paintResvg": 199
+      }
+    },
+    {
+      "name": "spans",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" >A<tspan dx=\"5\" dy=\"4\">BC</tspan>D</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              18.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              23.953125,
+              44
+            ],
+            "end": [
+              33.0625,
+              44
+            ],
+            "angle": 0,
+            "extent": [
+              23.953125,
+              29,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              33.0625,
+              44
+            ],
+            "end": [
+              41.921875,
+              44
+            ],
+            "angle": 0,
+            "extent": [
+              33.0625,
+              29,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              41.921875,
+              44
+            ],
+            "end": [
+              52.15625,
+              44
+            ],
+            "angle": 0,
+            "extent": [
+              41.921875,
+              29,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.4959309895833333,
+        "rootMeanSquareError": 4.630275707233857,
+        "maxChannelError": 121,
+        "paintChromium": 236,
+        "paintResvg": 198
+      }
+    },
+    {
+      "name": "rotation",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40L110 60\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" rotate=\"20 40\"><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10.564995765686035,
+              38.55160140991211
+            ],
+            "end": [
+              18.214265823364258,
+              43.20425033569336
+            ],
+            "angle": 31.309932708740234,
+            "extent": [
+              8.486327171325684,
+              25.736072540283203,
+              17.52294921875,
+              20.885650634765625
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              20.398330688476562,
+              39.093990325927734
+            ],
+            "end": [
+              26.092666625976562,
+              46.2042121887207
+            ],
+            "angle": 51.309932708740234,
+            "extent": [
+              17.276174545288086,
+              29.71738052368164,
+              20.52457618713379,
+              18.987258911132812
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              29.286375045776367,
+              40.95353698730469
+            ],
+            "end": [
+              34.82443618774414,
+              47.868621826171875
+            ],
+            "angle": 51.309932708740234,
+            "extent": [
+              26.16421890258789,
+              31.57692527770996,
+              20.368297576904297,
+              18.79212760925293
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              38.21809387207031,
+              42.289215087890625
+            ],
+            "end": [
+              44.61567687988281,
+              50.27754211425781
+            ],
+            "angle": 51.309932708740234,
+            "extent": [
+              35.09593963623047,
+              32.91260528564453,
+              21.22781753540039,
+              19.865367889404297
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 3.6354166666666665,
+        "rootMeanSquareError": 25.36688473474489,
+        "maxChannelError": 255,
+        "paintChromium": 226,
+        "paintResvg": 222
+      }
+    },
+    {
+      "name": "curve",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 65Q64 0 118 65\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"12\">Bend SVG</textPath></text></svg>",
+      "chromium": {
+        "text": "Bend SVG",
+        "count": 8,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              18.009632110595703,
+              55.95246505737305
+            ],
+            "end": [
+              24.608600616455078,
+              49.672794342041016
+            ],
+            "angle": -43.579776763916016,
+            "extent": [
+              7.669172763824463,
+              38.80656433105469,
+              19.696884155273438,
+              20.043563842773438
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              24.620695114135742,
+              49.67826461791992
+            ],
+            "end": [
+              30.766464233398438,
+              44.704498291015625
+            ],
+            "angle": -38.98322296142578,
+            "extent": [
+              15.184303283691406,
+              33.04454803466797,
+              18.098529815673828,
+              19.743038177490234
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              30.748472213745117,
+              44.677734375
+            ],
+            "end": [
+              37.970706939697266,
+              39.90594482421875
+            ],
+            "angle": -33.45308303833008,
+            "extent": [
+              22.47966194152832,
+              27.390880584716797,
+              17.69605827331543,
+              20.62420654296875
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              37.95793533325195,
+              39.892120361328125
+            ],
+            "end": [
+              45.68984603881836,
+              36.07005310058594
+            ],
+            "angle": -26.30426597595215,
+            "extent": [
+              31.31086540222168,
+              22.623252868652344,
+              16.151533126831055,
+              20.854679107666016
+            ]
+          },
+          {
+            "index": 4,
+            "start": [
+              45.744815826416016,
+              36.18171691894531
+            ],
+            "end": [
+              49.16048812866211,
+              34.92182922363281
+            ],
+            "angle": -20.246685028076172,
+            "extent": [
+              40.553871154785156,
+              20.84865951538086,
+              9.99087142944336,
+              19.08590316772461
+            ]
+          },
+          {
+            "index": 5,
+            "start": [
+              49.118919372558594,
+              34.813026428222656
+            ],
+            "end": [
+              56.57940673828125,
+              32.958641052246094
+            ],
+            "angle": -13.958626747131348,
+            "extent": [
+              45.5005989074707,
+              18.401586532592773,
+              12.043693542480469,
+              20.29332160949707
+            ]
+          },
+          {
+            "index": 6,
+            "start": [
+              56.58355712890625,
+              32.92369079589844
+            ],
+            "end": [
+              64.82698059082031,
+              32.318275451660156
+            ],
+            "angle": -4.200385093688965,
+            "extent": [
+              55.48488235473633,
+              17.358566284179688,
+              9.635074615478516,
+              19.554378509521484
+            ]
+          },
+          {
+            "index": 7,
+            "start": [
+              64.85581970214844,
+              32.22304916381836
+            ],
+            "end": [
+              74.971435546875,
+              33.55648422241211
+            ],
+            "angle": 7.5094075202941895,
+            "extent": [
+              64.33306121826172,
+              17.35169792175293,
+              12.598709106445312,
+              20.170480728149414
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.8159993489583334,
+        "rootMeanSquareError": 5.9368763378599745,
+        "maxChannelError": 116,
+        "paintChromium": 384,
+        "paintResvg": 348
+      }
+    },
+    {
+      "name": "reference-transform",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M0 0H100\" transform=\"translate(10 40)\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              18.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              18.953125,
+              40
+            ],
+            "end": [
+              28.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              18.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              28.0625,
+              40
+            ],
+            "end": [
+              36.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              28.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              36.921875,
+              40
+            ],
+            "end": [
+              47.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              36.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.706787109375,
+        "rootMeanSquareError": 6.800513872663717,
+        "maxChannelError": 146,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "ancestor-transform",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><g transform=\"translate(10 40)\"><path id=\"p\" d=\"M0 0H100\"/></g></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              8.953125,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              -15,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              8.953125953674316,
+              0
+            ],
+            "end": [
+              18.0625,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              8.953125953674316,
+              -15,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              18.0625,
+              0
+            ],
+            "end": [
+              26.921875,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              18.0625,
+              -15,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              26.921875,
+              0
+            ],
+            "end": [
+              37.15625,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              26.921875,
+              -15,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.0006510416666666666,
+        "rootMeanSquareError": 0.0637887953849786,
+        "maxChannelError": 7,
+        "paintChromium": 2,
+        "paintResvg": 2
+      }
+    },
+    {
+      "name": "text-transform",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" transform=\"translate(5 10)\"><textPath href=\"#p\" >ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              18.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              18.953125,
+              40
+            ],
+            "end": [
+              28.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              18.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              28.0625,
+              40
+            ],
+            "end": [
+              36.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              28.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              36.921875,
+              40
+            ],
+            "end": [
+              47.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              36.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.706787109375,
+        "rootMeanSquareError": 6.800513872663717,
+        "maxChannelError": 146,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "direct-path",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" path=\"M10 60H110\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              60
+            ],
+            "end": [
+              18.953125,
+              60
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              45,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              18.953125,
+              60
+            ],
+            "end": [
+              28.0625,
+              60
+            ],
+            "angle": 0,
+            "extent": [
+              18.953125,
+              45,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              28.0625,
+              60
+            ],
+            "end": [
+              36.921875,
+              60
+            ],
+            "angle": 0,
+            "extent": [
+              28.0625,
+              45,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              36.921875,
+              60
+            ],
+            "end": [
+              47.15625,
+              60
+            ],
+            "angle": 0,
+            "extent": [
+              36.921875,
+              45,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 5.288655598958333,
+        "rootMeanSquareError": 32.372743898626226,
+        "maxChannelError": 255,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "shape",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><circle id=\"p\" cx=\"64\" cy=\"48\" r=\"35\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" >Bend</textPath></text></svg>",
+      "chromium": {
+        "text": "Bend",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 2.30859375,
+        "rootMeanSquareError": 20.720674558678507,
+        "maxChannelError": 255,
+        "paintChromium": 0,
+        "paintResvg": 200
+      }
+    },
+    {
+      "name": "closed-wrap",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110V65H10Z\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"95%\">ABCDEFGHIJKL</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCDEFGHIJKL",
+        "count": 12,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              52.5
+            ],
+            "end": [
+              10,
+              43.546875
+            ],
+            "angle": -90,
+            "extent": [
+              -5,
+              43.546875,
+              19,
+              8.953125
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 4,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 5,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 6,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 7,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 8,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 9,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 10,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 11,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.155029296875,
+        "rootMeanSquareError": 2.874164846996138,
+        "maxChannelError": 85,
+        "paintChromium": 55,
+        "paintResvg": 47
+      }
+    },
+    {
+      "name": "side-right",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" side=\"right\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              18.953125,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              18.953125,
+              40
+            ],
+            "end": [
+              28.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              18.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              28.0625,
+              40
+            ],
+            "end": [
+              36.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              28.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              36.921875,
+              40
+            ],
+            "end": [
+              47.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              36.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.706787109375,
+        "rootMeanSquareError": 6.800513872663717,
+        "maxChannelError": 146,
+        "paintChromium": 236,
+        "paintResvg": 197
+      }
+    },
+    {
+      "name": "negative-offset",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" startOffset=\"-12\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              6.953125,
+              40
+            ],
+            "end": [
+              16.0625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              6.953125,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              16.0625,
+              40
+            ],
+            "end": [
+              24.921875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              16.0625,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              24.921875,
+              40
+            ],
+            "end": [
+              35.15625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              24.921875,
+              25,
+              10.234375,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.5599772135416666,
+        "rootMeanSquareError": 6.149220023795023,
+        "maxChannelError": 169,
+        "paintChromium": 184,
+        "paintResvg": 155
+      }
+    },
+    {
+      "name": "mixed",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H90\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" x=\"4\" y=\"20\">A<textPath href=\"#p\" >BC</textPath>DE</text></svg>",
+      "chromium": {
+        "text": "ABCDE",
+        "count": 5,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              4,
+              20
+            ],
+            "end": [
+              12.953125,
+              20
+            ],
+            "angle": 0,
+            "extent": [
+              4,
+              5,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              19.109375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              9.109375,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              19.109375,
+              40
+            ],
+            "end": [
+              27.96875,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              19.109375,
+              25,
+              8.859375,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              90,
+              40
+            ],
+            "end": [
+              100.234375,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              90,
+              25,
+              10.234375,
+              19
+            ]
+          },
+          {
+            "index": 4,
+            "start": [
+              100.21875,
+              40
+            ],
+            "end": [
+              108.015625,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              100.21875,
+              25,
+              7.796875,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 2.9451497395833335,
+        "rootMeanSquareError": 23.163808230054702,
+        "maxChannelError": 255,
+        "paintChromium": 295,
+        "paintResvg": 236
+      }
+    },
+    {
+      "name": "missing",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"other\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" x=\"4\" y=\"20\">A<textPath href=\"#p\" >BC</textPath>DE</text></svg>",
+      "chromium": {
+        "text": "ABCDE",
+        "count": 5,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              4,
+              20
+            ],
+            "end": [
+              12.953125,
+              20
+            ],
+            "angle": 0,
+            "extent": [
+              4,
+              5,
+              8.953125,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              35.984375,
+              0
+            ],
+            "end": [
+              46.21875,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              35.984375,
+              -15,
+              10.234375,
+              19
+            ]
+          },
+          {
+            "index": 4,
+            "start": [
+              46.203125,
+              0
+            ],
+            "end": [
+              54,
+              0
+            ],
+            "angle": 0,
+            "extent": [
+              46.203125,
+              -15,
+              7.796875,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 1.3072916666666667,
+        "rootMeanSquareError": 15.58128259122143,
+        "maxChannelError": 255,
+        "paintChromium": 52,
+        "paintResvg": 137
+      }
+    },
+    {
+      "name": "length-fit",
+      "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"128\" height=\"96\"><defs><path id=\"p\" d=\"M10 40H110\"/></defs><text font-family=\"Noto Sans\" font-size=\"14\" ><textPath href=\"#p\" textLength=\"50\" lengthAdjust=\"spacingAndGlyphs\">ABCD</textPath></text></svg>",
+      "chromium": {
+        "text": "ABCD",
+        "count": 4,
+        "chars": [
+          {
+            "index": 0,
+            "start": [
+              10,
+              40
+            ],
+            "end": [
+              22.04793930053711,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              10,
+              25,
+              12.04793930053711,
+              19
+            ]
+          },
+          {
+            "index": 1,
+            "start": [
+              22.04793930053711,
+              40
+            ],
+            "end": [
+              34.3061408996582,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              22.04793930053711,
+              25,
+              12.258201599121094,
+              19
+            ]
+          },
+          {
+            "index": 2,
+            "start": [
+              34.3061408996582,
+              40
+            ],
+            "end": [
+              46.22792434692383,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              34.3061408996582,
+              25,
+              11.921783447265625,
+              19
+            ]
+          },
+          {
+            "index": 3,
+            "start": [
+              46.22792434692383,
+              40
+            ],
+            "end": [
+              60,
+              40
+            ],
+            "angle": 0,
+            "extent": [
+              46.22792434692383,
+              25,
+              13.772075653076172,
+              19
+            ]
+          }
+        ]
+      },
+      "pixelComparisonBetweenReferences": {
+        "meanAbsoluteError": 0.6439615885416666,
+        "rootMeanSquareError": 5.651132871767837,
+        "maxChannelError": 110,
+        "paintChromium": 298,
+        "paintResvg": 253
+      }
+    }
+  ]
+}

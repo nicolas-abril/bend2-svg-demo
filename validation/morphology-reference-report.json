@@ -1,0 +1,108 @@
+{
+  "integrated": true,
+  "sourceSHA256": "6f07e3f729ee9d6a62951eb3eb529087d0321ea06270dc4c7add2af5db7c7cf4",
+  "primaryReference": "chromium",
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "fixtures": {
+    "morphology-basic.svg": {
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\">\n<defs>\n <filter id=\"erode\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology radius=\"2\"/></filter>\n <filter id=\"dilate\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology operator=\"dilate\" radius=\"2\"/></filter>\n <filter id=\"color\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\" color-interpolation-filters=\"sRGB\"><feMorphology operator=\"dilate\" radius=\"2\"/></filter>\n <filter id=\"alpha\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology operator=\"erode\" in=\"SourceAlpha\" radius=\"1 2\"/></filter>\n</defs>\n<rect x=\"5\" y=\"5\" width=\"22\" height=\"20\" fill=\"#c43\" filter=\"url(#erode)\"/>\n<rect x=\"38\" y=\"8\" width=\"16\" height=\"14\" fill=\"#39b\" filter=\"url(#dilate)\"/>\n<g filter=\"url(#color)\"><rect x=\"6\" y=\"39\" width=\"9\" height=\"15\" fill=\"red\" fill-opacity=\".5\"/><rect x=\"15\" y=\"39\" width=\"9\" height=\"15\" fill=\"blue\" fill-opacity=\".75\"/></g>\n<path d=\"M38 37H57V43H49V57H43V43H38Z\" fill=\"#693\" filter=\"url(#alpha)\"/>\n</svg>\n",
+      "sha256": "6f56d16fc5693afe5de143c0a2b6117f76812fccb6e9ec55f071440c4c874e04",
+      "results": {
+        "resvg": {
+          "fixture": "morphology-basic.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 5.897216796875,
+          "rootMeanSquareError": 33.307773810688076,
+          "maxChannelError": 255,
+          "differingPixels": 973,
+          "pixelsAbove32": 164,
+          "fractionAbove32": 0.0400390625
+        },
+        "chromium": {
+          "fixture": "morphology-basic.svg",
+          "meanAbsoluteError": 0.11018880208333333,
+          "rootMeanSquareError": 0.3319469868568373,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0
+        }
+      }
+    },
+    "morphology-radius.svg": {
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\"><defs><filter id=\"m00\" filterUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"0\"/></filter><filter id=\"m01\" filterUnits=\"userSpaceOnUse\" x=\"16\" y=\"0\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\".49\"/></filter><filter id=\"m02\" filterUnits=\"userSpaceOnUse\" x=\"32\" y=\"0\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\".5\"/></filter><filter id=\"m03\" filterUnits=\"userSpaceOnUse\" x=\"48\" y=\"0\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"1.5\"/></filter><filter id=\"m04\" filterUnits=\"userSpaceOnUse\" x=\"0\" y=\"16\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"2 0\"/></filter><filter id=\"m05\" filterUnits=\"userSpaceOnUse\" x=\"16\" y=\"16\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"0 2\"/></filter><filter id=\"m06\" filterUnits=\"userSpaceOnUse\" x=\"32\" y=\"16\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"-1 2\"/></filter><filter id=\"m07\" filterUnits=\"userSpaceOnUse\" x=\"48\" y=\"16\" width=\"16\" height=\"16\"><feMorphology operator=\"erode\" radius=\"2 -1\"/></filter><filter id=\"m10\" filterUnits=\"userSpaceOnUse\" x=\"0\" y=\"32\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"0\"/></filter><filter id=\"m11\" filterUnits=\"userSpaceOnUse\" x=\"16\" y=\"32\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\".49\"/></filter><filter id=\"m12\" filterUnits=\"userSpaceOnUse\" x=\"32\" y=\"32\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\".5\"/></filter><filter id=\"m13\" filterUnits=\"userSpaceOnUse\" x=\"48\" y=\"32\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"1.5\"/></filter><filter id=\"m14\" filterUnits=\"userSpaceOnUse\" x=\"0\" y=\"48\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"2 0\"/></filter><filter id=\"m15\" filterUnits=\"userSpaceOnUse\" x=\"16\" y=\"48\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"0 2\"/></filter><filter id=\"m16\" filterUnits=\"userSpaceOnUse\" x=\"32\" y=\"48\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"-1 2\"/></filter><filter id=\"m17\" filterUnits=\"userSpaceOnUse\" x=\"48\" y=\"48\" width=\"16\" height=\"16\"><feMorphology operator=\"dilate\" radius=\"2 -1\"/></filter></defs><rect x=\"4\" y=\"4\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m00)\"/><rect x=\"20\" y=\"4\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m01)\"/><rect x=\"36\" y=\"4\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m02)\"/><rect x=\"52\" y=\"4\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m03)\"/><rect x=\"4\" y=\"20\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m04)\"/><rect x=\"20\" y=\"20\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m05)\"/><rect x=\"36\" y=\"20\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m06)\"/><rect x=\"52\" y=\"20\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m07)\"/><rect x=\"4\" y=\"36\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m10)\"/><rect x=\"20\" y=\"36\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m11)\"/><rect x=\"36\" y=\"36\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m12)\"/><rect x=\"52\" y=\"36\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m13)\"/><rect x=\"4\" y=\"52\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m14)\"/><rect x=\"20\" y=\"52\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m15)\"/><rect x=\"36\" y=\"52\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m16)\"/><rect x=\"52\" y=\"52\" width=\"8\" height=\"8\" fill=\"#2685b4\" filter=\"url(#m17)\"/></svg>\n",
+      "sha256": "94b3cfed8bf50ba37b3ec3a704058b38bbcedd701353687d908ac685b45e27ea",
+      "results": {
+        "resvg": {
+          "fixture": "morphology-radius.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 10.2421875,
+          "rootMeanSquareError": 40.89433156522633,
+          "maxChannelError": 217,
+          "differingPixels": 304,
+          "pixelsAbove32": 304,
+          "fractionAbove32": 0.07421875
+        },
+        "chromium": {
+          "fixture": "morphology-radius.svg",
+          "meanAbsoluteError": 0,
+          "rootMeanSquareError": 0,
+          "maxChannelError": 0,
+          "pixelsAbove32": 0
+        }
+      }
+    },
+    "morphology-units.svg": {
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\">\n<defs>\n <filter id=\"box\" primitiveUnits=\"objectBoundingBox\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology radius=\".125 .25\" operator=\"dilate\"/></filter>\n <filter id=\"m\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology radius=\"1 2\" operator=\"erode\"/></filter>\n <filter id=\"grow\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology radius=\"2 1\" operator=\"dilate\"/></filter>\n</defs>\n<rect x=\"8\" y=\"8\" width=\"16\" height=\"12\" fill=\"#d64\" filter=\"url(#box)\"/>\n<g transform=\"translate(35 6) scale(2 1.5)\"><rect width=\"10\" height=\"12\" fill=\"#29a\" filter=\"url(#m)\"/></g>\n<g transform=\"translate(16 47) rotate(25)\"><rect x=\"-8\" y=\"-6\" width=\"16\" height=\"12\" fill=\"#7a4\" filter=\"url(#grow)\"/></g>\n<g transform=\"translate(46 47) skewX(25)\"><rect x=\"-8\" y=\"-7\" width=\"16\" height=\"14\" fill=\"#a58\" filter=\"url(#m)\"/></g>\n</svg>\n",
+      "sha256": "8973ec0875ff7d0e5d78e82714010d8787b5c54850d15e70aaaa019e894f2b0d",
+      "results": {
+        "resvg": {
+          "fixture": "morphology-units.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 4.252604166666667,
+          "rootMeanSquareError": 22.03913496605716,
+          "maxChannelError": 221,
+          "differingPixels": 853,
+          "pixelsAbove32": 181,
+          "fractionAbove32": 0.044189453125
+        },
+        "chromium": {
+          "fixture": "morphology-units.svg",
+          "meanAbsoluteError": 0.888916015625,
+          "rootMeanSquareError": 4.116616718025252,
+          "maxChannelError": 49,
+          "pixelsAbove32": 24
+        }
+      }
+    },
+    "morphology-graph.svg": {
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\">\n<defs>\n <filter id=\"outline\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology operator=\"dilate\" radius=\"2\" in=\"SourceAlpha\" result=\"thick\"/><feComposite in=\"thick\" in2=\"SourceAlpha\" operator=\"out\" result=\"ring\"/><feFlood flood-color=\"#a35\"/><feComposite in2=\"ring\" operator=\"in\"/></filter>\n <filter id=\"opening\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology radius=\"1\"/><feMorphology operator=\"dilate\" radius=\"1\"/></filter>\n <filter id=\"clipped\" filterUnits=\"userSpaceOnUse\" x=\"2\" y=\"34\" width=\"27\" height=\"26\"><feFlood flood-color=\"#296\" x=\"8\" y=\"39\" width=\"14\" height=\"15\"/><feMorphology operator=\"dilate\" radius=\"3\"/></filter>\n <filter id=\"shift\" x=\"-.5\" y=\"-.5\" width=\"2\" height=\"2\"><feMorphology operator=\"dilate\" radius=\"1\" result=\"m\"/><feOffset dx=\"3\" dy=\"2\"/><feMerge><feMergeNode/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter>\n</defs>\n<rect x=\"8\" y=\"8\" width=\"15\" height=\"15\" fill=\"#269\" filter=\"url(#outline)\"/>\n<path d=\"M38 6H54V14H57V15H54V23H38Z\" fill=\"#c85\" filter=\"url(#opening)\"/>\n<rect x=\"6\" y=\"38\" width=\"18\" height=\"16\" filter=\"url(#clipped)\"/>\n<rect x=\"39\" y=\"38\" width=\"13\" height=\"15\" fill=\"#36c\" fill-opacity=\".6\" filter=\"url(#shift)\"/>\n</svg>\n",
+      "sha256": "d1cade5c3087a2b1e727c008258a144b685c4b35e1919f4b7bf5488f40925318",
+      "results": {
+        "resvg": {
+          "fixture": "morphology-graph.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 10.107421875,
+          "rootMeanSquareError": 40.456612159793075,
+          "maxChannelError": 221,
+          "differingPixels": 666,
+          "pixelsAbove32": 302,
+          "fractionAbove32": 0.07373046875
+        },
+        "chromium": {
+          "fixture": "morphology-graph.svg",
+          "meanAbsoluteError": 0.03515625,
+          "rootMeanSquareError": 0.1875,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0
+        }
+      }
+    }
+  }
+}

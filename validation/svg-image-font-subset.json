@@ -1,0 +1,12 @@
+{
+  "purpose": "Self-contained Chromium reference font in svg-image-text.svg; Bend uses matching outlines from its bundled font book. User font-face decoding is not implemented.",
+  "generator": "fontTools subset 4.59.2",
+  "text": "Bend ABC",
+  "retainHinting": true,
+  "sourceFont": "fonts/NotoSans-Regular.ttf",
+  "sourceSHA256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+  "subsetSHA256": "a732ef7c50319e81beb134118974c15c869d86c91242807691b45938be19b6c4",
+  "subsetBytes": 7360,
+  "license": "../FONT-LICENSE.txt",
+  "fixtureSHA256": "8cefb88e5fe54adf31a80fe49d17ce80f71030896f6c989c37bd4e60288ef1d7"
+}

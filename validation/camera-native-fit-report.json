@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "sourceSHA256": {
+    "svg.bend": "acbc0c3c9275fe6c0901244c2568c305fd619b89f1e06a717a89d8f1430d5b65",
+    "state.bend": "a61de7222e52f99d0d1a76b279cc434fabc480c2bfaa65e0e39c8ae777cfc72b",
+    "render.bend": "f1b27e474780a584929eac6864bfb02b5320b9b989b96ac3b54223bb3e6a55f5",
+    "fonts.dat": "46a116fcce137787210904ca0cb088d1ca979ad54389c2dc6cc5ca8ecccf8f3e"
+  },
+  "binarySHA256": "12d5b75c6a4a6364cef4c2480f2bc4ee9c74678a726c638d97cc56694e2405fc",
+  "results": [
+    {
+      "name": "camera-wide",
+      "passed": true,
+      "sha256": "57281b15a5a5da02ab891cddeeae0324225e15f83efebe6f2023c9f0c14f4b3b",
+      "durationSeconds": 0.521954
+    },
+    {
+      "name": "camera-tall",
+      "passed": true,
+      "sha256": "024f0a56b54aef8bf6b8150cb49c52621e345ed501bef66b88e19f4f26a3c33c",
+      "durationSeconds": 0.630237417
+    },
+    {
+      "name": "camera-resources",
+      "passed": true,
+      "sha256": "0c53444ded8bd74f7b09d6a302960a176ac02244ad73a03bea22d41ef0228777",
+      "durationSeconds": 1.5144515
+    }
+  ]
+}

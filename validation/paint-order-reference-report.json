@@ -1,0 +1,89 @@
+{
+  "integrated": true,
+  "sourceSHA256": "8049f793b502babb9461a25cd08f67cfbbbba86869baf4f26b252d67e60a6d98",
+  "thresholds": {
+    "meanAbsoluteError": 1,
+    "rootMeanSquareError": 5,
+    "fractionAbove32": 0.01
+  },
+  "results": [
+    {
+      "fixture": "paint-order-shapes.svg",
+      "primary": "chromium",
+      "references": {
+        "resvg": {
+          "fixture": "paint-order-shapes.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 0.0791015625,
+          "rootMeanSquareError": 0.28125,
+          "maxChannelError": 1,
+          "differingPixels": 972,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0
+        },
+        "chromium": {
+          "fixture": "paint-order-shapes.svg",
+          "meanAbsoluteError": 0.041015625,
+          "rootMeanSquareError": 0.20252314682524564,
+          "maxChannelError": 1,
+          "pixelsAbove32": 0
+        }
+      },
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" viewBox=\"0 0 64 64\"><rect x=\"5\" y=\"6\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"normal\"/><rect x=\"26\" y=\"6\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"fill markers\"/><rect x=\"47\" y=\"6\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"stroke\"/><rect x=\"5\" y=\"37\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"stroke markers\"/><rect x=\"26\" y=\"37\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"markers\"/><rect x=\"47\" y=\"37\" width=\"12\" height=\"20\" fill=\"#247ba0\" fill-opacity=\".55\" stroke=\"#e76f51\" stroke-opacity=\".65\" stroke-width=\"6\" paint-order=\"markers stroke\"/></svg>\n",
+      "fixtureSHA256": "17a6541a9c67e1c86adb0c6a50b55de3b095368f0829f4e9d94b71bfc65b2ec4"
+    },
+    {
+      "fixture": "paint-order-markers.svg",
+      "primary": "chromium",
+      "references": {
+        "resvg": {
+          "fixture": "paint-order-markers.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 1.573974609375,
+          "rootMeanSquareError": 8.381007834246924,
+          "maxChannelError": 65,
+          "differingPixels": 1573,
+          "pixelsAbove32": 92,
+          "fractionAbove32": 0.0224609375
+        },
+        "chromium": {
+          "fixture": "paint-order-markers.svg",
+          "meanAbsoluteError": 0.4642740885416667,
+          "rootMeanSquareError": 1.0462529246275332,
+          "maxChannelError": 14,
+          "pixelsAbove32": 0
+        }
+      },
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" viewBox=\"0 0 64 64\"><defs><marker id=\"m\" markerUnits=\"userSpaceOnUse\" markerWidth=\"10\" markerHeight=\"10\" overflow=\"visible\"><rect x=\"-5\" y=\"-5\" width=\"10\" height=\"10\" fill=\"lime\" opacity=\".5\"/></marker></defs><path d=\"M4 5h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"normal\"/><path d=\"M36 5h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"fill markers\"/><path d=\"M4 26h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"stroke\"/><path d=\"M36 26h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"stroke markers\"/><path d=\"M4 47h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"markers\"/><path d=\"M36 47h20v10z\" fill=\"red\" fill-opacity=\".5\" stroke=\"blue\" stroke-opacity=\".5\" stroke-width=\"6\" marker-mid=\"url(#m)\" paint-order=\"markers stroke\"/></svg>\n",
+      "fixtureSHA256": "1c38d2e3771b1b48957f197c895d56d76b297d84c23522fb0bed68a304446590"
+    },
+    {
+      "fixture": "text-paint-order.svg",
+      "primary": "resvg",
+      "references": {
+        "resvg": {
+          "fixture": "text-paint-order.svg",
+          "width": 64,
+          "height": 64,
+          "meanAbsoluteError": 0.3136393229166667,
+          "rootMeanSquareError": 1.0215771099954554,
+          "maxChannelError": 13,
+          "differingPixels": 901,
+          "pixelsAbove32": 0,
+          "fractionAbove32": 0
+        },
+        "chromium": {
+          "fixture": "text-paint-order.svg",
+          "meanAbsoluteError": 4.106770833333333,
+          "rootMeanSquareError": 9.249199360057244,
+          "maxChannelError": 52,
+          "pixelsAbove32": 143
+        }
+      },
+      "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" viewBox=\"0 0 64 64\"><g font-family=\"Noto Sans\" font-size=\"14\" letter-spacing=\"-5\" fill=\"#2879a8\" fill-opacity=\".6\" stroke=\"#c34d61\" stroke-opacity=\".65\" stroke-width=\"3\"><text x=\"6\" y=\"12\">AAA</text><text x=\"36\" y=\"12\" paint-order=\"stroke\">AAA</text><g paint-order=\"stroke\"><text x=\"6\" y=\"30\">AAA</text><text x=\"36\" y=\"30\" paint-order=\"normal\">AAA</text></g><text x=\"6\" y=\"48\" fill-rule=\"evenodd\">AAA</text><text x=\"36\" y=\"48\" style=\"paint-order:stroke fill\">AAA</text></g></svg>\n",
+      "fixtureSHA256": "ee20082555ecb8dfbf92d09bb89264a77c146a6e16f1faa8d7a9b5f2c160f4a5"
+    }
+  ]
+}

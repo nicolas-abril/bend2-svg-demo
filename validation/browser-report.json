@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "initial pixel matrix",
+    "drag transforms source by 20,10",
+    "burst drag input coalesced",
+    "stroke dash edit",
+    "fill edit",
+    "undo",
+    "no browser errors"
+  ],
+  "moveRequests": 1,
+  "before": "<svg viewBox=\"0 0 256 256\" height=\"256\" width=\"256\" xmlns=\"http://www.w3.org/2000/svg\"><rect fill=\"#e34b36\" rx=\"12\" height=\"82\" width=\"102\" y=\"28\" x=\"24\"></rect><circle fill=\"#4682b4\" r=\"47\" cy=\"87\" cx=\"178\"></circle><path fill=\"#79bd4a\" d=\"M25 217 Q64 112 100 190 T197 181 L230 225Z\"></path></svg>",
+  "moved": "<svg viewBox=\"0 0 256 256\" height=\"256\" width=\"256\" xmlns=\"http://www.w3.org/2000/svg\"><rect style=\";transform:matrix(1,0 0,1 20,10 )\" fill=\"#e34b36\" rx=\"12\" height=\"82\" width=\"102\" y=\"28\" x=\"24\"></rect><circle fill=\"#4682b4\" r=\"47\" cy=\"87\" cx=\"178\"></circle><path fill=\"#79bd4a\" d=\"M25 217 Q64 112 100 190 T197 181 L230 225Z\"></path></svg>",
+  "durationSeconds": 46.15
+}

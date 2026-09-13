@@ -1,0 +1,19 @@
+{
+  "sourceSHA256": "670f8ca4e789676b6fef0ec756d3c16f00d92b4f6be0edbac0ba72cb0de62c4a",
+  "results": [
+    {
+      "name": "text",
+      "meanAbsoluteError": 3.0848214285714284,
+      "rootMeanSquareError": 7.670967996283129,
+      "maxChannelError": 32,
+      "maxErrorAgainstPrior": 0
+    },
+    {
+      "name": "outlines",
+      "meanAbsoluteError": 3.0848214285714284,
+      "rootMeanSquareError": 7.670967996283129,
+      "maxChannelError": 32,
+      "maxErrorAgainstPrior": 0
+    }
+  ]
+}

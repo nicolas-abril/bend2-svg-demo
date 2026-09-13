@@ -1,0 +1,142 @@
+{
+  "features": [
+    "authored segment endpoints",
+    "analytic cubic/quadratic/arc tangents",
+    "inherited marker longhands and shorthand",
+    "automatic and fixed orientation",
+    "marker viewports and reference positions",
+    "solid/gradient/pattern context paints",
+    "recursive resource guard",
+    "pick owner from marker pixels"
+  ],
+  "sourceSHA256": "a445621c83dcfbe3cd9bd0294d1cb88a68134b238e995fc1c870ab31274a0a0e",
+  "comparisons": [
+    {
+      "fixture": "markers-compositing.svg",
+      "meanAbsoluteError": 0.9136555989583334,
+      "rootMeanSquareError": 5.943082627710274,
+      "maxChannelError": 96,
+      "pixelsAbove32": 58,
+      "reference": "chromium",
+      "features": [
+        "group opacity includes markers",
+        "objectBoundingBox excludes markers",
+        "clipping and masking marker paint",
+        "transformed context gradient"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "markers-viewports.svg",
+      "meanAbsoluteError": 1.1587727864583333,
+      "rootMeanSquareError": 7.009590481901089,
+      "maxChannelError": 107,
+      "pixelsAbove32": 91,
+      "reference": "chromium",
+      "features": [
+        "marker viewBox",
+        "refX/refY",
+        "meet/slice/none",
+        "overflow clips",
+        "nonuniform transforms"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "markers-vertices.svg",
+      "meanAbsoluteError": 0.4212239583333333,
+      "rootMeanSquareError": 1.9929073454378154,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "closed-path angle bisectors",
+        "subpath endpoints",
+        "quadratic/smooth/arc tangents",
+        "polyline markers"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-styles.svg",
+      "meanAbsoluteError": 0.009765625,
+      "rootMeanSquareError": 0.10364452469860624,
+      "maxChannelError": 2,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "inherited marker properties",
+        "marker shorthand source order",
+        "important marker declarations",
+        "marker definition styles"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-recursive.svg",
+      "meanAbsoluteError": 0.2294921875,
+      "rootMeanSquareError": 2.610949500022294,
+      "maxChannelError": 48,
+      "pixelsAbove32": 14,
+      "reference": "chromium",
+      "features": [
+        "direct and indirect recursive markers",
+        "invalid references",
+        "zero-size marker viewport"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-basic.svg",
+      "meanAbsoluteError": 0.57275390625,
+      "rootMeanSquareError": 3.592481660240824,
+      "maxChannelError": 71,
+      "pixelsAbove32": 13,
+      "reference": "chromium",
+      "features": [
+        "marker-start/mid/end",
+        "auto-start-reverse",
+        "strokeWidth/userSpaceOnUse units",
+        "curve endpoint tangents"
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "markers-zero.svg",
+      "meanAbsoluteError": 0.9568684895833334,
+      "rootMeanSquareError": 7.104411041740195,
+      "maxChannelError": 153,
+      "pixelsAbove32": 60,
+      "reference": "chromium",
+      "features": [
+        "moveto-only paths",
+        "zero-length segments",
+        "omitted equal-endpoint arcs",
+        "degenerate curve tangents"
+      ],
+      "passed": false
+    },
+    {
+      "fixture": "markers-context.svg",
+      "meanAbsoluteError": 0.6703287760416666,
+      "rootMeanSquareError": 3.4312561665093346,
+      "maxChannelError": 32,
+      "pixelsAbove32": 0,
+      "reference": "chromium",
+      "features": [
+        "context-fill/context-stroke",
+        "solid/gradient/pattern context paint",
+        "independent paint opacity"
+      ],
+      "passed": true
+    }
+  ],
+  "referenceNotes": {
+    "chromium": "Primary marker reference. Three fixtures remain failures.",
+    "resvg": "Alternate results retained; context paints and auto-start-reverse are not implemented by this binding."
+  },
+  "specifications": [
+    "https://www.w3.org/TR/SVG2/painting.html#Markers",
+    "https://www.w3.org/TR/SVG2/paths.html#PathElementImplementationNotes"
+  ]
+}
