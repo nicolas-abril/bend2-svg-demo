@@ -406,28 +406,68 @@ def path.arc(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, phi: F32,
       _ => arc.prepare(p, q, cmd, F32.abs(rx), F32.abs(ry), (phi * 0.017453292519943295 : F32),
         large, sweep, point.scale(point.sub(cur, q), 0.5))))
 
-def path.apply(+p: Path, +cmd: U32, +vs: List<&2, F32>) -> Path:
+# The command's numbers are read by pattern, exactly as many as it takes;
+# the parser has already counted them.
+def path.cursor(p: Path) -> Point:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
-  +c = upper(cmd)
-  +x = U.nth(vs, 0n, 0.0)
-  +y = U.nth(vs, 1n, 0.0)
-  +a = relative(cmd, cur, Point{x, y})
-  +b = relative(cmd, cur, Point{U.nth(vs, 2n, 0.0), U.nth(vs, 3n, 0.0)})
-  +q = relative(cmd, cur, Point{U.nth(vs, 4n, 0.0), U.nth(vs, 5n, 0.0)})
-  +cs = U.choose(Point, U32.is_eq(prev, 67) || U32.is_eq(prev, 83),
-    point.sub(point.scale(cur, 2.0), ctrl), cur)
-  +qs = U.choose(Point, U32.is_eq(prev, 81) || U32.is_eq(prev, 84),
-    point.sub(point.scale(cur, 2.0), ctrl), cur)
-  U.branch(Path, U32.is_eq(c, 77), _ => path.move(p, a, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 76), _ => path.line(p, a, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 72), _ => path.line(p, path.h(cur, x, cmd), cmd),
-    _ => U.branch(Path, U32.is_eq(c, 86), _ => path.line(p, path.v(cur, x, cmd), cmd),
-    _ => U.branch(Path, U32.is_eq(c, 67), _ => path.cubic(p, a, b, q, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 83), _ => path.cubic(p, cs, a, b, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 81), _ => path.quad(p, a, b, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 84), _ => path.quad(p, qs, a, cmd),
-    _ => U.branch(Path, U32.is_eq(c, 65), _ => path.arc(p, relative(cmd, cur, Point{U.nth(vs, 5n, 0.0), U.nth(vs, 6n, 0.0)}), cmd, x, y, U.nth(vs, 2n, 0.0), U.nth(vs, 3n, 0.0), U.nth(vs, 4n, 0.0)),
-    _ => p)))))))))
+  cur
+
+# The reflected control point of a smooth curve after a curve of the same
+# kind (commands a or b), else the current point.
+def path.smooth(p: Path, +a: U32, +b: U32) -> Point:
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  +c = cur
+  +pv = prev
+  U.choose(Point, U32.is_eq(pv, a) || U32.is_eq(pv, b), point.sub(point.scale(c, 2.0), ctrl), c)
+
+def path.apply(+p: Path, +cmd: U32, c: U32, vs: List<&2, F32>) -> Path:
+  match c:
+    case 77:
+      match vs:
+        case Con{x, Con{y, r}}:
+          path.move(p, relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 76:
+      match vs:
+        case Con{x, Con{y, r}}:
+          path.line(p, relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 72:
+      match vs:
+        case Con{x, r}:
+          path.line(p, path.h(path.cursor(p), x, cmd), cmd)
+        case _: p
+    case 86:
+      match vs:
+        case Con{y, r}:
+          path.line(p, path.v(path.cursor(p), y, cmd), cmd)
+        case _: p
+    case 67:
+      match vs:
+        case Con{x1, Con{y1, Con{x2, Con{y2, Con{x, Con{y, r}}}}}}:
+          path.cubic(p, relative(cmd, path.cursor(p), Point{x1, y1}), relative(cmd, path.cursor(p), Point{x2, y2}), relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 83:
+      match vs:
+        case Con{x2, Con{y2, Con{x, Con{y, r}}}}:
+          path.cubic(p, path.smooth(p, 67, 83), relative(cmd, path.cursor(p), Point{x2, y2}), relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 81:
+      match vs:
+        case Con{x1, Con{y1, Con{x, Con{y, r}}}}:
+          path.quad(p, relative(cmd, path.cursor(p), Point{x1, y1}), relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 84:
+      match vs:
+        case Con{x, Con{y, r}}:
+          path.quad(p, path.smooth(p, 81, 84), relative(cmd, path.cursor(p), Point{x, y}), cmd)
+        case _: p
+    case 65:
+      match vs:
+        case Con{rx, Con{ry, Con{rot, Con{large, Con{sweep, Con{x, Con{y, r}}}}}}}:
+          path.arc(p, relative(cmd, path.cursor(p), Point{x, y}), cmd, rx, ry, rot, large, sweep)
+        case _: p
+    case _: p
 
 def path.arity(+c: U32) -> Nat:
   U.choose(Nat, U32.is_eq(c, 90), 0n, U.choose(Nat, U32.is_eq(c, 72) || U32.is_eq(c, 86), 1n,
@@ -441,7 +481,7 @@ def path.step(kind: U32, p: Path, +cmd: U32, vs: List<&2, F32>) -> Path:
   match kind:
     case 0: p
     case 1: path.close(p)
-    case _: path.apply(p, cmd, vs)
+    case _: path.apply(p, cmd, upper(cmd), vs)
 
 # The command a bare number after `cmd` repeats: a move continues as a
 # line, a close as nothing (the parse ends), any other command as itself.
@@ -1148,12 +1188,30 @@ def points.rev(xs: List<&2, Point>, acc: List<&2, Point>) -> List<&2, Point>:
     case Nil{}: acc
     case Con{h, t}: points.rev(t, Con{h, acc})
 
-def points.clean(+xs: List<&2, Point>, +previous: Point) -> List<&2, Point>:
+# Repeated points dropped, each decided a step ahead: `near` says whether
+# h coincides with the point kept before it.
+@unsafe
+def points.clean.go(near: Bool, +h: Point, t: List<&2, Point>, +previous: Point) -> List<&2, Point>:
+  match near:
+    case True{}:
+      match t:
+        case Nil{}: Nil{}
+        case Con{h2, t2}:
+          +hh = h2
+          points.clean.go(F32.is_lt(point.distance(hh, previous), 0.0000001), hh, t2, previous)
+    case False{}:
+      match t:
+        case Nil{}: Con{h, Nil{}}
+        case Con{h2, t2}:
+          +hh = h2
+          Con{h, points.clean.go(F32.is_lt(point.distance(hh, h), 0.0000001), hh, t2, h)}
+
+def points.clean(xs: List<&2, Point>, +previous: Point) -> List<&2, Point>:
   match xs:
     case Nil{}: Nil{}
     case Con{h, t}:
-      U.branch(List<&2, Point>, F32.is_lt(point.distance(h, previous), 0.0000001),
-        _ => points.clean(t, previous), _ => Con{h, points.clean(t, h)})
+      +hh = h
+      points.clean.go(F32.is_lt(point.distance(hh, previous), 0.0000001), hh, t, previous)
 
 def subpath.finish(points: List<&2, Point>, closed: Bool, paths: List<&2, Subpath>) -> List<&2, Subpath>:
   match points:
@@ -1172,16 +1230,42 @@ def points.add(points: List<&2, Point>, a: Point, b: Point) -> List<&2, Point>:
     case Nil{}: Con{b, Con{a, Nil{}}}
     case Con{h, t}: Con{b, Con{h, t}}
 
-def subpaths(+es: List<&2, Edge>, +points: List<&2, Point>, +paths: List<&2, Subpath>) -> List<&2, Subpath>:
+# The polylines under construction: the current one's points (reversed)
+# and the finished subpaths.
+type Sub is Data:
+  Sub{points: List<&2, Point>, paths: List<&2, Subpath>}
+
+# 0 a fill-only edge (ends the current subpath, open), 1 a stroked edge
+# (extends it), 2 a closing edge (ends it, closed).
+def edge.kind(+stroked: Bool, +closed: Bool) -> U32:
+  U.choose(U32, stroked, U.choose(U32, closed, 2, 1), 0)
+
+def subpaths.add(kind: U32, +ax: F32, +ay: F32, +bx: F32, +by: F32, st: Sub) -> Sub:
+  match kind:
+    case 0:
+      Sub{points, paths} = st
+      Sub{Nil{}, subpath.finish(points, False{}, paths)}
+    case 1:
+      Sub{points, paths} = st
+      Sub{points.add(points, Point{ax, ay}, Point{bx, by}), paths}
+    case _:
+      Sub{points, paths} = st
+      Sub{Nil{}, subpath.finish(points.add(points, Point{ax, ay}, Point{bx, by}), True{}, paths)}
+
+def subpaths.finish(st: Sub) -> List<&2, Subpath>:
+  Sub{points, paths} = st
+  subpath.finish(points, False{}, paths)
+
+@unsafe
+def subpaths.go(kind: U32, +ax: F32, +ay: F32, +bx: F32, +by: F32, rest: List<&2, Edge>, st: Sub) -> List<&2, Subpath>:
+  match rest:
+    case Nil{}: subpaths.finish(subpaths.add(kind, ax, ay, bx, by, st))
+    case Con{Edge{x0, y0, x1, y1, s2, c2}, r2}: subpaths.go(edge.kind(s2, c2), x0, y0, x1, y1, r2, subpaths.add(kind, ax, ay, bx, by, st))
+
+def subpaths(es: List<&2, Edge>) -> List<&2, Subpath>:
   match es:
-    case Nil{}: subpath.finish(points, False{}, paths)
-    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}:
-      +ps = points.add(points, Point{ax, ay}, Point{bx, by})
-      U.branch(List<&2, Subpath>, stroked,
-        _ => U.branch(List<&2, Subpath>, closed,
-          _ => subpaths(rest, Nil{}, subpath.finish(ps, True{}, paths)),
-          _ => subpaths(rest, ps, paths)),
-        _ => subpaths(rest, Nil{}, subpath.finish(points, False{}, paths)))
+    case Nil{}: Nil{}
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}: subpaths.go(edge.kind(stroked, closed), ax, ay, bx, by, rest, Sub{Nil{}, Nil{}})
 
 type Segment is Data:
   Segment{px: F32, py: F32, qx: F32, qy: F32, ux: F32, uy: F32, length: F32, distance: F32}
@@ -1738,7 +1822,7 @@ def stroke.compile.paths(paths: List<&2, Subpath>, r: F32, +settings: StrokeSett
 
 # The stroke outline edges of a shape's edges, in the same units.
 def stroke.compile(es: List<&2, Edge>, r: F32, settings: StrokeSettings, ref: F32, declared: F32, +scale: F32) -> List<&2, Edge>:
-  stroke.compile.paths(subpaths(edges.rev(es, Nil{}), Nil{}, Nil{}), r, settings, ref, declared, scale)
+  stroke.compile.paths(subpaths(edges.rev(es, Nil{})), r, settings, ref, declared, scale)
 
 def bounds.empty() -> Bounds:
   Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)}
@@ -1782,22 +1866,25 @@ def edge.tree.inside(t: EdgeTree, p: Point, even: Bool) -> Bool:
   +w = edge.tree.winding(t, p)
   F32.is_gt(F32.abs(U.choose(F32, even, (w % 2.0 : F32), w)), 0.5)
 
-# A fill keeps its edge tree for point queries and picking; a cover, once built
-# for a raster, gives each pixel its exact coverage.
+# A fill keeps its bounds for the scene box and, once built for a raster,
+# the cover that gives each pixel its exact coverage. The edges stay with
+# the scene alone, so building the cover consumes them as their owner (the
+# covered scene keeps none); a point query without a cover, picking on the
+# compiled scene, walks them from there.
 type Fill is Data:
-  Fill{tree: EdgeTree, cover: Cover}
+  Fill{box: Bounds, cover: Cover}
 
-def fill.new(+es: List<&2, Edge>) -> Fill:
-  Fill{edge.tree(es), cover.none()}
+def fill.new(es: List<&2, Edge>) -> Fill:
+  Fill{bounds(es, bounds.empty()), cover.none()}
 
 def fill.bounds(f: Fill) -> Bounds:
-  Fill{tree, cover} = f
-  edge.tree.bounds(tree)
+  Fill{box, cover} = f
+  box
 
-def fill.coverage(f: Fill, +q: Point, +p: Point, +even: Bool) -> F32:
-  Fill{tree, cover} = f
+def fill.coverage(f: Fill, es: List<&2, Edge>, +q: Point, +p: Point, +even: Bool) -> F32:
+  Fill{box, cover} = f
   +cov = cover
-  U.branch(F32, cover.present(cov), _ => cover.at(cov, p), _ => U.choose(F32, edge.tree.inside(tree, q, even), 1.0, 0.0))
+  U.branch(F32, cover.present(cov), _ => cover.at(cov, p), _ => U.choose(F32, fill.inside(es, q, even), 1.0, 0.0))
 
 def bounds.disk(p: Point, +r: F32) -> Bounds:
   Point{x, y} = p
@@ -2804,10 +2891,10 @@ def paint.order.composite(+order: U32, +fill: Img.Color, +stroke: Img.Color, +ma
 # `limit` is the coverage the enclosing clips leave at this pixel; taking the
 # minimum with the shape's own coverage keeps an edge that coincides with a clip
 # edge (marker and image viewports) at its true coverage instead of squaring it.
-def scene.shape(es: Fill, +s: Style, ink: Paint<Brush>, outline: StrokeMesh, +p: Point, +paintPoint: Point, +worldPoint: Point, +linear: Bool, markers: Img.Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, +limit: F32) -> Img.Color:
+def scene.shape(f: Fill, es: List<&2, Edge>, +s: Style, ink: Paint<Brush>, outline: StrokeMesh, +p: Point, +paintPoint: Point, +worldPoint: Point, +linear: Bool, markers: Img.Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, +limit: F32) -> Img.Color:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   Paint{fc, sc} = ink
-  +fillCover = U.choose(F32, visible && Bool.not(U.string.equal(fill, "none")), U.min(fill.coverage(es, p, worldPoint, even), limit), 0.0)
+  +fillCover = U.choose(F32, visible && Bool.not(U.string.equal(fill, "none")), U.min(fill.coverage(f, es, p, worldPoint, even), limit), 0.0)
   +strokeCover = U.choose(F32, visible && Bool.not(U.string.equal(stroke, "none")) && F32.is_gt(width, 0.0), U.min(stroke.coverage(outline, worldPoint), limit), 0.0)
   paint.order.composite(order,
     U.branch(Img.Color, F32.is_gt(fillCover, 0.0), _ => color.fade(color.space(brush.sample(fc, p, paintPoint, fills), linear), fillCover), _ => Img.clear()),
@@ -2821,7 +2908,7 @@ def style.margin(s: Style) -> F32:
 def scene.local(+scene: Scene<Brush>, +p: Point, paintPoint: Point, linear: Bool, +markers: Img.Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, +limit: F32) -> Img.Color:
   Scene{es, box, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect} = scene
   +q = matrix.point(inv, p)
-  U.branch(Img.Color, bounds.inside(box, q, style.margin(style)) || style.nonScaling(style), _ => scene.shape(fillTree, style, ink, outline, q, matrix.point(inv, paintPoint), p, linear, markers, fills, strokes, limit), _ => markers)
+  U.branch(Img.Color, bounds.inside(box, q, style.margin(style)) || style.nonScaling(style), _ => scene.shape(fillTree, es, style, ink, outline, q, matrix.point(inv, paintPoint), p, linear, markers, fills, strokes, limit), _ => markers)
 
 # A rendered filter carries its clip as a plain factor; otherwise the clip
 # coverage travels down as the limit.
@@ -4091,11 +4178,12 @@ def cover.scale(+m: Matrix, +frame: Raster) -> F32:
   Raster{origin, step, width, height, depth, linear, pixels} = frame
   (F32.sqrt(F32.abs((a * d - b * c : F32))) / step : F32)
 
+# The covered mesh keeps its bounds and cover; its edges are consumed.
 def cover.stroke(mesh: StrokeMesh, +frame: Raster, +sub: U32, +trees: Bool) -> StrokeMesh:
   StrokeMesh{stree, inv, old} = mesh
-  +tree = stree
+  EdgeFlat{box, edges} = stree
   +iv = inv
-  StrokeMesh{tree, iv, cover.edges(cover.tree.edges(tree, Nil{}), matrix.inverse(iv), False{}, frame, sub, trees)}
+  StrokeMesh{EdgeFlat{box, Nil{}}, iv, cover.edges(edges, matrix.inverse(iv), False{}, frame, sub, trees)}
 
 def cover.clip(c: Clip, +frame: Raster, +sub: U32) -> Clip:
   match c:
@@ -4111,8 +4199,8 @@ def cover.clip(c: Clip, +frame: Raster, +sub: U32) -> Clip:
 def cover.fill.if(paints: Bool, f: Fill, es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Fill:
   match paints:
     case True{}:
-      Fill{tree, old} = f
-      Fill{tree, cover.edges(es, m, even, frame, sub, trees)}
+      Fill{box, old} = f
+      Fill{box, cover.edges(es, m, even, frame, sub, trees)}
     case False{}: f
 
 def cover.stroke.if(paints: Bool, mesh: StrokeMesh, +frame: Raster, +sub: U32, +trees: Bool) -> StrokeMesh:
@@ -4320,14 +4408,13 @@ def cover.scenes(xs: List<&2, Scene<Brush>>, +frame: Raster, +sub: U32, +trees: 
   match xs:
     case Nil{}: Nil{}
     case Con{Scene{es, box, inv, style, opacity, kids, id, ink, clip, outline, fill, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
-      +edges = es
       +iv = inv
       +st = style
       +m = matrix.inverse(iv)
       +half = (raster.scale(frame) * 0.5 + 0.01 : F32)
       +ik = ink
-      Con{Scene{edges, bounds.expand(box, cover.reach(iv, half)), iv, st, opacity, cover.scenes(kids, frame, sub, trees), id, cover.paint(ik, m, frame, sub, nodes => f => n => cover.scenes(nodes, f, n, True{}), nodes => f => n => cover.scenes(nodes, f, n, True{})), cover.image.clip(paint.fill(ik), cover.clip(clip, frame, sub), iv, frame, sub), cover.stroke.if(style.strokes(st), outline, frame, sub, trees),
-        cover.fill.if(style.fills(st), fill, edges, m, cover.rule(st), frame, sub, trees), cover.scenes(maskNodes, frame, sub, trees), maskMode, cover.scenes(markerNodes, frame, sub, trees), bounds.expand(coverage, half), effect}, cover.scenes(rest, frame, sub, trees)}
+      Con{Scene{Nil{}, bounds.expand(box, cover.reach(iv, half)), iv, st, opacity, cover.scenes(kids, frame, sub, trees), id, cover.paint(ik, m, frame, sub, nodes => f => n => cover.scenes(nodes, f, n, True{}), nodes => f => n => cover.scenes(nodes, f, n, True{})), cover.image.clip(paint.fill(ik), cover.clip(clip, frame, sub), iv, frame, sub), cover.stroke.if(style.strokes(st), outline, frame, sub, trees),
+        cover.fill.if(style.fills(st), fill, es, m, cover.rule(st), frame, sub, trees), cover.scenes(maskNodes, frame, sub, trees), maskMode, cover.scenes(markerNodes, frame, sub, trees), bounds.expand(coverage, half), effect}, cover.scenes(rest, frame, sub, trees)}
 
 def raster.scene(+format: Raster, +nodes: List<&2, Scene<Brush>>, +aa: U32) -> Raster:
   Raster{origin, step, width, height, depth, pixelsLinear, pixels} = format
@@ -5482,7 +5569,7 @@ def paint.cover(fb: Array<U32>, +cov: Cover, +tg: Target, +ctx: PaintCtx) -> Arr
 def paint.fill.if(cond: Bool, fb: Array<U32>, f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   match cond:
     case True{}:
-      Fill{tree, cover} = f
+      Fill{box, cover} = f
       paint.cover(fb, cover, tg, paint.context(brush, inv, linear, clips))
     case False{}: fb
 

@@ -213,10 +213,21 @@ def attr.pick(hit: Bool, +v: String, rest: Maybe<&2, String>) -> Maybe<&2, Strin
 
 # The attribute's value when present. Attribute lists are short, so the whole
 # list is walked without a lambda per entry.
+# The first attribute with the key, decided one entry ahead so the walk
+# stops at the hit instead of comparing every key.
+@unsafe
+def attr.find.go(hit: Bool, v: String, t: List<&2, Attr>, +key: String) -> Maybe<&2, String>:
+  match hit:
+    case True{}: Some{v}
+    case False{}:
+      match t:
+        case Nil{}: None{}
+        case Con{Attr{k2, v2}, t2}: attr.find.go(U.string.equal(k2, key), v2, t2, key)
+
 def attr.find(attrs: List<&2, Attr>, +key: String) -> Maybe<&2, String>:
   match attrs:
     case Nil{}: None{}
-    case Con{Attr{k, v}, t}: attr.pick(U.string.equal(k, key), v, attr.find(t, key))
+    case Con{Attr{k, v}, t}: attr.find.go(U.string.equal(k, key), v, t, key)
 
 def attr.or(found: Maybe<&2, String>, +fallback: String) -> String:
   match found:
