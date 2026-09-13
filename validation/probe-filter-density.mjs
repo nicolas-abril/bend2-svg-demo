@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {PNG} from 'pngjs';
 import {dirname,resolve} from 'node:path';
 const here=dirname(import.meta.filename),root=resolve(here,'..'),candidate=mkdtempSync(resolve(tmpdir(),'bend-svg-filter-density-'));
-for(const file of ['svg.bend','state.bend','render.bend','fonts.dat'])copyFileSync(resolve(root,file),resolve(candidate,file));
+for(const file of ['svg.bend','state.bend','render.bend','fonts/NotoSans-Regular.ttf','fonts/NotoSans-Bold.ttf','fonts/NotoSans-Italic.ttf','fonts/NotoSans-BoldItalic.ttf'])copyFileSync(resolve(root,file),resolve(candidate,file));
 const source=readFileSync(resolve(root,'svg.bend'),'utf8'),needle='raster.format(area, (1.0 / max(filter.density(space), 0.000001) : F32))';
 if(source.split(needle).length!==2)throw Error('Expected one unchanged filter-buffer density expression');
 const variant=source.replace(needle,'raster.format(area, (0.5 / max(filter.density(space), 0.000001) : F32))');writeFileSync(resolve(candidate,'svg.bend'),variant);

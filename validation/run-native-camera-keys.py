@@ -10,7 +10,7 @@ assert json.loads((v/'native-camera-report.json').read_text())['binarySHA256']==
 expected=json.loads((v/'native-camera-expected-sources.json').read_text())
 input=c/'native-key-input.svg';input.write_text(json.loads((v/'camera-cases.json').read_text())[0]['svg'])
 with (c/'native-key-app.log').open('w') as log:
- app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(input),'SVG_OUTPUT':str(output),'SVG_FONTS':str(r/'fonts.dat')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
+ app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(input),'SVG_OUTPUT':str(output),'SVG_FONTS':str(r/'fonts')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
  def key(code,char):
   p=subprocess.run(['swift','-module-cache-path',str(r/'build/swift-cache'),str(v/'native-target-input.swift'),str(app.pid),str(code),str(char)],capture_output=True,text=True)
   if p.returncode:raise RuntimeError(p.stdout+p.stderr)

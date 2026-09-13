@@ -1,7 +1,7 @@
 // Independent renderer only: separate text layout from rendering the same outlines.
 import{Resvg}from'@resvg/resvg-js';import{PNG}from'pngjs';import{readFileSync,writeFileSync}from'node:fs';import{resolve,dirname}from'node:path';
 const here=dirname(import.meta.filename),root=resolve(here,'..'),probe=JSON.parse(readFileSync(resolve(here,'text-length-position-probe.json'),'utf8')),positions=probe.results[0].bend,glyphs=new Map();
-for(const line of readFileSync(resolve(root,'fonts.dat'),'utf8').split('\n')){const[k,id,metrics,path]=line.split('|');if(k==='g')glyphs.set(id,path||'');}
+for(const line of readFileSync(resolve(root,'fonts'),'utf8').split('\n')){const[k,id,metrics,path]=line.split('|');if(k==='g')glyphs.set(id,path||'');}
 const colors=['#2879a8','#a64975','#488b65','#966d31'];let paths='';for(let row=0;row<4;row++)for(const[i,char]of Array.from('Bend').entries()){const[,x,y,a,b]=positions[row*4+i];paths+=`<path fill="${colors[row]}" d="${glyphs.get('0:'+char.codePointAt(0))}" transform="matrix(${a} ${b} 0 -.012 ${x} ${y})"/>`;}
 const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">${paths}</svg>`,out=new Resvg(svg,{background:'white'}).render();writeFileSync(resolve(here,'text-length-outlines.svg.txt'),svg);writeFileSync(resolve(here,'text-length-outlines-reference.png'),out.asPng());
 const bend=readFileSync(resolve(here,'text-length.ppm'),'utf8').trim().split(/\s+/).slice(4).map(Number),text=PNG.sync.read(readFileSync(resolve(here,'text-length-reference.png'))).data;const results=[];

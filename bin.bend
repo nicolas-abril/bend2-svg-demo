@@ -402,18 +402,12 @@ def bytes.zero(+size: U32) -> Bytes:
 
 # ---- files ----
 
-# A file's bytes as a string with one character per byte; File.read decodes UTF-8.
-def bytes.read.raw(path: String) -> IO(Result<&1, &1, U32 & String, String>):
+# A file's bytes, read straight into a byte tree by the effect (File.read
+# decodes UTF-8, and building the tree in Bend from a byte string costs a
+# cons cell per byte); Fail carries the errno and its message.
+def bytes.read.raw(path: String) -> IO(Result<&1, &1, U32 & String, Bytes>):
   import "./effs/bytes_read.c"
   import "./effs/bytes_read.js"
 
-def bytes.read.result(got: Result<&1, &1, U32 & String, String>) -> Result<&1, &1, U32 & String, Bytes>:
-  match got:
-    case Fail{err}: Fail{err}
-    case Done{text}: Done{bytes.string(text, bytes.empty())}
-
 def bytes.read(path: String) -> IO(Result<&1, &1, U32 & String, Bytes>):
-  do IO<Result<&1, &1, U32 & String, Bytes>>:
-    got : Result<&1, &1, U32 & String, String> <- bytes.read.raw(path)
-    IO.pure(Result<&1, &1, U32 & String, Bytes>, bytes.read.result(got))
-
+  bytes.read.raw(path)

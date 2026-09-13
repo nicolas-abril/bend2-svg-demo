@@ -20,7 +20,7 @@ for (const file of readdirSync(resolve(root, 'fixtures')).filter(x => x.endsWith
   const name = file.slice(0, -4), input = resolve(root, 'fixtures', file);
   const [cmd, args] = binary ? [binary, ['--gpu', 'off']] : ['bun', [bend, resolve(root, 'render.bend')]];
   const result = spawnSync(cmd, args, {
-    env: {...process.env, SVG_FONTS:resolve(root,'fonts.dat'), SVG_INPUT: input, SVG_WIDTH:'64', SVG_HEIGHT:'64', SVG_AA:String(aa)}, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+    env: {...process.env, SVG_FONTS:resolve(root,'fonts'), SVG_INPUT: input, SVG_WIDTH:'64', SVG_HEIGHT:'64', SVG_AA:String(aa)}, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
   });
   if (result.status) throw new Error(result.stderr || result.stdout);
   writeFileSync(resolve(here, `${name}.ppm`), result.stdout);

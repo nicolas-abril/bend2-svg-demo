@@ -3,7 +3,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {resolve,dirname} from 'node:path';
 import {createHash} from 'node:crypto';
 const here=dirname(import.meta.filename),root=process.env.SVG_APP_ROOT||resolve(here,'..');
-const sourceSHA256=Object.fromEntries(['svg.bend','state.bend','web.bend','web.html','fonts.dat'].map(f=>[f,createHash('sha256').update(readFileSync(resolve(root,f))).digest('hex')]));
+const sourceSHA256=Object.fromEntries(['svg.bend','state.bend','web.bend','web.html','fonts/NotoSans-Regular.ttf','fonts/NotoSans-Bold.ttf','fonts/NotoSans-Italic.ttf','fonts/NotoSans-BoldItalic.ttf'].map(f=>[f,createHash('sha256').update(readFileSync(resolve(root,f))).digest('hex')]));
 const prefix=process.env.SVG_VALIDATION_PREFIX||'camera';
 const reportPath=resolve(here,`browser-${prefix}${process.env.SVG_SERVER_BACKEND==='javascript'?'-js':''}-report.json`);
 const cases=JSON.parse(readFileSync(resolve(here,'camera-cases.json'),'utf8'));

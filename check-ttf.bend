@@ -5,7 +5,7 @@ import ./font.bend as Font
 
 # A Noto Sans subset (fontTools, "AVTo.,We" plus e-acute, kern feature kept) read
 # back as a font book face; expectations come from fontTools' outlines, metrics
-# and GPOS pair data, formatted like fonts.dat.
+# and GPOS pair data, in the text font format the checks use.
 def glyph.show(+cp: U32, g: Font.FontGlyph) -> String:
   Font.FontGlyph{advance, outline, gid, leftClass, rightClass} = g
   "g|0:" ++ U.choose(String, U32.is_eq(cp, 0), "?", U32.show(cp)) ++ "|" ++ F32.show(advance) ++ " " ++ U32.show(gid) ++ " " ++ U32.show(leftClass) ++ " " ++ U32.show(rightClass) ++ "|" ++ outline
@@ -13,9 +13,9 @@ def glyph.show(+cp: U32, g: Font.FontGlyph) -> String:
 def glyph(+book: Font.FontBook, +cp: U32) -> String:
   glyph.show(cp, Font.font.glyph(book, 0, cp))
 
+# A class-pair key (leftClass * 128 + rightClass) looked up through the face's GPOS.
 def kern(+book: Font.FontBook, +key: U32) -> String:
-  Font.FontBook{glyphs, kerning, metrics} = book
-  "k|0:" ++ U32.show(key) ++ "|" ++ F32.show(Font.font.number.result(Map.get(F32, 1000000.0, kerning, "0:" ++ U32.show(key))))
+  "k|0:" ++ U32.show(key) ++ "|" ++ F32.show(Font.font.kern(book, 0, 0, U32.div(key, 128), 0, U32.mod(key, 128)))
 
 def metric(+book: Font.FontBook, +name: String) -> String:
   "m|0:" ++ name ++ "|" ++ F32.show(Font.font.metric(book, 0, name, 1000000.0))

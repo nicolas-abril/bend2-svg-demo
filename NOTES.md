@@ -876,9 +876,9 @@ Timings on this machine, compiled renderer, the previous sampler versus now:
 | stroke-vector | 0.15 s | 0.03 s | 1.87 s | 0.20 s |
 | text-path-styles | 1.60 s | 1.50 s | 3.04 s | 1.63 s |
 
-Text fixtures are dominated by reading `fonts.dat` (about 1.3 s), not by
-rasterization; the interpreter renders `basic` at 64x64 in 1.4 s instead of
-6.5 s. `validation/compare.mjs` accepts `SVG_RENDER_BIN=build/render` to use
+Text fixtures were dominated by reading `fonts.dat` (about 1.3 s), not by
+rasterization (see the on-demand fonts section); the interpreter renders
+`basic` at 64x64 in 1.4 s instead of 6.5 s. `validation/compare.mjs` accepts `SVG_RENDER_BIN=build/render` to use
 the compiled renderer while iterating; the recorded matrices still come from
 the interpreter run and `native-all.mjs` proves C parity.
 
@@ -888,3 +888,40 @@ sum of mean errors over all fixtures is slightly lower than with the
 sub-sample grid; the transformed-pattern fixture moved from 0.95 to 1.52 there
 (its Chromium verdict still passes) and the clipping fixtures from 0.05 to
 0.2, both from tile resampling and the coincident-edge minimum.
+
+## On-demand fonts and byte trees
+
+Loading fonts was the whole text render time: `fonts.dat` (5 MB of text, every
+glyph of four faces as a path string) was read as a String, five million cons
+cells, and scanned into a map before layout began, 1.47 s of a 1.5 s render;
+the TrueType path decoded a file's byte string into a tree and walked every
+glyph into the book, 0.6 s per face. resvg maps the same four files and parses
+only their table directories, half a millisecond, because glyphs are decoded
+on demand.
+
+Two changes close that gap. `effs/bytes_read` now builds the `Bin.Bytes` tree
+itself, in C and in JavaScript, with packed byte leaves over the next power of
+two and a single zero leaf for the unused tail, so no Bend-side pass touches
+every byte. And `font.bend` keeps a TrueType face as its bytes plus table
+offsets (`TTFace`): `font.glyph` finds the glyph index by a binary search over
+the cmap format 4 segments or format 12 groups and decodes advance, outline and
+kerning classes for that glyph only; `font.kern` walks the GPOS format 1 pair
+sets and the class grid for the pair asked. The text-format book from
+`font.parse` remains for the check programs. `fonts.dat` and its generator are
+gone; `fonts/` holds the four Noto Sans files and `SVG_FONTS` names a directory
+or a file list. `check-ttf.bend` reads its kerning through `font.kern`, and
+`validation/ttf-parity.mjs` still reproduces all 15 text fixture matrices.
+
+Timings, compiled renderer, whole process including startup and output:
+
+| Fixture | fonts.dat, eager | TrueType, on demand |
+| --- | --- | --- |
+| text-path-styles 64x64 | 1.50 s | 0.07 s |
+| text-style 64x64 | 1.49 s | 0.08 s |
+| text-path-styles 256x256 | 1.63 s | 0.19 s |
+
+Loading the four faces now costs about 50 ms, almost all of it the byte tree
+(570 KB per file at two heap words per node); the glyph decodes for a fixture's
+few dozen characters are below the timer's noise. resvg renders the same
+fixture in half a millisecond in-process, so text is now about 100 times
+slower rather than 3000, the same ratio as shapes.

@@ -24,7 +24,7 @@ unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
 | `web.bend` | HTTP server forwarding requests to the shared reducer |
 | `web.html` | Browser controls, input transport and matrix presentation |
 | `render.bend` | Headless matrix export |
-| `fonts.dat` | Noto Sans outlines, metrics and kerning, parsed by Bend |
+| `fonts/` | The four Noto Sans TrueType files, read on demand by `font.bend` |
 | `check*.bend`, `validation/` | Regression checks, comparisons and recorded evidence |
 
 ## Run
@@ -45,12 +45,14 @@ make web-js                 # optional Bun/JavaScript backend
 ```
 
 Set `BEND_MAIN=/absolute/path/bend2/main.ts` for another core checkout. Run from
-this directory, or set `SVG_FONTS` to the absolute path of `fonts.dat`.
+this directory, or set `SVG_FONTS` to the absolute path of the `fonts` directory.
+`SVG_FONTS=a.ttf,b.ttf,...` names other TrueType files instead (regular, bold,
+italic, bold italic in that order). Files are read through `Bin.bytes.read`, a
+small foreign effect under `effs/` that returns a file's bytes as a byte tree,
+and a face is kept as those bytes: glyph outlines, advances and kerning are
+decoded from the tables when text first uses them, so loading a face costs a
+table-directory read.
 Set `SVG_INPUT=/absolute/path/drawing.svg` to load a document at startup.
-Set `SVG_TTF_FONTS=a.ttf,b.ttf,...` to load faces from TrueType files instead of
-`fonts.dat` (regular, bold, italic, bold italic in that order). They are read
-through `Bin.bytes.read`, a small foreign effect under `effs/` that returns a
-file's raw bytes, since `File.read` decodes UTF-8.
 The web server maintains one shared editor state and processes requests
 sequentially. HTTP carries the input/response protocol.
 
@@ -201,8 +203,8 @@ browser scripts and reports preserve earlier checkpoints; their fixed coordinate
 and matrices predate automatic fitting.
 
 Fonts are distributed under the [SIL Open Font License](FONT-LICENSE.txt).
-`validation/generate-fonts.py` rebuilds the bundled asset from the matching TTFs;
-this development tool is not used by the application.
+`make ttf` checks that the on-demand TrueType faces reproduce every saved text
+fixture matrix.
 
 Additional sampling and reference diagnostics are recorded in
 [text rasterization notes](validation/text-rasterization-investigation.md).

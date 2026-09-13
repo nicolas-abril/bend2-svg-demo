@@ -8,7 +8,7 @@ try:
  for name in ['kernels','units']:
   output=c/('native-convolve-'+name+'-saved.svg');output.unlink(missing_ok=True)
   with (c/('native-convolve-'+name+'.log')).open('w') as log:
-   app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(c/'fixtures'/('convolve-'+name+'.svg')),'SVG_OUTPUT':str(output),'SVG_FONTS':str(c/'fonts.dat')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
+   app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(c/'fixtures'/('convolve-'+name+'.svg')),'SVG_OUTPUT':str(output),'SVG_FONTS':str(c/'fonts')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
    try:
     wait=time.time();window=None
     while time.time()-wait<180:

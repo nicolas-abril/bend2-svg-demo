@@ -5,7 +5,7 @@ assert hashlib.sha256(binary.read_bytes()).hexdigest()=='d67764a86c1fa1f57f7105b
 for name,color in [('black','#000000'),('color','#5078a0'),('white','#ffffff')]:
  input=c/('calibration-'+name+'.svg');input.write_text('<svg width="256" height="256"><rect width="256" height="256" fill="'+color+'"/></svg>')
  with (c/('calibration-'+name+'.log')).open('w') as log:
-  app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(input),'SVG_FONTS':str(r/'fonts.dat')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
+  app=subprocess.Popen([str(binary),'--gpu','off'],cwd=c,env={**os.environ,'SVG_INPUT':str(input),'SVG_FONTS':str(r/'fonts')},stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
   try:
    start=time.time();window=None
    while time.time()-start<120:

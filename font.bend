@@ -3,15 +3,27 @@ import Base
 import ./util.bend as U
 import ./bin.bend as Bin
 
-# Noto font data is loaded once; all glyph lookup and layout remain in Bend.
+type TTFont is Data:
+  TTFont{glyf: U32, loca: U32, long: Bool, hmtx: U32, metrics: U32, glyphs: U32, units: F32}
+
+type TTPairs is Data:
+  TTPairs{specific: List<&2, U32>, classes: U32, coverage: U32, class1: U32, class2: U32}
+
+# A TrueType face stays as its bytes plus table offsets; glyphs and kerning
+# are read from it on demand (see font.glyph and font.kern at the end).
+type TTFace is Data:
+  TTFace{bytes: Bin.Bytes, font: TTFont, pairs: TTPairs, cmap: U32}
+
 type FontGlyph is Data:
   FontGlyph{advance: F32, outline: String, glyph: U32, leftClass: U32, rightClass: U32}
 
+# The glyph, kerning and metric maps hold text-format fonts (font.parse) and
+# every face's metrics; faces holds the lazily read TrueType faces by number.
 type FontBook is Data:
-  FontBook{glyphs: Map<&2, FontGlyph>, kerning: Map<&2, F32>, metrics: Map<&2, F32>}
+  FontBook{glyphs: Map<&2, FontGlyph>, kerning: Map<&2, F32>, metrics: Map<&2, F32>, faces: Map<&2, TTFace>}
 
 def font.empty() -> FontBook:
-  FontBook{MTip{}, MTip{}, MTip{}}
+  FontBook{MTip{}, MTip{}, MTip{}, MTip{}}
 
 def font.missing() -> FontGlyph:
   FontGlyph{600.0, "M94 0V714H505V0ZM151 57H448V657H151Z", 0, 0, 0}
@@ -25,34 +37,32 @@ def font.number.result(got: Map<&2, F32> & F32) -> F32:
   val
 
 def font.metric(book: FontBook, face: U32, name: String, fallback: F32) -> F32:
-  FontBook{glyphs, kerning, faceMetrics} = book
+  FontBook{glyphs, kerning, faceMetrics, faces} = book
   font.number.result(Map.get(F32, fallback, faceMetrics, U32.show(face) ++ ":" ++ name))
 
-def font.glyph(+book: FontBook, +face: U32, ch: U32) -> FontGlyph:
-  FontBook{glyphs, kerning, faceMetrics} = book
+def font.glyph.map(+glyphs: Map<&2, FontGlyph>, +face: U32, ch: U32) -> FontGlyph:
   font.glyph.result(Map.get(FontGlyph, font.glyph.result(Map.get(FontGlyph, font.missing(), glyphs, U32.show(face) ++ ":?")), glyphs, U32.show(face) ++ ":" ++ U32.show(ch)))
 
 def font.kern.value(+specific: F32, fallback: Unit -> F32) -> F32:
   U.branch(F32, F32.is_eq(specific, 1000000.0), _ => fallback(Unit{}), _ => specific)
 
-def font.kern(+book: FontBook, +face: U32, left: U32, leftClass: U32, right: U32, rightClass: U32) -> F32:
-  FontBook{glyphs, kerning, faceMetrics} = book
+def font.kern.map(+kerning: Map<&2, F32>, +face: U32, left: U32, leftClass: U32, right: U32, rightClass: U32) -> F32:
   font.kern.value(font.number.result(Map.get(F32, 1000000.0, kerning, U32.show(face) ++ ":" ++ U32.show((16777216 + left * 4096 + right : U32)))),
     _ => font.number.result(Map.get(F32, 0.0, kerning, U32.show(face) ++ ":" ++ U32.show((leftClass * 128 + rightClass : U32)))))
 
 def font.parse.glyph(key: String, scan: U.Scan, book: FontBook) -> FontBook:
   U.Scan{metrics, outline} = scan
-  FontBook{glyphs, kerning, faceMetrics} = book
+  FontBook{glyphs, kerning, faceMetrics, faces} = book
   +vs = U.numbers(metrics)
   FontBook{Map.set(&2, FontGlyph, glyphs, key, FontGlyph{U.nth(vs, 0n, 600.0), outline,
-    F32.to_u32(U.nth(vs, 1n, 0.0)), F32.to_u32(U.nth(vs, 2n, 0.0)), F32.to_u32(U.nth(vs, 3n, 0.0))}), kerning, faceMetrics}
+    F32.to_u32(U.nth(vs, 1n, 0.0)), F32.to_u32(U.nth(vs, 2n, 0.0)), F32.to_u32(U.nth(vs, 3n, 0.0))}), kerning, faceMetrics, faces}
 
 def font.parse.record(kind: String, +scan: U.Scan, +book: FontBook) -> FontBook:
   U.Scan{key, body} = scan
-  FontBook{glyphs, kerning, faceMetrics} = book
+  FontBook{glyphs, kerning, faceMetrics, faces} = book
   +tag = kind
   U.branch(FontBook, String.eq(tag, "g"), _ => font.parse.glyph(key, U.until(body, 124, ""), book),
-    _ => U.branch(FontBook, String.eq(tag, "k"), _ => FontBook{glyphs, Map.set(&2, F32, kerning, key, U.scalar(body, 0.0)), faceMetrics}, _ => U.branch(FontBook, String.eq(tag, "m"), _ => FontBook{glyphs, kerning, Map.set(&2, F32, faceMetrics, key, U.scalar(body, 0.0))}, _ => book)))
+    _ => U.branch(FontBook, String.eq(tag, "k"), _ => FontBook{glyphs, Map.set(&2, F32, kerning, key, U.scalar(body, 0.0)), faceMetrics, faces}, _ => U.branch(FontBook, String.eq(tag, "m"), _ => FontBook{glyphs, kerning, Map.set(&2, F32, faceMetrics, key, U.scalar(body, 0.0)), faces}, _ => book)))
 
 def font.parse.row(scan: U.Scan, book: FontBook) -> FontBook:
   U.Scan{kind, body} = scan
@@ -68,10 +78,11 @@ def font.parse(s: String, book: FontBook) -> FontBook:
     case SNil{}: book
     case SCon{c, t}: font.parse.line(U.until(SCon{c, t}, 10, ""), book, rest => fonts => font.parse(rest, fonts))
 # ---- TrueType reader ----
-# Reads glyf/loca/hmtx/cmap/OS/2/GPOS into one face of a font book: outlines
-# as SVG path data in font units (y up), advances, GPOS pair kerning (every
-# format 1 subtable and the first format 2 subtable of the first pair lookup)
-# and OS/2 metrics normalized by units per em. CFF outlines, collections,
+# Reads the table directory, glyf/loca/hmtx, cmap, OS/2 and GPOS of one face:
+# outlines as SVG path data in font units (y up), advances, GPOS pair kerning
+# (every format 1 subtable and the first format 2 subtable of the first pair
+# lookup) and OS/2 metrics normalized by units per em. Glyphs and kerning are
+# resolved when asked for, from the face's bytes. CFF outlines, collections,
 # WOFF wrappers and the legacy kern table are not read.
 
 def ttf.u8(+b: Bin.Bytes, +at: U32) -> U32:
@@ -105,9 +116,6 @@ def ttf.table.find(+b: Bin.Bytes, n: Nat, +at: U32, +tag: U32) -> U32:
 # Table offset by tag, read as a big-endian word; 0 when absent.
 def ttf.table(+b: Bin.Bytes, +tag: U32) -> U32:
   ttf.table.find(b, U32.to_nat(ttf.u16(b, 4)), 12, tag)
-
-type TTFont is Data:
-  TTFont{glyf: U32, loca: U32, long: Bool, hmtx: U32, metrics: U32, glyphs: U32, units: F32}
 
 def ttf.font(+b: Bin.Bytes) -> TTFont:
   +head = ttf.table(b, 1751474532)
@@ -509,9 +517,6 @@ def ttf.outline(g: TTGlyph) -> String:
 # ---- GPOS pair positioning ----
 
 # Format 1 subtables list specific glyph pairs; the first format 2 subtable supplies classes.
-type TTPairs is Data:
-  TTPairs{specific: List<&2, U32>, classes: U32, coverage: U32, class1: U32, class2: U32}
-
 def ttf.pairs.empty() -> TTPairs:
   TTPairs{Nil{}, 0, 0, 0, 0}
 
@@ -641,11 +646,6 @@ def ttf.right(+b: Bin.Bytes, +pairs: TTPairs, +gid: U32) -> U32:
 
 # ---- glyph records ----
 
-def ttf.record(+b: Bin.Bytes, +f: TTFont, +face: U32, +key: String, +gid: U32, +pairs: TTPairs, book: FontBook) -> FontBook:
-  FontBook{glyphs, kerning, metrics} = book
-  FontBook{Map.set(&2, FontGlyph, glyphs, U32.show(face) ++ ":" ++ key,
-    FontGlyph{ttf.advance(b, f, gid), ttf.outline(ttf.glyph(b, f, gid)), gid, ttf.left(b, pairs, gid), ttf.right(b, pairs, gid)}), kerning, metrics}
-
 # ---- cmap ----
 
 def ttf.cmap.score(+platform: U32, +encoding: U32) -> U32:
@@ -672,58 +672,52 @@ def ttf.cmap4.glyph(+b: Bin.Bytes, +cp: U32, +start: U32, +delta: U32, +roAt: U3
   U.branch(U32, U32.is_eq(ro, 0), _ => U32.and((cp + delta : U32), 65535),
     _ => ttf.cmap4.indexed(ttf.u16(b, (roAt + ro + (cp - start) * 2 : U32)), delta))
 
-def ttf.cmap4.range(+b: Bin.Bytes, +f: TTFont, +face: U32, n: Nat, +cp: U32, +start: U32, +delta: U32, +roAt: U32, +ro: U32, +pairs: TTPairs, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
+# Glyph index of a code point through the picked subtable: a binary search over
+# format 4 segments (first end code at or above the code point) or format 12 groups.
+def ttf.cmap4.find(+b: Bin.Bytes, fuel: Nat, +sub: U32, +lo: U32, +hi: U32, +cp: U32) -> U32:
+  match fuel:
+    case 0n: lo
     case 1n+d:
-      +bookDup = book
-      +gid = ttf.cmap4.glyph(b, cp, start, delta, roAt, ro)
-      ttf.cmap4.range(b, f, face, d, (cp + 1 : U32), start, delta, roAt, ro, pairs,
-        U.branch(FontBook, U32.is_eq(gid, 0), _ => bookDup, _ => ttf.record(b, f, face, U32.show(cp), gid, pairs, bookDup)))
+      +dd = d
+      +mid = U32.div((lo + hi : U32), 2)
+      U.branch(U32, U32.is_ge(lo, hi), _ => lo,
+        _ => U.branch(U32, U32.is_lt(ttf.u16(b, (sub + 14 + mid * 2 : U32)), cp), _ => ttf.cmap4.find(b, dd, sub, (mid + 1 : U32), hi, cp), _ => ttf.cmap4.find(b, dd, sub, lo, mid, cp)))
 
-def ttf.cmap4(+b: Bin.Bytes, +f: TTFont, +face: U32, +sub: U32, +pairs: TTPairs, n: Nat, +i: U32, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
+def ttf.cmap4.gid(+b: Bin.Bytes, +sub: U32, +cp: U32) -> U32:
+  +segX2 = ttf.u16(b, (sub + 6 : U32))
+  +count = U32.div(segX2, 2)
+  +i = ttf.cmap4.find(b, 20n, sub, 0, count, cp)
+  +start = ttf.u16(b, (sub + 16 + segX2 + i * 2 : U32))
+  +delta = ttf.u16(b, (sub + 16 + segX2 * 2 + i * 2 : U32))
+  +roAt = (sub + 16 + segX2 * 3 + i * 2 : U32)
+  U.branch(U32, U32.is_gt(cp, 65534) || U32.is_ge(i, count) || U32.is_lt(cp, start), _ => 0, _ => ttf.cmap4.glyph(b, cp, start, delta, roAt, ttf.u16(b, roAt)))
+
+def ttf.cmap12.find(+b: Bin.Bytes, fuel: Nat, +at: U32, +lo: U32, +hi: U32, +cp: U32) -> U32:
+  match fuel:
+    case 0n: lo
     case 1n+d:
-      +bookDup = book
-      +segX2 = ttf.u16(b, (sub + 6 : U32))
-      +end = ttf.u16(b, (sub + 14 + i * 2 : U32))
-      +start = ttf.u16(b, (sub + 16 + segX2 + i * 2 : U32))
-      +delta = ttf.u16(b, (sub + 16 + segX2 * 2 + i * 2 : U32))
-      +roAt = (sub + 16 + segX2 * 3 + i * 2 : U32)
-      +last = U.choose(U32, U32.is_lt(end, 65535), end, 65534)
-      ttf.cmap4(b, f, face, sub, pairs, d, (i + 1 : U32),
-        U.branch(FontBook, U32.is_le(start, last),
-          _ => ttf.cmap4.range(b, f, face, U32.to_nat((last - start + 1 : U32)), start, start, delta, roAt, ttf.u16(b, roAt), pairs, bookDup), _ => bookDup))
+      +dd = d
+      +mid = U32.div((lo + hi : U32), 2)
+      U.branch(U32, U32.is_ge(lo, hi), _ => lo,
+        _ => U.branch(U32, U32.is_lt(ttf.u32(b, (at + mid * 12 + 4 : U32)), cp), _ => ttf.cmap12.find(b, dd, at, (mid + 1 : U32), hi, cp), _ => ttf.cmap12.find(b, dd, at, lo, mid, cp)))
 
-def ttf.cmap12.range(+b: Bin.Bytes, +f: TTFont, +face: U32, n: Nat, +cp: U32, +gid: U32, +pairs: TTPairs, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
-    case 1n+d: ttf.cmap12.range(b, f, face, d, (cp + 1 : U32), (gid + 1 : U32), pairs, ttf.record(b, f, face, U32.show(cp), gid, pairs, book))
+def ttf.cmap12.gid(+b: Bin.Bytes, +sub: U32, +cp: U32) -> U32:
+  +at = (sub + 16 : U32)
+  +count = ttf.u32(b, (sub + 12 : U32))
+  +i = ttf.cmap12.find(b, 40n, at, 0, count, cp)
+  +start = ttf.u32(b, (at + i * 12 : U32))
+  U.branch(U32, U32.is_ge(i, count) || U32.is_lt(cp, start), _ => 0, _ => (ttf.u32(b, (at + i * 12 + 8 : U32)) + cp - start : U32))
 
-def ttf.cmap12(+b: Bin.Bytes, +f: TTFont, +face: U32, +pairs: TTPairs, n: Nat, +at: U32, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
-    case 1n+d:
-      +bookDup = book
-      +start = ttf.u32(b, at)
-      +end = ttf.u32(b, (at + 4 : U32))
-      ttf.cmap12(b, f, face, pairs, d, (at + 12 : U32),
-        U.branch(FontBook, U32.is_le(start, end) && U32.is_lt((end - start : U32), 65536),
-          _ => ttf.cmap12.range(b, f, face, U32.to_nat((end - start + 1 : U32)), start, ttf.u32(b, (at + 8 : U32)), pairs, bookDup), _ => bookDup))
-
-def ttf.cmap.sub(+b: Bin.Bytes, +f: TTFont, +face: U32, +sub: U32, +pairs: TTPairs, book: FontBook) -> FontBook:
-  +bookDup = book
+def ttf.cmap.gid(+b: Bin.Bytes, +sub: U32, +cp: U32) -> U32:
   +format = ttf.u16(b, sub)
-  U.branch(FontBook, U32.is_eq(format, 4), _ => ttf.cmap4(b, f, face, sub, pairs, U32.to_nat(U32.div(ttf.u16(b, (sub + 6 : U32)), 2)), 0, bookDup),
-    _ => U.branch(FontBook, U32.is_eq(format, 12), _ => ttf.cmap12(b, f, face, pairs, U32.to_nat(ttf.u32(b, (sub + 12 : U32))), (sub + 16 : U32), bookDup), _ => bookDup))
+  U.branch(U32, U32.is_eq(sub, 0), _ => 0,
+    _ => U.branch(U32, U32.is_eq(format, 4), _ => ttf.cmap4.gid(b, sub, cp),
+      _ => U.branch(U32, U32.is_eq(format, 12), _ => ttf.cmap12.gid(b, sub, cp), _ => 0)))
 
-# The best Unicode subtable (formats 4 and 12) maps every code point to a glyph record.
-def ttf.cmap(+b: Bin.Bytes, +f: TTFont, +face: U32, +pairs: TTPairs, book: FontBook) -> FontBook:
-  +bookDup = book
+# The best Unicode subtable (formats 4 and 12), 0 when the font has none.
+def ttf.cmap.subtable(+b: Bin.Bytes) -> U32:
   +cmap = ttf.table(b, 1668112752)
-  U.branch(FontBook, U32.is_eq(cmap, 0), _ => bookDup,
-    _ => ttf.cmap.sub(b, f, face, ttf.cmap.pick(b, U32.to_nat(ttf.u16(b, (cmap + 2 : U32))), cmap, (cmap + 4 : U32), 0, 0), pairs, bookDup))
+  U.branch(U32, U32.is_eq(cmap, 0), _ => 0, _ => ttf.cmap.pick(b, U32.to_nat(ttf.u16(b, (cmap + 2 : U32))), cmap, (cmap + 4 : U32), 0, 0))
 
 # ---- kerning values ----
 
@@ -737,60 +731,49 @@ def ttf.value.size(+vf: U32) -> U32:
 def ttf.xadvance(+b: Bin.Bytes, +at: U32, +vf: U32) -> F32:
   U.choose(F32, ttf.bit(vf, 4), ttf.i16(b, (at + ttf.bits(U32.and(vf, 3)) * 2 : U32)), 0.0)
 
-def ttf.kern.set(+face: U32, +key: U32, +value: F32, book: FontBook) -> FontBook:
-  FontBook{glyphs, kerning, metrics} = book
-  FontBook{glyphs, Map.set(&2, F32, kerning, U32.show(face) ++ ":" ++ U32.show(key), value), metrics}
-
-def ttf.kerning.records(+b: Bin.Bytes, +face: U32, +first: U32, +vf1: U32, +vf2: U32, n: Nat, +at: U32, book: FontBook) -> FontBook:
+# A format 1 pair set: the record whose second glyph matches, 1000000 when none.
+def ttf.kern.records(+b: Bin.Bytes, n: Nat, +at: U32, +vf1: U32, +vf2: U32, +right: U32) -> F32:
   match n:
-    case 0n: book
+    case 0n: 1000000.0
     case 1n+d:
-      +second = ttf.u16(b, at)
-      ttf.kerning.records(b, face, first, vf1, vf2, d, (at + 2 + ttf.value.size(vf1) + ttf.value.size(vf2) : U32),
-        ttf.kern.set(face, (16777216 + first * 4096 + second : U32), ttf.xadvance(b, (at + 2 : U32), vf1), book))
+      U.branch(F32, U32.is_eq(ttf.u16(b, at), right), _ => ttf.xadvance(b, (at + 2 : U32), vf1),
+        _ => ttf.kern.records(b, d, (at + 2 + ttf.value.size(vf1) + ttf.value.size(vf2) : U32), vf1, vf2, right))
 
-def ttf.kerning.sets(+b: Bin.Bytes, +face: U32, +sub: U32, +cov: U32, +vf1: U32, +vf2: U32, n: Nat, +i: U32, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
-    case 1n+d:
-      +set = (sub + ttf.u16(b, (sub + 10 + i * 2 : U32)) : U32)
-      ttf.kerning.sets(b, face, sub, cov, vf1, vf2, d, (i + 1 : U32),
-        ttf.kerning.records(b, face, ttf.coverage.glyph(b, cov, i), vf1, vf2, U32.to_nat(ttf.u16(b, set)), (set + 2 : U32), book))
+def ttf.kern.subtable(+b: Bin.Bytes, +sub: U32, +left: U32, +right: U32) -> F32:
+  +index = ttf.coverage(b, (sub + ttf.u16(b, (sub + 2 : U32)) : U32), left)
+  +vf1 = ttf.u16(b, (sub + 4 : U32))
+  +vf2 = ttf.u16(b, (sub + 6 : U32))
+  +set = (sub + ttf.u16(b, (sub + 10 + (index - 1) * 2 : U32)) : U32)
+  U.branch(F32, U32.is_eq(index, 0), _ => 1000000.0, _ => ttf.kern.records(b, U32.to_nat(ttf.u16(b, set)), (set + 2 : U32), vf1, vf2, right))
 
-def ttf.kerning.specific(+b: Bin.Bytes, +face: U32, subs: List<&2, U32>, book: FontBook) -> FontBook:
+# Every format 1 subtable in turn; the first pair found wins.
+def ttf.kern.specific(+b: Bin.Bytes, subs: List<&2, U32>, +left: U32, +right: U32) -> F32:
   match subs:
-    case Nil{}: book
+    case Nil{}: 1000000.0
     case Con{sub, rest}:
-      +s = sub
-      ttf.kerning.specific(b, face, rest, ttf.kerning.sets(b, face, s, (s + ttf.u16(b, (s + 2 : U32)) : U32), ttf.u16(b, (s + 4 : U32)), ttf.u16(b, (s + 6 : U32)), U32.to_nat(ttf.u16(b, (s + 8 : U32))), 0, book))
+      +v = ttf.kern.subtable(b, sub, left, right)
+      U.branch(F32, F32.is_eq(v, 1000000.0), _ => ttf.kern.specific(b, rest, left, right), _ => v)
 
-def ttf.kerning.grid(+b: Bin.Bytes, +face: U32, +at: U32, +vf1: U32, +size: U32, +columns: U32, n: Nat, +k: U32, book: FontBook) -> FontBook:
-  match n:
-    case 0n: book
-    case 1n+d:
-      +bookDup = book
-      +v = ttf.xadvance(b, (at + k * size : U32), vf1)
-      ttf.kerning.grid(b, face, at, vf1, size, columns, d, (k + 1 : U32),
-        U.branch(FontBook, F32.is_eq(v, 0.0), _ => bookDup, _ => ttf.kern.set(face, ((U32.div(k, columns) + 1) * 128 + U32.mod(k, columns) : U32), v, bookDup)))
-
-def ttf.kerning.classes(+b: Bin.Bytes, +face: U32, +sub: U32, book: FontBook) -> FontBook:
-  +bookDup = book
+# The format 2 class grid; leftClass counts from one (0 means uncovered).
+def ttf.kern.classes(+b: Bin.Bytes, +sub: U32, +leftClass: U32, +rightClass: U32) -> F32:
   +vf1 = ttf.u16(b, (sub + 4 : U32))
   +vf2 = ttf.u16(b, (sub + 6 : U32))
   +rows = ttf.u16(b, (sub + 12 : U32))
   +columns = ttf.u16(b, (sub + 14 : U32))
-  U.branch(FontBook, U32.is_eq(sub, 0) || U32.is_eq(columns, 0), _ => bookDup,
-    _ => ttf.kerning.grid(b, face, (sub + 16 : U32), vf1, (ttf.value.size(vf1) + ttf.value.size(vf2) : U32), columns, U32.to_nat((rows * columns : U32)), 0, bookDup))
+  +size = (ttf.value.size(vf1) + ttf.value.size(vf2) : U32)
+  U.branch(F32, U32.is_eq(sub, 0) || U32.is_eq(leftClass, 0) || U32.is_gt(leftClass, rows) || U32.is_ge(rightClass, columns), _ => 0.0,
+    _ => ttf.xadvance(b, (sub + 16 + ((leftClass - 1) * columns + rightClass) * size : U32), vf1))
 
-def ttf.kerning(+b: Bin.Bytes, +face: U32, pairs: TTPairs, book: FontBook) -> FontBook:
+def ttf.kern(+fc: TTFace, +left: U32, +leftClass: U32, +right: U32, +rightClass: U32) -> F32:
+  TTFace{b, f, pairs, cmap} = fc
   TTPairs{specific, classes, coverage, class1, class2} = pairs
-  ttf.kerning.classes(b, face, classes, ttf.kerning.specific(b, face, specific, book))
+  font.kern.value(ttf.kern.specific(b, specific, left, right), _ => ttf.kern.classes(b, classes, leftClass, rightClass))
 
 # ---- OS/2 metrics ----
 
 def ttf.metric(+face: U32, +name: String, +value: F32, book: FontBook) -> FontBook:
-  FontBook{glyphs, kerning, metrics} = book
-  FontBook{glyphs, kerning, Map.set(&2, F32, metrics, U32.show(face) ++ ":" ++ name, value)}
+  FontBook{glyphs, kerning, metrics, faces} = book
+  FontBook{glyphs, kerning, Map.set(&2, F32, metrics, U32.show(face) ++ ":" ++ name, value), faces}
 
 def ttf.metrics(+b: Bin.Bytes, +face: U32, +os2: U32, +units: F32, book: FontBook) -> FontBook:
   +bookDup = book
@@ -802,15 +785,47 @@ def ttf.metrics(+b: Bin.Bytes, +face: U32, +os2: U32, +units: F32, book: FontBoo
           ttf.metric(face, "descender", (ttf.i16(b, (os2 + 70 : U32)) / units : F32),
             U.branch(FontBook, U32.is_ge(version, 2), _ => ttf.metric(face, "xheight", (ttf.i16(b, (os2 + 86 : U32)) / units : F32), bookDup), _ => bookDup))))))
 
-# Adds one face from TrueType bytes: glyphs keyed "face:codepoint", the missing
-# glyph "face:?", kerning and metrics. Fonts without glyf/loca/hmtx leave the book unchanged.
-def font.ttf(+face: U32, +b: Bin.Bytes, book: FontBook) -> FontBook:
-  +bookDup = book
+# Adds one face from TrueType bytes: the face record for on-demand glyphs and
+# kerning, and its OS/2 metrics. Fonts without glyf/loca/hmtx leave the book unchanged.
+def font.ttf(+face: U32, +b: Bin.Bytes, +book: FontBook) -> FontBook:
+  FontBook{glyphs, kerning, metrics, faces} = book
   +f = ttf.font(b)
-  +pairs = ttf.pairs(b)
   U.branch(FontBook, ttf.valid(f),
-    _ => ttf.metrics(b, face, ttf.table(b, 1330851634), ttf.units(f), ttf.kerning(b, face, pairs, ttf.cmap(b, f, face, pairs, ttf.record(b, f, face, "?", 0, pairs, bookDup)))),
-    _ => bookDup)
+    _ => ttf.metrics(b, face, ttf.table(b, 1330851634), ttf.units(f), FontBook{glyphs, kerning, metrics, Map.set(&2, TTFace, faces, U32.show(face), TTFace{b, f, ttf.pairs(b), ttf.cmap.subtable(b)})}),
+    _ => FontBook{glyphs, kerning, metrics, faces})
 
 def font.ttf.base64(+face: U32, +text: String, book: FontBook) -> FontBook:
   font.ttf(face, Bin.base64(text), book)
+
+# ---- lookups ----
+
+def font.face.absent() -> TTFace:
+  TTFace{Bin.bytes.empty(), TTFont{0, 0, False{}, 0, 0, 0, 0.0}, TTPairs{Nil{}, 0, 0, 0, 0}, 0}
+
+def font.face.result(got: Map<&2, TTFace> & TTFace) -> TTFace:
+  (map, fc) = got
+  fc
+
+def font.face(+faces: Map<&2, TTFace>, +face: U32) -> TTFace:
+  font.face.result(Map.get(TTFace, font.face.absent(), faces, U32.show(face)))
+
+def font.face.present(+fc: TTFace) -> Bool:
+  TTFace{b, f, pairs, cmap} = fc
+  ttf.valid(f)
+
+# A glyph read on demand: cmap to glyph index (0, the missing glyph, when
+# unmapped), then advance, outline and kerning classes from the tables.
+def ttf.lookup(+fc: TTFace, +ch: U32) -> FontGlyph:
+  TTFace{b, f, pairs, cmap} = fc
+  +gid = ttf.cmap.gid(b, cmap, ch)
+  FontGlyph{ttf.advance(b, f, gid), ttf.outline(ttf.glyph(b, f, gid)), gid, ttf.left(b, pairs, gid), ttf.right(b, pairs, gid)}
+
+def font.glyph(+book: FontBook, +face: U32, +ch: U32) -> FontGlyph:
+  FontBook{glyphs, kerning, faceMetrics, faces} = book
+  +fc = font.face(faces, face)
+  U.branch(FontGlyph, font.face.present(fc), _ => ttf.lookup(fc, ch), _ => font.glyph.map(glyphs, face, ch))
+
+def font.kern(+book: FontBook, +face: U32, +left: U32, +leftClass: U32, +right: U32, +rightClass: U32) -> F32:
+  FontBook{glyphs, kerning, faceMetrics, faces} = book
+  +fc = font.face(faces, face)
+  U.branch(F32, font.face.present(fc), _ => ttf.kern(fc, left, leftClass, right, rightClass), _ => font.kern.map(kerning, face, left, leftClass, right, rightClass))

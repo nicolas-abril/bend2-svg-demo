@@ -323,16 +323,6 @@ def example() -> String:
     ++ "<circle cx=\"178\" cy=\"87\" r=\"47\" fill=\"#4682b4\"/>"
     ++ "<path d=\"M25 217 Q64 112 100 190 T197 181 L230 225Z\" fill=\"#79bd4a\"/></svg>"
 
-def fonts.read(path: String) -> IO(Font.FontBook):
-  do IO<Font.FontBook>:
-    data : String <- read(path)
-    return Font.font.parse(data, Font.font.empty())
-
-def fonts.env(env: Result<&1, &1, U32 & String, String>) -> IO(Font.FontBook):
-  match env:
-    case Fail{err}: fonts.read("fonts.dat")
-    case Done{path}: fonts.read(path)
-
 def fonts.ttf.step(rest: String, +face: U32, loaded: Font.FontBook, next: String -> U32 -> Font.FontBook -> IO(Font.FontBook)) -> IO(Font.FontBook):
   match rest:
     case SNil{}: IO.pure(Font.FontBook, loaded)
@@ -344,7 +334,6 @@ def fonts.ttf.got(+face: U32, got: Result<&1, &1, U32 & String, Bin.Bytes>, book
     case Fail{err}: book
     case Done{bytes}: Font.font.ttf(face, bytes, book)
 
-# SVG_TTF_FONTS lists TrueType files, one face each in order (regular, bold, italic, bold italic).
 @unsafe
 def fonts.ttf.list(scan: U.Scan, +face: U32, book: Font.FontBook) -> IO(Font.FontBook):
   U.Scan{path, rest} = scan
@@ -352,16 +341,23 @@ def fonts.ttf.list(scan: U.Scan, +face: U32, book: Font.FontBook) -> IO(Font.Fon
     got : Result<&1, &1, U32 & String, Bin.Bytes> <- Bin.bytes.read(path)
     fonts.ttf.step(rest, face, fonts.ttf.got(face, got, book), more => f => loaded => fonts.ttf.list(U.until(more, 44, ""), f, loaded))
 
-def fonts.pick(ttf: Result<&1, &1, U32 & String, String>, env: Result<&1, &1, U32 & String, String>) -> IO(Font.FontBook):
-  match ttf:
-    case Fail{err}: fonts.env(env)
-    case Done{paths}: fonts.ttf.list(U.until(paths, 44, ""), 0, Font.font.empty())
+# The four bundled Noto Sans faces in a directory, in face order.
+def fonts.directory(+dir: String) -> String:
+  dir ++ "/NotoSans-Regular.ttf," ++ dir ++ "/NotoSans-Bold.ttf," ++ dir ++ "/NotoSans-Italic.ttf," ++ dir ++ "/NotoSans-BoldItalic.ttf"
+
+# SVG_FONTS lists TrueType files, one face each in order (regular, bold, italic,
+# bold italic), or names a directory holding the Noto Sans files; default "fonts".
+def fonts.paths(env: Result<&1, &1, U32 & String, String>) -> String:
+  match env:
+    case Fail{err}: fonts.directory("fonts")
+    case Done{value}:
+      +v = value
+      U.branch(String, U.string.contains(v, ".ttf"), _ => v, _ => fonts.directory(v))
 
 def read.fonts() -> IO(Font.FontBook):
   do IO<Font.FontBook>:
-    ttf : Result<&1, &1, U32 & String, String> <- IO.get_env("SVG_TTF_FONTS")
     env : Result<&1, &1, U32 & String, String> <- IO.get_env("SVG_FONTS")
-    fonts.pick(ttf, env)
+    fonts.ttf.list(U.until(fonts.paths(env), 44, ""), 0, Font.font.empty())
 
 def initial.env(env: Result<&1, &1, U32 & String, String>, +fonts: Font.FontBook) -> IO(State):
   match env:

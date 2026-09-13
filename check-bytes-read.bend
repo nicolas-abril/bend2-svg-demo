@@ -13,8 +13,8 @@ def show(got: Result<&1, &1, U32 & String, Bin.Bytes>) -> String:
 
 def main() -> IO(Unit):
   do IO<Unit>:
-    got : Result<&1, &1, U32 & String, Bin.Bytes> <- Bin.bytes.read("validation/fonts/NotoSans-Regular.ttf")
-    missing : Result<&1, &1, U32 & String, Bin.Bytes> <- Bin.bytes.read("validation/fonts/none.ttf")
+    got : Result<&1, &1, U32 & String, Bin.Bytes> <- Bin.bytes.read("fonts/NotoSans-Regular.ttf")
+    missing : Result<&1, &1, U32 & String, Bin.Bytes> <- Bin.bytes.read("fonts/none.ttf")
     Unit <- IO.print(show(got))
     IO.print(show(missing))
 
