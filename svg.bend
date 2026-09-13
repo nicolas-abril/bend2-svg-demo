@@ -1603,6 +1603,101 @@ def style.inherit(+s: Style, +as: List<&2, XML.Attr>, +ref: F32) -> Style:
     U.string.equal(style.value(as, "fill-rule", U.choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
     U.string.equal(style.value(as, "visibility", U.choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{}), paint.order.value(style.value(as, "paint-order", paint.order.name(po), "normal", True{}), po)}
 
+# The properties a resource may inherit, in the order every resolved list
+# carries them; a resolved parent list starts with the same keys in the same
+# order, so a parent's value is read positionally and only the element's own
+# attributes are searched by name.
+type Prop is Data:
+  Prop{key: String, initial: String, inherited: Bool}
+
+def props.spec() -> List<&2, Prop>:
+  Con{Prop{"color", "black", True{}}, Con{Prop{"color-interpolation", "sRGB", True{}}, Con{Prop{"stop-color", "black", False{}}, Con{Prop{"stop-opacity", "1", False{}},
+    Con{Prop{"fill", "black", True{}}, Con{Prop{"stroke", "none", True{}}, Con{Prop{"stroke-width", "1", True{}}, Con{Prop{"fill-opacity", "1", True{}},
+    Con{Prop{"stroke-opacity", "1", True{}}, Con{Prop{"fill-rule", "nonzero", True{}}, Con{Prop{"clip-rule", "nonzero", True{}}, Con{Prop{"stroke-linecap", "butt", True{}},
+    Con{Prop{"stroke-linejoin", "miter", True{}}, Con{Prop{"stroke-miterlimit", "4", True{}}, Con{Prop{"stroke-dasharray", "none", True{}}, Con{Prop{"stroke-dashoffset", "0", True{}},
+    Con{Prop{"visibility", "visible", True{}}, Con{Prop{"opacity", "1", False{}}, Con{Prop{"image-rendering", "auto", True{}}, Con{Prop{"color-interpolation-filters", "linearRGB", True{}},
+    Con{Prop{"flood-color", "black", False{}}, Con{Prop{"flood-opacity", "1", False{}}, Con{Prop{"marker-start", "none", True{}}, Con{Prop{"marker-mid", "none", True{}},
+    Con{Prop{"marker-end", "none", True{}}, Nil{}}}}}}}}}}}}}}}}}}}}}}}}}}
+
+def props.head.pick(hit: Bool, +v: String, whole: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
+  match hit:
+    case True{}: v
+    case False{}: XML.attr.get(whole, key, initial)
+
+# The parent's value for key: the head when the parent list is resolved, else by name.
+def props.head.value(parent: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
+  match parent:
+    case Nil{}: initial
+    case Con{XML.Attr{k, v}, t}:
+      +kk = k
+      +vv = v
+      props.head.pick(U.string.equal(kk, key), vv, Con{XML.Attr{kk, vv}, t}, key, initial)
+
+def props.advance.pick(hit: Bool, whole: List<&2, XML.Attr>, rest: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
+  match hit:
+    case True{}: rest
+    case False{}: whole
+
+def props.advance(parent: List<&2, XML.Attr>, +key: String) -> List<&2, XML.Attr>:
+  match parent:
+    case Nil{}: Nil{}
+    case Con{XML.Attr{k, v}, t}:
+      +kk = k
+      +tt = t
+      props.advance.pick(U.string.equal(kk, key), Con{XML.Attr{kk, v}, tt}, tt)
+
+def props.fold(spec: List<&2, Prop>, +parent: List<&2, XML.Attr>, +as: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
+  match spec:
+    case Nil{}: as
+    case Con{Prop{key, initial, inherited}, rest}:
+      +k = key
+      +ini = initial
+      Con{XML.Attr{k, style.value(as, k, props.head.value(parent, k, ini), ini, inherited)}, props.fold(rest, props.advance(parent, k), as)}
+
+# Referenced elements (gradients, patterns, markers, clip paths, masks,
+# filters) get their inherited properties on demand: the raw tree is kept
+# under a root element whose attributes are the root svg's, and a lookup
+# by id resolves the properties down the ancestor chain of the element it
+# finds. Nothing is resolved for the elements a document never references.
+def resources(xs: List<&2, XML.Element>, +root: List<&2, XML.Attr>) -> List<&2, XML.Element>:
+  Con{XML.Element{"#root", root, xs, ""}, Nil{}}
+
+# The subtree of a found element gets its properties resolved too, since its
+# content (stops, primitives, pattern or marker content) inherits from it.
+def resources.tree(xs: List<&2, XML.Element>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Element>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{XML.Element{n, attrs, kids, txt}, rest}:
+      +props = props.fold(props.spec(), parent, CSS.properties(attrs))
+      Con{XML.Element{n, props, resources.tree(kids, props), txt}, resources.tree(rest, parent)}
+
+# The properties of an element below a chain of raw ancestor attribute
+# lists, outermost last.
+def resource.resolve(chain: List<&2, List<&2, XML.Attr>>, own: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
+  match chain:
+    case Nil{}: own
+    case Con{as, rest}: props.fold(props.spec(), resource.resolve(rest, as), own)
+
+def resource.found(+n: String, +props: List<&2, XML.Attr>, kids: List<&2, XML.Element>, +txt: String) -> Maybe<&2, XML.Element>:
+  Some{XML.Element{n, props, resources.tree(kids, props), txt}}
+
+# A lookup runs rarely, so it branches through lambdas over copies.
+def resource.search(xs: List<&2, XML.Element>, +id: String, +chain: List<&2, List<&2, XML.Attr>>) -> Maybe<&2, XML.Element>:
+  match xs:
+    case Nil{}: None{}
+    case Con{XML.Element{n, as, kids, txt}, rest}:
+      +nn = n
+      +attrs = as
+      +kk = kids
+      +tt = txt
+      U.branch(Maybe<&2, XML.Element>, U.string.equal(XML.attr.get(attrs, "id", ""), id),
+        _ => resource.found(nn, resource.resolve(chain, CSS.properties(attrs)), kk, tt),
+        _ => XML.element.prefer(U.branch(Maybe<&2, XML.Element>, U.string.equal(nn, "#svg-image"), _ => None{}, _ => resource.search(kk, id, Con{attrs, chain})),
+          resource.search(rest, id, chain)))
+
+def resource.find(+all: List<&2, XML.Element>, +id: String) -> Maybe<&2, XML.Element>:
+  resource.search(all, id, Nil{})
+
 # Gradient resources are compiled into paint functions before rasterization.
 type Stop is Data:
   Stop{offset: F32, color: Img.Color}
@@ -1658,7 +1753,7 @@ def gradient.resolve(depth: Nat, +node: XML.Element, +all: List<&2, XML.Element>
       XML.Element{n, as, kids, txt} = node
       +href = XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))
       U.branch(XML.Element, U.prefix(href, "#"),
-        _ => gradient.reference(node, XML.element.find(all, U.drop(href, "#")), e => gradient.resolve(d, e, all)), _ => node)
+        _ => gradient.reference(node, resource.find(all, U.drop(href, "#")), e => gradient.resolve(d, e, all)), _ => node)
 
 def srgb.linear(+v: F32) -> F32:
   U.branch(F32, F32.is_le(v, 0.04045), _ => (v / 12.92 : F32), _ => F32.pow(((v + 0.055) / 1.055 : F32), 2.4))
@@ -1678,64 +1773,6 @@ def stop.color(c: Img.Color, opacity: F32, +linear: Bool) -> Img.Color:
 
 def property.value(+as: List<&2, XML.Attr>, +parent: List<&2, XML.Attr>, +key: String, +initial: String, inherited: Bool) -> String:
   style.value(as, key, XML.attr.get(parent, key, initial), initial, inherited)
-
-# The properties a resource may inherit, in the order every resolved list
-# carries them; a resolved parent list starts with the same keys in the same
-# order, so a parent's value is read positionally and only the element's own
-# attributes are searched by name.
-type Prop is Data:
-  Prop{key: String, initial: String, inherited: Bool}
-
-def props.spec() -> List<&2, Prop>:
-  Con{Prop{"color", "black", True{}}, Con{Prop{"color-interpolation", "sRGB", True{}}, Con{Prop{"stop-color", "black", False{}}, Con{Prop{"stop-opacity", "1", False{}},
-    Con{Prop{"fill", "black", True{}}, Con{Prop{"stroke", "none", True{}}, Con{Prop{"stroke-width", "1", True{}}, Con{Prop{"fill-opacity", "1", True{}},
-    Con{Prop{"stroke-opacity", "1", True{}}, Con{Prop{"fill-rule", "nonzero", True{}}, Con{Prop{"clip-rule", "nonzero", True{}}, Con{Prop{"stroke-linecap", "butt", True{}},
-    Con{Prop{"stroke-linejoin", "miter", True{}}, Con{Prop{"stroke-miterlimit", "4", True{}}, Con{Prop{"stroke-dasharray", "none", True{}}, Con{Prop{"stroke-dashoffset", "0", True{}},
-    Con{Prop{"visibility", "visible", True{}}, Con{Prop{"opacity", "1", False{}}, Con{Prop{"image-rendering", "auto", True{}}, Con{Prop{"color-interpolation-filters", "linearRGB", True{}},
-    Con{Prop{"flood-color", "black", False{}}, Con{Prop{"flood-opacity", "1", False{}}, Con{Prop{"marker-start", "none", True{}}, Con{Prop{"marker-mid", "none", True{}},
-    Con{Prop{"marker-end", "none", True{}}, Nil{}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-def props.head.pick(hit: Bool, +v: String, whole: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
-  match hit:
-    case True{}: v
-    case False{}: XML.attr.get(whole, key, initial)
-
-# The parent's value for key: the head when the parent list is resolved, else by name.
-def props.head.value(parent: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
-  match parent:
-    case Nil{}: initial
-    case Con{XML.Attr{k, v}, t}:
-      +kk = k
-      +vv = v
-      props.head.pick(U.string.equal(kk, key), vv, Con{XML.Attr{kk, vv}, t}, key, initial)
-
-def props.advance.pick(hit: Bool, whole: List<&2, XML.Attr>, rest: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  match hit:
-    case True{}: rest
-    case False{}: whole
-
-def props.advance(parent: List<&2, XML.Attr>, +key: String) -> List<&2, XML.Attr>:
-  match parent:
-    case Nil{}: Nil{}
-    case Con{XML.Attr{k, v}, t}:
-      +kk = k
-      +tt = t
-      props.advance.pick(U.string.equal(kk, key), Con{XML.Attr{kk, v}, tt}, tt)
-
-def props.fold(spec: List<&2, Prop>, +parent: List<&2, XML.Attr>, +as: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  match spec:
-    case Nil{}: as
-    case Con{Prop{key, initial, inherited}, rest}:
-      +k = key
-      +ini = initial
-      Con{XML.Attr{k, style.value(as, k, props.head.value(parent, k, ini), ini, inherited)}, props.fold(rest, props.advance(parent, k), as)}
-
-def resources(xs: List<&2, XML.Element>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Element>:
-  match xs:
-    case Nil{}: Nil{}
-    case Con{XML.Element{n, attrs, kids, txt}, rest}:
-      +props = props.fold(props.spec(), parent, CSS.properties(attrs))
-      Con{XML.Element{n, props, resources(kids, props), txt}, resources(rest, parent)}
 
 def gradient.stops(xs: List<&2, XML.Element>, +as: List<&2, XML.Attr>, +previous: F32, +linear: Bool) -> List<&2, Stop>:
   match xs:
@@ -2033,7 +2070,7 @@ def brush.resource(result: Maybe<&2, XML.Element>, +all: List<&2, XML.Element>, 
 
 def brush.url(+scan: U.Scan, +all: List<&2, XML.Element>, box: Bounds, w: F32, h: F32, opacity: F32, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
   U.Scan{url, fallback} = scan
-  brush.resource(XML.element.find(all, U.drop(U.unquote(U.trim.both(url)), "#")), all, box, w, h, opacity,
+  brush.resource(resource.find(all, U.drop(U.unquote(U.trim.both(url)), "#")), all, box, w, h, opacity,
     U.choose(String, U.string.equal(U.trim(fallback), ""), "none", U.trim(fallback)), patterns)
 
 def brush(+s: String, current: String, +opacity: F32, +all: List<&2, XML.Element>, box: Bounds, w: F32, h: F32, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
@@ -2088,7 +2125,7 @@ def clip.attach(+as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bound
   build: List<&2, XML.Element> -> Matrix -> Clip) -> Clip:
   +value = XML.attr.get(as, "clip-path", "none")
   U.branch(Clip, U.prefix(value, "url("),
-    _ => clip.reference(XML.element.find(all, U.drop(U.unquote(U.trim.both(U.scan.head(U.until(U.drop(value, "url("), 41, "")))), "#")),
+    _ => clip.reference(resource.find(all, U.drop(U.unquote(U.trim.both(U.scan.head(U.until(U.drop(value, "url("), 41, "")))), "#")),
       box, m, build), _ => ClipAll{})
 
 @unsafe
@@ -2178,7 +2215,7 @@ def filter.resource(result: Maybe<&2, XML.Element>, +box: Bounds, m: Matrix, +w:
 def filter.spec(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, box: Bounds, m: Matrix, w: F32, h: F32) -> FilterEffect:
   +value = U.trim.both(XML.attr.get(as, "filter", "none"))
   +id = U.drop(U.unquote(U.trim.both(U.scan.head(U.until(U.drop(value, "url("), 41, "")))), "#")
-  U.branch(FilterEffect, U.prefix(value, "url("), _ => filter.resource(XML.element.find(all, id), box, m, w, h), _ => NoFilter{})
+  U.branch(FilterEffect, U.prefix(value, "url("), _ => filter.resource(resource.find(all, id), box, m, w, h), _ => NoFilter{})
 
 def scene.make(+es: List<&2, Edge>, +m: Matrix, +s: Style, opacity: F32, +children: List<&2, Scene<Brush>>, id: String,
   +all: List<&2, XML.Element>, +w: F32, +h: F32, +as: List<&2, XML.Attr>, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, +scale: F32) -> Scene<Brush>:
@@ -2403,7 +2440,7 @@ def mask.attach(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, active: Lis
   +id = U.drop(U.unquote(U.trim.both(U.scan.head(U.until(U.drop(value, "url("), 41, "")))), "#")
   U.branch(MaskData, U.prefix(value, "url("),
     _ => U.branch(MaskData, U.strings.has(active, id), _ => MaskData{Nil{}, 2},
-      _ => mask.resource(XML.element.find(all, id), id, XML.attr.get(as, "mask-mode", "match-source"), box, m, w, h, build)),
+      _ => mask.resource(resource.find(all, id), id, XML.attr.get(as, "mask-mode", "match-source"), box, m, w, h, build)),
     _ => MaskData{Nil{}, 0})
 
 def scene.masked(+scene: Scene<Brush>, as: List<&2, XML.Attr>, all: List<&2, XML.Element>, active: List<&2, String>, w: F32, h: F32,
@@ -2524,7 +2561,7 @@ def pattern.resolve(depth: Nat, +node: XML.Element, +all: List<&2, XML.Element>)
       XML.Element{n, as, kids, txt} = node
       +href = XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))
       U.branch(XML.Element, U.prefix(href, "#"),
-        _ => pattern.reference(node, XML.element.find(all, U.drop(href, "#")), e => pattern.resolve(d, e, all)), _ => node)
+        _ => pattern.reference(node, resource.find(all, U.drop(href, "#")), e => pattern.resolve(d, e, all)), _ => node)
 
 def pattern.paint(+nodes: List<&2, Scene<Brush>>, inv: Matrix, width: F32, height: F32, opacity: F32) -> Brush:
   Pattern{inv, width, height, opacity, nodes}
@@ -2614,7 +2651,7 @@ def marker.resource(+result: Maybe<&2, XML.Element>, id: String, vertex: MarkerV
 def marker.instance(+value: String, vertex: MarkerVertex, start: Bool, +all: List<&2, XML.Element>, active: List<&2, String>, width: F32, w: F32, h: F32) -> List<&2, XML.Element>:
   +id = U.drop(U.unquote(U.trim.both(U.scan.head(U.until(U.drop(value, "url("), 41, "")))), "#")
   U.branch(List<&2, XML.Element>, U.prefix(value, "url(") && Bool.not(U.strings.has(active, id)),
-    _ => marker.resource(XML.element.find(all, id), id, vertex, start, width, w, h), _ => Nil{})
+    _ => marker.resource(resource.find(all, id), id, vertex, start, width, w, h), _ => Nil{})
 
 def marker.elements.append(xs: List<&2, XML.Element>, ys: List<&2, XML.Element>) -> List<&2, XML.Element>:
   match xs:
