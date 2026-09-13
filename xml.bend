@@ -19,7 +19,7 @@ def value(s: String) -> U.Scan:
       +ch = c
       +rest = t
       U.branch(U.Scan, U32.is_eq(ch, 34) || U32.is_eq(ch, 39),
-        _ => U.until(rest, ch, ""), _ => xml.name(SCon{Chr{ch}, rest}, ""))
+        _ => U.until.decoded(rest, ch, ""), _ => xml.name(SCon{Chr{ch}, rest}, ""))
 
 def equals(s: String) -> U.Scan:
   match s:
@@ -251,11 +251,12 @@ def decode.attrs(as: List<&2, Attr>) -> List<&2, Attr>:
     case Nil{}: Nil{}
     case Con{Attr{k, v}, rest}: Con{Attr{k, entities(v)}, decode.attrs(rest)}
 
+# Attribute values were decoded as they were read; text still is here.
 def decode.nodes(xs: List<&2, Element>) -> List<&2, Element>:
   match xs:
     case Nil{}: Nil{}
     case Con{Element{n, as, kids, txt}, rest}:
-      Con{Element{n, decode.attrs(as), decode.nodes(kids), entities(txt)}, decode.nodes(rest)}
+      Con{Element{n, as, decode.nodes(kids), entities(txt)}, decode.nodes(rest)}
 
 def parse(s: String) -> Element:
   tree.root(decode.nodes(tree(annotate(tokenize(s), 1), Con{Element{"#document", Nil{}, Nil{}, ""}, Nil{}})))

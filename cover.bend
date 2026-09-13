@@ -186,6 +186,43 @@ def lines.clamp(xs: List<&2, CovLine>, +w: F32, acc: List<&2, CovLine>, +n: U32)
 def lines.clip(xs: List<&2, CovLine>, +w: F32) -> List<&2, CovLine> & U32:
   lines.clamp(lines.split(lines.split(xs, 0.0), w), w, Nil{}, 0)
 
+# One pass over the lines: shift by the mask's origin, split at the grid's
+# left and right edges and clamp the pieces to it, counting them. Pieces
+# left of 0 or right of w become vertical lines on that edge, which keeps
+# the winding of every cell inside intact.
+def line.push(+ax: F32, +ay: F32, +bx: F32, +by: F32, +w: F32, st: List<&2, CovLine> & U32) -> List<&2, CovLine> & U32:
+  (acc, n) = st
+  (Con{CovLine{U.clamp(ax, 0.0, w), ay, U.clamp(bx, 0.0, w), by}, acc}, (n + 1 : U32))
+
+# Split at x = at when the line crosses it, pushing the piece before the
+# crossing; the rest continues.
+def line.cut.at(cross: Bool, +ax: F32, +ay: F32, +bx: F32, +by: F32, +at: F32, +w: F32, st: List<&2, CovLine> & U32) -> (List<&2, CovLine> & U32) & (F32 & F32):
+  match cross:
+    case False{}: (st, (ax, ay))
+    case True{}:
+      +my = (ay + (by - ay) * ((at - ax) / (bx - ax)) : F32)
+      (line.push(ax, ay, at, my, w, st), (at, my))
+
+def line.cut(+ax: F32, +ay: F32, +bx: F32, +by: F32, +at: F32, +w: F32, st: List<&2, CovLine> & U32) -> (List<&2, CovLine> & U32) & (F32 & F32):
+  line.cut.at((F32.is_lt(ax, at) && F32.is_gt(bx, at)) || (F32.is_gt(ax, at) && F32.is_lt(bx, at)), ax, ay, bx, by, at, w, st)
+
+def line.prepare.last(got: (List<&2, CovLine> & U32) & (F32 & F32), +bx: F32, +by: F32, +w: F32) -> List<&2, CovLine> & U32:
+  (st, (ax, ay)) = got
+  line.push(ax, ay, bx, by, w, st)
+
+def line.prepare.right(got: (List<&2, CovLine> & U32) & (F32 & F32), +bx: F32, +by: F32, +w: F32) -> List<&2, CovLine> & U32:
+  (st, (ax, ay)) = got
+  line.prepare.last(line.cut(ax, ay, bx, by, w, w, st), bx, by, w)
+
+def lines.prepare(xs: List<&2, CovLine>, +dx: F32, +dy: F32, +w: F32, st: List<&2, CovLine> & U32) -> List<&2, CovLine> & U32:
+  match xs:
+    case Nil{}: st
+    case Con{CovLine{x0, y0, x1, y1}, rest}:
+      +ax = (x0 - dx : F32)
+      +bx = (x1 - dx : F32)
+      +by = (y1 - dy : F32)
+      lines.prepare(rest, dx, dy, w, line.prepare.right(line.cut(ax, (y0 - dy : F32), bx, by, 0.0, w, st), bx, by, w))
+
 # ---- sub-scanline winding ----
 # Each pixel row is sampled on `sub` horizontal scanlines. The lines reaching
 # a scanline are kept in a list sorted by their x on it: one pass per
@@ -1125,11 +1162,11 @@ def mask.scan(clipped: List<&2, CovLine> & U32, even: Bool, +h: U32, +sub: U32, 
     case True{}: scan.rows(h, sub, lines.sort(xs), True{}, w)
     case False{}: mask.arrays(xs, n, h, sub, w)
 
-def mask.build(+xs: List<&2, CovLine>, +gx: U32, +gy: U32, +w: U32, +h: U32, +even: Bool, +sub: U32, +trees: Bool) -> CovMask:
+def mask.build(xs: List<&2, CovLine>, +gx: U32, +gy: U32, +w: U32, +h: U32, +even: Bool, +sub: U32, +trees: Bool) -> CovMask:
   +side = U.choose(U32, U32.is_gt(w, h), w, h)
   +depth = depth.for(side, 1, 0n)
   +size = U32.shln(1, depth)
-  CovMask{gx, gy, w, h, size, depth, mask.data(trees, mask.scan(lines.clip(xs, U32.to_f32(w)), even, h, sub, w), size, depth), True{}}
+  CovMask{gx, gy, w, h, size, depth, mask.data(trees, mask.scan(lines.prepare(xs, U32.to_f32(gx), U32.to_f32(gy), U32.to_f32(w), ({Nil{} : List<&2, CovLine>}, 0)), even, h, sub, w), size, depth), True{}}
 
 def mask.box(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U32, box: CovBox, +trees: Bool) -> CovMask:
   CovBox{x0, y0, x1, y1} = box
@@ -1138,7 +1175,7 @@ def mask.box(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +su
   +ex = F32.to_u32(U.clamp(F32.ceil(x1), 0.0, U32.to_f32(width)))
   +ey = F32.to_u32(U.clamp(F32.ceil(y1), 0.0, U32.to_f32(height)))
   U.branch(CovMask, U32.is_ge(gx, ex) || U32.is_ge(gy, ey), _ => CovMask{0, 0, 0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, True{}},
-    _ => mask.build(lines.shift(xs, U32.to_f32(gx), U32.to_f32(gy)), gx, gy, (ex - gx : U32), (ey - gy : U32), even, sub, trees))
+    _ => mask.build(xs, gx, gy, (ex - gx : U32), (ey - gy : U32), even, sub, trees))
 
 # A closed rectangle on whole pixels: four axis-aligned lines on the box edges
 # with integer coordinates (the usual viewport clip and the common rect), whose

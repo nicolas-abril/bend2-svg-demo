@@ -2,833 +2,833 @@
   "passed": true,
   "check": "Saved C backend versus the JavaScript-produced 64x64 AA8 matrices for every fixture",
   "sourceSHA256": {
-    "svg.bend": "ee157967dc4d962f51ae51261e15ea1192b5a7ef03a43a69b74cc5777381a683",
-    "state.bend": "7e3a37708598526629bb777e0fd26df5bed1065cf7d2d31d2372f50fd8b915f6",
+    "svg.bend": "52431e437a3dcb214f1291d2856e2d980f04feaf9e5f07d9072d233ac52a20c6",
+    "state.bend": "5c71b9fb706d4b6324cb923db9442e79e486642392c3ffda72c78957514c20ec",
     "render.bend": "0767d280e4f1b2d72c62ea913e243866ccd2858460982fb21ed40755fc24fed0",
     "fonts/NotoSans-Regular.ttf": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
     "fonts/NotoSans-Bold.ttf": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
     "fonts/NotoSans-Italic.ttf": "36cff144df01309dab648bea71baff9bb074026914afe63aeacc8bc90b67a28b",
     "fonts/NotoSans-BoldItalic.ttf": "6edf4227ef0fa846aca70e86a307804ca4401741830f5b3af0f2554abe2b8466"
   },
-  "binarySHA256": "29818dde92084ee63e2d913289560c50bfa967310a0307538b65f0b434d73d64",
+  "binarySHA256": "d2c1752719991262ef7d2fceef7dad3dc935aa5134fd8789a5c91001719df437",
   "results": [
     {
       "fixture": "basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009687542000000002,
+      "durationSeconds": 0.009427584,
       "sha256": "3e125325beabac7e6a726ae97688035c8f17fd2fd9cab71418763b48b512840d"
     },
     {
       "fixture": "clipping-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008245291000000002,
+      "durationSeconds": 0.008184374999999999,
       "sha256": "5dcf0b395e87445ce7064dfb7ef6e39167939c637fd110bccd14eb32b140ea34"
     },
     {
       "fixture": "clipping.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009178666999999998,
+      "durationSeconds": 0.009002041000000002,
       "sha256": "8d5ba3a69c367bcbf91d46159da4693b69b75fd294c4afaa3e5e93a466f67ea8"
     },
     {
       "fixture": "colors-hsl.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007827000000000006,
+      "durationSeconds": 0.007730250000000005,
       "sha256": "78b4b50bf234a00786c5e5b65c5e155997afd7b4e5e61e8779378c22b59e57d5"
     },
     {
       "fixture": "colors-hwb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007781582999999997,
+      "durationSeconds": 0.007686959000000002,
       "sha256": "96587609cf9dd0e0fde8494f31a1203467ac631799c8ede3459a68d53f790c8d"
     },
     {
       "fixture": "colors-named.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012963665999999997,
+      "durationSeconds": 0.012438000000000003,
       "sha256": "ba084526a4d9d4febef010b30ff140f0ec89916c7babed95ed828fd55d81692f"
     },
     {
       "fixture": "colors-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008617000000000005,
+      "durationSeconds": 0.008341708999999994,
       "sha256": "c507a19f0aa52ad38cfa46eee90efc7bc72de45486689adf29e063a99ef3e95c"
     },
     {
       "fixture": "colors-rgb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007928624999999996,
+      "durationSeconds": 0.00750004100000001,
       "sha256": "cb249360659cbe454faf1466e9bff8b1fe9ff015f0ffda062466812559bc3d36"
     },
     {
       "fixture": "compact-paths.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007475042000000002,
+      "durationSeconds": 0.007215999999999994,
       "sha256": "4d34ceed2309f143d22cd425f5362daac176cc910cc1c65a345b36f832b532bf"
     },
     {
       "fixture": "convolve-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.017385709000000006,
+      "durationSeconds": 0.017172584,
       "sha256": "6e1e4e76d29cdaedf16ea7024b3bedf04d1663fc660ed7e4b025e57d8c86f3b6"
     },
     {
       "fixture": "convolve-edges.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.023144958000000004,
+      "durationSeconds": 0.02283841600000001,
       "sha256": "8d7bdb741174f3fa06765978934a5a838dc02b1eeda499d1dd893961a0d1834f"
     },
     {
       "fixture": "convolve-graph.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.023672708,
+      "durationSeconds": 0.024095791999999987,
       "sha256": "0fd6e05a989363194e2d1afa7b50d1041dd57defb650a9f6dbc2466362f10a0c"
     },
     {
       "fixture": "convolve-kernels.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02589779200000001,
+      "durationSeconds": 0.025603542000000003,
       "sha256": "cbe909156b826292bf01342ee7c02ab1101fd46e83b5b88c40430e7a36613c94"
     },
     {
       "fixture": "convolve-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.024247458999999992,
+      "durationSeconds": 0.024197166999999978,
       "sha256": "f7d019a47abe43daafd75f1873bc468bf2cab30d711090017dbbd0f4d2f7f274"
     },
     {
       "fixture": "css-cascade.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007732207999999986,
+      "durationSeconds": 0.007623250000000013,
       "sha256": "e14b75ce2950f9d6281e38f3e2440c986c69ccde62ad2bab71cb774618d711d5"
     },
     {
       "fixture": "css-media.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00785012499999999,
+      "durationSeconds": 0.00780295799999999,
       "sha256": "b554e5aeb25890dec6c1554451c9bbc0df6d7f6f1bb4459a643b92cc7273fd19"
     },
     {
       "fixture": "css-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009629083000000009,
+      "durationSeconds": 0.009766582999999997,
       "sha256": "d23c309f033853bb5838a468428ac6b8eda0f331eb62a07b57f70c4e7838db5b"
     },
     {
       "fixture": "css-selectors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009510999999999995,
+      "durationSeconds": 0.009258916999999997,
       "sha256": "4239b1ebf385a74fa569e25d7bd36e2b27e9f13bbe04a2f3d58e525ade673cde"
     },
     {
       "fixture": "css-structural.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00963624999999999,
+      "durationSeconds": 0.009365041999999988,
       "sha256": "a95cc92db765d5a2024b97a3672a51f437164ac0d1206f092539e5eaf184559b"
     },
     {
       "fixture": "filters-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015884375000000006,
+      "durationSeconds": 0.015739416999999974,
       "sha256": "c20c6b7ab425dd66b2759b809487f35bdc7b0d1e01a5a4396eaea3c35e3c21e7"
     },
     {
       "fixture": "filters-blend-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.12251058299999999,
+      "durationSeconds": 0.119926625,
       "sha256": "e059bd04255804d3ac6b37a9ff33c6903a184a3ee8158ffc89208f9f8c1dae89"
     },
     {
       "fixture": "filters-blend-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018358791999999995,
+      "durationSeconds": 0.017380832999999995,
       "sha256": "9275130ce6bf451b2efbfdd14fd89ebde1382ea64f5643b7b74283d2fa8f7c7f"
     },
     {
       "fixture": "filters-blend-linear.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.12551350000000003,
+      "durationSeconds": 0.12418749999999994,
       "sha256": "69b88199d98dd39f71e28c38ffd146aed656cb05979fb8962fe81cd5eecea3b5"
     },
     {
       "fixture": "filters-blend-opaque.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.12374404200000004,
+      "durationSeconds": 0.12213020800000005,
       "sha256": "6a499fee03589aea5429078f506880e800f478a3e0c6b2c18235cac682429abf"
     },
     {
       "fixture": "filters-blend.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015409415999999964,
+      "durationSeconds": 0.015177999999999997,
       "sha256": "6cacbd76d95303389be26d6974498f0c543a9da1a298037e8b12d455eeb61082"
     },
     {
       "fixture": "filters-blur.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.07262183300000004,
+      "durationSeconds": 0.07250920800000006,
       "sha256": "e439f1c7fa15866b08e59550dc39677977a1bcd121f69d2ad1094bdbac94e994"
     },
     {
       "fixture": "filters-composite.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02385749999999996,
+      "durationSeconds": 0.023280208000000017,
       "sha256": "21f1686ab600c14c9b90f5ab8d22cd7e5aee69fe684b49151953ecd677c5b1fc"
     },
     {
       "fixture": "filters-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04414945800000009,
+      "durationSeconds": 0.044508916,
       "sha256": "8e7d1a518b52ac64a013048d4d975793244eab02a6cbd93eb9b625f39844a2fc"
     },
     {
       "fixture": "filters-regions.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.016440249999999993,
+      "durationSeconds": 0.016394667000000026,
       "sha256": "2b000aacfbf9faa1c0fd5d114c1cadb833f7606a49f29bcbcdae8185f349db81"
     },
     {
       "fixture": "filters-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.09156487499999992,
+      "durationSeconds": 0.09144020799999998,
       "sha256": "5b0a49ced0e5c76d4de54773c9673674d99a01907b06ce202889f1685f6e4788"
     },
     {
       "fixture": "gradient-linear.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008598041999999964,
+      "durationSeconds": 0.00840908300000001,
       "sha256": "0c9ff860b391d3dee26b1bc1b99b49bad347bfd581cf2da8840dc00ed56417f3"
     },
     {
       "fixture": "gradient-radial.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008655042000000094,
+      "durationSeconds": 0.008352666999999996,
       "sha256": "19747a72ba5363e2017116684337c690ecb05df4964086cf11d6c286a21ae8b3"
     },
     {
       "fixture": "gradient-stops.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008072958999999968,
+      "durationSeconds": 0.007765249999999923,
       "sha256": "252786e92ba15bb61a231127fb837f7be0663d1419da08b53ee788e41f01e454"
     },
     {
       "fixture": "gradient-strokes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00815666699999997,
+      "durationSeconds": 0.007867208000000006,
       "sha256": "b891654732a975f96540c75c426e9088f5938111a3ce406975d5d5a5101f8d93"
     },
     {
       "fixture": "gradient-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008295749999999998,
+      "durationSeconds": 0.007959249999999998,
       "sha256": "e1f876f7584b06c555becf6bca152745e2f8b47f7644256f211ed438a3cc6459"
     },
     {
       "fixture": "images-aspect.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.015066667000000053,
+      "durationSeconds": 0.0151016249999999,
       "sha256": "2b760f8733475aa88c765b243d0e77d005651eb73cea76b83280af0d557d4329"
     },
     {
       "fixture": "images-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012189166999999997,
+      "durationSeconds": 0.012109042000000046,
       "sha256": "5d34aede0e36168bc70daa6093583e18aa647cc33354192924a470d376c72d52"
     },
     {
       "fixture": "images-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01532162500000004,
+      "durationSeconds": 0.015068750000000023,
       "sha256": "7ddd49e68afc18f4effd858e7708052a00fd67bfe0d3f632f85f76c0674dc3ad"
     },
     {
       "fixture": "images-compression.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.045602167000000006,
+      "durationSeconds": 0.045186915999999994,
       "sha256": "0284eae815fc62e642aeb29b069ba9030d4ac86314fc4eec05008f50543dbfca"
     },
     {
       "fixture": "images-png-formats.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0405172500000001,
+      "durationSeconds": 0.03979933400000005,
       "sha256": "b506d698068ed9ebb1dbc5d06331ee836da80bcc5d9595de7bd83695c816d942"
     },
     {
       "fixture": "images-transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012439583999999969,
+      "durationSeconds": 0.01255366600000002,
       "sha256": "2df5ffeb623187ca434e16f834de6df5214118d014f61cf11fe9c723daffe7e5"
     },
     {
       "fixture": "images-uris.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01225649999999996,
+      "durationSeconds": 0.012230790999999954,
       "sha256": "4788e70a8a4b8577283e33446559140e817057201ab56d70641e01944c05939a"
     },
     {
       "fixture": "jpeg-color.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.044441250000000085,
+      "durationSeconds": 0.044850832999999965,
       "sha256": "2f78d23264cb1f3c528d8ba2925f9b37915ba79fe3d809d81fe8f1cf2a95cfd7"
     },
     {
       "fixture": "jpeg-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.040165000000000194,
+      "durationSeconds": 0.03999766700000009,
       "sha256": "0e7e2a164f470f02583f0a86e352818cc6b4d9b43b9cfca8d01ce24aceb36d1b"
     },
     {
       "fixture": "jpeg-encoding.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03247045800000001,
+      "durationSeconds": 0.03245904199999995,
       "sha256": "56a30ba1581a171a54a455ccfa9c53410f0f9df18cef4f365ebb944b3134f4c2"
     },
     {
       "fixture": "jpeg-progressive.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03267979199999991,
+      "durationSeconds": 0.03232108300000004,
       "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
     },
     {
       "fixture": "jpeg-sequential.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.030973459000000047,
+      "durationSeconds": 0.030896334000000025,
       "sha256": "b6878646605356b30aec1e6202798f5dfa76c1ae1d20285fc49e2a6fb7555a4b"
     },
     {
       "fixture": "jpeg-uris.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03497724999999991,
+      "durationSeconds": 0.034306959000000005,
       "sha256": "9dac9761f33ccd68f26420d4a6b32f7d958ee7c00dbc76eaa49ea4fc66b4a061"
     },
     {
       "fixture": "markers-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008050750000000108,
+      "durationSeconds": 0.007947792000000163,
       "sha256": "da603a756f8aaf4f4f655c4c5d8a8ee4d83ed86b5e92a91367807cdf417b9feb"
     },
     {
       "fixture": "markers-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.012625999999999976,
+      "durationSeconds": 0.012705375000000003,
       "sha256": "ae39be3cb182c835bd212807956d2ce1d66104d19f14018e88a16fc2f71c2738"
     },
     {
       "fixture": "markers-context.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.010154207999999927,
+      "durationSeconds": 0.009592916999999944,
       "sha256": "518dac04ccc71df07928a217246c7d29ad1a52ce8c0bae9fbcf7f992f15f3c91"
     },
     {
       "fixture": "markers-recursive.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008141834000000018,
+      "durationSeconds": 0.008167042000000038,
       "sha256": "2b9749d8dcd4a92c4e70917bfe3b499b645326aed3fae5ce6466b8bfb82126ba"
     },
     {
       "fixture": "markers-styles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009263541999999916,
+      "durationSeconds": 0.009386792000000014,
       "sha256": "6755050d3af9660be52ed53693b58ff70bf9e9b02a3d54b6575bc10897119f31"
     },
     {
       "fixture": "markers-vertices.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009862082999999983,
+      "durationSeconds": 0.009531790999999885,
       "sha256": "ee7d4e9627325a7b6e930c6d6c6c3ec375be785cbd70edc6b2b4ba4a0414085b"
     },
     {
       "fixture": "markers-viewports.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008802916000000096,
+      "durationSeconds": 0.008612540999999965,
       "sha256": "9d420bbddbab9d67291976425fd4922c80ca45427ed2194aaf0bf3e5403cd64d"
     },
     {
       "fixture": "markers-zero.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009711457999999994,
+      "durationSeconds": 0.00956224999999995,
       "sha256": "1bdfc8bb6ee50508434c507e8274817912d7e5a9cbfa27b718249724cac361cc"
     },
     {
       "fixture": "mask-alpha.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007552249999999958,
+      "durationSeconds": 0.007380083000000013,
       "sha256": "641f473259f380c09cf4b2d09f7939f8397ba17469e86d2d09f78597812aafb3"
     },
     {
       "fixture": "mask-compositing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00785612500000002,
+      "durationSeconds": 0.007553000000000111,
       "sha256": "08e60153308fb662a09992f8e580a6389c2a7ccd20439248505a829b39b1f55b"
     },
     {
       "fixture": "mask-errors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008124333999999862,
+      "durationSeconds": 0.007930624999999964,
       "sha256": "b740b612877e52fb64b0844ebb5e1d1f566435020887040905d074c021115830"
     },
     {
       "fixture": "mask-gradients.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008800750000000107,
+      "durationSeconds": 0.008786041000000069,
       "sha256": "e4531ccb410165ade617e8f85b16be69b50243428167c7c23dc64754e898cfb9"
     },
     {
       "fixture": "mask-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007643083000000161,
+      "durationSeconds": 0.007660332999999809,
       "sha256": "15df1638cb9636fcf65213ec2aae44caa2c569d9883f5956ecfc00d5c91b49fd"
     },
     {
       "fixture": "mask-linear-rgb.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00739545800000019,
+      "durationSeconds": 0.00724741599999993,
       "sha256": "4b6a3d8982cc58d726d689fe815bb5b97b82ca7a1eeb8424d100503dcc733d90"
     },
     {
       "fixture": "mask-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009157707999999957,
+      "durationSeconds": 0.008723625000000084,
       "sha256": "dc48bb2ab66441f530c0b3b8e964e49889d6363de63a79e743eeb3fffc4814f6"
     },
     {
       "fixture": "mask-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008266750000000002,
+      "durationSeconds": 0.008066291999999977,
       "sha256": "b33162a4548699b35ab23d79a754f8f157c93b044d2a9a95f24480d56f8482a2"
     },
     {
       "fixture": "masks.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008177332999999863,
+      "durationSeconds": 0.007986458999999968,
       "sha256": "73be363482ea85d69fecfb3924b485555da25fbc65d8f42856d397f314d08cf9"
     },
     {
       "fixture": "morphology-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.040988042000000176,
+      "durationSeconds": 0.04068791600000009,
       "sha256": "9c762f57c85c5d436aff3b5aa34bc2a0230d82a6642852e75d3b2092ac32f36f"
     },
     {
       "fixture": "morphology-graph.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.039231958000000074,
+      "durationSeconds": 0.038731625000000124,
       "sha256": "fa5a75bec94284ebb1950469e196945bdfb85317446b24c0d1e2a480d7e9cef8"
     },
     {
       "fixture": "morphology-radius.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03570362499999988,
+      "durationSeconds": 0.03542358300000001,
       "sha256": "5d596b7a7ebf7ede2a139577e11f4be4f9f900b95ad35e04de06b9b9b994d651"
     },
     {
       "fixture": "morphology-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.04268591599999991,
+      "durationSeconds": 0.04257258299999989,
       "sha256": "d3eb5c4085840e318359c014deb7938e4db3107dd2abf105a60c2983f4828c41"
     },
     {
       "fixture": "opacity.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00755925000000002,
+      "durationSeconds": 0.007107124999999996,
       "sha256": "1758113dbc4628dbf99748bd1624d2f3757cac4a613eeb476b95ee54100548b5"
     },
     {
       "fixture": "paint-order-markers.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009320333000000118,
+      "durationSeconds": 0.009100916000000098,
       "sha256": "047257851218c9355f510cbd29ca7175ea8355aae1d2f57013462e4548fff2cb"
     },
     {
       "fixture": "paint-order-shapes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007460749999999962,
+      "durationSeconds": 0.007225292000000081,
       "sha256": "8e10d47cdcd9b221f6d0372570a21fd8ec1500afe7e72dd593a9f5640c36c222"
     },
     {
       "fixture": "paths.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007552374999999984,
+      "durationSeconds": 0.007159582999999884,
       "sha256": "d8b3e562cb8ff4a45972595e91e0d36dafcc31a87088dd56068a89ca71443faf"
     },
     {
       "fixture": "pattern-errors.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009326750000000175,
+      "durationSeconds": 0.009104499999999916,
       "sha256": "5d30c21adeaeae443299920306f4630a8a069e5c71987bc9d19e1e995b8eb594"
     },
     {
       "fixture": "pattern-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009440875000000005,
+      "durationSeconds": 0.009123249999999871,
       "sha256": "238adbbee9afa8f5061a05cd933f4fac669ce6a7ec1cfb7048cb4e354c22ff8a"
     },
     {
       "fixture": "pattern-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.010833041999999977,
+      "durationSeconds": 0.010607375000000047,
       "sha256": "95268a8bf75cc7e20476911fd2a2d7b00ce2eff52fdfe99e0a27c04d46290c29"
     },
     {
       "fixture": "pattern-reference.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009066917000000103,
+      "durationSeconds": 0.008869583999999804,
       "sha256": "9820a55453fdf3388ca870fed8f0f074d97082edbdb345fd6fbf931f8420872c"
     },
     {
       "fixture": "pattern-transform.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.03227691699999991,
+      "durationSeconds": 0.0325152079999998,
       "sha256": "f49bc6d7e079f7b168284e16614658603e0c8fda2cd47ae0a21956ecaaf0be21"
     },
     {
       "fixture": "pattern-units.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009232624999999871,
+      "durationSeconds": 0.009096583000000009,
       "sha256": "f9f6dd01781b772c8d224fa3cafba3675625dad94c2c5219dbe6d670c9e59911"
     },
     {
       "fixture": "pattern-viewbox.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.009664582999999994,
+      "durationSeconds": 0.009624250000000074,
       "sha256": "38389f01f58f040574475088561b5ebe5b0531e4d4c886623b0817377ac67541"
     },
     {
       "fixture": "stroke-calibration.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0073611670000000235,
+      "durationSeconds": 0.007277332999999999,
       "sha256": "2077d3dea260b5bed774dd03227f517d3508fbf12d6231e71250f2e7422095f7"
     },
     {
       "fixture": "stroke-caps.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007354791999999861,
+      "durationSeconds": 0.007352624999999989,
       "sha256": "c4d4746e19e9d6673f5487f0fe68b8cc5668ea7faa5f449b8b90325b019468d9"
     },
     {
       "fixture": "stroke-dash-curves.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007569790999999895,
+      "durationSeconds": 0.0073932079999999584,
       "sha256": "5d068755517e915cfa60f21fcb836b7771ed248b2043a86974d9fa5bbd3f23c2"
     },
     {
       "fixture": "stroke-dash-zero.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007252334000000019,
+      "durationSeconds": 0.007178042000000005,
       "sha256": "b5098383de2b090950cbbe27ff395e3012295d08771068dd100dd23146e11ea9"
     },
     {
       "fixture": "stroke-dashes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007743708999999853,
+      "durationSeconds": 0.007557332999999972,
       "sha256": "c4035589890a75b6620eec481af6e6f419e1c89fcfed54d91021b179c4945e24"
     },
     {
       "fixture": "stroke-joins.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00739975000000004,
+      "durationSeconds": 0.007120916999999963,
       "sha256": "27415818e077a82b6b6e4eaef9d6b34b62648c9144373c7ccb74b03b172f5465"
     },
     {
       "fixture": "stroke-vector.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007298416999999972,
+      "durationSeconds": 0.007177415999999994,
       "sha256": "c81872ca461390b0d0d4a2979703f308716fd31da19a4f14939b8eb9cadda135"
     },
     {
       "fixture": "svg-image-auto.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019295041999999967,
+      "durationSeconds": 0.01856091699999979,
       "sha256": "e8dccd3a49b3a32f3d419238a67b7f36009c6d7799272970ad8904db43c402ab"
     },
     {
       "fixture": "svg-image-contexts.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02169399999999996,
+      "durationSeconds": 0.021023832999999967,
       "sha256": "1f96cc219a4443bfa5465002709b8968f1b11cde94ff60adf828faede818d372"
     },
     {
       "fixture": "svg-image-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019690334000000122,
+      "durationSeconds": 0.019250084000000015,
       "sha256": "a96f988575d54dd9bccd504ee10d517dac2e84fc91e6c84bdbffb6aa28bc0b39"
     },
     {
       "fixture": "svg-image-percent.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01759762499999988,
+      "durationSeconds": 0.017226083000000017,
       "sha256": "ded759f0f0ea5ba3afe1ff058152c20dbaae7dce9f1a9c53d17c1ace10277014"
     },
     {
       "fixture": "svg-image-resources.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018599500000000036,
+      "durationSeconds": 0.018172915999999987,
       "sha256": "afe60890e9938ba860964b2a52ba1b942194a151a94e4ad7e372393b7c082783"
     },
     {
       "fixture": "svg-image-sizing.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.017881458000000065,
+      "durationSeconds": 0.017468082999999978,
       "sha256": "447ef7afd5add434098829086c644db1676c73c46e208b32e4996dc382068c54"
     },
     {
       "fixture": "svg-image-text.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0414654579999999,
+      "durationSeconds": 0.040521666999999977,
       "sha256": "0bc9b9b030aa13909f48506beb4c6514eef2f04bc642d0b767c77388b6d2968e"
     },
     {
       "fixture": "symbols.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.008038041000000022,
+      "durationSeconds": 0.007704041999999845,
       "sha256": "8d8becf36c76b10f0b7fa6d6b84a802cc00362604869dacd9683906ff738b8f3"
     },
     {
       "fixture": "text-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01799004200000013,
+      "durationSeconds": 0.01755579200000011,
       "sha256": "33ccca0e4593c5111abd41335ddbcb2200018b9b28839e5a5cadcaad35038672"
     },
     {
       "fixture": "text-length-spans.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018855624999999918,
+      "durationSeconds": 0.01860670899999991,
       "sha256": "fd6c6b96c5ff480e339d915c0e80d2785e4513f1d91e068c5c9a552d05b6f99a"
     },
     {
       "fixture": "text-length.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01917883300000017,
+      "durationSeconds": 0.01866487499999994,
       "sha256": "55fb3d8864918b43c31fb0c6492ae0eacdb128dba0b668922e5fb7ebe2bbf87b"
     },
     {
       "fixture": "text-paint-order.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02317750000000001,
+      "durationSeconds": 0.022570624999999837,
       "sha256": "fa8eff13a24e66bdd85d4bf5b017c433678abd4fe0eda15455b279a4bdbc02fb"
     },
     {
       "fixture": "text-paints.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01902666599999975,
+      "durationSeconds": 0.018349833999999874,
       "sha256": "a7c2b4b39086dd0acbc4d524b75c9efbc1065a30ae3ab8ba7c8d36e0f677e0b4"
     },
     {
       "fixture": "text-path-basic.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.02073529099999996,
+      "durationSeconds": 0.019799291999999694,
       "sha256": "d6c736a340d913f0a01ca809205061b6259522939ed740f1bbfd1f55fe32e8c5"
     },
     {
       "fixture": "text-path-positions.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018234333999999762,
+      "durationSeconds": 0.01811941700000034,
       "sha256": "f653ab4790366fb89710070f8ae828de7088d2e016fcf50871b3eaa0a07fe920"
     },
     {
       "fixture": "text-path-references.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019908707999999935,
+      "durationSeconds": 0.02023900000000003,
       "sha256": "b32426a7558cdc8998a5f96467009cb57c5dd2e13d4404f3505433938be49ac1"
     },
     {
       "fixture": "text-path-shapes.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0177478329999999,
+      "durationSeconds": 0.017536916999999902,
       "sha256": "48e8cfad1649ef79fe7a8ac0b1453378852eec5e354195c19c8b7b976c58f8ab"
     },
     {
       "fixture": "text-path-styles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018444540999999846,
+      "durationSeconds": 0.018527000000000043,
       "sha256": "9950d30e633a123bfa2cdf4546d4ba3377c73d2295580b16fffa12f86bc8d930"
     },
     {
       "fixture": "text-position.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.019001332999999704,
+      "durationSeconds": 0.018250375000000076,
       "sha256": "c39e155da204e31bfb7f7e876636b6ec50b04f9ef0e9f8ddc0a4220282727440"
     },
     {
       "fixture": "text-spans.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.0182893339999996,
+      "durationSeconds": 0.017658750000000053,
       "sha256": "b9eb7d217046028631e1085f45d8ed8544721743a1217539a6599fb13ae34001"
     },
     {
       "fixture": "text-style.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.020691917000000105,
+      "durationSeconds": 0.020214042000000064,
       "sha256": "6d9f54801fb71167866401db5c4911ac278369c2097d365e59c4c180211cab8a"
     },
     {
       "fixture": "text-unicode.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.01889316699999972,
+      "durationSeconds": 0.018742334000000027,
       "sha256": "452612c1ee5e361e0c67adb50e76219ffd5a3fa3f549d2b536f3f516692e674b"
     },
     {
       "fixture": "text-whitespace.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.018069875000000138,
+      "durationSeconds": 0.017330875000000107,
       "sha256": "f1d9043a8806da05e7072af84548e3b6c41b07f19cf0f312454f6768fe0236dc"
     },
     {
       "fixture": "transforms.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007439499999999953,
+      "durationSeconds": 0.007231209000000035,
       "sha256": "25a4d4e279dade1d1c1396c00b0339d266d190364d07f836a4a3324773a9155a"
     },
     {
       "fixture": "use-clips.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00826416700000027,
+      "durationSeconds": 0.008184291999999914,
       "sha256": "650df610458558759b8e30bb99371c2b8fcd9b50e6de254b5d119389f16e3465"
     },
     {
       "fixture": "use-cycles.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007618249999999989,
+      "durationSeconds": 0.007125541000000339,
       "sha256": "834f88e5d488a598b705ca3fd0db405d9a853518f422b0a22c667755bd1c006b"
     },
     {
       "fixture": "use-inheritance.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00767304200000035,
+      "durationSeconds": 0.007339500000000044,
       "sha256": "aa4d847d304c445c1298fb4c3b51a24d44c22b79f9ea9a25fd0b01a69318adfd"
     },
     {
       "fixture": "use.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00760879100000011,
+      "durationSeconds": 0.007325291000000107,
       "sha256": "55560a0a69c38eb65c434f86a56e250c5ce8fd903cac50d1680f4aad1b6ab71c"
     },
     {
       "fixture": "viewports-nested.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.00781925000000001,
+      "durationSeconds": 0.007646292000000358,
       "sha256": "ff41c67dbd01c9369265b67bf6779a71543984977de95f92e8dd78242dc23755"
     },
     {
       "fixture": "viewports.svg",
       "passed": true,
       "maxChannelError": 0,
-      "durationSeconds": 0.007550958999999693,
+      "durationSeconds": 0.007473333999999795,
       "sha256": "8cfdc8c6521523a4d42c6c0c20af093da5751b6bc7b47bfdb683b5fbddd2e732"
     }
   ]

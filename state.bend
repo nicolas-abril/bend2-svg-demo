@@ -278,8 +278,15 @@ def events(xs: List<Event>, s: State) -> State:
     case Con{ev, rest}: events(rest, apply(s, event(ev)))
 
 # Filesystem plumbing is shared so open/save semantics agree between frontends.
-def read.chunk(got: File & Result<&1, &1, U32 & String, String>, acc: String,
-  next: File -> String -> IO(String)) -> IO(String):
+# Chunks are collected last first and joined once at the end, so a large
+# file costs one pass rather than one per chunk.
+def read.join(chunks: List<&2, String>, acc: String) -> String:
+  match chunks:
+    case Nil{}: acc
+    case Con{c, rest}: read.join(rest, c ++ acc)
+
+def read.chunk(got: File & Result<&1, &1, U32 & String, String>, acc: List<&2, String>,
+  next: File -> List<&2, String> -> IO(String)) -> IO(String):
   (file, result) = got
   match result:
     case Fail{error}:
@@ -291,11 +298,11 @@ def read.chunk(got: File & Result<&1, &1, U32 & String, String>, acc: String,
         case SNil{}:
           do IO<String>:
             Unit <- File.close(file)
-            return acc
-        case SCon{c, t}: next(file)(acc ++ SCon{c, t})
+            return read.join(acc, "")
+        case SCon{c, t}: next(file)(Con{SCon{c, t}, acc})
 
 @unsafe
-def read.loop(file: File, acc: String) -> IO(String):
+def read.loop(file: File, acc: List<&2, String>) -> IO(String):
   do IO<String>:
     got : File & Result<&1, &1, U32 & String, String> <- File.read(file, 65536)
     read.chunk(got, acc, f => text => read.loop(f, text))
@@ -303,7 +310,7 @@ def read.loop(file: File, acc: String) -> IO(String):
 def read(path: String) -> IO(String):
   do IO<String>:
     file : File <- IO.try(File, File.open(path, "r"))
-    read.loop(file, "")
+    read.loop(file, Nil{})
 
 def write.done(got: File & Result<&1, &1, U32 & String, Unit>) -> IO(Unit):
   (file, result) = got

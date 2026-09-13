@@ -3718,6 +3718,12 @@ def cover.lines(es: List<&2, Edge>, +frame: Raster) -> List<&2, Cov.CovLine>:
     case Nil{}: Nil{}
     case Con{Edge{a, b, stroked, closed}, rest}: Con{cover.line(cover.pixel(frame, a), cover.pixel(frame, b)), cover.lines(rest, frame)}
 
+# Local edges through m onto the frame's pixel grid in one pass.
+def cover.lines.through(es: List<&2, Edge>, +m: Matrix, +frame: Raster, acc: List<&2, Cov.CovLine>) -> List<&2, Cov.CovLine>:
+  match es:
+    case Nil{}: acc
+    case Con{Edge{a, b, stroked, closed}, rest}: cover.lines.through(rest, m, frame, Con{cover.line(cover.pixel(frame, matrix.point(m, a)), cover.pixel(frame, matrix.point(m, b))), acc})
+
 # With `trees` the mask carries the quadtree that clip and pixel queries
 # need; a fill painted directly keeps only its rows of runs.
 def cover.build(+lines: List<&2, Cov.CovLine>, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
@@ -3726,7 +3732,7 @@ def cover.build(+lines: List<&2, Cov.CovLine>, +even: Bool, +frame: Raster, +sub
 
 # Local edges through m (local to device) onto the frame's pixel grid.
 def cover.edges(es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
-  cover.build(cover.lines(edges.transform(es, m), frame), even, frame, sub, trees)
+  cover.build(cover.lines.through(es, m, frame, Nil{}), even, frame, sub, trees)
 
 def cover.tree.edges(t: EdgeTree, acc: List<&2, Edge>) -> List<&2, Edge>:
   match t:
@@ -5094,12 +5100,59 @@ def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +
       Target{tx, ty, tw, th} = t
       paint.rows.of(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, fixed, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), fixed, Target{tx, ty, tw, th}, ctx)
 
+# A solid brush with a uniform clip limit paints runs straight: the front
+# for full coverage is packed once per shape, a partial run packs its own,
+# and an opaque front is written without a read.
+def paint.solid.row.mode(opaque: Bool, fb: Array<U32>, +i: U32, +cols: Nat, +front: U32) -> Array<U32>:
+  match opaque:
+    case True{}: set.row(fb, cols, i, front)
+    case False{}: fill.row(fb, cols, i, front)
+
+def paint.solid.run.some(skip: Bool, fb: Array<U32>, +bx: U32, +cols: U32, +v: F32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+  match skip:
+    case True{}: fb
+    case False{}:
+      +front = U.choose(U32, F32.is_ge(v, 1.0), full, pixel.pack(tint, U.min(v, limit)))
+      paint.solid.row.mode(U32.is_eq(U32.div(front, 16777216), 255), fb, target.index(t, bx, y), U32.to_nat(cols), front)
+
+def paint.solid.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+  Target{tx, ty, tw, th} = t
+  +bx = paint.from(x0, tx)
+  +cols = paint.span(x0, (x1 - x0 : U32), tx, (tx + tw : U32))
+  paint.solid.run.some(U32.is_eq(cols, 0), fb, bx, cols, v, y, Target{tx, ty, tw, th}, full, tint, limit)
+
+@unsafe
+def paint.solid.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+  match runs:
+    case Nil{}: fb
+    case Con{Cov.Run{x0, x1, v}, rest}: paint.solid.runs(paint.solid.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, t, full, tint, limit), rest, gx, y, t, full, tint, limit)
+
+def paint.solid.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+  match inside:
+    case True{}: paint.solid.runs(fb, runs, gx, y, t, full, tint, limit)
+    case False{}: fb
+
+@unsafe
+def paint.solid.rows(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+  match rows:
+    case Nil{}: fb
+    case Con{r, rest}:
+      Target{tx, ty, tw, th} = t
+      paint.solid.rows(paint.solid.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, Target{tx, ty, tw, th}, full, tint, limit), rest, gx, (y + 1 : U32), Target{tx, ty, tw, th}, full, tint, limit)
+
+def paint.rows.mode(solid: Bool, fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +gy: U32, +fixed: F32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+  match solid:
+    case True{}:
+      +tint = paint.ctx.tint(ctx)
+      paint.solid.rows(fb, rows, gx, gy, tg, pixel.pack(tint, fixed), tint, fixed)
+    case False{}: paint.rows.of(fb, rows, gx, gy, fixed, tg, ctx)
+
 # The clips are read once over the mask's whole box: uniform there (the
 # usual case, a shape inside the viewport clip), that limit serves every
 # run and nothing reads the clips again; zero there paints nothing.
 def paint.data(d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +fixed: F32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
   match d:
-    case Cov.CovRows{rows}: paint.rows.of(fb, rows, gx, gy, fixed, tg, ctx)
+    case Cov.CovRows{rows}: paint.rows.mode(F32.is_ge(fixed, 0.0) && paint.ctx.solid(ctx), fb, rows, gx, gy, fixed, tg, ctx)
     case Cov.CovTreed{tree}: paint.tree(fb, tree, gx, gy, size, tg, ctx)
 
 def paint.data.known(empty: Bool, +known: F32, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:

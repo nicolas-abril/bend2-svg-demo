@@ -264,3 +264,68 @@ def strings.has(xs: List<&2, String>, +s: String) -> Bool:
   match xs:
     case Nil{}: False{}
     case Con{h, t}: branch(Bool, string.equal(h, s), _ => True{}, _ => strings.has(t, s))
+
+# Reverse a scan's accumulator while decoding XML entities: the reversed
+# text shows an entity as its ';' first, then its name backwards, then '&';
+# a ';' without a short name and '&' behind it is plain text.
+def entity.push(+e: String, +out: String) -> String:
+  match e:
+    case SNil{}: out
+    case SCon{c, t}: SCon{c, entity.push(t, out)}
+
+def entity.of(+name: String) -> String:
+  choose(String, string.equal(name, "amp"), "&", choose(String, string.equal(name, "lt"), "<",
+    choose(String, string.equal(name, "gt"), ">", choose(String, string.equal(name, "quot"), "\"",
+      choose(String, string.equal(name, "apos"), "'", choose(String, prefix(name, "#x"), SCon{Chr{hex(drop(name, "#x"), 0)}, ""},
+        choose(String, prefix(name, "#"), SCon{Chr{F32.to_u32(scalar(drop(name, "#"), 65533.0))}, ""}, "&" ++ name ++ ";")))))))
+
+# One step of the decoding reversal: kind 0 a plain character, 1 an entity
+# (its name collected backwards up to the '&'), 2 a ';' that began no
+# entity (the collected text stays as it was), 3 the end.
+type Step is Data:
+  Step{kind: U32, ch: U32, name: String, rest: String}
+
+@unsafe
+def entity.take(s: String, +name: String, +n: U32) -> Step:
+  match s:
+    case SNil{}: Step{2, 0, name, ""}
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +tail = t
+      branch(Step, U32.is_eq(ch, 38), _ => Step{1, 0, name, tail},
+        _ => branch(Step, U32.is_lt(n, 12) && (digit(ch) || (U32.is_ge(ch, 65) && U32.is_le(ch, 90)) || (U32.is_ge(ch, 97) && U32.is_le(ch, 122)) || U32.is_eq(ch, 35)),
+          _ => entity.take(tail, SCon{Chr{ch}, name}, (n + 1 : U32)), _ => Step{2, 0, name, SCon{Chr{ch}, tail}}))
+
+def rev.next.at(semi: Bool, +ch: U32, t: String) -> Step:
+  match semi:
+    case True{}: entity.take(t, "", 0)
+    case False{}: Step{0, ch, "", t}
+
+def rev.next(s: String) -> Step:
+  match s:
+    case SNil{}: Step{3, 0, "", ""}
+    case SCon{Chr{c}, t}:
+      +ch = c
+      rev.next.at(U32.is_eq(ch, 59), ch, t)
+
+@unsafe
+def rev.decode.go(st: Step, +out: String) -> String:
+  match st:
+    case Step{kind, ch, name, rest}:
+      match kind:
+        case 0: rev.decode.go(rev.next(rest), SCon{Chr{ch}, out})
+        case 1: rev.decode.go(rev.next(rest), entity.push(entity.of(name), out))
+        case 2: rev.decode.go(rev.next(rest), entity.push(name, SCon{Chr{59}, out}))
+        case _: out
+
+def rev.decode(s: String, +out: String) -> String:
+  rev.decode.go(rev.next(s), out)
+
+# Like until, with entities decoded in the reversal.
+def until.decoded(+s: String, +end: U32, +acc: String) -> Scan:
+  match s:
+    case SNil{}: Scan{rev.decode(acc, ""), ""}
+    case SCon{Chr{c}, t}:
+      branch(Scan, U32.is_eq(c, end),
+        _ => Scan{rev.decode(acc, ""), t},
+        _ => until.decoded(t, end, SCon{Chr{c}, acc}))
