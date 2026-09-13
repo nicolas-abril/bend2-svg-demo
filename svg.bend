@@ -3455,11 +3455,18 @@ def expand.text(has: Bool, +xs: List<&2, XML.Element>, book: Font.FontBook, +w: 
     case True{}: text.paint.group(text.expand(text.path.resolve(xs, xs, w, h, True{}), text.font.default(book), w, h, True{}))
     case False{}: xs
 
+# Without a stylesheet the CSS pass would only merge style attributes, which
+# CSS.properties does on demand, so the tree is used as parsed.
+def document.styled(has: Bool, +kids: List<&2, XML.Element>, +w: F32, +h: F32) -> List<&2, XML.Element>:
+  match has:
+    case True{}: CSS.css.tree(kids, CSS.css.rules(CSS.css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, CSS.css.element.count(kids))
+    case False{}: kids
+
 def document.camera.fonts(+root: XML.Element, +w: F32, +h: F32, matrix: Matrix, book: Font.FontBook) -> List<&2, Scene<Brush>>:
   XML.Element{n, a, kids, txt} = root
   +kinds = XML.elements.kinds(kids, 0)
   +images = U32.is_gt(U32.and(kinds, 1), 0)
-  +styled = CSS.css.tree(kids, CSS.css.rules(CSS.css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, CSS.css.element.count(kids))
+  +styled = document.styled(images || U32.is_gt(U32.and(kinds, 8), 0), kids, w, h)
   +nodes = expand.text(images || U32.is_gt(U32.and(kinds, 4), 0), expand.uses(images || U32.is_gt(U32.and(kinds, 2), 0), expand.images(images, styled, w, h)), book, w, h)
   context.scenes(compile(64n, nodes, style.default(), matrix, w, h, resources(nodes, a), True{}, Nil{}, 1.0), context.empty(), identity())
 
@@ -3469,7 +3476,8 @@ def document.fonts(root: XML.Element, w: F32, h: F32, book: Font.FontBook) -> Li
 # The document viewport and the output matrix have independent dimensions.
 def document.size(+root: XML.Element, +w: F32, +h: F32) -> Point:
   XML.Element{n, attrs, kids, txt} = root
-  +styled = CSS.css.tree(kids, CSS.css.rules(CSS.css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, CSS.css.element.count(kids))
+  +kinds = XML.elements.kinds(kids, 0)
+  +styled = document.styled(U32.is_gt(U32.and(kinds, 9), 0), kids, w, h)
   +as = image.svg.attrs(image.svg.root(styled))
   Point{U.max(0.0, viewport.dimension(as, "width", w)), U.max(0.0, viewport.dimension(as, "height", h))}
 
@@ -4863,9 +4871,29 @@ def paint.span(+at: U32, +size: U32, +lo: U32, +hi: U32) -> U32:
   +b = U.choose(U32, U32.is_lt((at + size : U32), hi), (at + size : U32), hi)
   U.choose(U32, U32.is_gt(b, a), (b - a : U32), 0)
 
+# An opaque front replaces the pixels outright, no read and no blend.
+@unsafe
+def set.row(fb: Array<U32>, n: Nat, +i: U32, +front: U32) -> Array<U32>:
+  match n:
+    case 0n: fb
+    case 1n+d: set.row(Array.set(U32, fb, i, front), d, (i + 1 : U32), front)
+
+@unsafe
+def set.rows(fb: Array<U32>, n: Nat, +x0: U32, +y: U32, +cols: Nat, +t: Target, +front: U32) -> Array<U32>:
+  match n:
+    case 0n: fb
+    case 1n+d: set.rows(set.row(fb, cols, target.index(t, x0, y), front), d, x0, (y + 1 : U32), cols, t, front)
+
+def fill.rows.mode(opaque: Bool, fb: Array<U32>, n: Nat, +x0: U32, +y: U32, +cols: Nat, +t: Target, +front: U32) -> Array<U32>:
+  match opaque:
+    case True{}: set.rows(fb, n, x0, y, cols, t, front)
+    case False{}: fill.rows(fb, n, x0, y, cols, t, front)
+
 def paint.block.mode(direct: Bool, fb: Array<U32>, +x0: U32, +y0: U32, +rows: Nat, +cols: Nat, +v: F32, +known: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
   match direct:
-    case True{}: fill.rows(fb, rows, x0, y0, cols, t, pixel.pack(paint.ctx.tint(ctx), U.min(v, known)))
+    case True{}:
+      +front = pixel.pack(paint.ctx.tint(ctx), U.min(v, known))
+      fill.rows.mode(U32.is_eq(U32.div(front, 16777216), 255), fb, rows, x0, y0, cols, t, front)
     case False{}: paint.rows(fb, rows, x0, y0, cols, v, known, t, ctx)
 
 # A block whose clips are uniform paints with that limit folded in: nothing

@@ -320,14 +320,14 @@ def serialize(root: Element) -> String:
   serialize.nodes(Con{root, Nil{}})
 
 # The number of elements in a forest, the roots included.
-# Which of three element names the tree holds, as bits: 1 image, 2 use, 4 text.
+# Which of four element names the tree holds, as bits: 1 image, 2 use, 4 text, 8 style.
 def elements.kinds(xs: List<&2, Element>, +acc: U32) -> U32:
   match xs:
     case Nil{}: acc
     case Con{Element{name, attrs, kids, text}, rest}:
       +n = name
       elements.kinds(rest, elements.kinds(kids, U32.or(acc, U.choose(U32, U.string.equal(n, "image"), 1,
-        U.choose(U32, U.string.equal(n, "use"), 2, U.choose(U32, U.string.equal(n, "text"), 4, 0))))))
+        U.choose(U32, U.string.equal(n, "use"), 2, U.choose(U32, U.string.equal(n, "text"), 4, U.choose(U32, U.string.equal(n, "style"), 8, 0)))))))
 
 def elements.count(xs: List<&2, Element>) -> U32:
   match xs:
