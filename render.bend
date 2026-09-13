@@ -16,8 +16,22 @@ def env(name: String, fallback: String) -> IO(String):
     result : Result<&1, &1, U32 & String, String> <- IO.get_env(name)
     return env.value(result, fallback)
 
-def output(doc: XML.Element, +w: U32, +h: U32, aa: U32, fonts: Font.FontBook) -> String:
-  SVG.ppm(w, h, SVG.document.fitted.fonts(doc, U32.to_f32(w), U32.to_f32(h), fonts), aa)
+# The packed pixels of a document, written as a PPM matrix by a foreign effect
+# (formatting 65 thousand pixels as text in Bend cost more than painting them).
+def pixels.write(a: Array<U32>, +w: U32, +h: U32) -> IO(Array<U32> & Result<&1, &1, U32 & String, Unit>):
+  import "./effs/pixels_write.c"
+  import "./effs/pixels_write.js"
+
+def written(got: Array<U32> & Result<&1, &1, U32 & String, Unit>) -> IO(Unit):
+  (pixels, result) = got
+  match result:
+    case Fail{err}: IO.print("write failed")
+    case Done{unit}: IO.pure(Unit, Unit{})
+
+def render.write(doc: XML.Element, book: Font.FontBook, +w: U32, +h: U32, +aa: U32) -> IO(Unit):
+  do IO<Unit>:
+    got : Array<U32> & Result<&1, &1, U32 & String, Unit> <- pixels.write(SVG.paint.packed(SVG.document.fitted.fonts(doc, U32.to_f32(w), U32.to_f32(h), book), w, h, aa), w, h)
+    written(got)
 
 def render.document(+doc: XML.Element) -> IO(Unit):
   do IO<Unit>:
@@ -28,7 +42,7 @@ def render.document(+doc: XML.Element) -> IO(Unit):
     w : U32 = F32.to_u32(U.clamp(U.scalar(width, 256.0), 1.0, 1024.0))
     h : U32 = F32.to_u32(U.clamp(U.scalar(height, 256.0), 1.0, 1024.0))
     aa : U32 = F32.to_u32(U.clamp(U.scalar(samples, 4.0), 1.0, 8.0))
-    IO.write(output(doc, w, h, aa, book))
+    render.write(doc, book, w, h, aa)
 
 def main() -> IO(Unit):
   do IO<Unit>:

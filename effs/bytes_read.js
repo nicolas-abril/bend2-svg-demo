@@ -1,14 +1,19 @@
 // Bytes
 // =====
 
-// The whole file as a Bin.Bytes value: a balanced tree of byte leaves over
-// the next power of two, zero leaves for the unused tail, byte count, capacity.
+// The whole file as a Bin.Bytes value: a balanced tree of four-byte word
+// leaves over the next power of two, zero leaves for the unused tail, byte
+// count, capacity.
 function bytes_read_tree(buf, lo, cap) {
   if (lo >= buf.length) {
     return { $: "bin.ByteFlat", value: 0 };
   }
-  if (cap === 1) {
-    return { $: "bin.ByteFlat", value: buf[lo] };
+  if (cap <= 4) {
+    let word = 0;
+    for (let k = 0; k < cap && lo + k < buf.length; k++) {
+      word += buf[lo + k] * 2 ** (8 * k);
+    }
+    return { $: "bin.ByteWord", value: word };
   }
   const half = cap / 2;
   return { $: "bin.ByteNode", left: bytes_read_tree(buf, lo, half), right: bytes_read_tree(buf, lo + half, half) };

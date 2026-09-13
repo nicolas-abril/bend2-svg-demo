@@ -4,9 +4,25 @@ import ./util.bend as U
 
 # Colors are premultiplied sRGB, as used by SVG's source-over compositor.
 # Persistent byte buffers support embedded image decoding without foreign code.
+# A flat leaf is one value per index (decoders keep whole words in a Bytes, and
+# a flat above the leaf level is a uniform run); a word leaf packs four bytes
+# little-endian, which is how the file effect builds a tree with a quarter of
+# the nodes and two levels fewer to descend. Each leaf carries its own reading.
 type ByteTree is Data:
   ByteFlat{value: U32}
+  ByteWord{value: U32}
   ByteNode{left: ByteTree, right: ByteTree}
+
+def bytes.lane(+index: U32) -> U32:
+  +k = U32.mod(index, 4)
+  U.choose(U32, U32.is_eq(k, 0), 1, U.choose(U32, U32.is_eq(k, 1), 256, U.choose(U32, U32.is_eq(k, 2), 65536, 16777216)))
+
+def bytes.word.get(+word: U32, +index: U32) -> U32:
+  U32.mod(U32.div(word, bytes.lane(index)), 256)
+
+def bytes.word.put(+word: U32, +index: U32, +v: U32) -> U32:
+  +lane = bytes.lane(index)
+  (word - U32.mod(U32.div(word, lane), 256) * lane + v * lane : U32)
 
 type Bytes is Data:
   Bytes{bufTree: ByteTree, size: U32, capacity: U32}
@@ -18,6 +34,7 @@ def bytes.empty() -> Bytes:
 def bytes.tree.get(bufTree: ByteTree, +capacity: U32, +index: U32) -> U32:
   match bufTree:
     case ByteFlat{v}: v
+    case ByteWord{v}: bytes.word.get(v, index)
     case ByteNode{left, right}:
       +half = (capacity / 2 : U32)
       bytes.tree.get(U.choose(ByteTree, U32.is_lt(index, half), left, right), half, U32.mod(index, half))
@@ -27,6 +44,8 @@ def bytes.tree.set(+bufTree: ByteTree, +capacity: U32, +index: U32, +v: U32) -> 
   match bufTree:
     case ByteFlat{old}:
       U.branch(ByteTree, U32.is_le(capacity, 1), _ => ByteFlat{v}, _ => bytes.tree.set(ByteNode{ByteFlat{old}, ByteFlat{old}}, capacity, index, v))
+    case ByteWord{old}:
+      U.branch(ByteTree, U32.is_le(capacity, 4), _ => ByteWord{bytes.word.put(old, index, v)}, _ => bytes.tree.set(ByteNode{ByteWord{old}, ByteWord{old}}, capacity, index, v))
     case ByteNode{left, right}:
       +half = (capacity / 2 : U32)
       U.branch(ByteTree, U32.is_lt(index, half), _ => ByteNode{bytes.tree.set(left, half, index, v), right}, _ => ByteNode{left, bytes.tree.set(right, half, (index - half : U32), v)})

@@ -1,16 +1,20 @@
 // Bytes
 // =====
 
-// The whole file as a Bin.Bytes value: a balanced tree of packed byte leaves
-// over the next power of two, with zero leaves standing in for the unused
-// tail, plus the byte count and that capacity. Built here so no Bend-side
+// The whole file as a Bin.Bytes value: a balanced tree of packed four-byte
+// word leaves over the next power of two, with zero leaves standing in for
+// the unused tail, plus the byte count and that capacity. Built here so no Bend-side
 // conversion touches every byte.
 static Term bytes_read_tree(Env e, const uint8_t* p, u64 n, u64 lo, u64 cap) {
   if (lo >= n) {
     return term_pak(CID_BIN_BYTEFLAT, 0);
   }
-  if (cap == 1) {
-    return term_pak(CID_BIN_BYTEFLAT, (u64)p[lo]);
+  if (cap <= 4) {
+    u64 word = 0;
+    for (u64 k = 0; k < cap && lo + k < n; k += 1) {
+      word |= (u64)p[lo + k] << (8 * k);
+    }
+    return term_pak(CID_BIN_BYTEWORD, word);
   }
   u64 half = cap / 2;
   Term left = bytes_read_tree(e, p, n, lo, half);

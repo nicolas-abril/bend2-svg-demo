@@ -1685,8 +1685,8 @@
     },
     {
       "fixture": "images-transforms.svg",
-      "meanAbsoluteError": 0.577880859375,
-      "rootMeanSquareError": 1.8264326212022348,
+      "meanAbsoluteError": 0.5751953125,
+      "rootMeanSquareError": 1.821636455223709,
       "maxChannelError": 20,
       "pixelsAbove32": 0,
       "reference": "chromium",

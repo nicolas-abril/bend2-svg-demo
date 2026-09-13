@@ -14,7 +14,7 @@ try {
 for(const f of readdirSync(resolve(root,'fixtures')).filter(f=>f.endsWith('.svg')&&(!filter||f.startsWith(filter)))){
  const k=scaleFor(f);if(k!==pageScale){if(page)await page.close();page=await browser.newPage({viewport:{width:64,height:64},deviceScaleFactor:k});pageScale=k;}
  await page.goto(pathToFileURL(resolve(root,'fixtures',f)).href);
- if(f.startsWith('text-')){const faces=['Regular','Bold','Italic','BoldItalic'].map(style=>({style,data:readFileSync(resolve(here,'fonts',`NotoSans-${style}.ttf`)).toString('base64')}));await page.evaluate(async faces=>{for(const {style,data}of faces){const face=new FontFace('Noto Sans',`url(data:font/ttf;base64,${data})`,{weight:style.includes('Bold')?'700':'400',style:style.includes('Italic')?'italic':'normal'});document.fonts.add(await face.load());}await document.fonts.ready;},faces);}
+ if(f.startsWith('text-')){const faces=['Regular','Bold','Italic','BoldItalic'].map(style=>({style,data:readFileSync(resolve(here, '../fonts',`NotoSans-${style}.ttf`)).toString('base64')}));await page.evaluate(async faces=>{for(const {style,data}of faces){const face=new FontFace('Noto Sans',`url(data:font/ttf;base64,${data})`,{weight:style.includes('Bold')?'700':'400',style:style.includes('Italic')?'italic':'normal'});document.fonts.add(await face.load());}await document.fonts.ready;},faces);}
  const name=f.slice(0,-4),shot=PNG.sync.read(await page.screenshot({omitBackground:false}));
  if(shot.width!==64*k||shot.height!==64*k)throw Error('Reference size mismatch');
  const ref=downsample(shot.data,64,64,k),png=new PNG({width:64,height:64});png.data.set(ref);

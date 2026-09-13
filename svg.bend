@@ -4422,41 +4422,392 @@ def prepare.scenes(+xs: List<&2, Scene<Brush>>, +space: Matrix, +aa: U32) -> Lis
       +node = scene.covered(Scene{es, box, inv, style, opacity, prepare.scenes(kids, space, aa), id, prepare.paint(ink, matrix.mul(space, matrix.inverse(inv)), nodes => mat => prepare.scenes(nodes, mat, aa), nodes => mat => prepare.scenes(nodes, mat, aa)), clip, outline, fillTree, prepare.scenes(masks, space, aa), maskMode, prepare.scenes(markers, space, aa), coverage, effect})
       Con{prepare.effect(effect, node, space, aa), prepare.scenes(rest, space, aa)}
 
-def image.raw(depth: Nat, +x: U32, +y: U32, +scene: List<&2, Scene<Brush>>, +aa: U32) -> Image:
-  match depth:
-    case 0n: Pix{pixel(scene, x, y, aa)}
-    case 1n+d:
-      +dd = d
-      +h = U32.shln(1, dd)
-      a b c e = image.raw(dd, x, y, scene, aa) image.raw(dd, (x + h : U32), y, scene, aa)
-        image.raw(dd, x, (y + h : U32), scene, aa) image.raw(dd, (x + h : U32), (y + h : U32), scene, aa)
-      Qua{a, b, c, e}
-
-def frame(+w: U32, +h: U32) -> Raster:
-  raster.format(Bounds{0.0, 0.0, U32.to_f32(w), U32.to_f32(h)}, 1.0)
-
-def image(+depth: Nat, x: U32, y: U32, scene: List<&2, Scene<Brush>>, +aa: U32) -> Image:
-  +side = U32.shln(1, depth)
-  image.raw(depth, x, y, cover.scenes(prepare.scenes(scene, identity(), aa), frame(side, side), cover.sub(aa)), aa)
-
 # Portable image export for headless rendering and reference comparisons.
 def pixel.ppm(c: U32) -> String:
   +rgb = c
   U32.show((rgb / 65536 % 256 : U32)) ++ " " ++ U32.show((rgb / 256 % 256 : U32))
     ++ " " ++ U32.show((rgb % 256 : U32)) ++ "\n"
 
-def ppm.row(n: Nat, +x: U32, +y: U32, +scene: List<&2, Scene<Brush>>, +aa: U32) -> String:
-  match n:
-    case 0n: ""
-    case 1n+d: pixel.ppm(pixel(scene, x, y, aa)) ++ ppm.row(d, U32.inc(x), y, scene, aa)
+# ---- painter ----
+# Nodes are painted back to front into a flat RGBA layer (four F32 lanes per
+# pixel) straight from their coverage masks: a mask leaf that spans a block
+# paints that block with one coverage value, so a uniform interior costs one
+# blend per pixel and nothing else, and a solid brush is sampled once per shape.
+# Nodes with opacity, a mask or a rendered filter are painted into a layer of
+# their own and composited; enclosing clips travel down as the coverage limit
+# the per-pixel sampler also uses, so both paths agree.
 
-def ppm.rows(n: Nat, +y: U32, +w: U32, +scene: List<&2, Scene<Brush>>, +aa: U32) -> String:
+def frame(+w: U32, +h: U32) -> Raster:
+  Raster{Point{0.0, 0.0}, 1.0, w, h, raster.depth(U.choose(U32, U32.is_gt(w, h), w, h), 1, 0n), False{}, Img.Flat{Img.clear()}}
+
+def layer.new(+w: U32, +h: U32) -> Array<F32>:
+  Array.new(F32, raster.depth((w * h * 4 : U32), 1, 0n), 0.0)
+
+def layer.color.a(got: Array<F32> & F32, +r: F32, +g: F32, +b: F32) -> Array<F32> & Img.Color:
+  (a, al) = got
+  (a, Img.Color{r, g, b, al})
+
+def layer.color.b(got: Array<F32> & F32, +i: U32, +r: F32, +g: F32) -> Array<F32> & Img.Color:
+  (a, bl) = got
+  layer.color.a(Array.get(F32, a, (i + 3 : U32)), r, g, bl)
+
+def layer.color.g(got: Array<F32> & F32, +i: U32, +r: F32) -> Array<F32> & Img.Color:
+  (a, gr) = got
+  layer.color.b(Array.get(F32, a, (i + 2 : U32)), i, r, gr)
+
+def layer.color.r(got: Array<F32> & F32, +i: U32) -> Array<F32> & Img.Color:
+  (a, r) = got
+  layer.color.g(Array.get(F32, a, (i + 1 : U32)), i, r)
+
+# The premultiplied color whose lanes start at i.
+def layer.color(a: Array<F32>, +i: U32) -> Array<F32> & Img.Color:
+  layer.color.r(Array.get(F32, a, i), i)
+
+def layer.put(a: Array<F32>, +i: U32, c: Img.Color) -> Array<F32>:
+  Img.Color{r, g, b, al} = c
+  Array.set(F32, Array.set(F32, Array.set(F32, Array.set(F32, a, i, r), (i + 1 : U32), g), (i + 2 : U32), b), (i + 3 : U32), al)
+
+def layer.over.got(got: Array<F32> & Img.Color, +i: U32, front: Img.Color) -> Array<F32>:
+  (a, back) = got
+  layer.put(a, i, color.over(front, back))
+
+# Composite front over the pixel whose lanes start at i.
+def layer.over(a: Array<F32>, +i: U32, front: Img.Color) -> Array<F32>:
+  layer.over.got(layer.color(a, i), i, front)
+
+def paint.with(cond: Bool, a: Array<F32>, yes: Array<F32> -> Array<F32>, no: Array<F32> -> Array<F32>) -> Array<F32>:
+  match cond:
+    case True{}: yes(a)
+    case False{}: no(a)
+
+# What one shape's pixels need: the brush (a solid color is sampled once), the
+# device-to-local matrix, the color space and the enclosing clips.
+type PaintCtx is Data:
+  PaintCtx{brush: Brush, inverse: Matrix, linear: Bool, clips: List<&2, Clip>, solid: Bool, color: Img.Color}
+
+def paint.solid(+brush: Brush) -> Bool:
+  match brush:
+    case Solid{c, source}: True{}
+    case _: False{}
+
+def paint.solid.color(+brush: Brush, +linear: Bool) -> Img.Color:
+  match brush:
+    case Solid{c, source}: color.space(c, linear)
+    case _: Img.clear()
+
+def paint.context(+brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>) -> PaintCtx:
+  PaintCtx{brush, inv, linear, clips, paint.solid(brush), paint.solid.color(brush, linear)}
+
+def paint.clips.of(+ctx: PaintCtx) -> List<&2, Clip>:
+  PaintCtx{br, inv, linear, clips, solid, tint} = ctx
+  clips
+
+# The least coverage the enclosing clips leave at p.
+def paint.limit(clips: List<&2, Clip>, +p: Point, +acc: F32) -> F32:
+  match clips:
+    case Nil{}: acc
+    case Con{c, rest}: paint.limit(rest, p, U.min(acc, clip.cover(c, p)))
+
+def paint.sample(+ctx: PaintCtx, +p: Point) -> Img.Color:
+  PaintCtx{br, inv, linear, clips, solid, tint} = ctx
+  U.branch(Img.Color, solid, _ => tint, _ => color.space(brush.sample(br, matrix.point(inv, p), matrix.point(inv, p), nodes => q => center => Img.clear()), linear))
+
+def paint.pixel(fb: Array<F32>, +x: U32, +y: U32, +v: F32, +w: U32, +ctx: PaintCtx) -> Array<F32>:
+  +p = {Point{(U32.to_f32(x) + 0.5 : F32), (U32.to_f32(y) + 0.5 : F32)} : Point}
+  +c = U.min(v, paint.limit(paint.clips.of(ctx), p, 1.0))
+  layer.over(fb, ((y * w + x) * 4 : U32), color.fade(paint.sample(ctx, p), c))
+
+@unsafe
+def paint.row(fb: Array<F32>, n: Nat, +x: U32, +y: U32, +v: F32, +w: U32, +ctx: PaintCtx) -> Array<F32>:
   match n:
-    case 0n: ""
-    case 1n+d: ppm.row(U32.to_nat(w), 0, y, scene, aa) ++ ppm.rows(d, U32.inc(y), w, scene, aa)
+    case 0n: fb
+    case 1n+d: paint.row(paint.pixel(fb, x, y, v, w, ctx), d, (x + 1 : U32), y, v, w, ctx)
+
+@unsafe
+def paint.rows(fb: Array<F32>, n: Nat, +x0: U32, +y: U32, +cols: Nat, +v: F32, +w: U32, +ctx: PaintCtx) -> Array<F32>:
+  match n:
+    case 0n: fb
+    case 1n+d: paint.rows(paint.row(fb, cols, x0, y, v, w, ctx), d, x0, (y + 1 : U32), cols, v, w, ctx)
+
+def paint.span(+at: U32, +size: U32, +limit: U32) -> U32:
+  U.choose(U32, U32.is_ge(at, limit), 0, U.choose(U32, U32.is_le((at + size : U32), limit), size, (limit - at : U32)))
+
+# One uniform block of a mask, clipped to the frame.
+def paint.block(fb: Array<F32>, +x0: U32, +y0: U32, +size: U32, +v: F32, +w: U32, +h: U32, +ctx: PaintCtx) -> Array<F32>:
+  paint.rows(fb, U32.to_nat(paint.span(y0, size, h)), x0, y0, U32.to_nat(paint.span(x0, size, w)), v, w, ctx)
+
+def paint.block.if(cond: Bool, fb: Array<F32>, +x0: U32, +y0: U32, +size: U32, +v: F32, +w: U32, +h: U32, +ctx: PaintCtx) -> Array<F32>:
+  match cond:
+    case True{}: paint.block(fb, x0, y0, size, v, w, h, ctx)
+    case False{}: fb
+
+@unsafe
+def paint.tree(fb: Array<F32>, t: Cov.CovTree, +x0: U32, +y0: U32, +size: U32, +w: U32, +h: U32, +ctx: PaintCtx) -> Array<F32>:
+  match t:
+    case Cov.CovFlat{v}:
+      +vv = v
+      paint.block.if(F32.is_gt(vv, 0.0), fb, x0, y0, size, vv, w, h, ctx)
+    case Cov.CovQuad{a, b, c, d}:
+      +half = U32.div(size, 2)
+      paint.tree(paint.tree(paint.tree(paint.tree(fb, a, x0, y0, half, w, h, ctx), b, (x0 + half : U32), y0, half, w, h, ctx), c, x0, (y0 + half : U32), half, w, h, ctx), d, (x0 + half : U32), (y0 + half : U32), half, w, h, ctx)
+
+def paint.tree.if(cond: Bool, fb: Array<F32>, t: Cov.CovTree, +x0: U32, +y0: U32, +size: U32, +w: U32, +h: U32, +ctx: PaintCtx) -> Array<F32>:
+  match cond:
+    case True{}: paint.tree(fb, t, x0, y0, size, w, h, ctx)
+    case False{}: fb
+
+# A shape's coverage mask on the frame grid, painted with its brush.
+def paint.cover(fb: Array<F32>, +cov: Cover, +w: U32, +h: U32, +ctx: PaintCtx) -> Array<F32>:
+  Cover{Cov.CovMask{gx, gy, size, depth, tree, present}, origin, step} = cov
+  paint.tree.if(present, fb, tree, gx, gy, size, w, h, ctx)
+
+def paint.fill.if(cond: Bool, fb: Array<F32>, +f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +w: U32, +h: U32) -> Array<F32>:
+  match cond:
+    case True{}:
+      Fill{tree, cover} = f
+      paint.cover(fb, cover, w, h, paint.context(brush, inv, linear, clips))
+    case False{}: fb
+
+def paint.stroke.if(cond: Bool, fb: Array<F32>, +mesh: StrokeMesh, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +w: U32, +h: U32) -> Array<F32>:
+  match cond:
+    case True{}:
+      StrokeMesh{tree, meshInverse, cover} = mesh
+      paint.cover(fb, cover, w, h, paint.context(brush, inv, linear, clips))
+    case False{}: fb
+
+# Fill (which = 0) or stroke (1) of a shape; markers (2) are painted by the caller.
+def paint.piece(fb: Array<F32>, +which: U32, +s: Style, +ink: Paint<Brush>, +inv: Matrix, +outline: StrokeMesh, +f: Fill, +linear: Bool, +clips: List<&2, Clip>, +w: U32, +h: U32) -> Array<F32>:
+  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+  Paint{fc, sc} = ink
+  paint.stroke.if(U32.is_eq(which, 1) && visible && Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0),
+    paint.fill.if(U32.is_eq(which, 0) && visible && Bool.not(String.eq(fill, "none")), fb, f, fc, inv, linear, clips, w, h),
+    outline, sc, inv, linear, clips, w, h)
+
+# paint-order as three steps: the first piece is order / 2, the other two in
+# ascending order for an even value and descending for an odd one.
+def paint.order.first(+order: U32) -> U32:
+  U32.div(order, 2)
+
+def paint.order.second(+order: U32) -> U32:
+  +first = U32.div(order, 2)
+  +lo = U.choose(U32, U32.is_eq(first, 0), 1, 0)
+  +hi = U.choose(U32, U32.is_eq(first, 2), 1, 2)
+  U.choose(U32, U32.is_eq(U32.mod(order, 2), 0), lo, hi)
+
+def paint.order.third(+order: U32) -> U32:
+  +first = U32.div(order, 2)
+  +lo = U.choose(U32, U32.is_eq(first, 0), 1, 0)
+  +hi = U.choose(U32, U32.is_eq(first, 2), 1, 2)
+  U.choose(U32, U32.is_eq(U32.mod(order, 2), 0), hi, lo)
+
+def paint.order.of(+s: Style) -> U32:
+  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+  order
+
+def paint.markers.at(+which: U32, +nodes: List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
+  U.choose(List<&2, Scene<Brush>>, U32.is_eq(which, 2), nodes, Nil{})
+
+def paint.clips(clip: Clip, +clips: List<&2, Clip>) -> List<&2, Clip>:
+  match clip:
+    case ClipAll{}: clips
+    case _: Con{clip, clips}
+
+# ---- layer compositing ----
+
+def comp.factor.got(got: Array<F32> & Img.Color, +mode: U32) -> Array<F32> & F32:
+  (a, c) = got
+  (a, mask.value(c, mode))
+
+# The mask factor at lane index i: one without a mask, else the mask layer's luminance or alpha.
+def comp.factor.if(read: Bool, mask: Array<F32>, +i: U32, +mode: U32) -> Array<F32> & F32:
+  match read:
+    case True{}: comp.factor.got(layer.color(mask, i), mode)
+    case False{}: (mask, 1.0)
+
+def comp.factor(mask: Array<F32>, +i: U32, +mode: U32) -> Array<F32> & F32:
+  comp.factor.if(U32.is_ne(mode, 0), mask, i, mode)
+
+def comp.pixel.mask(got: Array<F32> & F32, fb: Array<F32>, layer: Array<F32>, +i: U32, +opacity: F32, c: Img.Color) -> Array<F32> & (Array<F32> & Array<F32>):
+  (mask, f) = got
+  (layer.over(fb, i, color.fade(c, (opacity * f : F32))), (layer, mask))
+
+def comp.pixel.layer(got: Array<F32> & Img.Color, fb: Array<F32>, mask: Array<F32>, +i: U32, +opacity: F32, +mode: U32) -> Array<F32> & (Array<F32> & Array<F32>):
+  (layer, c) = got
+  comp.pixel.mask(comp.factor(mask, i, mode), fb, layer, i, opacity, c)
+
+def comp.step2(rest: Array<F32> & Array<F32>, fb: Array<F32>, +i: U32, +opacity: F32, +mode: U32) -> Array<F32> & (Array<F32> & Array<F32>):
+  (layer, mask) = rest
+  comp.pixel.layer(layer.color(layer, i), fb, mask, i, opacity, mode)
+
+# One pixel: the layer's color, faded by opacity and the mask, over the frame.
+def comp.step(state: Array<F32> & (Array<F32> & Array<F32>), +i: U32, +opacity: F32, +mode: U32) -> Array<F32> & (Array<F32> & Array<F32>):
+  (fb, rest) = state
+  comp.step2(rest, fb, i, opacity, mode)
+
+@unsafe
+def comp.row(state: Array<F32> & (Array<F32> & Array<F32>), n: Nat, +i: U32, +opacity: F32, +mode: U32) -> Array<F32> & (Array<F32> & Array<F32>):
+  match n:
+    case 0n: state
+    case 1n+d: comp.row(comp.step(state, i, opacity, mode), d, (i + 4 : U32), opacity, mode)
+
+@unsafe
+def comp.rows(state: Array<F32> & (Array<F32> & Array<F32>), n: Nat, +y: U32, +x0: U32, +cols: Nat, +w: U32, +opacity: F32, +mode: U32) -> Array<F32> & (Array<F32> & Array<F32>):
+  match n:
+    case 0n: state
+    case 1n+d: comp.rows(comp.row(state, cols, ((y * w + x0) * 4 : U32), opacity, mode), d, (y + 1 : U32), x0, cols, w, opacity, mode)
+
+def comp.finish(state: Array<F32> & (Array<F32> & Array<F32>)) -> Array<F32>:
+  (fb, rest) = state
+  fb
+
+# The pixel range of a device box within the frame: start and count per axis.
+def comp.start(+lo: F32, +limit: U32) -> U32:
+  F32.to_u32(U.clamp(F32.floor(lo), 0.0, U32.to_f32(limit)))
+
+def comp.count(+lo: F32, +hi: F32, +limit: U32) -> U32:
+  +a = comp.start(lo, limit)
+  +b = F32.to_u32(U.clamp(F32.ceil(hi), 0.0, U32.to_f32(limit)))
+  U.choose(U32, U32.is_gt(b, a), (b - a : U32), 0)
+
+# A finished layer, faded by opacity and its mask layer, over the frame within box.
+def comp.layer(fb: Array<F32>, layer: Array<F32>, mask: Array<F32>, +box: Bounds, +w: U32, +h: U32, +opacity: F32, +mode: U32) -> Array<F32>:
+  Bounds{x0, y0, x1, y1} = box
+  comp.finish(comp.rows((fb, (layer, mask)), U32.to_nat(comp.count(y0, y1, h)), comp.start(y0, h), comp.start(x0, w), U32.to_nat(comp.count(x0, x1, w)), w, opacity, mode))
+
+# A rendered filter raster, faded by the node's clip, opacity and mask, over the frame.
+def rcomp.pixel.mask(got: Array<F32> & F32, fb: Array<F32>, +i: U32, +opacity: F32, c: Img.Color) -> Array<F32> & Array<F32>:
+  (mask, f) = got
+  (layer.over(fb, i, color.fade(c, (opacity * f : F32))), mask)
+
+def rcomp.step(state: Array<F32> & Array<F32>, +x: U32, +y: U32, +w: U32, +raster: Raster, +clip: Clip, +linear: Bool, +opacity: F32, +mode: U32) -> Array<F32> & Array<F32>:
+  (fb, mask) = state
+  +p = {Point{(U32.to_f32(x) + 0.5 : F32), (U32.to_f32(y) + 0.5 : F32)} : Point}
+  +i = ((y * w + x) * 4 : U32)
+  rcomp.pixel.mask(comp.factor(mask, i, mode), fb, i, opacity, color.fade(raster.color(raster, p, linear), clip.cover(clip, p)))
+
+@unsafe
+def rcomp.row(state: Array<F32> & Array<F32>, n: Nat, +x: U32, +y: U32, +w: U32, +raster: Raster, +clip: Clip, +linear: Bool, +opacity: F32, +mode: U32) -> Array<F32> & Array<F32>:
+  match n:
+    case 0n: state
+    case 1n+d: rcomp.row(rcomp.step(state, x, y, w, raster, clip, linear, opacity, mode), d, (x + 1 : U32), y, w, raster, clip, linear, opacity, mode)
+
+@unsafe
+def rcomp.rows(state: Array<F32> & Array<F32>, n: Nat, +y: U32, +x0: U32, +cols: Nat, +w: U32, +raster: Raster, +clip: Clip, +linear: Bool, +opacity: F32, +mode: U32) -> Array<F32> & Array<F32>:
+  match n:
+    case 0n: state
+    case 1n+d: rcomp.rows(rcomp.row(state, cols, x0, y, w, raster, clip, linear, opacity, mode), d, (y + 1 : U32), x0, cols, w, raster, clip, linear, opacity, mode)
+
+def rcomp.finish(state: Array<F32> & Array<F32>) -> Array<F32>:
+  (fb, mask) = state
+  fb
+
+def comp.raster(fb: Array<F32>, mask: Array<F32>, +raster: Raster, +clip: Clip, +box: Bounds, +w: U32, +h: U32, +linear: Bool, +opacity: F32, +mode: U32) -> Array<F32>:
+  Bounds{x0, y0, x1, y1} = box
+  rcomp.finish(rcomp.rows((fb, mask), U32.to_nat(comp.count(y0, y1, h)), comp.start(y0, h), comp.start(x0, w), U32.to_nat(comp.count(x0, x1, w)), w, raster, clip, linear, opacity, mode))
+
+def filter.raster(effect: FilterEffect) -> Raster:
+  match effect:
+    case NoFilter{}: raster.empty()
+    case FilterSpec{region, units, viewport, attrs, primitives}: raster.empty()
+    case FilterImage{raster}: raster
+
+# ---- nodes ----
+
+# Paint a list of scenes onto fb, back to front. A node is direct when it has
+# no opacity, mask or rendered filter: fill, stroke and markers in paint order,
+# then its children, all limited by the enclosing clips plus its own. Otherwise
+# the same content goes into a fresh layer (a copy of the node without those
+# three) and the layer, or the filter raster, is composited within the node's
+# coverage box; a mask is a layer painted from the mask nodes.
+@unsafe
+def paint.scenes(fb: Array<F32>, +xs: List<&2, Scene<Brush>>, +w: U32, +h: U32, +linear: Bool, +clips: List<&2, Clip>) -> Array<F32>:
+  match xs:
+    case Nil{}: fb
+    case Con{Scene{es, box, inv, style, opacity, kids, id, ink, clip, outline, fill, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
+      +inner = paint.clips(clip, clips)
+      +direct = F32.is_ge(opacity, 1.0) && U32.is_eq(maskMode, 0) && Bool.not(filter.rendered(effect))
+      +order = paint.order.of(style)
+      +first = paint.order.first(order)
+      +second = paint.order.second(order)
+      +third = paint.order.third(order)
+      paint.scenes(paint.with(direct, fb,
+        fb1 => paint.scenes(
+          paint.scenes(paint.piece(
+            paint.scenes(paint.piece(
+              paint.scenes(paint.piece(fb1, first, style, ink, inv, outline, fill, linear, inner, w, h), paint.markers.at(first, markerNodes), w, h, linear, inner),
+              second, style, ink, inv, outline, fill, linear, inner, w, h), paint.markers.at(second, markerNodes), w, h, linear, inner),
+            third, style, ink, inv, outline, fill, linear, inner, w, h), paint.markers.at(third, markerNodes), w, h, linear, inner),
+          kids, w, h, linear, inner),
+        fb1 => paint.with(filter.rendered(effect), fb1,
+          fb2 => comp.raster(fb2, paint.scenes(layer.new(w, h), paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes), w, h, U32.is_eq(maskMode, 3), Nil{}), filter.raster(effect), clip, coverage, w, h, linear, opacity, maskMode),
+          fb2 => comp.layer(fb2,
+            paint.scenes(layer.new(w, h), Con{Scene{es, box, inv, style, 1.0, kids, id, ink, clip, outline, fill, Nil{}, 0, markerNodes, coverage, NoFilter{}}, Nil{}}, w, h, linear, clips),
+            paint.scenes(layer.new(w, h), paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes), w, h, U32.is_eq(maskMode, 3), Nil{}),
+            coverage, w, h, opacity, maskMode))),
+        rest, w, h, linear, clips)
+
+# The whole document at w by h device pixels.
+def paint.frame(scene: List<&2, Scene<Brush>>, +w: U32, +h: U32, +aa: U32) -> Array<F32>:
+  paint.scenes(layer.new(w, h), cover.scenes(prepare.scenes(scene, identity(), aa), frame(w, h), cover.sub(aa)), w, h, False{}, Nil{})
+
+# ---- packed output ----
+
+def pack.got(got: Array<F32> & Img.Color, out: Array<U32>, +j: U32) -> Array<F32> & Array<U32>:
+  (fb, c) = got
+  (fb, Array.set(U32, out, j, color.pack(color.over(c, color.rgb(16777215)))))
+
+def pack.step(state: Array<F32> & Array<U32>, +j: U32) -> Array<F32> & Array<U32>:
+  (fb, out) = state
+  pack.got(layer.color(fb, (j * 4 : U32)), out, j)
+
+@unsafe
+def pack.loop(state: Array<F32> & Array<U32>, n: Nat, +j: U32) -> Array<F32> & Array<U32>:
+  match n:
+    case 0n: state
+    case 1n+d: pack.loop(pack.step(state, j), d, (j + 1 : U32))
+
+def pack.finish(state: Array<F32> & Array<U32>) -> Array<U32>:
+  (fb, out) = state
+  out
+
+# The document as packed 0xRRGGBB pixels over white, row-major, w * h entries.
+def paint.packed(scene: List<&2, Scene<Brush>>, +w: U32, +h: U32, +aa: U32) -> Array<U32>:
+  pack.finish(pack.loop((paint.frame(scene, w, h, aa), Array.new(U32, raster.depth((w * h : U32), 1, 0n), 0)), U32.to_nat((w * h : U32)), 0))
+
+# Threads an array through a continuation after one read.
+def packed.then(-R: Type, got: Array<U32> & U32, next: Array<U32> -> U32 -> R) -> R:
+  (a, v) = got
+  next(a)(v)
+
+# The window image: a quadtree over a 2^depth square, read from the packed pixels.
+@unsafe
+def image.of(a: Array<U32>, depth: Nat, +x: U32, +y: U32, +side: U32, next: Array<U32> -> Image -> Image) -> Image:
+  match depth:
+    case 0n: packed.then(Image, Array.get(U32, a, (y * side + x : U32)), a1 => v => next(a1)(Pix{v}))
+    case 1n+d:
+      +dd = d
+      +half = U32.shln(1, dd)
+      image.of(a, dd, x, y, side, a1 => ia => image.of(a1, dd, (x + half : U32), y, side, a2 => ib => image.of(a2, dd, x, (y + half : U32), side,
+        a3 => ic => image.of(a3, dd, (x + half : U32), (y + half : U32), side, a4 => id => next(a4)(Qua{ia, ib, ic, id})))))
+
+def image(+depth: Nat, x: U32, y: U32, scene: List<&2, Scene<Brush>>, +aa: U32) -> Image:
+  +side = U32.shln(1, depth)
+  image.of(paint.packed(scene, side, side, aa), depth, 0, 0, side, a => im => im)
+
+@unsafe
+def ppm.cols(a: Array<U32>, n: Nat, +j: U32, next: Array<U32> -> String -> String) -> String:
+  match n:
+    case 0n: next(a)("")
+    case 1n+d: packed.then(String, Array.get(U32, a, j), a1 => v => ppm.cols(a1, d, (j + 1 : U32), a2 => rest => next(a2)(pixel.ppm(v) ++ rest)))
+
+@unsafe
+def ppm.rows(a: Array<U32>, n: Nat, +y: U32, +w: U32, next: Array<U32> -> String -> String) -> String:
+  match n:
+    case 0n: next(a)("")
+    case 1n+d: ppm.cols(a, U32.to_nat(w), (y * w : U32), a1 => row => ppm.rows(a1, d, (y + 1 : U32), w, a2 => rest => next(a2)(row ++ rest)))
 
 def ppm(+w: U32, +h: U32, scene: List<&2, Scene<Brush>>, +aa: U32) -> String:
-  "P3\n" ++ U32.show(w) ++ " " ++ U32.show(h) ++ "\n255\n" ++ ppm.rows(U32.to_nat(h), 0, w, cover.scenes(prepare.scenes(scene, identity(), aa), frame(w, h), cover.sub(aa)), aa)
+  "P3\n" ++ U32.show(w) ++ " " ++ U32.show(h) ++ "\n255\n" ++ ppm.rows(paint.packed(scene, w, h, aa), U32.to_nat(h), 0, w, a => text => text)
 
 type Pick is Data:
   Pick{found: Bool, id: String, inverse: Matrix}

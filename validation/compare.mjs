@@ -33,7 +33,7 @@ for (const file of readdirSync(resolve(root, 'fixtures')).filter(x => x.endsWith
   try {
     reference = new Resvg(readFileSync(input), {
       background:'white', fitTo:{mode:'width',value:w*scaleFor(file)},
-      ...(file.startsWith('text-') ? {font:{fontFiles:['Regular','Bold','Italic','BoldItalic'].map(style=>resolve(here,'fonts',`NotoSans-${style}.ttf`)),loadSystemFonts:false,defaultFontFamily:'Noto Sans'}} : {}),
+      ...(file.startsWith('text-') ? {font:{fontFiles:['Regular','Bold','Italic','BoldItalic'].map(style=>resolve(here, '../fonts',`NotoSans-${style}.ttf`)),loadSystemFonts:false,defaultFontFamily:'Noto Sans'}} : {}),
     }).render();
   } catch(error) {
     report.push({fixture:file,width:w,height:h,error:String(error.message||error)});

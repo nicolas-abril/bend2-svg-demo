@@ -925,3 +925,58 @@ Loading the four faces now costs about 50 ms, almost all of it the byte tree
 few dozen characters are below the timer's noise. resvg renders the same
 fixture in half a millisecond in-process, so text is now about 100 times
 slower rather than 3000, the same ratio as shapes.
+
+## Array painter, word-packed byte trees and a pixel-writing effect
+
+A profile of a 1024x1024 render put most of the time in term drops, closure
+applications and color blends: the per-pixel sampler walked the scene list
+for every pixel, allocating points, colors and branch closures on the way, and
+the text PPM cost another sixth in string appends. Three changes address that;
+none of them alters a pixel value, so all 117 saved matrices are byte-identical.
+
+The painter (`paint.scenes`) works on a flat `Array<F32>` layer with four
+premultiplied lanes per pixel and paints nodes back to front straight from
+their coverage masks: a mask leaf that spans a block paints the block with one
+coverage value, so a uniform interior costs one blend per pixel and a solid
+brush is sampled once per shape. Direct nodes (no opacity, mask or rendered
+filter) paint fill, stroke and markers in paint order and then their children;
+enclosing clips travel down as the coverage limit, the same rule the per-pixel
+sampler uses, which is why the two agree. Other nodes are painted into a layer
+of their own (a copy of the node without those three) and composited within
+their coverage box, a mask being a layer painted from the mask nodes and a
+filter node reading its rendered raster. Arrays are linear, so the loops thread
+them explicitly and branch through helpers that match on a Bool; the packed
+pixels then go through a continuation-threaded quadtree build for the window
+and a row-by-row string build for the web frame. The per-pixel `sample` stays
+for pattern tiles, filter inputs, picking and the check programs.
+
+`Bin.Bytes` gained a second leaf kind: `ByteWord` packs four bytes little-endian
+and is what the file effect now builds, a quarter of the nodes and two levels
+fewer per read; `ByteFlat` keeps one value per index, since the JPEG and DEFLATE
+decoders store whole coefficients and code counts in a `Bytes`. A memory-mapped
+file is not expressible here: arrays are linear and cannot be shared, and the
+TrueType reader needs random access from pure code, so the tree stays the
+shared, indexable form.
+
+The headless renderer writes its matrix through `effs/pixels_write`, a foreign
+effect that formats the packed `Array<U32>` as P3 text in C or JavaScript.
+
+Timings, whole process, compiled renderer (the empty document is the process
+floor):
+
+| Fixture | 64x64, before | after | 256x256, before | after | 1024x1024 after |
+| --- | --- | --- | --- | --- | --- |
+| empty document | 20 ms | 21 ms | 20 ms | 21 ms | 21 ms |
+| basic | 30 ms | 24 ms | 150 ms | 38 ms | 256 ms |
+| stroke-vector | 34 ms | 24 ms | 193 ms | 39 ms | 268 ms |
+| markers-compositing | 57 ms | 40 ms | 399 ms | 106 ms | 1128 ms |
+| text-path-styles | 70 ms | 43 ms | 184 ms | 58 ms | 247 ms |
+
+Render time now grows roughly linearly with the pixel count from 256x256 up
+(basic: 17 ms to 235 ms for 16 times the pixels), and against resvg's 0.6 ms
+and 1.6 ms for basic at the two sizes the gap is about 5x at 64x64 and 10x at
+256x256 once the 20 ms process floor is set aside. What remains is the per-pixel
+blend through linear array reads and writes, the layers that opacity groups
+and masks allocate at frame size (markers-compositing has four), and the
+process floor itself, which resvg avoids by staying in-process.
+

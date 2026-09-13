@@ -24,11 +24,11 @@ try {
     const actual = readFileSync(resolve(here, `${name}.ppm`), 'utf8').trim().split(/\s+/).slice(4).map(Number);
     const row = { fixture: f };
     try {
-      const r = new Resvg(readFileSync(input), { background: 'white', fitTo: { mode: 'width', value: W * K }, ...(f.startsWith('text-') ? { font: { fontFiles: fonts.map(s => resolve(here, 'fonts', `NotoSans-${s}.ttf`)), loadSystemFonts: false, defaultFontFamily: 'Noto Sans' } } : {}) }).render();
+      const r = new Resvg(readFileSync(input), { background: 'white', fitTo: { mode: 'width', value: W * K }, ...(f.startsWith('text-') ? { font: { fontFiles: fonts.map(s => resolve(here, '../fonts', `NotoSans-${s}.ttf`)), loadSystemFonts: false, defaultFontFamily: 'Noto Sans' } } : {}) }).render();
       const px = down(r.pixels, W * K); row.resvg = metrics(actual, px); writeFileSync(resolve(here, `${name}-resvg-x${K}.png`), toPng(px));
     } catch (e) { row.resvg = { error: String(e.message || e) }; }
     await page.goto(pathToFileURL(input).href);
-    if (f.startsWith('text-')) { const faces = fonts.map(style => ({ style, data: readFileSync(resolve(here, 'fonts', `NotoSans-${style}.ttf`)).toString('base64') })); await page.evaluate(async faces => { for (const { style, data } of faces) { const face = new FontFace('Noto Sans', `url(data:font/ttf;base64,${data})`, { weight: style.includes('Bold') ? '700' : '400', style: style.includes('Italic') ? 'italic' : 'normal' }); await face.load(); document.fonts.add(face); } await document.fonts.ready; }, faces); }
+    if (f.startsWith('text-')) { const faces = fonts.map(style => ({ style, data: readFileSync(resolve(here, '../fonts', `NotoSans-${style}.ttf`)).toString('base64') })); await page.evaluate(async faces => { for (const { style, data } of faces) { const face = new FontFace('Noto Sans', `url(data:font/ttf;base64,${data})`, { weight: style.includes('Bold') ? '700' : '400', style: style.includes('Italic') ? 'italic' : 'normal' }); await face.load(); document.fonts.add(face); } await document.fonts.ready; }, faces); }
     const shot = PNG.sync.read(await page.screenshot({ omitBackground: false }));
     if (shot.width !== W * K) throw new Error(`screenshot ${shot.width}`);
     const px = down(shot.data, W * K); row.chromium = metrics(actual, px); writeFileSync(resolve(here, `${name}-chromium-x${K}.png`), toPng(px));

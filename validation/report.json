@@ -1158,10 +1158,10 @@
       "fixture": "images-transforms.svg",
       "width": 64,
       "height": 64,
-      "meanAbsoluteError": 1.7202962239583333,
-      "rootMeanSquareError": 6.748161159638849,
+      "meanAbsoluteError": 1.7233072916666667,
+      "rootMeanSquareError": 6.748902785052051,
       "maxChannelError": 97,
-      "differingPixels": 1371,
+      "differingPixels": 1378,
       "pixelsAbove32": 119,
       "fractionAbove32": 0.029052734375
     },

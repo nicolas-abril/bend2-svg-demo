@@ -16,7 +16,7 @@ unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
 | `xml.bend` | XML tokens, element tree, entities, attributes and serialization |
 | `css.bend` | Stylesheets, selectors, specificity, media queries and the cascade |
 | `font.bend` | Font book (outlines, advances, kerning, metrics) and the TrueType reader |
-| `cover.bend` | Analytic area coverage: signed-area accumulation of line lists into sparse masks |
+| `cover.bend` | Scan-converted area coverage of line lists into sparse masks |
 | `png.bend`, `jpeg.bend` | PNG and JPEG decoders producing `img.bend` pictures |
 | `bin.bend`, `img.bend`, `util.bend` | Bytes/DEFLATE/base64 and the `effs/` raw file read, colors and pixel quadtrees, text scanning helpers |
 | `state.bend` | Shared document, view, input reducer, picking, edits, undo and file IO |
@@ -72,9 +72,9 @@ preserves document source and edit history. Source edits preserve the current
 view; opening a file resets it.
 
 Both frontends display a 256×256 matrix. Shapes are rasterized with
-scan-converted coverage masks (one paint sample per pixel, exact fill, stroke
-and clip extents along each scanline), so a frame costs about the same idle
-or dragging. The native window currently lacks the web
+scan-converted coverage masks and painted back to front into a flat RGBA array
+straight from those masks (one blend per covered pixel, a solid brush sampled
+once per shape), so a frame costs about the same idle or dragging. The native window currently lacks the web
 UI's source and property panels. Configurable interactive viewport size remains
 unfinished.
 
