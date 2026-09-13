@@ -1094,3 +1094,60 @@ still walks a crossing per band and join edge it meets and adds a span per
 interval. A stroker that emits the offset outline as one polygon per subpath
 would bring a stroke's mask to the cost of a fill's, which is the next step
 if strokes matter more.
+
+## Regular documents: run-based masks and a cheaper compile
+
+The Ghostscript tiger (240 paths, 1208 elements, 68 KB of path data) showed
+two costs the earlier rounds never touched, because they are paid by every
+plain document rather than by clips, layers or filters.
+
+**Masks from runs.** A shape's mask was a dense float array over its box
+filled by the scan, then folded cell by cell into the quadtree through a
+continuation per cell; on the tiger's cover stage that fold was 70 percent
+of the profile. The scan now emits each row as a list of runs (a span with a
+constant coverage) and the tree is built top-down from the rows: a node
+whose rows are all a single run of one value across its width becomes a
+leaf, and only nodes along the shape's edge are split further. The dense
+array and the fold are gone; a mask costs its perimeter times the depth
+rather than its area. The aligned-rectangle fast path was also fixed to
+fire (rectangle edge lists carry zero-length edges, and the uniformity
+sentinel was mishandled).
+
+**The compile.** Compiling the tiger took 195 ms regardless of size. The
+profile was dominated by `term_drop` under `String.eq`: Base's `String.eq`
+compares through `String.cmp`, which rebuilds the compared prefix of both
+strings and drops it again, and the compile compares names constantly
+(every attribute lookup by name, every property keyword, every element name
+test). All libraries now use `U.string.equal`, which walks both strings once
+and stops at the first difference. On top of that the `resources` pass,
+which resolves the 25 inherited properties for every element, looked each
+one up by name in the parent's resolved list; a parent's list is in the same
+fixed order, so it is now read positionally with a name lookup only for the
+root's raw attributes. Attribute lookups walk the list without a lambda per
+entry, numeric inherited properties (stroke-width, opacities, miterlimit)
+keep the parent's number instead of printing and reparsing it, and the edge
+and stroke trees are built bottom-up from leaves instead of by repeated
+partitioning. Outputs are byte-identical.
+
+Cumulative stage times on the tiger and the two-path Twemoji face, compiled:
+
+| Stage | tiger 256 | tiger 1024 | face 256 | face 1024 |
+| --- | --- | --- | --- | --- |
+| parse XML | 12 ms | 12 ms | 7 ms | 7 ms |
+| compile the document | +52 ms (was +195) | +53 ms (was +195) | +1 ms | +1 ms |
+| coverage masks | +157 ms (was +150) | +534 ms (was +730) | +5 ms | +45 ms (was +108) |
+| paint and write | +10 ms | +47 ms | +1 ms | +5 ms |
+
+Whole-process times, best of three:
+
+| Document | 64x64 | 256x256 | 1024x1024 | 1024 before |
+| --- | --- | --- | --- | --- |
+| tiger | 176 ms | 233 ms | 652 ms | 975 ms |
+| twemoji face | 8 ms | 13 ms | 62 ms | 123 ms |
+| openmoji bulb | 11 ms | 17 ms | 63 ms | 89 ms |
+| basic | 8 ms | 10 ms | 31 ms | 49 ms |
+
+At 256 the tiger's masks are small, so the run-based tree saves little there
+and the scan itself (flattened curves, sub-scanline crossings) is what
+remains; at 1024 the tree build was the larger share. The compile is now a
+flat profile of attribute lookups, path parsing and bounds.

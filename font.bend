@@ -61,8 +61,8 @@ def font.parse.record(kind: String, +scan: U.Scan, +book: FontBook) -> FontBook:
   U.Scan{key, body} = scan
   FontBook{glyphs, kerning, faceMetrics, faces} = book
   +tag = kind
-  U.branch(FontBook, String.eq(tag, "g"), _ => font.parse.glyph(key, U.until(body, 124, ""), book),
-    _ => U.branch(FontBook, String.eq(tag, "k"), _ => FontBook{glyphs, Map.set(&2, F32, kerning, key, U.scalar(body, 0.0)), faceMetrics, faces}, _ => U.branch(FontBook, String.eq(tag, "m"), _ => FontBook{glyphs, kerning, Map.set(&2, F32, faceMetrics, key, U.scalar(body, 0.0)), faces}, _ => book)))
+  U.branch(FontBook, U.string.equal(tag, "g"), _ => font.parse.glyph(key, U.until(body, 124, ""), book),
+    _ => U.branch(FontBook, U.string.equal(tag, "k"), _ => FontBook{glyphs, Map.set(&2, F32, kerning, key, U.scalar(body, 0.0)), faceMetrics, faces}, _ => U.branch(FontBook, U.string.equal(tag, "m"), _ => FontBook{glyphs, kerning, Map.set(&2, F32, faceMetrics, key, U.scalar(body, 0.0)), faces}, _ => book)))
 
 def font.parse.row(scan: U.Scan, book: FontBook) -> FontBook:
   U.Scan{kind, body} = scan

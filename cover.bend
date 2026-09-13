@@ -368,39 +368,104 @@ def scan.done(state: Array<F32> & (List<&2, CovLine> & List<&2, CovLine>)) -> Ar
 def scan.rows(a: Array<F32>, n: Nat, +y: U32, +stride: U32, +sub: U32, +xs: List<&2, CovLine>, +even: Bool) -> Array<F32>:
   scan.done(scan.rows.go((a, (Nil{}, lines.sort(xs))), n, y, stride, sub, even))
 
-# ---- run deltas into coverage ----
+# ---- rows of runs ----
+# After the scan a row holds direct partial coverage in its even slots and run
+# deltas in its odd slots. One pass per row sums the deltas into coverage and
+# coalesces equal neighbouring cells into runs [x0, x1) of one value; cells in
+# no run are zero. The rows list is top first.
 
-def prefix.put(got: Array<F32> & F32, +i: U32, +running: F32) -> Array<F32>:
+type Run is Data:
+  Run{x0: U32, x1: U32, value: F32}
+
+# Close the run that ends at x (exclusive) when it holds a value.
+def runs.close(+x0: U32, +x1: U32, +v: F32, +acc: List<&2, Run>) -> List<&2, Run>:
+  U.choose(List<&2, Run>, F32.is_eq(v, 0.0) || U32.is_ge(x0, x1), acc, Con{Run{x0, x1, v}, acc})
+
+def runs.reverse(xs: List<&2, Run>, acc: List<&2, Run>) -> List<&2, Run>:
+  match xs:
+    case Nil{}: acc
+    case Con{r, rest}: runs.reverse(rest, Con{r, acc})
+
+# The state along a row: the array, the running delta sum, the current run's
+# start and value, and the runs closed so far (reversed).
+def row.cell(got: Array<F32> & F32, +x: U32, +running: F32, +start: U32, +v: F32, +acc: List<&2, Run>) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
   (a, direct) = got
-  Array.set(F32, a, i, (direct + running : F32))
+  +c = (direct + running : F32)
+  +same = F32.is_eq(c, v)
+  (a, (running, (U.choose(U32, same, start, x), (U.choose(F32, same, v, c), U.choose(List<&2, Run>, same, acc, runs.close(start, x, v, acc))))))
 
-def prefix.delta(got: Array<F32> & F32, +i: U32, +running: F32) -> Array<F32> & F32:
+def row.delta(got: Array<F32> & F32, +x: U32, +i: U32, +running: F32, +start: U32, +v: F32, acc: List<&2, Run>) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
   (a, delta) = got
-  +total = (running + delta : F32)
-  (prefix.put(Array.get(F32, a, i), i, total), total)
+  row.cell(Array.get(F32, a, i), x, (running + delta : F32), start, v, acc)
 
-def prefix.next(state: Array<F32> & F32, +i: U32) -> Array<F32> & F32:
-  (a, running) = state
-  prefix.delta(Array.get(F32, a, (i + 1 : U32)), i, running)
+def row.step3(rest: F32 & List<&2, Run>, a: Array<F32>, +x: U32, +i: U32, +running: F32, +start: U32) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
+  (v, acc) = rest
+  row.delta(Array.get(F32, a, (i + 1 : U32)), x, i, running, start, v, acc)
 
-# Along one row: the running sum of deltas plus the direct partials, written into the even slots.
+def row.step2(rest: U32 & (F32 & List<&2, Run>), a: Array<F32>, +x: U32, +i: U32, +running: F32) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
+  (start, more) = rest
+  row.step3(more, a, x, i, running, start)
+
+def row.step1(rest: F32 & (U32 & (F32 & List<&2, Run>)), a: Array<F32>, +x: U32, +i: U32) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
+  (running, more) = rest
+  row.step2(more, a, x, i, running)
+
+def row.step(state: Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))), +x: U32, +i: U32) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
+  (a, rest) = state
+  row.step1(rest, a, x, i)
+
 @unsafe
-def prefix.cells(state: Array<F32> & F32, n: Nat, +i: U32) -> Array<F32> & F32:
+def row.cells(state: Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))), n: Nat, +x: U32, +i: U32) -> Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))):
   match n:
     case 0n: state
-    case 1n+d: prefix.cells(prefix.next(state, i), d, (i + 2 : U32))
+    case 1n+d: row.cells(row.step(state, x, i), d, (x + 1 : U32), (i + 2 : U32))
 
-def prefix.done(state: Array<F32> & F32) -> Array<F32>:
-  (a, running) = state
-  a
+def row.finish3(rest: F32 & List<&2, Run>, +start: U32, +w: U32) -> List<&2, Run>:
+  (v, acc) = rest
+  runs.reverse(runs.close(start, w, v, acc), Nil{})
 
+def row.finish2(rest: U32 & (F32 & List<&2, Run>), +w: U32) -> List<&2, Run>:
+  (start, more) = rest
+  row.finish3(more, start, w)
+
+def row.finish1(rest: F32 & (U32 & (F32 & List<&2, Run>)), +w: U32) -> List<&2, Run>:
+  (running, more) = rest
+  row.finish2(more, w)
+
+def row.finish(state: Array<F32> & (F32 & (U32 & (F32 & List<&2, Run>))), +w: U32) -> Array<F32> & List<&2, Run>:
+  (a, rest) = state
+  (a, row.finish1(rest, w))
+
+# The runs of row y.
+def row.runs(a: Array<F32>, +y: U32, +stride: U32, +w: U32) -> Array<F32> & List<&2, Run>:
+  row.finish(row.cells((a, (0.0, (0, (0.0, Nil{})))), U32.to_nat(w), 0, (y * stride * 2 : U32)), w)
+
+def rows.push(got: Array<F32> & List<&2, Run>, rows: List<&2, List<&2, Run>>) -> Array<F32> & List<&2, List<&2, Run>>:
+  (a, runs) = got
+  (a, Con{runs, rows})
+
+def rows.step(state: Array<F32> & List<&2, List<&2, Run>>, +y: U32, +stride: U32, +w: U32) -> Array<F32> & List<&2, List<&2, Run>>:
+  (a, rows) = state
+  rows.push(row.runs(a, y, stride, w), rows)
+
+# Rows from the last to the first, so the list comes out top first.
 @unsafe
-def prefix.rows(a: Array<F32>, n: Nat, +y: U32, +stride: U32) -> Array<F32>:
+def rows.loop(state: Array<F32> & List<&2, List<&2, Run>>, n: Nat, +y: U32, +stride: U32, +w: U32) -> Array<F32> & List<&2, List<&2, Run>>:
   match n:
-    case 0n: a
-    case 1n+d: prefix.rows(prefix.done(prefix.cells((a, 0.0), U32.to_nat(stride), (y * stride * 2 : U32))), d, (y + 1 : U32), stride)
+    case 0n: state
+    case 1n+d: rows.loop(rows.step(state, (y - 1 : U32), stride, w), d, (y - 1 : U32), stride, w)
 
-# ---- quadtree build ----
+def rows.done(state: Array<F32> & List<&2, List<&2, Run>>) -> List<&2, List<&2, Run>>:
+  (a, rows) = state
+  rows
+
+def rows.of(a: Array<F32>, +h: U32, +stride: U32, +w: U32) -> List<&2, List<&2, Run>>:
+  rows.done(rows.loop((a, Nil{}), U32.to_nat(h), h, stride, w))
+
+# ---- quadtree from rows ----
+# A node square is a leaf when every row in it holds one value across the
+# node's columns (a row with no run there is zero); otherwise it splits, so
+# the build only descends along the shape's edges.
 
 def tree.same(+p: CovTree, +q: CovTree) -> Bool:
   match p q:
@@ -415,25 +480,57 @@ def tree.value(+p: CovTree) -> F32:
 def tree.merge(+a: CovTree, +b: CovTree, +c: CovTree, +d: CovTree) -> CovTree:
   U.branch(CovTree, tree.same(a, b) && tree.same(a, c) && tree.same(a, d), _ => CovFlat{tree.value(a)}, _ => CovQuad{a, b, c, d})
 
-def build.leaf(got: Array<F32> & F32, next: Array<F32> -> CovTree -> CovTree) -> CovTree:
-  (a, v) = got
-  next(a)(CovFlat{v})
+# Uniform value of one row's runs over the columns [x0, x1): the single run
+# that covers them all, zero when none touches them, -1 otherwise. Runs are
+# maximal, so a run that only partly covers the columns means two values.
+def runs.uniform(rs: List<&2, Run>, +x0: U32, +x1: U32, +acc: F32) -> F32:
+  match rs:
+    case Nil{}: U.choose(F32, F32.is_gt(acc, 1.5), 0.0, acc)
+    case Con{Run{rx0, rx1, v}, rest}:
+      +a0 = rx0
+      +a1 = rx1
+      +vv = v
+      +overlaps = U32.is_lt(a0, x1) && U32.is_lt(x0, a1)
+      +covers = U32.is_le(a0, x0) && U32.is_ge(a1, x1)
+      runs.uniform(rest, x0, x1, U.choose(F32, Bool.not(overlaps), acc, U.choose(F32, covers && F32.is_gt(acc, 1.5), vv, F32.neg(1.0))))
 
-def build.cell(a: Array<F32>, +x: U32, +y: U32, +w: U32, +h: U32, +stride: U32, next: Array<F32> -> CovTree -> CovTree) -> CovTree:
-  with.next(CovTree, U32.is_lt(x, w) && U32.is_lt(y, h), a, next, a1 => n1 => build.leaf(Array.get(F32, a1, ((y * stride + x) * 2 : U32)), n1), a1 => n1 => n1(a1)(CovFlat{0.0}))
+# Uniform value over n rows and the columns [x0, x1); rows past the list are zero.
+def rows.uniform(n: Nat, rows: List<&2, List<&2, Run>>, +x0: U32, +x1: U32, +acc: F32) -> F32:
+  match n:
+    case 0n: acc
+    case 1n+d:
+      match rows:
+        case Nil{}: U.choose(F32, F32.is_gt(acc, 1.5), 0.0, U.choose(F32, F32.is_eq(acc, 0.0), 0.0, F32.neg(1.0)))
+        case Con{r, rest}: rows.uniform(d, rest, x0, x1, tree.same.as(acc, runs.uniform(r, x0, x1, 2.0)))
 
-# Depth-first over the power-of-two grid, threading the accumulation array through continuations.
+def rows.take(rows: List<&2, List<&2, Run>>, n: Nat) -> List<&2, List<&2, Run>>:
+  match rows:
+    case Nil{}: Nil{}
+    case Con{r, rest}:
+      match n:
+        case 0n: Nil{}
+        case 1n+d: Con{r, rows.take(rest, d)}
+
+def rows.drop(rows: List<&2, List<&2, Run>>, n: Nat) -> List<&2, List<&2, Run>>:
+  match rows:
+    case Nil{}: Nil{}
+    case Con{r, rest}:
+      match n:
+        case 0n: Con{r, rest}
+        case 1n+d: rows.drop(rest, d)
+
 @unsafe
-def build.tree(a: Array<F32>, depth: Nat, +x: U32, +y: U32, +w: U32, +h: U32, +stride: U32, next: Array<F32> -> CovTree -> CovTree) -> CovTree:
+def tree.rows(+rows: List<&2, List<&2, Run>>, depth: Nat, +x0: U32, +size: U32) -> CovTree:
   match depth:
-    case 0n: build.cell(a, x, y, w, h, stride, next)
-    case 1n+dd:
-      +d0 = dd
-      +half = U32.shln(1, d0)
-      with.next(CovTree, U32.is_ge(x, w) || U32.is_ge(y, h), a, next, a0 => n0 => n0(a0)(CovFlat{0.0}),
-        a0 => n0 => build.tree(a0, d0, x, y, w, h, stride, a1 => ta => build.tree(a1, d0, (x + half : U32), y, w, h, stride,
-          a2 => tb => build.tree(a2, d0, x, (y + half : U32), w, h, stride,
-            a3 => tc => build.tree(a3, d0, (x + half : U32), (y + half : U32), w, h, stride, a4 => td => n0(a4)(tree.merge(ta, tb, tc, td)))))))
+    case 0n: CovFlat{rows.uniform(1n, rows, x0, (x0 + 1 : U32), 2.0)}
+    case 1n+d:
+      +dd = d
+      +half = U32.shln(1, dd)
+      +u = rows.uniform(U32.to_nat(size), rows, x0, (x0 + size : U32), 2.0)
+      +top = rows.take(rows, U32.to_nat(half))
+      +bottom = rows.drop(rows, U32.to_nat(half))
+      U.branch(CovTree, F32.is_ge(u, 0.0), _ => CovFlat{u},
+        _ => CovQuad{tree.rows(top, dd, x0, half), tree.rows(top, dd, (x0 + half : U32), half), tree.rows(bottom, dd, x0, half), tree.rows(bottom, dd, (x0 + half : U32), half)})
 
 # ---- entry ----
 
@@ -468,7 +565,7 @@ def mask.build(+xs: List<&2, CovLine>, +gx: U32, +gy: U32, +w: U32, +h: U32, +ev
   +cells = (stride * h * 2 : U32)
   +side = U.choose(U32, U32.is_gt(w, h), w, h)
   +depth = depth.for(side, 1, 0n)
-  CovMask{gx, gy, U32.shln(1, depth), depth, build.tree(prefix.rows(scan.rows(Array.new(F32, depth.for(cells, 1, 0n), 0.0), U32.to_nat(h), 0, stride, sub, lines.clip(xs, U32.to_f32(w)), even), U32.to_nat(h), 0, stride), depth, 0, 0, w, h, stride, a => t => t), True{}}
+  CovMask{gx, gy, U32.shln(1, depth), depth, tree.rows(rows.of(scan.rows(Array.new(F32, depth.for(cells, 1, 0n), 0.0), U32.to_nat(h), 0, stride, sub, lines.clip(xs, U32.to_f32(w)), even), h, stride, w), depth, 0, U32.shln(1, depth)), True{}}
 
 def mask.box(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U32, box: CovBox) -> CovMask:
   CovBox{x0, y0, x1, y1} = box

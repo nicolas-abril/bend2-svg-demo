@@ -184,7 +184,7 @@ def unit(num: Number, reference: F32) -> F32:
 
 def string.contains(+s: String, +part: String) -> Bool:
   match s:
-    case SNil{}: String.eq(part, "")
+    case SNil{}: string.equal(part, "")
     case SCon{c, rest}: prefix(s, part) || string.contains(rest, part)
 
 def scan.head(s: Scan) -> String:
@@ -199,4 +199,4 @@ def unquote(+s: String) -> String:
 def strings.has(xs: List<&2, String>, +s: String) -> Bool:
   match xs:
     case Nil{}: False{}
-    case Con{h, t}: branch(Bool, String.eq(h, s), _ => True{}, _ => strings.has(t, s))
+    case Con{h, t}: branch(Bool, string.equal(h, s), _ => True{}, _ => strings.has(t, s))

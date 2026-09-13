@@ -146,7 +146,7 @@ def stack.add(s: List<&2, Element>, node: Element) -> List<&2, Element>:
       Con{Element{n, a, Con{node, kids}, txt}, rest}
 
 def stack.text(+s: List<&2, Element>, +text: String) -> List<&2, Element>:
-  U.branch(List<&2, Element>, String.eq(text, ""), _ => s,
+  U.branch(List<&2, Element>, U.string.equal(text, ""), _ => s,
     _ => stack.add(s, Element{"#text", Nil{}, Nil{}, text}))
 
 def stack.close(s: List<&2, Element>) -> List<&2, Element>:
@@ -179,11 +179,25 @@ def annotate(xs: List<&2, Token>, +i: U32) -> List<&2, Token>:
       Con{Open{n, Con{Attr{"#editor-id", U32.show(i)}, as}, closed}, annotate(rest, U32.inc(i))}
     case Con{tok, rest}: Con{tok, annotate(rest, i)}
 
-def attr.get(attrs: List<&2, Attr>, +key: String, +fallback: String) -> String:
+def attr.pick(hit: Bool, +v: String, rest: Maybe<&2, String>) -> Maybe<&2, String>:
+  match hit:
+    case True{}: Some{v}
+    case False{}: rest
+
+# The attribute's value when present. Attribute lists are short, so the whole
+# list is walked without a lambda per entry.
+def attr.find(attrs: List<&2, Attr>, +key: String) -> Maybe<&2, String>:
   match attrs:
-    case Nil{}: fallback
-    case Con{Attr{k, v}, t}:
-      U.branch(String, String.eq(k, key), _ => v, _ => attr.get(t, key, fallback))
+    case Nil{}: None{}
+    case Con{Attr{k, v}, t}: attr.pick(U.string.equal(k, key), v, attr.find(t, key))
+
+def attr.or(found: Maybe<&2, String>, +fallback: String) -> String:
+  match found:
+    case None{}: fallback
+    case Some{v}: v
+
+def attr.get(attrs: List<&2, Attr>, +key: String, +fallback: String) -> String:
+  attr.or(attr.find(attrs, key), fallback)
 
 def attrs.append(xs: List<&2, Attr>, ys: List<&2, Attr>) -> List<&2, Attr>:
   match xs:
@@ -199,17 +213,17 @@ def element.find(+xs: List<&2, Element>, +id: String) -> Maybe<&2, Element>:
   match xs:
     case Nil{}: None{}
     case Con{Element{n, as, kids, txt}, rest}:
-      U.branch(Maybe<&2, Element>, String.eq(attr.get(as, "id", ""), id),
+      U.branch(Maybe<&2, Element>, U.string.equal(attr.get(as, "id", ""), id),
         _ => Some{Element{n, as, kids, txt}},
-        _ => element.prefer(U.branch(Maybe<&2, Element>, String.eq(n, "#svg-image"), _ => None{}, _ => element.find(kids, id)), element.find(rest, id)))
+        _ => element.prefer(U.branch(Maybe<&2, Element>, U.string.equal(n, "#svg-image"), _ => None{}, _ => element.find(kids, id)), element.find(rest, id)))
 
 # Decode XML entities before interpreting attributes or exposing source editing.
 def entity(+s: String) -> String:
-  U.branch(String, String.eq(s, "amp"), _ => "&",
-    _ => U.branch(String, String.eq(s, "lt"), _ => "<",
-      _ => U.branch(String, String.eq(s, "gt"), _ => ">",
-        _ => U.branch(String, String.eq(s, "quot"), _ => "\"",
-          _ => U.branch(String, String.eq(s, "apos"), _ => "'",
+  U.branch(String, U.string.equal(s, "amp"), _ => "&",
+    _ => U.branch(String, U.string.equal(s, "lt"), _ => "<",
+      _ => U.branch(String, U.string.equal(s, "gt"), _ => ">",
+        _ => U.branch(String, U.string.equal(s, "quot"), _ => "\"",
+          _ => U.branch(String, U.string.equal(s, "apos"), _ => "'",
             _ => U.branch(String, U.prefix(s, "#x"), _ => SCon{Chr{U.hex(U.drop(s, "#x"), 0)}, ""},
               _ => U.branch(String, U.prefix(s, "#"), _ => SCon{Chr{F32.to_u32(U.scalar(U.drop(s, "#"), 65533.0))}, ""},
                 _ => "&" ++ s ++ ";")))))))
@@ -252,7 +266,7 @@ def attrs.remove(+as: List<&2, Attr>, +key: String) -> List<&2, Attr>:
     case Nil{}: Nil{}
     case Con{Attr{k, v}, rest}:
       +kk = k
-      U.branch(List<&2, Attr>, String.eq(kk, key), _ => attrs.remove(rest, key),
+      U.branch(List<&2, Attr>, U.string.equal(kk, key), _ => attrs.remove(rest, key),
         _ => Con{Attr{kk, v}, attrs.remove(rest, key)})
 
 def attrs.set(as: List<&2, Attr>, +key: String, value: String) -> List<&2, Attr>:
@@ -285,8 +299,8 @@ def serialize.attrs(as: List<&2, Attr>) -> String:
 
 def serialize.element(+n: String, as: List<&2, Attr>, kids: List<&2, Element>, txt: String, +acc: String,
   children: List<&2, Element> -> String -> String) -> String:
-  +isDocument = String.eq(n, "#document")
-  +isText = String.eq(n, "#text")
+  +isDocument = U.string.equal(n, "#document")
+  +isText = U.string.equal(n, "#text")
   +open = U.branch(String, isDocument || isText, _ => acc,
     _ => SCon{Chr{62}, serialize.attrs.rev(as, U.rev(n, SCon{Chr{60}, acc}))})
   +body = children(U.choose(List<&2, Element>, isText, Nil{}, kids))(U.choose(String, isDocument, open, escape.rev(txt, open)))
@@ -304,3 +318,9 @@ def serialize.nodes(xs: List<&2, Element>) -> String:
 
 def serialize(root: Element) -> String:
   serialize.nodes(Con{root, Nil{}})
+
+# The number of elements in a forest, the roots included.
+def elements.count(xs: List<&2, Element>) -> U32:
+  match xs:
+    case Nil{}: 0
+    case Con{Element{name, attrs, kids, text}, rest}: (1 + elements.count(kids) + elements.count(rest) : U32)

@@ -89,7 +89,7 @@ def edit.attrs(+as: List<&2, XML.Attr>, +op: U32, key: String, value: String, ma
   +newValue = U.choose(String, U32.is_eq(op, 3),
     SVG.matrix.show(SVG.matrix.mul(SVG.transform(XML.attr.get(old, "transform", ""), SVG.identity()), matrix)), value)
   +k = U.choose(String, U32.is_eq(op, 3), "transform", key)
-  U.branch(List<&2, XML.Attr>, String.eq(k, "textLength") || String.eq(k, "lengthAdjust") || String.eq(k, "pathLength") || String.eq(k, "preserveAspectRatio") || String.eq(k, "href") || String.eq(k, "xlink:href"),
+  U.branch(List<&2, XML.Attr>, U.string.equal(k, "textLength") || U.string.equal(k, "lengthAdjust") || U.string.equal(k, "pathLength") || U.string.equal(k, "preserveAspectRatio") || U.string.equal(k, "href") || U.string.equal(k, "xlink:href"),
     _ => XML.attrs.set(as, k, newValue),
     _ => XML.attrs.set(as, "style", XML.attr.get(as, "style", "") ++ ";" ++ k ++ ":" ++ newValue))
 
@@ -97,7 +97,7 @@ def edit.nodes(+xs: List<&2, XML.Element>, +id: String, +op: U32, +key: String, 
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      +hit = String.eq(XML.attr.get(as, "#editor-id", ""), id)
+      +hit = U.string.equal(XML.attr.get(as, "#editor-id", ""), id)
       U.branch(List<&2, XML.Element>, hit && U32.is_eq(op, 1),
         _ => edit.nodes(rest, id, op, key, value, matrix),
         _ => Con{XML.Element{n, U.choose(List<&2, XML.Attr>, hit, edit.attrs(as, op, key, value, matrix), as),
@@ -148,7 +148,7 @@ def release(+s: State) -> State:
 
 def modify.ready(+s: State, op: U32, key: String, value: String) -> State:
   State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
-  U.branch(State, String.eq(id, ""), _ => s,
+  U.branch(State, U.string.equal(id, ""), _ => s,
     _ => release(rebuild(s, edit(doc, id, op, key, value, SVG.identity()), Con{doc, history})))
 
 def translate.ready(+s: State, dx: F32, dy: F32) -> State:
@@ -223,7 +223,7 @@ def view(+s: State) -> State & Image:
 def command.coords(+cmd: String, +vs: List<&2, F32>) -> Action:
   +x = F32.to_u32(U.max(0.0, U.nth(vs, 0n, 0.0)))
   +y = F32.to_u32(U.max(0.0, U.nth(vs, 1n, 0.0)))
-  U.choose(Action, String.eq(cmd, "down"), Press{x, y}, Drag{x, y})
+  U.choose(Action, U.string.equal(cmd, "down"), Press{x, y}, Drag{x, y})
 
 def command.property(scan: U.Scan) -> Action:
   U.Scan{k, v} = scan
@@ -233,12 +233,12 @@ def command.split(scan: U.Scan) -> Action:
   U.Scan{cmd, body} = scan
   +c = cmd
   +b = body
-  U.branch(Action, String.eq(c, "source"), _ => Source{b},
-    _ => U.branch(Action, String.eq(c, "load"), _ => Load{b},
-    _ => U.branch(Action, String.eq(c, "down") || String.eq(c, "move"), _ => command.coords(c, U.numbers(b)),
-      _ => U.branch(Action, String.eq(c, "up"), _ => Release{},
-        _ => U.branch(Action, String.eq(c, "set"), _ => command.property(U.until(b, 10, "")),
-          _ => U.choose(Action, String.eq(c, "delete"), Delete{}, U.choose(Action, String.eq(c, "undo"), Undo{}, Nothing{})))))))
+  U.branch(Action, U.string.equal(c, "source"), _ => Source{b},
+    _ => U.branch(Action, U.string.equal(c, "load"), _ => Load{b},
+    _ => U.branch(Action, U.string.equal(c, "down") || U.string.equal(c, "move"), _ => command.coords(c, U.numbers(b)),
+      _ => U.branch(Action, U.string.equal(c, "up"), _ => Release{},
+        _ => U.branch(Action, U.string.equal(c, "set"), _ => command.property(U.until(b, 10, "")),
+          _ => U.choose(Action, U.string.equal(c, "delete"), Delete{}, U.choose(Action, U.string.equal(c, "undo"), Undo{}, Nothing{})))))))
 
 def command(s: String) -> Action:
   command.split(U.until(s, 10, ""))

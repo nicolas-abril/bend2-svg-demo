@@ -62,15 +62,15 @@ def transform.one(+name: String, +v: List<&2, F32>) -> Matrix:
   +x = U.nth(v, 0n, 0.0)
   +y = U.nth(v, 1n, 0.0)
   +z = U.nth(v, 2n, 0.0)
-  U.branch(Matrix, String.eq(name, "translate"), _ => translate(x, y),
-    _ => U.branch(Matrix, String.eq(name, "scale"), _ => scale(x, U.nth(v, 1n, x)),
-      _ => U.branch(Matrix, String.eq(name, "rotate"),
+  U.branch(Matrix, U.string.equal(name, "translate"), _ => translate(x, y),
+    _ => U.branch(Matrix, U.string.equal(name, "scale"), _ => scale(x, U.nth(v, 1n, x)),
+      _ => U.branch(Matrix, U.string.equal(name, "rotate"),
         _ => matrix.mul(translate(y, z), matrix.mul(rotate(x), translate(F32.neg(y), F32.neg(z)))),
-        _ => U.branch(Matrix, String.eq(name, "matrix"),
+        _ => U.branch(Matrix, U.string.equal(name, "matrix"),
           _ => Matrix{x, y, z, U.nth(v, 3n, 1.0), U.nth(v, 4n, 0.0), U.nth(v, 5n, 0.0)},
-          _ => U.branch(Matrix, String.eq(name, "skewX"),
+          _ => U.branch(Matrix, U.string.equal(name, "skewX"),
             _ => Matrix{1.0, 0.0, F32.tan((x * 0.017453292519943295 : F32)), 1.0, 0.0, 0.0},
-            _ => U.branch(Matrix, String.eq(name, "skewY"),
+            _ => U.branch(Matrix, U.string.equal(name, "skewY"),
               _ => Matrix{1.0, F32.tan((x * 0.017453292519943295 : F32)), 0.0, 1.0, 0.0, 0.0},
               _ => identity()))))))
 
@@ -84,7 +84,7 @@ def transform.name(s: U.Scan, m: Matrix, next: String -> Matrix -> Matrix) -> Ma
 
 @unsafe
 def transform(+s: String, +m: Matrix) -> Matrix:
-  U.branch(Matrix, String.eq(U.trim(s), ""), _ => m,
+  U.branch(Matrix, U.string.equal(U.trim(s), ""), _ => m,
     _ => transform.name(U.until(U.separators(s), 40, ""), m, t => n => transform(t, n)))
 
 # Paths are flattened in user coordinates. The fill-only closing edge of an
@@ -361,19 +361,25 @@ def path.command(+s: String, +cmd: U32, +p: Path, next: String -> Path -> Path) 
     k => path.params(p, cmd, path.arguments(path.arity(upper(cmd)), s, U32.is_eq(upper(cmd), 65)), k))
   action(next)
 
+# A non-letter with no command pending ends the parse; with one pending it
+# repeats that command (SVG's implicit repetition).
+def path.repeat(pending: Bool, +ch: U32, +tail: String, +cmd: U32, +p: Path, next: String -> Path -> Path) -> Path:
+  match pending:
+    case True{}: path.command(SCon{Chr{ch}, tail}, cmd, p, next)
+    case False{}: p
+
+def path.char(letter: Bool, +ch: U32, +tail: String, +cmd: U32, +p: Path, next: String -> Path -> Path) -> Path:
+  match letter:
+    case True{}: path.command(tail, ch, p, next)
+    case False{}: path.repeat(U32.is_ne(cmd, 0), ch, tail, cmd, p, next)
+
 def path.scan(+p: Path, s: String, next: String -> Path -> Path) -> Path:
   Path{cur, start, ctrl, cmd, prev, es, trace} = p
   match s:
     case SNil{}: p
     case SCon{Chr{c}, t}:
       +ch = c
-      +tail = t
-      +letter = (U32.is_ge(ch, 65) && U32.is_le(ch, 90)) || (U32.is_ge(ch, 97) && U32.is_le(ch, 122))
-      action = U.choose((String -> Path -> Path) -> Path, letter,
-        k => path.command(tail, ch, p, k),
-        k => U.choose(Unit -> Path, U32.is_eq(cmd, 0), _ => p,
-          _ => path.command(SCon{Chr{ch}, tail}, cmd, p, k))(Unit{}))
-      action(next)
+      path.char((U32.is_ge(ch, 65) && U32.is_le(ch, 90)) || (U32.is_ge(ch, 97) && U32.is_le(ch, 122)), ch, t, cmd, p, next)
 
 @unsafe
 def path.loop(s: String, p: Path) -> Path:
@@ -476,64 +482,64 @@ def color.hex(+x: U32, +len: U32) -> Img.Color:
     _ => U.choose(Img.Color, U32.is_eq(len, 8), Img.rgba(byte(x, 16777216), byte(x, 65536), byte(x, 256), byte(x, 1)), color.rgb(x)))
 
 def color.named.a(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "aliceblue"), _ => 15792383, _ => U.branch(U32, String.eq(s, "antiquewhite"), _ => 16444375, _ => U.branch(U32, String.eq(s, "aqua"), _ => 65535, _ => U.branch(U32, String.eq(s, "aquamarine"), _ => 8388564, _ => U.branch(U32, String.eq(s, "azure"), _ => 15794175, _ => 16777216)))))
+  U.branch(U32, U.string.equal(s, "aliceblue"), _ => 15792383, _ => U.branch(U32, U.string.equal(s, "antiquewhite"), _ => 16444375, _ => U.branch(U32, U.string.equal(s, "aqua"), _ => 65535, _ => U.branch(U32, U.string.equal(s, "aquamarine"), _ => 8388564, _ => U.branch(U32, U.string.equal(s, "azure"), _ => 15794175, _ => 16777216)))))
 
 def color.named.b(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "beige"), _ => 16119260, _ => U.branch(U32, String.eq(s, "bisque"), _ => 16770244, _ => U.branch(U32, String.eq(s, "black"), _ => 0, _ => U.branch(U32, String.eq(s, "blanchedalmond"), _ => 16772045, _ => U.branch(U32, String.eq(s, "blue"), _ => 255, _ => U.branch(U32, String.eq(s, "blueviolet"), _ => 9055202, _ => U.branch(U32, String.eq(s, "brown"), _ => 10824234, _ => U.branch(U32, String.eq(s, "burlywood"), _ => 14596231, _ => 16777216))))))))
+  U.branch(U32, U.string.equal(s, "beige"), _ => 16119260, _ => U.branch(U32, U.string.equal(s, "bisque"), _ => 16770244, _ => U.branch(U32, U.string.equal(s, "black"), _ => 0, _ => U.branch(U32, U.string.equal(s, "blanchedalmond"), _ => 16772045, _ => U.branch(U32, U.string.equal(s, "blue"), _ => 255, _ => U.branch(U32, U.string.equal(s, "blueviolet"), _ => 9055202, _ => U.branch(U32, U.string.equal(s, "brown"), _ => 10824234, _ => U.branch(U32, U.string.equal(s, "burlywood"), _ => 14596231, _ => 16777216))))))))
 
 def color.named.c(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "cadetblue"), _ => 6266528, _ => U.branch(U32, String.eq(s, "chartreuse"), _ => 8388352, _ => U.branch(U32, String.eq(s, "chocolate"), _ => 13789470, _ => U.branch(U32, String.eq(s, "coral"), _ => 16744272, _ => U.branch(U32, String.eq(s, "cornflowerblue"), _ => 6591981, _ => U.branch(U32, String.eq(s, "cornsilk"), _ => 16775388, _ => U.branch(U32, String.eq(s, "crimson"), _ => 14423100, _ => U.branch(U32, String.eq(s, "cyan"), _ => 65535, _ => 16777216))))))))
+  U.branch(U32, U.string.equal(s, "cadetblue"), _ => 6266528, _ => U.branch(U32, U.string.equal(s, "chartreuse"), _ => 8388352, _ => U.branch(U32, U.string.equal(s, "chocolate"), _ => 13789470, _ => U.branch(U32, U.string.equal(s, "coral"), _ => 16744272, _ => U.branch(U32, U.string.equal(s, "cornflowerblue"), _ => 6591981, _ => U.branch(U32, U.string.equal(s, "cornsilk"), _ => 16775388, _ => U.branch(U32, U.string.equal(s, "crimson"), _ => 14423100, _ => U.branch(U32, U.string.equal(s, "cyan"), _ => 65535, _ => 16777216))))))))
 
 def color.named.d(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "darkblue"), _ => 139, _ => U.branch(U32, String.eq(s, "darkcyan"), _ => 35723, _ => U.branch(U32, String.eq(s, "darkgoldenrod"), _ => 12092939, _ => U.branch(U32, String.eq(s, "darkgray"), _ => 11119017, _ => U.branch(U32, String.eq(s, "darkgreen"), _ => 25600, _ => U.branch(U32, String.eq(s, "darkgrey"), _ => 11119017, _ => U.branch(U32, String.eq(s, "darkkhaki"), _ => 12433259, _ => U.branch(U32, String.eq(s, "darkmagenta"), _ => 9109643, _ => U.branch(U32, String.eq(s, "darkolivegreen"), _ => 5597999, _ => U.branch(U32, String.eq(s, "darkorange"), _ => 16747520, _ => U.branch(U32, String.eq(s, "darkorchid"), _ => 10040012, _ => U.branch(U32, String.eq(s, "darkred"), _ => 9109504, _ => U.branch(U32, String.eq(s, "darksalmon"), _ => 15308410, _ => U.branch(U32, String.eq(s, "darkseagreen"), _ => 9419919, _ => U.branch(U32, String.eq(s, "darkslateblue"), _ => 4734347, _ => U.branch(U32, String.eq(s, "darkslategray"), _ => 3100495, _ => U.branch(U32, String.eq(s, "darkslategrey"), _ => 3100495, _ => U.branch(U32, String.eq(s, "darkturquoise"), _ => 52945, _ => U.branch(U32, String.eq(s, "darkviolet"), _ => 9699539, _ => U.branch(U32, String.eq(s, "deeppink"), _ => 16716947, _ => U.branch(U32, String.eq(s, "deepskyblue"), _ => 49151, _ => U.branch(U32, String.eq(s, "dimgray"), _ => 6908265, _ => U.branch(U32, String.eq(s, "dimgrey"), _ => 6908265, _ => U.branch(U32, String.eq(s, "dodgerblue"), _ => 2003199, _ => 16777216))))))))))))))))))))))))
+  U.branch(U32, U.string.equal(s, "darkblue"), _ => 139, _ => U.branch(U32, U.string.equal(s, "darkcyan"), _ => 35723, _ => U.branch(U32, U.string.equal(s, "darkgoldenrod"), _ => 12092939, _ => U.branch(U32, U.string.equal(s, "darkgray"), _ => 11119017, _ => U.branch(U32, U.string.equal(s, "darkgreen"), _ => 25600, _ => U.branch(U32, U.string.equal(s, "darkgrey"), _ => 11119017, _ => U.branch(U32, U.string.equal(s, "darkkhaki"), _ => 12433259, _ => U.branch(U32, U.string.equal(s, "darkmagenta"), _ => 9109643, _ => U.branch(U32, U.string.equal(s, "darkolivegreen"), _ => 5597999, _ => U.branch(U32, U.string.equal(s, "darkorange"), _ => 16747520, _ => U.branch(U32, U.string.equal(s, "darkorchid"), _ => 10040012, _ => U.branch(U32, U.string.equal(s, "darkred"), _ => 9109504, _ => U.branch(U32, U.string.equal(s, "darksalmon"), _ => 15308410, _ => U.branch(U32, U.string.equal(s, "darkseagreen"), _ => 9419919, _ => U.branch(U32, U.string.equal(s, "darkslateblue"), _ => 4734347, _ => U.branch(U32, U.string.equal(s, "darkslategray"), _ => 3100495, _ => U.branch(U32, U.string.equal(s, "darkslategrey"), _ => 3100495, _ => U.branch(U32, U.string.equal(s, "darkturquoise"), _ => 52945, _ => U.branch(U32, U.string.equal(s, "darkviolet"), _ => 9699539, _ => U.branch(U32, U.string.equal(s, "deeppink"), _ => 16716947, _ => U.branch(U32, U.string.equal(s, "deepskyblue"), _ => 49151, _ => U.branch(U32, U.string.equal(s, "dimgray"), _ => 6908265, _ => U.branch(U32, U.string.equal(s, "dimgrey"), _ => 6908265, _ => U.branch(U32, U.string.equal(s, "dodgerblue"), _ => 2003199, _ => 16777216))))))))))))))))))))))))
 
 def color.named.f(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "firebrick"), _ => 11674146, _ => U.branch(U32, String.eq(s, "floralwhite"), _ => 16775920, _ => U.branch(U32, String.eq(s, "forestgreen"), _ => 2263842, _ => U.branch(U32, String.eq(s, "fuchsia"), _ => 16711935, _ => 16777216))))
+  U.branch(U32, U.string.equal(s, "firebrick"), _ => 11674146, _ => U.branch(U32, U.string.equal(s, "floralwhite"), _ => 16775920, _ => U.branch(U32, U.string.equal(s, "forestgreen"), _ => 2263842, _ => U.branch(U32, U.string.equal(s, "fuchsia"), _ => 16711935, _ => 16777216))))
 
 def color.named.g(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "gainsboro"), _ => 14474460, _ => U.branch(U32, String.eq(s, "ghostwhite"), _ => 16316671, _ => U.branch(U32, String.eq(s, "gold"), _ => 16766720, _ => U.branch(U32, String.eq(s, "goldenrod"), _ => 14329120, _ => U.branch(U32, String.eq(s, "gray"), _ => 8421504, _ => U.branch(U32, String.eq(s, "green"), _ => 32768, _ => U.branch(U32, String.eq(s, "greenyellow"), _ => 11403055, _ => U.branch(U32, String.eq(s, "grey"), _ => 8421504, _ => 16777216))))))))
+  U.branch(U32, U.string.equal(s, "gainsboro"), _ => 14474460, _ => U.branch(U32, U.string.equal(s, "ghostwhite"), _ => 16316671, _ => U.branch(U32, U.string.equal(s, "gold"), _ => 16766720, _ => U.branch(U32, U.string.equal(s, "goldenrod"), _ => 14329120, _ => U.branch(U32, U.string.equal(s, "gray"), _ => 8421504, _ => U.branch(U32, U.string.equal(s, "green"), _ => 32768, _ => U.branch(U32, U.string.equal(s, "greenyellow"), _ => 11403055, _ => U.branch(U32, U.string.equal(s, "grey"), _ => 8421504, _ => 16777216))))))))
 
 def color.named.h(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "honeydew"), _ => 15794160, _ => U.branch(U32, String.eq(s, "hotpink"), _ => 16738740, _ => 16777216))
+  U.branch(U32, U.string.equal(s, "honeydew"), _ => 15794160, _ => U.branch(U32, U.string.equal(s, "hotpink"), _ => 16738740, _ => 16777216))
 
 def color.named.i(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "indianred"), _ => 13458524, _ => U.branch(U32, String.eq(s, "indigo"), _ => 4915330, _ => U.branch(U32, String.eq(s, "ivory"), _ => 16777200, _ => 16777216)))
+  U.branch(U32, U.string.equal(s, "indianred"), _ => 13458524, _ => U.branch(U32, U.string.equal(s, "indigo"), _ => 4915330, _ => U.branch(U32, U.string.equal(s, "ivory"), _ => 16777200, _ => 16777216)))
 
 def color.named.k(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "khaki"), _ => 15787660, _ => 16777216)
+  U.branch(U32, U.string.equal(s, "khaki"), _ => 15787660, _ => 16777216)
 
 def color.named.l(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "lavender"), _ => 15132410, _ => U.branch(U32, String.eq(s, "lavenderblush"), _ => 16773365, _ => U.branch(U32, String.eq(s, "lawngreen"), _ => 8190976, _ => U.branch(U32, String.eq(s, "lemonchiffon"), _ => 16775885, _ => U.branch(U32, String.eq(s, "lightblue"), _ => 11393254, _ => U.branch(U32, String.eq(s, "lightcoral"), _ => 15761536, _ => U.branch(U32, String.eq(s, "lightcyan"), _ => 14745599, _ => U.branch(U32, String.eq(s, "lightgoldenrodyellow"), _ => 16448210, _ => U.branch(U32, String.eq(s, "lightgray"), _ => 13882323, _ => U.branch(U32, String.eq(s, "lightgreen"), _ => 9498256, _ => U.branch(U32, String.eq(s, "lightgrey"), _ => 13882323, _ => U.branch(U32, String.eq(s, "lightpink"), _ => 16758465, _ => U.branch(U32, String.eq(s, "lightsalmon"), _ => 16752762, _ => U.branch(U32, String.eq(s, "lightseagreen"), _ => 2142890, _ => U.branch(U32, String.eq(s, "lightskyblue"), _ => 8900346, _ => U.branch(U32, String.eq(s, "lightslategray"), _ => 7833753, _ => U.branch(U32, String.eq(s, "lightslategrey"), _ => 7833753, _ => U.branch(U32, String.eq(s, "lightsteelblue"), _ => 11584734, _ => U.branch(U32, String.eq(s, "lightyellow"), _ => 16777184, _ => U.branch(U32, String.eq(s, "lime"), _ => 65280, _ => U.branch(U32, String.eq(s, "limegreen"), _ => 3329330, _ => U.branch(U32, String.eq(s, "linen"), _ => 16445670, _ => 16777216))))))))))))))))))))))
+  U.branch(U32, U.string.equal(s, "lavender"), _ => 15132410, _ => U.branch(U32, U.string.equal(s, "lavenderblush"), _ => 16773365, _ => U.branch(U32, U.string.equal(s, "lawngreen"), _ => 8190976, _ => U.branch(U32, U.string.equal(s, "lemonchiffon"), _ => 16775885, _ => U.branch(U32, U.string.equal(s, "lightblue"), _ => 11393254, _ => U.branch(U32, U.string.equal(s, "lightcoral"), _ => 15761536, _ => U.branch(U32, U.string.equal(s, "lightcyan"), _ => 14745599, _ => U.branch(U32, U.string.equal(s, "lightgoldenrodyellow"), _ => 16448210, _ => U.branch(U32, U.string.equal(s, "lightgray"), _ => 13882323, _ => U.branch(U32, U.string.equal(s, "lightgreen"), _ => 9498256, _ => U.branch(U32, U.string.equal(s, "lightgrey"), _ => 13882323, _ => U.branch(U32, U.string.equal(s, "lightpink"), _ => 16758465, _ => U.branch(U32, U.string.equal(s, "lightsalmon"), _ => 16752762, _ => U.branch(U32, U.string.equal(s, "lightseagreen"), _ => 2142890, _ => U.branch(U32, U.string.equal(s, "lightskyblue"), _ => 8900346, _ => U.branch(U32, U.string.equal(s, "lightslategray"), _ => 7833753, _ => U.branch(U32, U.string.equal(s, "lightslategrey"), _ => 7833753, _ => U.branch(U32, U.string.equal(s, "lightsteelblue"), _ => 11584734, _ => U.branch(U32, U.string.equal(s, "lightyellow"), _ => 16777184, _ => U.branch(U32, U.string.equal(s, "lime"), _ => 65280, _ => U.branch(U32, U.string.equal(s, "limegreen"), _ => 3329330, _ => U.branch(U32, U.string.equal(s, "linen"), _ => 16445670, _ => 16777216))))))))))))))))))))))
 
 def color.named.m(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "magenta"), _ => 16711935, _ => U.branch(U32, String.eq(s, "maroon"), _ => 8388608, _ => U.branch(U32, String.eq(s, "mediumaquamarine"), _ => 6737322, _ => U.branch(U32, String.eq(s, "mediumblue"), _ => 205, _ => U.branch(U32, String.eq(s, "mediumorchid"), _ => 12211667, _ => U.branch(U32, String.eq(s, "mediumpurple"), _ => 9662683, _ => U.branch(U32, String.eq(s, "mediumseagreen"), _ => 3978097, _ => U.branch(U32, String.eq(s, "mediumslateblue"), _ => 8087790, _ => U.branch(U32, String.eq(s, "mediumspringgreen"), _ => 64154, _ => U.branch(U32, String.eq(s, "mediumturquoise"), _ => 4772300, _ => U.branch(U32, String.eq(s, "mediumvioletred"), _ => 13047173, _ => U.branch(U32, String.eq(s, "midnightblue"), _ => 1644912, _ => U.branch(U32, String.eq(s, "mintcream"), _ => 16121850, _ => U.branch(U32, String.eq(s, "mistyrose"), _ => 16770273, _ => U.branch(U32, String.eq(s, "moccasin"), _ => 16770229, _ => 16777216)))))))))))))))
+  U.branch(U32, U.string.equal(s, "magenta"), _ => 16711935, _ => U.branch(U32, U.string.equal(s, "maroon"), _ => 8388608, _ => U.branch(U32, U.string.equal(s, "mediumaquamarine"), _ => 6737322, _ => U.branch(U32, U.string.equal(s, "mediumblue"), _ => 205, _ => U.branch(U32, U.string.equal(s, "mediumorchid"), _ => 12211667, _ => U.branch(U32, U.string.equal(s, "mediumpurple"), _ => 9662683, _ => U.branch(U32, U.string.equal(s, "mediumseagreen"), _ => 3978097, _ => U.branch(U32, U.string.equal(s, "mediumslateblue"), _ => 8087790, _ => U.branch(U32, U.string.equal(s, "mediumspringgreen"), _ => 64154, _ => U.branch(U32, U.string.equal(s, "mediumturquoise"), _ => 4772300, _ => U.branch(U32, U.string.equal(s, "mediumvioletred"), _ => 13047173, _ => U.branch(U32, U.string.equal(s, "midnightblue"), _ => 1644912, _ => U.branch(U32, U.string.equal(s, "mintcream"), _ => 16121850, _ => U.branch(U32, U.string.equal(s, "mistyrose"), _ => 16770273, _ => U.branch(U32, U.string.equal(s, "moccasin"), _ => 16770229, _ => 16777216)))))))))))))))
 
 def color.named.n(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "navajowhite"), _ => 16768685, _ => U.branch(U32, String.eq(s, "navy"), _ => 128, _ => 16777216))
+  U.branch(U32, U.string.equal(s, "navajowhite"), _ => 16768685, _ => U.branch(U32, U.string.equal(s, "navy"), _ => 128, _ => 16777216))
 
 def color.named.o(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "oldlace"), _ => 16643558, _ => U.branch(U32, String.eq(s, "olive"), _ => 8421376, _ => U.branch(U32, String.eq(s, "olivedrab"), _ => 7048739, _ => U.branch(U32, String.eq(s, "orange"), _ => 16753920, _ => U.branch(U32, String.eq(s, "orangered"), _ => 16729344, _ => U.branch(U32, String.eq(s, "orchid"), _ => 14315734, _ => 16777216))))))
+  U.branch(U32, U.string.equal(s, "oldlace"), _ => 16643558, _ => U.branch(U32, U.string.equal(s, "olive"), _ => 8421376, _ => U.branch(U32, U.string.equal(s, "olivedrab"), _ => 7048739, _ => U.branch(U32, U.string.equal(s, "orange"), _ => 16753920, _ => U.branch(U32, U.string.equal(s, "orangered"), _ => 16729344, _ => U.branch(U32, U.string.equal(s, "orchid"), _ => 14315734, _ => 16777216))))))
 
 def color.named.p(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "palegoldenrod"), _ => 15657130, _ => U.branch(U32, String.eq(s, "palegreen"), _ => 10025880, _ => U.branch(U32, String.eq(s, "paleturquoise"), _ => 11529966, _ => U.branch(U32, String.eq(s, "palevioletred"), _ => 14381203, _ => U.branch(U32, String.eq(s, "papayawhip"), _ => 16773077, _ => U.branch(U32, String.eq(s, "peachpuff"), _ => 16767673, _ => U.branch(U32, String.eq(s, "peru"), _ => 13468991, _ => U.branch(U32, String.eq(s, "pink"), _ => 16761035, _ => U.branch(U32, String.eq(s, "plum"), _ => 14524637, _ => U.branch(U32, String.eq(s, "powderblue"), _ => 11591910, _ => U.branch(U32, String.eq(s, "purple"), _ => 8388736, _ => 16777216)))))))))))
+  U.branch(U32, U.string.equal(s, "palegoldenrod"), _ => 15657130, _ => U.branch(U32, U.string.equal(s, "palegreen"), _ => 10025880, _ => U.branch(U32, U.string.equal(s, "paleturquoise"), _ => 11529966, _ => U.branch(U32, U.string.equal(s, "palevioletred"), _ => 14381203, _ => U.branch(U32, U.string.equal(s, "papayawhip"), _ => 16773077, _ => U.branch(U32, U.string.equal(s, "peachpuff"), _ => 16767673, _ => U.branch(U32, U.string.equal(s, "peru"), _ => 13468991, _ => U.branch(U32, U.string.equal(s, "pink"), _ => 16761035, _ => U.branch(U32, U.string.equal(s, "plum"), _ => 14524637, _ => U.branch(U32, U.string.equal(s, "powderblue"), _ => 11591910, _ => U.branch(U32, U.string.equal(s, "purple"), _ => 8388736, _ => 16777216)))))))))))
 
 def color.named.r(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "rebeccapurple"), _ => 6697881, _ => U.branch(U32, String.eq(s, "red"), _ => 16711680, _ => U.branch(U32, String.eq(s, "rosybrown"), _ => 12357519, _ => U.branch(U32, String.eq(s, "royalblue"), _ => 4286945, _ => 16777216))))
+  U.branch(U32, U.string.equal(s, "rebeccapurple"), _ => 6697881, _ => U.branch(U32, U.string.equal(s, "red"), _ => 16711680, _ => U.branch(U32, U.string.equal(s, "rosybrown"), _ => 12357519, _ => U.branch(U32, U.string.equal(s, "royalblue"), _ => 4286945, _ => 16777216))))
 
 def color.named.s(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "saddlebrown"), _ => 9127187, _ => U.branch(U32, String.eq(s, "salmon"), _ => 16416882, _ => U.branch(U32, String.eq(s, "sandybrown"), _ => 16032864, _ => U.branch(U32, String.eq(s, "seagreen"), _ => 3050327, _ => U.branch(U32, String.eq(s, "seashell"), _ => 16774638, _ => U.branch(U32, String.eq(s, "sienna"), _ => 10506797, _ => U.branch(U32, String.eq(s, "silver"), _ => 12632256, _ => U.branch(U32, String.eq(s, "skyblue"), _ => 8900331, _ => U.branch(U32, String.eq(s, "slateblue"), _ => 6970061, _ => U.branch(U32, String.eq(s, "slategray"), _ => 7372944, _ => U.branch(U32, String.eq(s, "slategrey"), _ => 7372944, _ => U.branch(U32, String.eq(s, "snow"), _ => 16775930, _ => U.branch(U32, String.eq(s, "springgreen"), _ => 65407, _ => U.branch(U32, String.eq(s, "steelblue"), _ => 4620980, _ => 16777216))))))))))))))
+  U.branch(U32, U.string.equal(s, "saddlebrown"), _ => 9127187, _ => U.branch(U32, U.string.equal(s, "salmon"), _ => 16416882, _ => U.branch(U32, U.string.equal(s, "sandybrown"), _ => 16032864, _ => U.branch(U32, U.string.equal(s, "seagreen"), _ => 3050327, _ => U.branch(U32, U.string.equal(s, "seashell"), _ => 16774638, _ => U.branch(U32, U.string.equal(s, "sienna"), _ => 10506797, _ => U.branch(U32, U.string.equal(s, "silver"), _ => 12632256, _ => U.branch(U32, U.string.equal(s, "skyblue"), _ => 8900331, _ => U.branch(U32, U.string.equal(s, "slateblue"), _ => 6970061, _ => U.branch(U32, U.string.equal(s, "slategray"), _ => 7372944, _ => U.branch(U32, U.string.equal(s, "slategrey"), _ => 7372944, _ => U.branch(U32, U.string.equal(s, "snow"), _ => 16775930, _ => U.branch(U32, U.string.equal(s, "springgreen"), _ => 65407, _ => U.branch(U32, U.string.equal(s, "steelblue"), _ => 4620980, _ => 16777216))))))))))))))
 
 def color.named.t(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "tan"), _ => 13808780, _ => U.branch(U32, String.eq(s, "teal"), _ => 32896, _ => U.branch(U32, String.eq(s, "thistle"), _ => 14204888, _ => U.branch(U32, String.eq(s, "tomato"), _ => 16737095, _ => U.branch(U32, String.eq(s, "turquoise"), _ => 4251856, _ => 16777216)))))
+  U.branch(U32, U.string.equal(s, "tan"), _ => 13808780, _ => U.branch(U32, U.string.equal(s, "teal"), _ => 32896, _ => U.branch(U32, U.string.equal(s, "thistle"), _ => 14204888, _ => U.branch(U32, U.string.equal(s, "tomato"), _ => 16737095, _ => U.branch(U32, U.string.equal(s, "turquoise"), _ => 4251856, _ => 16777216)))))
 
 def color.named.v(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "violet"), _ => 15631086, _ => 16777216)
+  U.branch(U32, U.string.equal(s, "violet"), _ => 15631086, _ => 16777216)
 
 def color.named.w(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "wheat"), _ => 16113331, _ => U.branch(U32, String.eq(s, "white"), _ => 16777215, _ => U.branch(U32, String.eq(s, "whitesmoke"), _ => 16119285, _ => 16777216)))
+  U.branch(U32, U.string.equal(s, "wheat"), _ => 16113331, _ => U.branch(U32, U.string.equal(s, "white"), _ => 16777215, _ => U.branch(U32, U.string.equal(s, "whitesmoke"), _ => 16119285, _ => 16777216)))
 
 def color.named.y(+s: String) -> U32:
-  U.branch(U32, String.eq(s, "yellow"), _ => 16776960, _ => U.branch(U32, String.eq(s, "yellowgreen"), _ => 10145074, _ => 16777216))
+  U.branch(U32, U.string.equal(s, "yellow"), _ => 16776960, _ => U.branch(U32, U.string.equal(s, "yellowgreen"), _ => 10145074, _ => 16777216))
 
 def color.named.code(+s: String) -> U32:
   U.branch(U32, U.prefix(s, "a"), _ => color.named.a(s), _ => U.branch(U32, U.prefix(s, "b"), _ => color.named.b(s), _ => U.branch(U32, U.prefix(s, "c"), _ => color.named.c(s), _ => U.branch(U32, U.prefix(s, "d"), _ => color.named.d(s), _ => U.branch(U32, U.prefix(s, "f"), _ => color.named.f(s), _ => U.branch(U32, U.prefix(s, "g"), _ => color.named.g(s), _ => U.branch(U32, U.prefix(s, "h"), _ => color.named.h(s), _ => U.branch(U32, U.prefix(s, "i"), _ => color.named.i(s), _ => U.branch(U32, U.prefix(s, "k"), _ => color.named.k(s), _ => U.branch(U32, U.prefix(s, "l"), _ => color.named.l(s), _ => U.branch(U32, U.prefix(s, "m"), _ => color.named.m(s), _ => U.branch(U32, U.prefix(s, "n"), _ => color.named.n(s), _ => U.branch(U32, U.prefix(s, "o"), _ => color.named.o(s), _ => U.branch(U32, U.prefix(s, "p"), _ => color.named.p(s), _ => U.branch(U32, U.prefix(s, "r"), _ => color.named.r(s), _ => U.branch(U32, U.prefix(s, "s"), _ => color.named.s(s), _ => U.branch(U32, U.prefix(s, "t"), _ => color.named.t(s), _ => U.branch(U32, U.prefix(s, "v"), _ => color.named.v(s), _ => U.branch(U32, U.prefix(s, "w"), _ => color.named.w(s), _ => U.branch(U32, U.prefix(s, "y"), _ => color.named.y(s), _ => 16777216))))))))))))))))))))
@@ -557,12 +563,12 @@ def color.word(+s: String, +acc: String) -> U.Scan:
 def color.token.number(num: U.Number, sep: U32) -> ColorToken:
   U.Number{x, unitName, ok} = num
   +u = unitName
-  ColorToken{x, U.choose(U32, Bool.not(ok), 7, U.choose(U32, String.eq(u, ""), 0, U.choose(U32, String.eq(u, "%"), 1,
-    U.choose(U32, String.eq(u, "deg"), 2, U.choose(U32, String.eq(u, "rad"), 3, U.choose(U32, String.eq(u, "grad"), 4,
-      U.choose(U32, String.eq(u, "turn"), 5, 7))))))), sep}
+  ColorToken{x, U.choose(U32, Bool.not(ok), 7, U.choose(U32, U.string.equal(u, ""), 0, U.choose(U32, U.string.equal(u, "%"), 1,
+    U.choose(U32, U.string.equal(u, "deg"), 2, U.choose(U32, U.string.equal(u, "rad"), 3, U.choose(U32, U.string.equal(u, "grad"), 4,
+      U.choose(U32, U.string.equal(u, "turn"), 5, 7))))))), sep}
 
 def color.token(+word: String, +sep: U32) -> ColorToken:
-  U.branch(ColorToken, String.eq(word, "none"), _ => ColorToken{0.0, 6, sep}, _ => color.token.number(U.number(word), sep))
+  U.branch(ColorToken, U.string.equal(word, "none"), _ => ColorToken{0.0, 6, sep}, _ => color.token.number(U.number(word), sep))
 
 def color.tokens.word(+scan: U.Scan, next: String -> List<&2, ColorToken>) -> List<&2, ColorToken>:
   U.Scan{word, rest} = scan
@@ -570,8 +576,8 @@ def color.tokens.word(+scan: U.Scan, next: String -> List<&2, ColorToken>) -> Li
   +token = word
   +comma = U.prefix(s, ",")
   +slash = U.prefix(s, "/")
-  +end = U.prefix(s, ")") && String.eq(U.trim(U.drop(s, ")")), "")
-  +spaced = Bool.not(String.eq(rest, s))
+  +end = U.prefix(s, ")") && U.string.equal(U.trim(U.drop(s, ")")), "")
+  +spaced = Bool.not(U.string.equal(rest, s))
   +sep = U.choose(U32, end, 0, U.choose(U32, comma, 2, U.choose(U32, slash, 3, U.choose(U32, spaced, 1, 9))))
   +tail = U.choose(String, comma, U.drop(s, ","), U.choose(String, slash, U.drop(s, "/"), s))
   Con{color.token(token, sep), U.choose(Unit -> List<&2, ColorToken>, end || U32.is_eq(sep, 9), _ => Nil{}, _ => next(tail))(Unit{})}
@@ -652,7 +658,7 @@ def color.parse(+s: String) -> Img.Color:
     _ => U.branch(Img.Color, U.prefix(s, "rgb(") || U.prefix(s, "rgba("), _ => color.function.args(color.tokens(4n, U.drop(s, U.choose(String, U.prefix(s, "rgba("), "rgba(", "rgb("))), 0),
     _ => U.branch(Img.Color, U.prefix(s, "hsl(") || U.prefix(s, "hsla("), _ => color.function.args(color.tokens(4n, U.drop(s, U.choose(String, U.prefix(s, "hsla("), "hsla(", "hsl("))), 1),
     _ => U.branch(Img.Color, U.prefix(s, "hwb("), _ => color.function.args(color.tokens(4n, U.drop(s, "hwb(")), 2),
-    _ => U.branch(Img.Color, String.eq(s, "none") || String.eq(s, "transparent"), _ => Img.clear(), _ => color.named(s))))))
+    _ => U.branch(Img.Color, U.string.equal(s, "none") || U.string.equal(s, "transparent"), _ => Img.clear(), _ => color.named(s))))))
 
 def color(s: String) -> Img.Color:
   color.parse(CSS.css.lower(U.trim.both(s)))
@@ -660,7 +666,7 @@ def color(s: String) -> Img.Color:
 def color.opacity.number(num: U.Number, fallback: F32) -> F32:
   U.Number{x, tail, ok} = num
   +u = U.trim.both(tail)
-  U.clamp(U.choose(F32, ok && (String.eq(u, "") || String.eq(u, "%")), (x / U.choose(F32, String.eq(u, "%"), 100.0, 1.0) : F32), fallback), 0.0, 1.0)
+  U.clamp(U.choose(F32, ok && (U.string.equal(u, "") || U.string.equal(u, "%")), (x / U.choose(F32, U.string.equal(u, "%"), 100.0, 1.0) : F32), fallback), 0.0, 1.0)
 
 def color.opacity(s: String, fallback: F32) -> F32:
   color.opacity.number(U.number(s), fallback)
@@ -699,24 +705,24 @@ def edges.transform(es: List<&2, Edge>, +m: Matrix) -> List<&2, Edge>:
       Con{Edge{matrix.point(m, a), matrix.point(m, b), stroked, closed}, edges.transform(rest, m)}
 
 def shape.data(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> String:
-  U.branch(String, String.eq(name, "path"), _ => XML.attr.get(as, "d", ""),
-    _ => U.branch(String, String.eq(name, "rect") || String.eq(name, "image") || String.eq(name, "#svg-image"), _ => shape.rect(as, vw, vh),
-      _ => U.branch(String, String.eq(name, "circle"),
+  U.branch(String, U.string.equal(name, "path"), _ => XML.attr.get(as, "d", ""),
+    _ => U.branch(String, U.string.equal(name, "rect") || U.string.equal(name, "image") || U.string.equal(name, "#svg-image"), _ => shape.rect(as, vw, vh),
+      _ => U.branch(String, U.string.equal(name, "circle"),
         _ => shape.ellipse.path(dimension(as, "cx", vw, "0"), dimension(as, "cy", vh, "0"),
           dimension(as, "r", F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32)), "0"),
           dimension(as, "r", F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32)), "0")),
-        _ => U.branch(String, String.eq(name, "ellipse"),
+        _ => U.branch(String, U.string.equal(name, "ellipse"),
           _ => shape.ellipse.path(dimension(as, "cx", vw, "0"), dimension(as, "cy", vh, "0"),
             dimension(as, "rx", vw, "0"), dimension(as, "ry", vh, "0")),
-          _ => U.branch(String, String.eq(name, "line"),
+          _ => U.branch(String, U.string.equal(name, "line"),
             _ => "M" ++ xy(dimension(as, "x1", vw, "0"), dimension(as, "y1", vh, "0"))
               ++ "L" ++ xy(dimension(as, "x2", vw, "0"), dimension(as, "y2", vh, "0")),
-            _ => U.branch(String, String.eq(name, "polygon") || String.eq(name, "polyline"),
-              _ => "M" ++ XML.attr.get(as, "points", "") ++ U.choose(String, String.eq(name, "polygon"), "Z", ""),
+            _ => U.branch(String, U.string.equal(name, "polygon") || U.string.equal(name, "polyline"),
+              _ => "M" ++ XML.attr.get(as, "points", "") ++ U.choose(String, U.string.equal(name, "polygon"), "Z", ""),
               _ => ""))))))
 
 def shape(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> List<&2, Edge>:
-  U.branch(List<&2, Edge>, String.eq(name, "#glyph"),
+  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph"),
     _ => edges.transform(path(XML.attr.get(as, "d", "")), transform(XML.attr.get(as, "#glyph-transform", ""), identity())),
     _ => path(shape.data(name, as, vw, vh)))
 
@@ -735,7 +741,7 @@ def glyph.edges(xs: List<&2, XML.Element>) -> List<&2, Edge>:
       glyph.edges.append(edges.transform(path(XML.attr.get(attrs, "d", "")), transform(XML.attr.get(attrs, "#glyph-transform", ""), identity())), glyph.edges(rest))
 
 def shape.children(+name: String, as: List<&2, XML.Attr>, kids: List<&2, XML.Element>, vw: F32, vh: F32) -> List<&2, Edge>:
-  U.branch(List<&2, Edge>, String.eq(name, "#glyph-run"), _ => glyph.edges(kids), _ => shape(name, as, vw, vh))
+  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph-run"), _ => glyph.edges(kids), _ => shape(name, as, vw, vh))
 
 type MarkerSubpath is Data:
   MarkerSubpath{start: Point, segments: List<&2, MarkerSegment>, closed: Bool}
@@ -839,17 +845,40 @@ type StrokeSettings is Data:
 def stroke.settings() -> StrokeSettings:
   StrokeSettings{"butt", "miter", 4.0, "none", "0", "none"}
 
+# A property from an element's attributes: absent means the inherited value
+# (or the initial one for non-inherited properties) with no string work at
+# all; present, the CSS-wide keywords are honoured.
+def style.present(found: Maybe<&2, String>, +fallback: String, +initial: String, +inherited: Bool) -> String:
+  match found:
+    case None{}: U.choose(String, inherited, fallback, initial)
+    case Some{v}:
+      +vv = v
+      +keyword = CSS.css.lower(U.trim.both(vv))
+      U.choose(String, U.string.equal(keyword, "inherit") || (inherited && U.string.equal(keyword, "unset")), fallback,
+        U.choose(String, U.string.equal(keyword, "initial") || U.string.equal(keyword, "unset"), initial, vv))
+
 def style.value(+as: List<&2, XML.Attr>, key: String, +fallback: String, +initial: String, +inherited: Bool) -> String:
-  +v = XML.attr.get(as, key, U.choose(String, inherited, fallback, initial))
-  +keyword = CSS.css.lower(U.trim.both(v))
-  U.choose(String, String.eq(keyword, "inherit") || (inherited && String.eq(keyword, "unset")), fallback,
-    U.choose(String, String.eq(keyword, "initial") || String.eq(keyword, "unset"), initial, v))
+  style.present(XML.attr.find(as, key), fallback, initial, inherited)
+
+# A numeric inherited property: the parent's number stays a number when the
+# attribute is absent instead of being printed and parsed again.
+def style.number.present(found: Maybe<&2, String>, +parent: F32, +initial: F32, parse: String -> F32) -> F32:
+  match found:
+    case None{}: parent
+    case Some{v}:
+      +vv = v
+      +keyword = CSS.css.lower(U.trim.both(vv))
+      U.choose(F32, U.string.equal(keyword, "inherit") || U.string.equal(keyword, "unset"), parent,
+        U.choose(F32, U.string.equal(keyword, "initial"), initial, parse(vv)))
+
+def style.number(+as: List<&2, XML.Attr>, key: String, +parent: F32, +initial: F32, parse: String -> F32) -> F32:
+  style.number.present(XML.attr.find(as, key), parent, initial, parse)
 
 def stroke.inherit(s: StrokeSettings, +as: List<&2, XML.Attr>) -> StrokeSettings:
   StrokeSettings{cap, join, limit, dash, offset, vector} = s
   +lim = limit
   StrokeSettings{style.value(as, "stroke-linecap", cap, "butt", True{}), style.value(as, "stroke-linejoin", join, "miter", True{}),
-    U.max(0.0, U.scalar(style.value(as, "stroke-miterlimit", F32.show(lim), "4", True{}), lim)),
+    U.max(0.0, style.number(as, "stroke-miterlimit", lim, 4.0, v => U.scalar(v, lim))),
     style.value(as, "stroke-dasharray", dash, "none", True{}), style.value(as, "stroke-dashoffset", offset, "0", True{}),
     style.value(as, "vector-effect", vector, "none", False{})}
 
@@ -911,8 +940,8 @@ def stroke.append(xs: List<&2, StrokePart>, ys: List<&2, StrokePart>) -> List<&2
 
 def stroke.cap(+p: Point, +dir: Point, +r: F32, +cap: String, parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
   +rest = parts
-  U.branch(List<&2, StrokePart>, String.eq(cap, "round"), _ => Con{StrokeSector{p, r, point.scale(point.normal(dir), F32.neg(1.0)), point.normal(dir), 1.0}, rest},
-    _ => U.branch(List<&2, StrokePart>, String.eq(cap, "square"), _ => Con{StrokeBand{p, dir, r, r}, rest}, _ => rest))
+  U.branch(List<&2, StrokePart>, U.string.equal(cap, "round"), _ => Con{StrokeSector{p, r, point.scale(point.normal(dir), F32.neg(1.0)), point.normal(dir), 1.0}, rest},
+    _ => U.branch(List<&2, StrokePart>, U.string.equal(cap, "square"), _ => Con{StrokeBand{p, dir, r, r}, rest}, _ => rest))
 
 def stroke.miter.clipped(+p: Point, +a: Point, +b: Point, +m: Point, +limit: F32,
   parts: List<&2, StrokePart>) -> List<&2, StrokePart>:
@@ -931,7 +960,7 @@ def stroke.miter(+p: Point, +a: Point, +b: Point, +u: Point, +v: Point, +r: F32,
   +bevel = {Con{StrokeTriangle{p, a, b}, parts} : List<&2, StrokePart>}
   U.branch(List<&2, StrokePart>, F32.is_le(distance, (limit * r : F32)),
     _ => Con{StrokeTriangle{p, a, m}, Con{StrokeTriangle{p, m, b}, parts}},
-    _ => U.branch(List<&2, StrokePart>, String.eq(join, "miter-clip"),
+    _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "miter-clip"),
       _ => stroke.miter.clipped(p, a, b, m, (r * limit : F32), parts), _ => bevel))
 
 def stroke.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings,
@@ -944,11 +973,11 @@ def stroke.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSetti
   +a = point.add(p, point.scale(n1, r))
   +b = point.add(p, point.scale(n2, r))
   U.branch(List<&2, StrokePart>, F32.is_lt(F32.abs(turn), 0.000001),
-    _ => U.choose(List<&2, StrokePart>, String.eq(join, "round") && F32.is_lt(point.dot(u, v), 0.0),
+    _ => U.choose(List<&2, StrokePart>, U.string.equal(join, "round") && F32.is_lt(point.dot(u, v), 0.0),
       Con{StrokeSector{p, r, point.scale(point.normal(u), F32.neg(1.0)), point.normal(u), 1.0}, parts}, parts),
-    _ => U.branch(List<&2, StrokePart>, String.eq(join, "round"),
+    _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "round"),
       _ => Con{StrokeSector{p, r, n1, n2, sign}, parts},
-      _ => U.branch(List<&2, StrokePart>, String.eq(join, "bevel"),
+      _ => U.branch(List<&2, StrokePart>, U.string.equal(join, "bevel"),
         _ => Con{StrokeTriangle{p, a, b}, parts},
         _ => stroke.miter(p, a, b, u, v, r, limit, join, parts))))
 
@@ -1278,18 +1307,31 @@ def edges.drop(n: Nat, xs: List<&2, Edge>) -> List<&2, Edge>:
     case 1n+d Nil{}: Nil{}
     case 1n+d Con{h, t}: edges.drop(d, t)
 
+# The tree is built bottom-up: every edge becomes a leaf, and adjacent trees
+# are paired into forks until one remains, a linear amount of work instead of
+# splitting the list again at every level.
+def edge.leaves(es: List<&2, Edge>) -> List<&2, EdgeTree>:
+  match es:
+    case Nil{}: Nil{}
+    case Con{e, rest}:
+      +ee = e
+      Con{EdgeLeaf{bounds(Con{ee, Nil{}}, bounds.empty()), ee}, edge.leaves(rest)}
+
+def edge.pairs(ts: List<&2, EdgeTree>) -> List<&2, EdgeTree>:
+  match ts:
+    case Nil{}: Nil{}
+    case Con{a, Nil{}}: Con{a, Nil{}}
+    case Con{a, Con{b, rest}}: Con{edge.tree.fork(a, b), edge.pairs(rest)}
+
 @unsafe
-def edge.tree.build(+xs: List<&2, Edge>, +count: U32) -> EdgeTree:
-  match xs:
+def edge.reduce(ts: List<&2, EdgeTree>) -> EdgeTree:
+  match ts:
     case Nil{}: EdgeEmpty{}
-    case Con{h, t}:
-      +half = U32.div(count, 2)
-      U.branch(EdgeTree, U32.is_le(count, 1), _ => EdgeLeaf{bounds(Con{h, Nil{}}, bounds.empty()), h},
-        _ => edge.tree.fork(edge.tree.build(edges.take(U32.to_nat(half), xs), half),
-          edge.tree.build(edges.drop(U32.to_nat(half), xs), (count - half : U32))))
+    case Con{a, Nil{}}: a
+    case Con{a, Con{b, rest}}: edge.reduce(edge.pairs(Con{a, Con{b, rest}}))
 
 def edge.tree(+es: List<&2, Edge>) -> EdgeTree:
-  edge.tree.build(es, edges.count(es))
+  edge.reduce(edge.leaves(es))
 
 def bounds.ray(b: Bounds, p: Point) -> Bool:
   Bounds{x0, y0, x1, y1} = b
@@ -1368,15 +1410,29 @@ def stroke.drop(n: Nat, xs: List<&2, StrokePart>) -> List<&2, StrokePart>:
     case 1n+d Nil{}: Nil{}
     case 1n+d Con{h, t}: stroke.drop(d, t)
 
-@unsafe
-def stroke.tree(+xs: List<&2, StrokePart>, +count: U32) -> StrokeTree:
+def stroke.leaves(xs: List<&2, StrokePart>) -> List<&2, StrokeTree>:
   match xs:
+    case Nil{}: Nil{}
+    case Con{part, rest}:
+      +pp = part
+      Con{StrokeLeaf{stroke.bounds(pp), pp}, stroke.leaves(rest)}
+
+def stroke.pairs(ts: List<&2, StrokeTree>) -> List<&2, StrokeTree>:
+  match ts:
+    case Nil{}: Nil{}
+    case Con{a, Nil{}}: Con{a, Nil{}}
+    case Con{a, Con{b, rest}}: Con{stroke.tree.fork(a, b), stroke.pairs(rest)}
+
+@unsafe
+def stroke.reduce(ts: List<&2, StrokeTree>) -> StrokeTree:
+  match ts:
     case Nil{}: StrokeEmpty{}
-    case Con{h, t}:
-      +half = U32.div(count, 2)
-      U.branch(StrokeTree, U32.is_le(count, 1), _ => StrokeLeaf{stroke.bounds(h), h},
-        _ => stroke.tree.fork(stroke.tree(stroke.take(U32.to_nat(half), xs), half),
-          stroke.tree(stroke.drop(U32.to_nat(half), xs), (count - half : U32))))
+    case Con{a, Nil{}}: a
+    case Con{a, Con{b, rest}}: stroke.reduce(stroke.pairs(Con{a, Con{b, rest}}))
+
+# Built bottom-up by pairing, like edge.tree; the count argument is kept for callers.
+def stroke.tree(+xs: List<&2, StrokePart>, +count: U32) -> StrokeTree:
+  stroke.reduce(stroke.leaves(xs))
 
 def stroke.tree.inside(t: StrokeTree, +p: Point) -> Bool:
   match t:
@@ -1415,7 +1471,7 @@ def paint.order.normalize(s: String, +out: String, +gap: Bool) -> String:
     case SCon{Chr{c}, rest}:
       +ch = c
       +tail = rest
-      U.branch(String, U.space(ch), _ => paint.order.normalize(tail, out, Bool.not(String.eq(out, ""))),
+      U.branch(String, U.space(ch), _ => paint.order.normalize(tail, out, Bool.not(U.string.equal(out, ""))),
         _ => paint.order.normalize(tail, out ++ U.choose(String, gap, " ", "") ++ SCon{Chr{ch}, SNil{}}, False{}))
 
 def paint.order.name(+order: U32) -> String:
@@ -1425,12 +1481,12 @@ def paint.order.name(+order: U32) -> String:
 
 def paint.order.value(+s: String, fallback: U32) -> U32:
   +v = paint.order.normalize(CSS.css.lower(U.trim.both(s)), "", False{})
-  U.choose(U32, String.eq(v, "normal") || String.eq(v, "fill") || String.eq(v, "fill stroke") || String.eq(v, "fill stroke markers"), 0,
-    U.choose(U32, String.eq(v, "fill markers") || String.eq(v, "fill markers stroke"), 1,
-      U.choose(U32, String.eq(v, "stroke") || String.eq(v, "stroke fill") || String.eq(v, "stroke fill markers"), 2,
-        U.choose(U32, String.eq(v, "stroke markers") || String.eq(v, "stroke markers fill"), 3,
-          U.choose(U32, String.eq(v, "markers") || String.eq(v, "markers fill") || String.eq(v, "markers fill stroke"), 4,
-            U.choose(U32, String.eq(v, "markers stroke") || String.eq(v, "markers stroke fill"), 5, fallback))))))
+  U.choose(U32, U.string.equal(v, "normal") || U.string.equal(v, "fill") || U.string.equal(v, "fill stroke") || U.string.equal(v, "fill stroke markers"), 0,
+    U.choose(U32, U.string.equal(v, "fill markers") || U.string.equal(v, "fill markers stroke"), 1,
+      U.choose(U32, U.string.equal(v, "stroke") || U.string.equal(v, "stroke fill") || U.string.equal(v, "stroke fill markers"), 2,
+        U.choose(U32, U.string.equal(v, "stroke markers") || U.string.equal(v, "stroke markers fill"), 3,
+          U.choose(U32, U.string.equal(v, "markers") || U.string.equal(v, "markers fill") || U.string.equal(v, "markers fill stroke"), 4,
+            U.choose(U32, U.string.equal(v, "markers stroke") || U.string.equal(v, "markers stroke fill"), 5, fallback))))))
 
 # Compilation resolves geometry and inherited presentation once per edit.
 type Style is Data:
@@ -1440,15 +1496,15 @@ type Style is Data:
 def style.default() -> Style:
   Style{"black", "none", "black", 1.0, 1.0, 1.0, False{}, True{}, stroke.settings(), MarkerStyle{"none", "none", "none"}, "auto", 0}
 
-def style.inherit(+s: Style, +as: List<&2, XML.Attr>, ref: F32) -> Style:
+def style.inherit(+s: Style, +as: List<&2, XML.Attr>, +ref: F32) -> Style:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   +po = order
   Style{style.value(as, "fill", fill, "black", True{}), style.value(as, "stroke", stroke, "none", True{}), style.value(as, "color", col, "black", True{}),
-    color.opacity(style.value(as, "fill-opacity", F32.show(fo), "1", True{}), fo),
-    color.opacity(style.value(as, "stroke-opacity", F32.show(so), "1", True{}), so),
-    U.max(0.0, U.unit(U.number(style.value(as, "stroke-width", F32.show(width), "1", True{})), ref)),
-    String.eq(style.value(as, "fill-rule", U.choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
-    String.eq(style.value(as, "visibility", U.choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{}), paint.order.value(style.value(as, "paint-order", paint.order.name(po), "normal", True{}), po)}
+    style.number(as, "fill-opacity", fo, 1.0, v => color.opacity(v, fo)),
+    style.number(as, "stroke-opacity", so, 1.0, v => color.opacity(v, so)),
+    U.max(0.0, style.number(as, "stroke-width", width, U.unit(U.number("1"), ref), v => U.unit(U.number(v), ref))),
+    U.string.equal(style.value(as, "fill-rule", U.choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
+    U.string.equal(style.value(as, "visibility", U.choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{}), paint.order.value(style.value(as, "paint-order", paint.order.name(po), "normal", True{}), po)}
 
 # Gradient resources are compiled into paint functions before rasterization.
 type Stop is Data:
@@ -1485,7 +1541,7 @@ type Brush is Data:
 def gradient.has.stops(xs: List<&2, XML.Element>) -> Bool:
   match xs:
     case Nil{}: False{}
-    case Con{XML.Element{n, as, kids, txt}, rest}: String.eq(n, "stop") || gradient.has.stops(rest)
+    case Con{XML.Element{n, as, kids, txt}, rest}: U.string.equal(n, "stop") || gradient.has.stops(rest)
 
 def gradient.merge(local: XML.Element, template: XML.Element) -> XML.Element:
   XML.Element{n, as, kids, txt} = local
@@ -1526,37 +1582,62 @@ def stop.color(c: Img.Color, opacity: F32, +linear: Bool) -> Img.Color:
 def property.value(+as: List<&2, XML.Attr>, +parent: List<&2, XML.Attr>, +key: String, +initial: String, inherited: Bool) -> String:
   style.value(as, key, XML.attr.get(parent, key, initial), initial, inherited)
 
-def resources.markers(+as: List<&2, XML.Attr>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  Con{XML.Attr{"marker-start", property.value(as, parent, "marker-start", "none", True{})}, Con{XML.Attr{"marker-mid", property.value(as, parent, "marker-mid", "none", True{})}, Con{XML.Attr{"marker-end", property.value(as, parent, "marker-end", "none", True{})}, as}}}
+# The properties a resource may inherit, in the order every resolved list
+# carries them; a resolved parent list starts with the same keys in the same
+# order, so a parent's value is read positionally and only the element's own
+# attributes are searched by name.
+type Prop is Data:
+  Prop{key: String, initial: String, inherited: Bool}
 
-def resources.filter.colors(+as: List<&2, XML.Attr>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  Con{XML.Attr{"image-rendering", property.value(as, parent, "image-rendering", "auto", True{})}, Con{XML.Attr{"color-interpolation-filters", property.value(as, parent, "color-interpolation-filters", "linearRGB", True{})}, Con{XML.Attr{"flood-color", property.value(as, parent, "flood-color", "black", False{})}, Con{XML.Attr{"flood-opacity", property.value(as, parent, "flood-opacity", "1", False{})}, resources.markers(as, parent)}}}}
+def props.spec() -> List<&2, Prop>:
+  Con{Prop{"color", "black", True{}}, Con{Prop{"color-interpolation", "sRGB", True{}}, Con{Prop{"stop-color", "black", False{}}, Con{Prop{"stop-opacity", "1", False{}},
+    Con{Prop{"fill", "black", True{}}, Con{Prop{"stroke", "none", True{}}, Con{Prop{"stroke-width", "1", True{}}, Con{Prop{"fill-opacity", "1", True{}},
+    Con{Prop{"stroke-opacity", "1", True{}}, Con{Prop{"fill-rule", "nonzero", True{}}, Con{Prop{"clip-rule", "nonzero", True{}}, Con{Prop{"stroke-linecap", "butt", True{}},
+    Con{Prop{"stroke-linejoin", "miter", True{}}, Con{Prop{"stroke-miterlimit", "4", True{}}, Con{Prop{"stroke-dasharray", "none", True{}}, Con{Prop{"stroke-dashoffset", "0", True{}},
+    Con{Prop{"visibility", "visible", True{}}, Con{Prop{"opacity", "1", False{}}, Con{Prop{"image-rendering", "auto", True{}}, Con{Prop{"color-interpolation-filters", "linearRGB", True{}},
+    Con{Prop{"flood-color", "black", False{}}, Con{Prop{"flood-opacity", "1", False{}}, Con{Prop{"marker-start", "none", True{}}, Con{Prop{"marker-mid", "none", True{}},
+    Con{Prop{"marker-end", "none", True{}}, Nil{}}}}}}}}}}}}}}}}}}}}}}}}}}
 
-def resources.paint(+as: List<&2, XML.Attr>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  Con{XML.Attr{"fill", property.value(as, parent, "fill", "black", True{})},
-    Con{XML.Attr{"stroke", property.value(as, parent, "stroke", "none", True{})},
-    Con{XML.Attr{"stroke-width", property.value(as, parent, "stroke-width", "1", True{})},
-    Con{XML.Attr{"fill-opacity", property.value(as, parent, "fill-opacity", "1", True{})},
-    Con{XML.Attr{"stroke-opacity", property.value(as, parent, "stroke-opacity", "1", True{})},
-    Con{XML.Attr{"fill-rule", property.value(as, parent, "fill-rule", "nonzero", True{})},
-    Con{XML.Attr{"clip-rule", property.value(as, parent, "clip-rule", "nonzero", True{})},
-    Con{XML.Attr{"stroke-linecap", property.value(as, parent, "stroke-linecap", "butt", True{})},
-    Con{XML.Attr{"stroke-linejoin", property.value(as, parent, "stroke-linejoin", "miter", True{})},
-    Con{XML.Attr{"stroke-miterlimit", property.value(as, parent, "stroke-miterlimit", "4", True{})},
-    Con{XML.Attr{"stroke-dasharray", property.value(as, parent, "stroke-dasharray", "none", True{})},
-    Con{XML.Attr{"stroke-dashoffset", property.value(as, parent, "stroke-dashoffset", "0", True{})},
-    Con{XML.Attr{"visibility", property.value(as, parent, "visibility", "visible", True{})},
-    Con{XML.Attr{"opacity", property.value(as, parent, "opacity", "1", False{})}, resources.filter.colors(as, parent)}}}}}}}}}}}}}}
+def props.head.pick(hit: Bool, +v: String, whole: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
+  match hit:
+    case True{}: v
+    case False{}: XML.attr.get(whole, key, initial)
+
+# The parent's value for key: the head when the parent list is resolved, else by name.
+def props.head.value(parent: List<&2, XML.Attr>, +key: String, +initial: String) -> String:
+  match parent:
+    case Nil{}: initial
+    case Con{XML.Attr{k, v}, t}:
+      +kk = k
+      +vv = v
+      props.head.pick(U.string.equal(kk, key), vv, Con{XML.Attr{kk, vv}, t}, key, initial)
+
+def props.advance.pick(hit: Bool, whole: List<&2, XML.Attr>, rest: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
+  match hit:
+    case True{}: rest
+    case False{}: whole
+
+def props.advance(parent: List<&2, XML.Attr>, +key: String) -> List<&2, XML.Attr>:
+  match parent:
+    case Nil{}: Nil{}
+    case Con{XML.Attr{k, v}, t}:
+      +kk = k
+      +tt = t
+      props.advance.pick(U.string.equal(kk, key), Con{XML.Attr{kk, v}, tt}, tt)
+
+def props.fold(spec: List<&2, Prop>, +parent: List<&2, XML.Attr>, +as: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
+  match spec:
+    case Nil{}: as
+    case Con{Prop{key, initial, inherited}, rest}:
+      +k = key
+      +ini = initial
+      Con{XML.Attr{k, style.value(as, k, props.head.value(parent, k, ini), ini, inherited)}, props.fold(rest, props.advance(parent, k), as)}
 
 def resources(xs: List<&2, XML.Element>, +parent: List<&2, XML.Attr>) -> List<&2, XML.Element>:
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{n, attrs, kids, txt}, rest}:
-      +as = CSS.properties(attrs)
-      +props = {Con{XML.Attr{"color", property.value(as, parent, "color", "black", True{})},
-        Con{XML.Attr{"color-interpolation", property.value(as, parent, "color-interpolation", "sRGB", True{})},
-          Con{XML.Attr{"stop-color", property.value(as, parent, "stop-color", "black", False{})},
-            Con{XML.Attr{"stop-opacity", property.value(as, parent, "stop-opacity", "1", False{})}, resources.paint(as, parent)}}}} : List<&2, XML.Attr>}
+      +props = props.fold(props.spec(), parent, CSS.properties(attrs))
       Con{XML.Element{n, props, resources(kids, props), txt}, resources(rest, parent)}
 
 def gradient.stops(xs: List<&2, XML.Element>, +as: List<&2, XML.Attr>, +previous: F32, +linear: Bool) -> List<&2, Stop>:
@@ -1567,8 +1648,8 @@ def gradient.stops(xs: List<&2, XML.Element>, +as: List<&2, XML.Attr>, +previous
       +offset = U.max(previous, U.clamp(U.unit(U.number(XML.attr.get(props, "offset", "0")), 1.0), 0.0, 1.0))
       +col = XML.attr.get(props, "stop-color", "black")
       +tail = rest
-      U.branch(List<&2, Stop>, String.eq(n, "stop"),
-        _ => Con{Stop{offset, stop.color(color(U.choose(String, String.eq(CSS.css.lower(U.trim.both(col)), "currentcolor"),
+      U.branch(List<&2, Stop>, U.string.equal(n, "stop"),
+        _ => Con{Stop{offset, stop.color(color(U.choose(String, U.string.equal(CSS.css.lower(U.trim.both(col)), "currentcolor"),
           XML.attr.get(props, "color", XML.attr.get(as, "color", "black")), col)), U.clamp(U.unit(U.number(XML.attr.get(props, "stop-opacity", "1")), 1.0), 0.0, 1.0), linear)},
           gradient.stops(tail, as, offset, linear)}, _ => gradient.stops(tail, as, previous, linear))
 
@@ -1819,11 +1900,11 @@ def gradient.box(b: Bounds) -> Matrix:
 def gradient.build(e: XML.Element, +box: Bounds, +w: F32, +h: F32, opacity: F32) -> Brush:
   XML.Element{n, attrs, kids, txt} = e
   +as = CSS.properties(attrs)
-  +user = String.eq(XML.attr.get(as, "gradientUnits", "objectBoundingBox"), "userSpaceOnUse")
+  +user = U.string.equal(XML.attr.get(as, "gradientUnits", "objectBoundingBox"), "userSpaceOnUse")
   +vw = U.choose(F32, user, w, 1.0)
   +vh = U.choose(F32, user, h, 1.0)
-  +linear = String.eq(XML.attr.get(as, "color-interpolation", "sRGB"), "linearRGB")
-  +radial = String.eq(n, "radialGradient")
+  +linear = U.string.equal(XML.attr.get(as, "color-interpolation", "sRGB"), "linearRGB")
+  +radial = U.string.equal(n, "radialGradient")
   +cx = dimension(as, "cx", vw, "50%")
   +cy = dimension(as, "cy", vh, "50%")
   +radiusRef = F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32))
@@ -1834,13 +1915,13 @@ def gradient.build(e: XML.Element, +box: Bounds, +w: F32, +h: F32, opacity: F32)
     U.choose(Point, radial, Point{cx, cy}, Point{dimension(as, "x2", vw, "100%"), dimension(as, "y2", vh, "0%")}),
     dimension(as, "r", radiusRef, "50%"), dimension(as, "fr", radiusRef, "0%"),
     gradient.stops(kids, as, 0.0, linear),
-    U.choose(U32, String.eq(XML.attr.get(as, "spreadMethod", "pad"), "repeat"), 1,
-      U.choose(U32, String.eq(XML.attr.get(as, "spreadMethod", "pad"), "reflect"), 2, 0)), opacity, linear}
+    U.choose(U32, U.string.equal(XML.attr.get(as, "spreadMethod", "pad"), "repeat"), 1,
+      U.choose(U32, U.string.equal(XML.attr.get(as, "spreadMethod", "pad"), "reflect"), 2, 0)), opacity, linear}
 
 def gradient.is.valid(e: XML.Element) -> Bool:
   XML.Element{n, as, kids, txt} = e
   +tag = n
-  String.eq(tag, "linearGradient") || String.eq(tag, "radialGradient")
+  U.string.equal(tag, "linearGradient") || U.string.equal(tag, "radialGradient")
 
 def brush.resource(result: Maybe<&2, XML.Element>, +all: List<&2, XML.Element>, +box: Bounds, +w: F32, +h: F32,
   +opacity: F32, fallback: String, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
@@ -1850,18 +1931,18 @@ def brush.resource(result: Maybe<&2, XML.Element>, +all: List<&2, XML.Element>, 
       +tag = tagname
       +node = {XML.Element{tag, as, kids, txt} : XML.Element}
       U.branch(Brush, gradient.is.valid(node), _ => gradient.build(gradient.resolve(32n, node, all), box, w, h, opacity),
-        _ => U.branch(Brush, String.eq(tag, "pattern"), _ => patterns(node)(box)(w)(h)(opacity),
+        _ => U.branch(Brush, U.string.equal(tag, "pattern"), _ => patterns(node)(box)(w)(h)(opacity),
           _ => brush.solid(color(fallback), opacity)))
 
 def brush.url(+scan: U.Scan, +all: List<&2, XML.Element>, box: Bounds, w: F32, h: F32, opacity: F32, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
   U.Scan{url, fallback} = scan
   brush.resource(XML.element.find(all, U.drop(U.unquote(U.trim.both(url)), "#")), all, box, w, h, opacity,
-    U.choose(String, String.eq(U.trim(fallback), ""), "none", U.trim(fallback)), patterns)
+    U.choose(String, U.string.equal(U.trim(fallback), ""), "none", U.trim(fallback)), patterns)
 
 def brush(+s: String, current: String, +opacity: F32, +all: List<&2, XML.Element>, box: Bounds, w: F32, h: F32, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
   U.branch(Brush, U.prefix(s, "url("), _ => brush.url(U.until(U.drop(s, "url("), 41, ""), all, box, w, h, opacity, patterns),
-    _ => U.branch(Brush, String.eq(CSS.css.lower(U.trim.both(s)), "context-fill") || String.eq(CSS.css.lower(U.trim.both(s)), "context-stroke"), _ => PendingContext{String.eq(CSS.css.lower(U.trim.both(s)), "context-stroke"), opacity},
-      _ => brush.solid(color(U.choose(String, String.eq(CSS.css.lower(U.trim.both(s)), "currentcolor"), current, s)), opacity)))
+    _ => U.branch(Brush, U.string.equal(CSS.css.lower(U.trim.both(s)), "context-fill") || U.string.equal(CSS.css.lower(U.trim.both(s)), "context-stroke"), _ => PendingContext{U.string.equal(CSS.css.lower(U.trim.both(s)), "context-stroke"), opacity},
+      _ => brush.solid(color(U.choose(String, U.string.equal(CSS.css.lower(U.trim.both(s)), "currentcolor"), current, s)), opacity)))
 
 def style.colors(+s: Style, +all: List<&2, XML.Element>, +box: Bounds, +w: F32, +h: F32, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Paint<Brush>:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
@@ -1901,9 +1982,9 @@ def clip.reference(result: Maybe<&2, XML.Element>, +box: Bounds, +m: Matrix,
     case Some{XML.Element{n, as, kids, txt}}:
       +tag = n
       +attrs = as
-      U.branch(Clip, String.eq(tag, "clipPath"),
+      U.branch(Clip, U.string.equal(tag, "clipPath"),
         _ => build(Con{XML.Element{tag, attrs, kids, txt}, Nil{}})(matrix.mul(m,
-          U.choose(Matrix, String.eq(XML.attr.get(attrs, "clipPathUnits", "userSpaceOnUse"), "objectBoundingBox"),
+          U.choose(Matrix, U.string.equal(XML.attr.get(attrs, "clipPathUnits", "userSpaceOnUse"), "objectBoundingBox"),
             gradient.box(box), identity()))), _ => ClipAll{})
 
 def clip.attach(+as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bounds, m: Matrix,
@@ -1925,11 +2006,11 @@ def clip.build(fuel: Nat, +xs: List<&2, XML.Element>, +all: List<&2, XML.Element
           +dd = d
           +as = CSS.properties(attrs)
           +matrix = matrix.mul(matrix.mul(m, transform(XML.attr.get(as, "transform", ""), identity())),
-            U.choose(Matrix, String.eq(n, "use"), translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0")), identity()))
-          +rule = String.eq(XML.attr.get(as, "clip-rule", U.choose(String, even, "evenodd", "nonzero")), "evenodd")
+            U.choose(Matrix, U.string.equal(n, "use"), translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0")), identity()))
+          +rule = U.string.equal(XML.attr.get(as, "clip-rule", U.choose(String, even, "evenodd", "nonzero")), "evenodd")
           +es = shape.children(n, as, kids, w, h)
           +box = bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})
-          U.branch(Clip, String.eq(XML.attr.get(as, "display", "inline"), "none"),
+          U.branch(Clip, U.string.equal(XML.attr.get(as, "display", "inline"), "none"),
             _ => clip.build(1n+dd, rest, all, m, w, h, even),
             _ => ClipUnion{ClipIntersect{
               ClipUnion{ClipShape{edge.tree(es), matrix.inverse(matrix), rule, cover.none()}, clip.build(1n+dd, kids, all, matrix, w, h, rule)},
@@ -1942,12 +2023,12 @@ def clip.compile(as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bound
 def style.nonScaling(s: Style) -> Bool:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   StrokeSettings{cap, join, limit, dash, offset, vector} = ss
-  String.eq(vector, "non-scaling-stroke")
+  U.string.equal(vector, "non-scaling-stroke")
 
 def style.outline(+s: Style, +es: List<&2, Edge>, +m: Matrix, ref: F32, declared: F32) -> StrokeMesh:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   +screen = style.nonScaling(s)
-  stroke.mesh(U.branch(List<&2, StrokePart>, String.eq(stroke, "none") || F32.is_le(width, 0.0), _ => Nil{},
+  stroke.mesh(U.branch(List<&2, StrokePart>, U.string.equal(stroke, "none") || F32.is_le(width, 0.0), _ => Nil{},
     _ => stroke.compile(U.choose(List<&2, Edge>, screen, edges.transform(es, m), es), (width / 2.0 : F32), ss, ref, declared)),
     U.choose(Matrix, screen, identity(), matrix.inverse(m)))
 
@@ -1967,7 +2048,7 @@ def scene.bounds(xs: List<&2, Scene<Brush>>, +parentInverse: Matrix, box: Bounds
 def bounds.spec(+as: List<&2, XML.Attr>, box: Bounds) -> Bounds:
   +value = XML.attr.get(as, "#paint-box", "")
   +vs = U.numbers(value)
-  U.choose(Bounds, String.eq(value, ""), box, Bounds{U.nth(vs, 0n, 0.0), U.nth(vs, 1n, 0.0), U.nth(vs, 2n, 0.0), U.nth(vs, 3n, 0.0)})
+  U.choose(Bounds, U.string.equal(value, ""), box, Bounds{U.nth(vs, 0n, 0.0), U.nth(vs, 1n, 0.0), U.nth(vs, 2n, 0.0), U.nth(vs, 3n, 0.0)})
 
 def filter.dimension(+as: List<&2, XML.Attr>, +key: String, +ref: F32, +fallback: String, user: Bool) -> F32:
   U.branch(F32, user, _ => dimension(as, key, ref, fallback), _ => (dimension(as, key, 1.0, fallback) * ref : F32))
@@ -1978,7 +2059,7 @@ def filter.region(+as: List<&2, XML.Attr>, box: Bounds, +w: F32, +h: F32, +primi
   +by = y0
   +bw = (x1 - bx : F32)
   +bh = (y1 - by : F32)
-  +user = String.eq(XML.attr.get(as, "filterUnits", "objectBoundingBox"), "userSpaceOnUse")
+  +user = U.string.equal(XML.attr.get(as, "filterUnits", "objectBoundingBox"), "userSpaceOnUse")
   +fw = U.choose(F32, user, w, bw)
   +fh = U.choose(F32, user, h, bh)
   +x = (U.choose(F32, user, 0.0, bx) + filter.dimension(as, "x", fw, "-10%", user) : F32)
@@ -1994,8 +2075,8 @@ def filter.resource(result: Maybe<&2, XML.Element>, +box: Bounds, m: Matrix, +w:
     case None{}: NoFilter{}
     case Some{XML.Element{name, attrs, kids, txt}}:
       +as = CSS.properties(attrs)
-      +object = String.eq(XML.attr.get(as, "primitiveUnits", "userSpaceOnUse"), "objectBoundingBox")
-      U.branch(FilterEffect, String.eq(name, "filter"), _ => FilterSpec{filter.region(as, box, w, h, object), matrix.mul(m, U.choose(Matrix, object, gradient.box(box), identity())), Point{U.choose(F32, object, 1.0, w), U.choose(F32, object, 1.0, h)}, as, kids}, _ => NoFilter{})
+      +object = U.string.equal(XML.attr.get(as, "primitiveUnits", "userSpaceOnUse"), "objectBoundingBox")
+      U.branch(FilterEffect, U.string.equal(name, "filter"), _ => FilterSpec{filter.region(as, box, w, h, object), matrix.mul(m, U.choose(Matrix, object, gradient.box(box), identity())), Point{U.choose(F32, object, 1.0, w), U.choose(F32, object, 1.0, h)}, as, kids}, _ => NoFilter{})
 
 def filter.spec(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, box: Bounds, m: Matrix, w: F32, h: F32) -> FilterEffect:
   +value = U.trim.both(XML.attr.get(as, "filter", "none"))
@@ -2019,7 +2100,7 @@ def viewbox.matrix(+v: List<&2, F32>, +w: F32, +h: F32, +aspect: String) -> Matr
   +tx = U.choose(F32, U.prefix(aspect, "xMin"), 0.0, U.choose(F32, U.prefix(aspect, "xMax"), 1.0, 0.5))
   +ty = U.choose(F32, U.prefix(U.drop(aspect, "xxxx"), "YMin"), 0.0,
     U.choose(F32, U.prefix(U.drop(aspect, "xxxx"), "YMax"), 1.0, 0.5))
-  U.branch(Matrix, String.eq(aspect, "none"), _ => matrix.mul(scale(sx, sy), translate(F32.neg(x), F32.neg(y))),
+  U.branch(Matrix, U.string.equal(aspect, "none"), _ => matrix.mul(scale(sx, sy), translate(F32.neg(x), F32.neg(y))),
     _ => matrix.mul(translate(((w - vw * s) * tx : F32), ((h - vh * s) * ty : F32)),
       matrix.mul(scale(s, s), translate(F32.neg(x), F32.neg(y)))))
 
@@ -2033,8 +2114,8 @@ def bitmap.layout(+raster: Raster, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) 
   +ih = U32.to_f32(height)
   +aw = XML.attr.get(as, "width", "auto")
   +ah = XML.attr.get(as, "height", "auto")
-  +autoW = String.eq(aw, "auto")
-  +autoH = String.eq(ah, "auto")
+  +autoW = U.string.equal(aw, "auto")
+  +autoH = U.string.equal(ah, "auto")
   +rw = dimension(as, "width", vw, "0")
   +rh = dimension(as, "height", vh, "0")
   +w = U.choose(F32, autoW, U.choose(F32, autoH, iw, (rh * iw / U.max(ih, 0.000001) : F32)), rw)
@@ -2042,14 +2123,14 @@ def bitmap.layout(+raster: Raster, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) 
   +attrs = {Con{XML.Attr{"width", F32.show(w)}, Con{XML.Attr{"height", F32.show(h)}, as}} : List<&2, XML.Attr>}
   +inv = matrix.inverse(matrix.mul(translate(dimension(as, "x", vw, "0"), dimension(as, "y", vh, "0")), viewbox.matrix(Con{0.0, Con{0.0, Con{iw, Con{ih, Nil{}}}}}, w, h, U.trim.both(XML.attr.get(as, "preserveAspectRatio", "xMidYMid meet")))))
   +rendering = XML.attr.get(as, "image-rendering", "auto")
-  EmbeddedImage{raster, attrs, inv, String.eq(rendering, "pixelated") || String.eq(rendering, "crisp-edges") || String.eq(rendering, "optimizeSpeed")}
+  EmbeddedImage{raster, attrs, inv, U.string.equal(rendering, "pixelated") || U.string.equal(rendering, "crisp-edges") || U.string.equal(rendering, "optimizeSpeed")}
 
 def style.image.rendering(s: Style) -> String:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   rendering
 
 def bitmap.element(+name: String, +as: List<&2, XML.Attr>, w: F32, h: F32) -> EmbeddedImage:
-  U.branch(EmbeddedImage, String.eq(name, "image"), _ => bitmap.layout(bitmap.decode(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))), as, w, h), _ => NoImage{})
+  U.branch(EmbeddedImage, U.string.equal(name, "image"), _ => bitmap.layout(bitmap.decode(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))), as, w, h), _ => NoImage{})
 
 def bitmap.attrs(image: EmbeddedImage, fallback: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
   match image:
@@ -2090,14 +2171,14 @@ def viewport.clip(+w: F32, +h: F32, m: Matrix) -> Clip:
 
 def viewport.dimension(+as: List<&2, XML.Attr>, key: String, +ref: F32) -> F32:
   +value = XML.attr.get(as, key, "auto")
-  U.branch(F32, String.eq(value, "auto"), _ => ref, _ => U.unit(U.number(value), ref))
+  U.branch(F32, U.string.equal(value, "auto"), _ => ref, _ => U.unit(U.number(value), ref))
 
 def image.layout.sized(+as: List<&2, XML.Attr>, +values: List<&2, F32>, +vw: F32, +vh: F32) -> List<&2, XML.Attr>:
   +iw = U.nth(values, 0n, 300.0)
   +ih = U.nth(values, 1n, 150.0)
   +ratio = U.nth(values, 2n, 0.0)
-  +aw = String.eq(XML.attr.get(as, "width", "auto"), "auto")
-  +ah = String.eq(XML.attr.get(as, "height", "auto"), "auto")
+  +aw = U.string.equal(XML.attr.get(as, "width", "auto"), "auto")
+  +ah = U.string.equal(XML.attr.get(as, "height", "auto"), "auto")
   +rw = dimension(as, "width", vw, "0")
   +rh = dimension(as, "height", vh, "0")
   +w = U.choose(F32, aw, U.choose(F32, ah, iw, U.choose(F32, F32.is_gt(ratio, 0.0), (rh * ratio : F32), iw)), rw)
@@ -2106,12 +2187,12 @@ def image.layout.sized(+as: List<&2, XML.Attr>, +values: List<&2, F32>, +vw: F32
 
 def image.layout.attrs(+as: List<&2, XML.Attr>, +w: F32, +h: F32) -> List<&2, XML.Attr>:
   +size = XML.attr.get(as, "#image-size", "")
-  U.branch(List<&2, XML.Attr>, String.eq(size, ""), _ => as, _ => image.layout.sized(as, U.numbers(size), w, h))
+  U.branch(List<&2, XML.Attr>, U.string.equal(size, ""), _ => as, _ => image.layout.sized(as, U.numbers(size), w, h))
 
 def element.viewport(+name: String, raw: List<&2, XML.Attr>, +m: Matrix, +w: F32, +h: F32, +root: Bool) -> Viewport:
   +as = image.layout.attrs(raw, w, h)
   +base = matrix.mul(m, transform(XML.attr.get(as, "transform", ""), identity()))
-  +svg = String.eq(name, "svg")
+  +svg = U.string.equal(name, "svg")
   +width = U.choose(F32, root, w, viewport.dimension(as, "width", w))
   +height = U.choose(F32, root, h, viewport.dimension(as, "height", h))
   +origin = matrix.mul(base, U.choose(Matrix, root, identity(),
@@ -2121,9 +2202,9 @@ def element.viewport(+name: String, raw: List<&2, XML.Attr>, +m: Matrix, +w: F32
   +vh = U.nth(view, 3n, height)
   U.branch(Viewport, svg, _ => Viewport{
       matrix.mul(origin, viewbox.matrix(view, width, height, U.trim.both(XML.attr.get(as, "preserveAspectRatio", "xMidYMid meet")))), vw, vh,
-      U.branch(Clip, String.eq(XML.attr.get(as, "overflow", "hidden"), "visible"), _ => ClipAll{}, _ => viewport.clip(width, height, origin)),
+      U.branch(Clip, U.string.equal(XML.attr.get(as, "overflow", "hidden"), "visible"), _ => ClipAll{}, _ => viewport.clip(width, height, origin)),
       F32.is_gt(width, 0.0) && F32.is_gt(height, 0.0) && F32.is_gt(vw, 0.0) && F32.is_gt(vh, 0.0)},
-    _ => Viewport{U.branch(Matrix, String.eq(name, "use"),
+    _ => Viewport{U.branch(Matrix, U.string.equal(name, "use"),
       _ => matrix.mul(base, translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0"))), _ => base), w, h, ClipAll{}, True{}})
 
 def scene.clipped(scene: Scene<Brush>, viewportClip: Clip) -> Scene<Brush>:
@@ -2131,11 +2212,11 @@ def scene.clipped(scene: Scene<Brush>, viewportClip: Clip) -> Scene<Brush>:
   Scene{es, box, inv, style, opacity, kids, id, ink, ClipIntersect{mask, viewportClip}, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}
 
 def element.hidden(+name: String, as: List<&2, XML.Attr>) -> Bool:
-  String.eq(name, "#text") || String.eq(name, "defs") || String.eq(name, "title") || String.eq(name, "desc")
-    || String.eq(name, "metadata") || String.eq(name, "clipPath") || String.eq(name, "mask")
-    || String.eq(name, "symbol") || String.eq(name, "linearGradient") || String.eq(name, "radialGradient")
-    || String.eq(name, "marker") || String.eq(name, "pattern") || String.eq(name, "filter") || String.eq(name, "style")
-    || String.eq(XML.attr.get(as, "display", "inline"), "none")
+  U.string.equal(name, "#text") || U.string.equal(name, "defs") || U.string.equal(name, "title") || U.string.equal(name, "desc")
+    || U.string.equal(name, "metadata") || U.string.equal(name, "clipPath") || U.string.equal(name, "mask")
+    || U.string.equal(name, "symbol") || U.string.equal(name, "linearGradient") || U.string.equal(name, "radialGradient")
+    || U.string.equal(name, "marker") || U.string.equal(name, "pattern") || U.string.equal(name, "filter") || U.string.equal(name, "style")
+    || U.string.equal(XML.attr.get(as, "display", "inline"), "none")
 
 def instance.anonymous(xs: List<&2, XML.Element>) -> List<&2, XML.Element>:
   match xs:
@@ -2151,17 +2232,17 @@ def instance.root(result: Maybe<&2, XML.Element>, +useAttrs: List<&2, XML.Attr>)
       +as = CSS.properties(attrs)
       +width = XML.attr.get(useAttrs, "width", "auto")
       +height = XML.attr.get(useAttrs, "height", "auto")
-      +viewport = String.eq(tagname, "svg") || String.eq(tagname, "symbol")
-      Con{XML.Element{U.choose(String, String.eq(tagname, "symbol"), "svg", tagname),
+      +viewport = U.string.equal(tagname, "svg") || U.string.equal(tagname, "symbol")
+      Con{XML.Element{U.choose(String, U.string.equal(tagname, "symbol"), "svg", tagname),
         U.choose(List<&2, XML.Attr>, viewport,
-          Con{XML.Attr{"style", ""}, Con{XML.Attr{"width", U.choose(String, String.eq(width, "auto"), XML.attr.get(as, "width", "auto"), width)},
-            Con{XML.Attr{"height", U.choose(String, String.eq(height, "auto"), XML.attr.get(as, "height", "auto"), height)}, as}}}, as), kids, txt}, Nil{}}
+          Con{XML.Attr{"style", ""}, Con{XML.Attr{"width", U.choose(String, U.string.equal(width, "auto"), XML.attr.get(as, "width", "auto"), width)},
+            Con{XML.Attr{"height", U.choose(String, U.string.equal(height, "auto"), XML.attr.get(as, "height", "auto"), height)}, as}}}, as), kids, txt}, Nil{}}
 
 def use.children(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, ancestors: List<&2, String>,
   expand: List<&2, XML.Element> -> List<&2, XML.Element>) -> List<&2, XML.Element>:
   +href = XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))
   +id = U.drop(href, "#")
-  U.branch(List<&2, XML.Element>, U.prefix(href, "#") && Bool.not(String.eq(id, "")) && Bool.not(U.strings.has(ancestors, id)),
+  U.branch(List<&2, XML.Element>, U.prefix(href, "#") && Bool.not(U.string.equal(id, "")) && Bool.not(U.strings.has(ancestors, id)),
     _ => instance.anonymous(expand(instance.root(XML.element.find(all, id), as))), _ => Nil{})
 
 @unsafe
@@ -2173,9 +2254,9 @@ def use.expand(+fuel: Nat, +xs: List<&2, XML.Element>, +all: List<&2, XML.Elemen
       +as = attrs
       +tagname = n
       +parents = {Con{XML.attr.get(as, "id", ""), ancestors} : List<&2, String>}
-      Con{XML.Element{tagname, as, U.branch(List<&2, XML.Element>, String.eq(tagname, "use"),
+      Con{XML.Element{tagname, as, U.branch(List<&2, XML.Element>, U.string.equal(tagname, "use"),
         _ => use.children(CSS.properties(as), all, parents, nodes => use.expand(d, nodes, all, parents)),
-        _ => use.expand(fuel, kids, U.choose(List<&2, XML.Element>, String.eq(tagname, "#svg-image"), kids, all), U.choose(List<&2, String>, String.eq(tagname, "#svg-image"), Nil{}, parents))), txt}, use.expand(fuel, rest, all, ancestors)}
+        _ => use.expand(fuel, kids, U.choose(List<&2, XML.Element>, U.string.equal(tagname, "#svg-image"), kids, all), U.choose(List<&2, String>, U.string.equal(tagname, "#svg-image"), Nil{}, parents))), txt}, use.expand(fuel, rest, all, ancestors)}
 
 def scenes.append(xs: List<&2, Scene<Brush>>, ys: List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
   match xs:
@@ -2197,7 +2278,7 @@ def mask.clip(nodes: List<&2, Scene<Brush>>, +region: Clip) -> List<&2, Scene<Br
     case Con{h, t}: Con{scene.clipped(h, region), mask.clip(t, region)}
 
 def mask.region(+as: List<&2, XML.Attr>, +box: Bounds, +m: Matrix, +w: F32, +h: F32) -> Clip:
-  +user = String.eq(XML.attr.get(as, "maskUnits", "objectBoundingBox"), "userSpaceOnUse")
+  +user = U.string.equal(XML.attr.get(as, "maskUnits", "objectBoundingBox"), "userSpaceOnUse")
   +vw = U.choose(F32, user, w, 1.0)
   +vh = U.choose(F32, user, h, 1.0)
   +width = dimension(as, "width", vw, "120%")
@@ -2212,11 +2293,11 @@ def mask.resource(result: Maybe<&2, XML.Element>, +id: String, +mode: String, +b
     case None{}: MaskData{Nil{}, 2}
     case Some{XML.Element{n, attrs, kids, txt}}:
       +as = CSS.properties(attrs)
-      +bbox = String.eq(XML.attr.get(as, "maskContentUnits", "userSpaceOnUse"), "objectBoundingBox")
-      +kind = U.choose(String, String.eq(mode, "alpha") || String.eq(mode, "luminance"), mode, XML.attr.get(as, "mask-type", "luminance"))
-      U.branch(MaskData, String.eq(n, "mask"),
+      +bbox = U.string.equal(XML.attr.get(as, "maskContentUnits", "userSpaceOnUse"), "objectBoundingBox")
+      +kind = U.choose(String, U.string.equal(mode, "alpha") || U.string.equal(mode, "luminance"), mode, XML.attr.get(as, "mask-type", "luminance"))
+      U.branch(MaskData, U.string.equal(n, "mask"),
         _ => MaskData{mask.clip(build(id)(Con{XML.Element{"g", as, kids, txt}, Nil{}})(matrix.mul(m, U.choose(Matrix, bbox, gradient.box(box), identity())))(U.choose(F32, bbox, 1.0, w))(U.choose(F32, bbox, 1.0, h)), mask.region(as, box, m, w, h)),
-          U.choose(U32, String.eq(kind, "alpha"), 1, U.choose(U32, String.eq(XML.attr.get(as, "color-interpolation", "sRGB"), "linearRGB"), 3, 2))},
+          U.choose(U32, U.string.equal(kind, "alpha"), 1, U.choose(U32, U.string.equal(XML.attr.get(as, "color-interpolation", "sRGB"), "linearRGB"), 3, 2))},
         _ => MaskData{Nil{}, 2})
 
 def mask.attach(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, active: List<&2, String>, box: Bounds, m: Matrix, w: F32, h: F32,
@@ -2248,7 +2329,7 @@ def mask.apply(+c: Img.Color, +opacity: F32, mode: U32, render: Unit -> Img.Colo
 
 def style.paint(s: String, +current: String, opacity: F32) -> Img.Color:
   +paint = s
-  color.fade(color(U.choose(String, String.eq(CSS.css.lower(U.trim.both(paint)), "currentcolor"), current, paint)), opacity)
+  color.fade(color(U.choose(String, U.string.equal(CSS.css.lower(U.trim.both(paint)), "currentcolor"), current, paint)), opacity)
 
 def filter.sample(effect: FilterEffect, p: Point, linear: Bool, original: Unit -> Img.Color) -> Img.Color:
   match effect:
@@ -2269,8 +2350,8 @@ def paint.order.composite(+order: U32, +fill: Img.Color, +stroke: Img.Color, +ma
 def scene.shape(es: Fill, +s: Style, ink: Paint<Brush>, outline: StrokeMesh, +p: Point, +paintPoint: Point, +worldPoint: Point, +linear: Bool, markers: Img.Color, fills: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, strokes: List<&2, Scene<Brush>> -> Point -> Point -> Img.Color, +limit: F32) -> Img.Color:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   Paint{fc, sc} = ink
-  +fillCover = U.choose(F32, visible && Bool.not(String.eq(fill, "none")), U.min(fill.coverage(es, p, worldPoint, even), limit), 0.0)
-  +strokeCover = U.choose(F32, visible && Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0), U.min(stroke.coverage(outline, worldPoint), limit), 0.0)
+  +fillCover = U.choose(F32, visible && Bool.not(U.string.equal(fill, "none")), U.min(fill.coverage(es, p, worldPoint, even), limit), 0.0)
+  +strokeCover = U.choose(F32, visible && Bool.not(U.string.equal(stroke, "none")) && F32.is_gt(width, 0.0), U.min(stroke.coverage(outline, worldPoint), limit), 0.0)
   paint.order.composite(order,
     U.branch(Img.Color, F32.is_gt(fillCover, 0.0), _ => color.fade(color.space(brush.sample(fc, p, paintPoint, fills), linear), fillCover), _ => Img.clear()),
     U.branch(Img.Color, F32.is_gt(strokeCover, 0.0), _ => color.fade(color.space(brush.sample(sc, p, paintPoint, strokes), linear), strokeCover), _ => Img.clear()), markers)
@@ -2314,16 +2395,16 @@ def pattern.has.content(xs: List<&2, XML.Element>) -> Bool:
     case Nil{}: False{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +tagname = n
-      Bool.not(String.eq(tagname, "title") || String.eq(tagname, "desc") || String.eq(tagname, "metadata") || String.eq(tagname, "#text")) || pattern.has.content(rest)
+      Bool.not(U.string.equal(tagname, "title") || U.string.equal(tagname, "desc") || U.string.equal(tagname, "metadata") || U.string.equal(tagname, "#text")) || pattern.has.content(rest)
 
 def pattern.attributes(+xs: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Attr{k, v}, rest}:
       +key = k
-      U.branch(List<&2, XML.Attr>, String.eq(key, "x") || String.eq(key, "y") || String.eq(key, "width") || String.eq(key, "height")
-        || String.eq(key, "viewBox") || String.eq(key, "preserveAspectRatio") || String.eq(key, "patternTransform")
-        || String.eq(key, "patternUnits") || String.eq(key, "patternContentUnits"),
+      U.branch(List<&2, XML.Attr>, U.string.equal(key, "x") || U.string.equal(key, "y") || U.string.equal(key, "width") || U.string.equal(key, "height")
+        || U.string.equal(key, "viewBox") || U.string.equal(key, "preserveAspectRatio") || U.string.equal(key, "patternTransform")
+        || U.string.equal(key, "patternUnits") || U.string.equal(key, "patternContentUnits"),
         _ => Con{XML.Attr{key, v}, pattern.attributes(rest)}, _ => pattern.attributes(rest))
 
 def pattern.merge(local: XML.Element, template: XML.Element) -> XML.Element:
@@ -2337,7 +2418,7 @@ def pattern.reference(+node: XML.Element, result: Maybe<&2, XML.Element>, next: 
     case None{}: node
     case Some{XML.Element{n, as, kids, txt}}:
       +tagname = n
-      U.branch(XML.Element, String.eq(tagname, "pattern"), _ => pattern.merge(node, next(XML.Element{tagname, as, kids, txt})), _ => node)
+      U.branch(XML.Element, U.string.equal(tagname, "pattern"), _ => pattern.merge(node, next(XML.Element{tagname, as, kids, txt})), _ => node)
 
 def pattern.resolve(depth: Nat, +node: XML.Element, +all: List<&2, XML.Element>) -> XML.Element:
   match depth:
@@ -2360,14 +2441,14 @@ def pattern.tile(e: XML.Element, box: Bounds, +w: F32, +h: F32, opacity: F32,
   +by = y0
   +bw = (x1 - bx : F32)
   +bh = (y1 - by : F32)
-  +user = String.eq(XML.attr.get(as, "patternUnits", "objectBoundingBox"), "userSpaceOnUse")
-  +contentUser = String.eq(XML.attr.get(as, "patternContentUnits", "userSpaceOnUse"), "userSpaceOnUse")
+  +user = U.string.equal(XML.attr.get(as, "patternUnits", "objectBoundingBox"), "userSpaceOnUse")
+  +contentUser = U.string.equal(XML.attr.get(as, "patternContentUnits", "userSpaceOnUse"), "userSpaceOnUse")
   +uw = U.choose(F32, user, w, 1.0)
   +uh = U.choose(F32, user, h, 1.0)
   +width = dimension(as, "width", uw, "0")
   +height = dimension(as, "height", uh, "0")
   +view = U.numbers(XML.attr.get(as, "viewBox", ""))
-  +hasView = Bool.not(String.eq(XML.attr.get(as, "viewBox", ""), ""))
+  +hasView = Bool.not(U.string.equal(XML.attr.get(as, "viewBox", ""), ""))
   +vw = U.choose(F32, hasView, U.nth(view, 2n, 0.0), U.choose(F32, contentUser, w, 1.0))
   +vh = U.choose(F32, hasView, U.nth(view, 3n, 0.0), U.choose(F32, contentUser, h, 1.0))
   +units = U.choose(Matrix, user, identity(), matrix.mul(translate(bx, by), scale(bw, bh)))
@@ -2401,11 +2482,11 @@ def scene.marked(scene: Scene<Brush>, nodes: List<&2, Scene<Brush>>) -> Scene<Br
 def marker.angle.number(n: U.Number) -> F32:
   U.Number{x, t, ok} = n
   +suffix = U.trim.both(t)
-  (x * U.choose(F32, String.eq(suffix, "rad"), 57.29577951308232, U.choose(F32, String.eq(suffix, "grad"), 0.9, U.choose(F32, String.eq(suffix, "turn"), 360.0, 1.0))) : F32)
+  (x * U.choose(F32, U.string.equal(suffix, "rad"), 57.29577951308232, U.choose(F32, U.string.equal(suffix, "grad"), 0.9, U.choose(F32, U.string.equal(suffix, "turn"), 360.0, 1.0))) : F32)
 
 def marker.orient(+s: String, angle: F32, start: Bool) -> F32:
-  +auto = String.eq(s, "auto") || String.eq(s, "auto-start-reverse")
-  U.choose(F32, auto, (angle + U.choose(F32, start && String.eq(s, "auto-start-reverse"), 180.0, 0.0) : F32), marker.angle.number(U.number(s)))
+  +auto = U.string.equal(s, "auto") || U.string.equal(s, "auto-start-reverse")
+  U.choose(F32, auto, (angle + U.choose(F32, start && U.string.equal(s, "auto-start-reverse"), 180.0, 0.0) : F32), marker.angle.number(U.number(s)))
 
 def marker.reference.point(p: Point, +width: F32, +height: F32) -> List<&2, XML.Attr>:
   Point{x, y} = p
@@ -2421,10 +2502,10 @@ def marker.resource(+result: Maybe<&2, XML.Element>, id: String, vertex: MarkerV
       +view = U.numbers(XML.attr.get(as, "viewBox", ""))
       +vw = U.nth(view, 2n, width)
       +vh = U.nth(view, 3n, height)
-      +unitScale = U.choose(F32, String.eq(XML.attr.get(as, "markerUnits", "strokeWidth"), "userSpaceOnUse"), 1.0, strokeWidth)
+      +unitScale = U.choose(F32, U.string.equal(XML.attr.get(as, "markerUnits", "strokeWidth"), "userSpaceOnUse"), 1.0, strokeWidth)
       +mat = matrix.mul(translate(x, y), matrix.mul(rotate(marker.orient(XML.attr.get(as, "orient", "0"), angle, start)), scale(unitScale, unitScale)))
       +ref = matrix.point(viewbox.matrix(view, width, height, XML.attr.get(as, "preserveAspectRatio", "xMidYMid meet")), Point{dimension(as, "refX", vw, "0"), dimension(as, "refY", vh, "0")})
-      U.branch(List<&2, XML.Element>, String.eq(n, "marker") && F32.is_gt(width, 0.0) && F32.is_gt(height, 0.0) && F32.is_gt(vw, 0.0) && F32.is_gt(vh, 0.0) && F32.is_gt(unitScale, 0.0),
+      U.branch(List<&2, XML.Element>, U.string.equal(n, "marker") && F32.is_gt(width, 0.0) && F32.is_gt(height, 0.0) && F32.is_gt(vw, 0.0) && F32.is_gt(vh, 0.0) && F32.is_gt(unitScale, 0.0),
         _ => Con{XML.Element{"g", Con{XML.Attr{"transform", matrix.show(mat)}, Nil{}}, Con{XML.Element{"svg", Con{XML.Attr{"#marker-source", id}, Con{XML.Attr{"#editor-id", ""}, Con{XML.Attr{"transform", ""}, XML.attrs.append(marker.reference.point(ref, width, height), as)}}}, instance.anonymous(kids), txt}, Nil{}}, ""}, Nil{}}, _ => Nil{})
 
 def marker.instance(+value: String, vertex: MarkerVertex, start: Bool, +all: List<&2, XML.Element>, active: List<&2, String>, width: F32, w: F32, h: F32) -> List<&2, XML.Element>:
@@ -2455,7 +2536,7 @@ def marker.enabled(ms: MarkerStyle) -> Bool:
 
 def marker.instances(+name: String, as: List<&2, XML.Attr>, +s: Style, all: List<&2, XML.Element>, active: List<&2, String>, +w: F32, +h: F32) -> List<&2, XML.Element>:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
-  U.branch(List<&2, XML.Element>, marker.enabled(ms) && (String.eq(name, "path") || String.eq(name, "line") || String.eq(name, "polyline") || String.eq(name, "polygon")),
+  U.branch(List<&2, XML.Element>, marker.enabled(ms) && (U.string.equal(name, "path") || U.string.equal(name, "line") || U.string.equal(name, "polyline") || U.string.equal(name, "polygon")),
     _ => marker.instances.loop(marker.trace(shape.data(name, as, w, h)), True{}, ms, all, active, width, w, h), _ => Nil{})
 
 def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Element>, +vp: Viewport, inherited: Style, +all: List<&2, XML.Element>, +active: List<&2, String>,
@@ -2466,10 +2547,10 @@ def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Elem
   +baseStyle = style.inherit(inherited, as, F32.sqrt(((vw * vw + vh * vh) / 2.0 : F32)))
   +embedded = bitmap.element(n, Con{XML.Attr{"image-rendering", style.image.rendering(baseStyle)}, as}, vw, vh)
   +attrs = bitmap.attrs(embedded, as)
-  +style = U.choose(Style, String.eq(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
-  U.branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (String.eq(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
+  +style = U.choose(Style, U.string.equal(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
+  U.branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (U.string.equal(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
     _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape.children(n, attrs, glyphs, vw, vh), matrix, style,
-      color.opacity(XML.attr.get(attrs, "opacity", "1"), 1.0), U.branch(List<&2, Scene<Brush>>, String.eq(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
+      color.opacity(XML.attr.get(attrs, "opacity", "1"), 1.0), U.branch(List<&2, Scene<Brush>>, U.string.equal(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
       XML.attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
         node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills),
         node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes)), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
@@ -2488,7 +2569,7 @@ def compile(+fuel: Nat, +xs: List<&2, XML.Element>, +inherited: Style, +m: Matri
         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
         used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
         nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, active),
-        style => mat => vw => vh => compile(U.choose(Nat, String.eq(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), kids, U.choose(Style, String.eq(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, String.eq(n, "#svg-image"), resources(kids, Nil{}), all), False{}, U.choose(List<&2, String>, String.eq(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, String.eq(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})))),
+        style => mat => vw => vh => compile(U.choose(Nat, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), kids, U.choose(Style, U.string.equal(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), resources(kids, Nil{}), all), False{}, U.choose(List<&2, String>, U.string.equal(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})))),
         compile(fuel, rest, inherited, m, w, h, all, root, active))
 
 # XML.Text layout produces internal glyph geometry while preserving text/tspan groups.
@@ -2510,17 +2591,17 @@ def text.measure(+num: U.Number, ref: F32, +size: F32) -> F32:
     U.choose(F32, U.prefix(t, "rem"), (x * 16.0 : F32), U.unit(num, ref))))
 
 def text.font.size(+s: String, +parent: F32) -> F32:
-  U.choose(F32, String.eq(s, "smaller"), (parent / 1.2 : F32), U.choose(F32, String.eq(s, "larger"), (parent * 1.2 : F32),
-    U.choose(F32, String.eq(s, "medium"), 16.0, U.choose(F32, String.eq(s, "small"), 13.0,
-      U.choose(F32, String.eq(s, "large"), 18.0, U.max(0.0, text.measure(U.number(s), parent, parent)))))))
+  U.choose(F32, U.string.equal(s, "smaller"), (parent / 1.2 : F32), U.choose(F32, U.string.equal(s, "larger"), (parent * 1.2 : F32),
+    U.choose(F32, U.string.equal(s, "medium"), 16.0, U.choose(F32, U.string.equal(s, "small"), 13.0,
+      U.choose(F32, U.string.equal(s, "large"), 18.0, U.max(0.0, text.measure(U.number(s), parent, parent)))))))
 
 def text.font.inherit(+font: TextFont, +as: List<&2, XML.Attr>) -> TextFont:
   TextFont{size, face, weight, slant, anchor, letter, word, shift, baseline, kern, preserve, book} = font
   +sz = text.font.size(style.value(as, "font-size", F32.show(size), "16", True{}), size)
   +wt = style.value(as, "font-weight", weight, "normal", True{})
   +it = style.value(as, "font-style", slant, "normal", True{})
-  +bold = String.eq(wt, "bold") || String.eq(wt, "bolder") || F32.is_ge(U.scalar(wt, 400.0), 600.0)
-  +italic = String.eq(it, "italic") || U.prefix(it, "oblique")
+  +bold = U.string.equal(wt, "bold") || U.string.equal(wt, "bolder") || F32.is_ge(U.scalar(wt, 400.0), 600.0)
+  +italic = U.string.equal(it, "italic") || U.prefix(it, "oblique")
   +selectedFace = (U.choose(U32, bold, 1, 0) + U.choose(U32, italic, 2, 0) : U32)
   +bs = XML.attr.get(as, "baseline-shift", "0")
   +ws = style.value(as, "white-space", U.choose(String, preserve, "pre", "normal"), "normal", True{})
@@ -2529,10 +2610,10 @@ def text.font.inherit(+font: TextFont, +as: List<&2, XML.Attr>) -> TextFont:
     style.value(as, "text-anchor", anchor, "start", True{}),
     text.measure(U.number(style.value(as, "letter-spacing", F32.show(letter), "0", True{})), sz, sz),
     text.measure(U.number(style.value(as, "word-spacing", F32.show(word), "0", True{})), sz, sz),
-    (shift + U.choose(F32, String.eq(bs, "super"), (Font.font.metric(book, selectedFace, "superscript", 0.4) * sz : F32), U.choose(F32, String.eq(bs, "sub"), (F32.neg(Font.font.metric(book, selectedFace, "subscript", 0.2)) * sz : F32), text.measure(U.number(bs), sz, sz))) : F32),
+    (shift + U.choose(F32, U.string.equal(bs, "super"), (Font.font.metric(book, selectedFace, "superscript", 0.4) * sz : F32), U.choose(F32, U.string.equal(bs, "sub"), (F32.neg(Font.font.metric(book, selectedFace, "subscript", 0.2)) * sz : F32), text.measure(U.number(bs), sz, sz))) : F32),
     style.value(as, "dominant-baseline", baseline, "alphabetic", True{}),
-    Bool.not(String.eq(style.value(as, "font-kerning", U.choose(String, kern, "auto", "none"), "auto", True{}), "none")),
-    U.choose(Bool, String.eq(xml, "preserve"), True{}, U.choose(Bool, String.eq(xml, "default"), False{}, U.prefix(ws, "pre") || String.eq(ws, "break-spaces"))), book}
+    Bool.not(U.string.equal(style.value(as, "font-kerning", U.choose(String, kern, "auto", "none"), "auto", True{}), "none")),
+    U.choose(Bool, U.string.equal(xml, "preserve"), True{}, U.choose(Bool, U.string.equal(xml, "default"), False{}, U.prefix(ws, "pre") || U.string.equal(ws, "break-spaces"))), book}
 
 def text.length.value(+num: U.Number, +ref: F32, +size: F32, next: String -> List<&2, F32>) -> List<&2, F32>:
   U.Number{x, tail, ok} = num
@@ -2591,7 +2672,7 @@ def text.cursor() -> TextCursor:
 def text.chunk(+cursor: TextCursor) -> List<&2, TextChunk>:
   TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, spacing, chunks} = cursor
   +width = (x - start - trailing - spacing : F32)
-  Con{TextChunk{chunk, U.choose(F32, String.eq(anchor, "middle"), (width / 2.0 : F32), U.choose(F32, String.eq(anchor, "end"), width, 0.0))}, chunks}
+  Con{TextChunk{chunk, U.choose(F32, U.string.equal(anchor, "middle"), (width / 2.0 : F32), U.choose(F32, U.string.equal(anchor, "end"), width, 0.0))}, chunks}
 
 def text.index(cursor: TextCursor) -> U32:
   TextCursor{x, y, index, chunk, start, anchor, prev, pc, pf, ps, seen, blankState, trailing, spacing, chunks} = cursor
@@ -2609,12 +2690,12 @@ def text.path.attrs(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, +w: F32
   +direct = XML.attr.get(as, "path", "")
   +href = XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))
   +found = text.path.target(U.branch(Maybe<&2, XML.Element>, U.prefix(href, "#"), _ => XML.element.find(all, U.drop(href, "#")), _ => None{}), w, h)
-  XML.attrs.append(U.choose(List<&2, XML.Attr>, String.eq(direct, ""), found, Con{XML.Attr{"#text-path-data", direct}, Nil{}}), as)
+  XML.attrs.append(U.choose(List<&2, XML.Attr>, U.string.equal(direct, ""), found, Con{XML.Attr{"#text-path-data", direct}, Nil{}}), as)
 
 def text.path.resolve.node(+n: String, +as: List<&2, XML.Attr>, +kids: List<&2, XML.Element>, txt: String, +all: List<&2, XML.Element>, w: F32, h: F32, vp: Viewport,
   expand: List<&2, XML.Element> -> List<&2, XML.Element> -> F32 -> F32 -> List<&2, XML.Element>) -> XML.Element:
   Viewport{mat, vw, vh, clip, valid} = vp
-  XML.Element{n, U.choose(List<&2, XML.Attr>, String.eq(n, "textPath"), text.path.attrs(as, all, w, h), as), expand(kids)(U.choose(List<&2, XML.Element>, String.eq(n, "#svg-image"), kids, all))(vw)(vh), txt}
+  XML.Element{n, U.choose(List<&2, XML.Attr>, U.string.equal(n, "textPath"), text.path.attrs(as, all, w, h), as), expand(kids)(U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), kids, all))(vw)(vh), txt}
 
 @unsafe
 def text.path.resolve(xs: List<&2, XML.Element>, +all: List<&2, XML.Element>, +w: F32, +h: F32, +root: Bool) -> List<&2, XML.Element>:
@@ -2689,10 +2770,10 @@ def text.baseline(+font: TextFont) -> F32:
   +base = baseline
   +ascender = Font.font.metric(book, face, "ascender", 1.069)
   +descender = Font.font.metric(book, face, "descender", F32.neg(0.293))
-  (U.choose(F32, String.eq(base, "middle"), (size * Font.font.metric(book, face, "xheight", 0.536) / 2.0 : F32),
-    U.choose(F32, String.eq(base, "central"), (size * (ascender + descender) / 2.0 : F32),
-      U.choose(F32, String.eq(base, "text-before-edge") || String.eq(base, "before-edge"), (size * ascender : F32),
-        U.choose(F32, String.eq(base, "text-after-edge") || String.eq(base, "after-edge"), (size * descender : F32), 0.0)))) - shift : F32)
+  (U.choose(F32, U.string.equal(base, "middle"), (size * Font.font.metric(book, face, "xheight", 0.536) / 2.0 : F32),
+    U.choose(F32, U.string.equal(base, "central"), (size * (ascender + descender) / 2.0 : F32),
+      U.choose(F32, U.string.equal(base, "text-before-edge") || U.string.equal(base, "before-edge"), (size * ascender : F32),
+        U.choose(F32, U.string.equal(base, "text-after-edge") || U.string.equal(base, "after-edge"), (size * descender : F32), 0.0)))) - shift : F32)
 
 def text.glyph.node(outline: String, advance: F32, width: F32, extra: F32, x: F32, +matrix: Matrix, chunk: U32, index: U32) -> XML.Element:
   XML.Element{"#glyph", Con{XML.Attr{"#length-x", F32.show(x)}, Con{XML.Attr{"#length-width", F32.show(width)}, Con{XML.Attr{"#length-extra", F32.show(extra)}, Con{XML.Attr{"d", outline}, Con{XML.Attr{"#glyph-transform", matrix.show(matrix)}, Con{XML.Attr{"#glyph-advance", F32.show(advance)},
@@ -2748,9 +2829,9 @@ def text.measure.nodes(xs: List<&2, XML.Element>, +skip: String, +acc: TextMeasu
     case Nil{}: acc
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +attrs = as
-      +glyph = String.eq(n, "#glyph")
-      +fixed = String.eq(XML.attr.get(attrs, "#length-fixed", ""), "yes")
-      text.measure.nodes(rest, skip, U.branch(TextMeasure, (glyph && Bool.not(String.eq(XML.attr.get(attrs, "#text-index", ""), skip))) || fixed,
+      +glyph = U.string.equal(n, "#glyph")
+      +fixed = U.string.equal(XML.attr.get(attrs, "#length-fixed", ""), "yes")
+      text.measure.nodes(rest, skip, U.branch(TextMeasure, (glyph && Bool.not(U.string.equal(XML.attr.get(attrs, "#text-index", ""), skip))) || fixed,
         _ => text.measure.add(acc, U.scalar(XML.attr.get(attrs, "#length-x", "0"), 0.0), U.scalar(XML.attr.get(attrs, "#length-width", "0"), 0.0), U.scalar(XML.attr.get(attrs, "#length-extra", "0"), 0.0), fixed),
         _ => text.measure.nodes(kids, skip, acc)))
 
@@ -2770,7 +2851,7 @@ def text.length.translate(xs: List<&2, XML.Element>, +delta: F32) -> List<&2, XM
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +attrs = as
       +tagname = n
-      Con{XML.Element{tagname, U.choose(List<&2, XML.Attr>, String.eq(tagname, "#glyph") || String.eq(XML.attr.get(attrs, "#length-fixed", ""), "yes"), text.length.attrs(attrs, 1.0, delta), attrs),
+      Con{XML.Element{tagname, U.choose(List<&2, XML.Attr>, U.string.equal(tagname, "#glyph") || U.string.equal(XML.attr.get(attrs, "#length-fixed", ""), "yes"), text.length.attrs(attrs, 1.0, delta), attrs),
         text.length.translate(kids, delta), txt}, text.length.translate(rest, delta)}
 
 type TextFit is Data:
@@ -2795,11 +2876,11 @@ def text.fit.nodes(+xs: List<&2, XML.Element>, +origin: F32, +ratio: F32, +step:
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +attrs = as
       +tagname = n
-      +locked = String.eq(XML.attr.get(attrs, "#length-fixed", ""), "yes")
-      +glyph = String.eq(tagname, "#glyph")
+      +locked = U.string.equal(XML.attr.get(attrs, "#length-fixed", ""), "yes")
+      +glyph = U.string.equal(tagname, "#glyph")
       +x = U.scalar(XML.attr.get(attrs, "#length-x", "0"), 0.0)
       +delta = ((x - origin - fixed) * (ratio - 1.0) + U32.to_f32(count) * step : F32)
-      text.fit.then(U.branch(TextFit, locked || (glyph && Bool.not(String.eq(XML.attr.get(attrs, "#text-index", ""), skip))),
+      text.fit.then(U.branch(TextFit, locked || (glyph && Bool.not(U.string.equal(XML.attr.get(attrs, "#text-index", ""), skip))),
         _ => TextFit{Con{XML.Element{tagname, text.length.attrs(attrs, U.choose(F32, locked, 1.0, ratio), delta),
           text.length.translate(kids, delta), txt}, Nil{}}, U32.inc(count), (fixed + U.choose(F32, locked, U.scalar(XML.attr.get(attrs, "#length-width", "0"), 0.0), 0.0) : F32)},
         _ => text.fit.group(tagname, attrs, txt, text.fit.nodes(kids, origin, ratio, step, skip, count, fixed))),
@@ -2831,7 +2912,7 @@ def text.length(+result: TextLayout, +as: List<&2, XML.Attr>, w: F32, size: F32,
   +target = text.measure(U.number(XML.attr.get(as, "textLength", "-1")), w, size)
   +skip = U.choose(String, trimEnd && F32.is_gt(trailing, 0.0), U32.show((index - 1 : U32)), "#none")
   U.branch(TextLayout, text.length.valid(U.number(XML.attr.get(as, "textLength", "-1"))) && F32.is_ge(target, 0.0),
-    _ => text.length.fit(result, text.measure.nodes(nodes, skip, text.measure.empty()), target, String.eq(XML.attr.get(as, "lengthAdjust", "spacing"), "spacingAndGlyphs"), skip), _ => result)
+    _ => text.length.fit(result, text.measure.nodes(nodes, skip, text.measure.empty()), target, U.string.equal(XML.attr.get(as, "lengthAdjust", "spacing"), "spacingAndGlyphs"), skip), _ => result)
 
 def text.length.group.attrs(+as: List<&2, XML.Attr>, +m: TextMeasure) -> List<&2, XML.Attr>:
   TextMeasure{count, lo, hi, extra, fixed} = m
@@ -2854,10 +2935,10 @@ def text.layout(+xs: List<&2, XML.Element>, +font: TextFont, +frames: List<&2, T
     case Con{XML.Element{n, attrs, kids, txt}, rest}:
       +as = CSS.properties(attrs)
       +childFont = text.font.inherit(font, as)
-      text.layout.then(U.branch(TextLayout, String.eq(n, "#text"), _ => text.characters(txt, font, U.choose(List<&2, TextFrame>, onPath, text.path.frames(frames), frames), cursor),
-        _ => U.branch(TextLayout, String.eq(n, "textPath") && Bool.not(String.eq(XML.attr.get(as, "display", ""), "none")),
+      text.layout.then(U.branch(TextLayout, U.string.equal(n, "#text"), _ => text.characters(txt, font, U.choose(List<&2, TextFrame>, onPath, text.path.frames(frames), frames), cursor),
+        _ => U.branch(TextLayout, U.string.equal(n, "textPath") && Bool.not(U.string.equal(XML.attr.get(as, "display", ""), "none")),
           _ => text.path.layout(as, text.length(text.layout(kids, childFont, frames, text.path.begin(cursor), w, h, True{}), as, w, text.font.em(childFont), False{}), text.font.em(childFont)),
-        _ => U.branch(TextLayout, (String.eq(n, "tspan") || String.eq(n, "a")) && Bool.not(String.eq(XML.attr.get(as, "display", ""), "none")),
+        _ => U.branch(TextLayout, (U.string.equal(n, "tspan") || U.string.equal(n, "a")) && Bool.not(U.string.equal(XML.attr.get(as, "display", ""), "none")),
           _ => text.layout.group(as, text.length(text.layout(kids, childFont, Con{text.frame(as, text.index(cursor), w, h, text.font.em(childFont)), frames}, cursor, w, h, onPath), as, w, text.font.em(childFont), False{})),
           _ => TextLayout{Nil{}, cursor}))),
         next => text.layout(rest, font, frames, next, w, h, onPath))
@@ -2873,10 +2954,10 @@ def text.anchor.nodes(+xs: List<&2, XML.Element>, +chunks: List<&2, TextChunk>, 
     case Con{XML.Element{n, attrs, kids, txt}, rest}:
       +tagname = n
       +as = attrs
-      +glyph = String.eq(tagname, "#glyph")
+      +glyph = U.string.equal(tagname, "#glyph")
       +shift = text.chunk.shift(chunks, F32.to_u32(U.scalar(XML.attr.get(as, "#text-chunk", "0"), 0.0)))
       +mat = matrix.mul(translate(F32.neg(shift), 0.0), transform(XML.attr.get(as, "#glyph-transform", ""), identity()))
-      U.branch(List<&2, XML.Element>, glyph && String.eq(XML.attr.get(as, "#text-index", ""), skip),
+      U.branch(List<&2, XML.Element>, glyph && U.string.equal(XML.attr.get(as, "#text-index", ""), skip),
         _ => text.anchor.nodes(rest, chunks, skip),
         _ => Con{XML.Element{tagname, U.choose(List<&2, XML.Attr>, glyph, Con{XML.Attr{"#glyph-transform", matrix.show(mat)}, as}, as),
           text.anchor.nodes(kids, chunks, skip), txt}, text.anchor.nodes(rest, chunks, skip)})
@@ -2899,7 +2980,7 @@ def text.path.map(+xs: List<&2, XML.Element>, +edges: List<&2, Edge>, +total: F3
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      text.nodes.append(U.branch(List<&2, XML.Element>, String.eq(n, "#glyph"), _ => text.path.glyph(as, edges, total, offset, transform(XML.attr.get(as, "#glyph-transform", ""), identity())),
+      text.nodes.append(U.branch(List<&2, XML.Element>, U.string.equal(n, "#glyph"), _ => text.path.glyph(as, edges, total, offset, transform(XML.attr.get(as, "#glyph-transform", ""), identity())),
         _ => Con{XML.Element{n, as, text.path.map(kids, edges, total, offset), txt}, Nil{}}), text.path.map(rest, edges, total, offset))
 
 def text.path.mapped(kids: List<&2, XML.Element>, +as: List<&2, XML.Attr>) -> List<&2, XML.Element>:
@@ -2911,7 +2992,7 @@ def text.path.finish(+xs: List<&2, XML.Element>) -> List<&2, XML.Element>:
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      Con{XML.Element{n, as, U.branch(List<&2, XML.Element>, String.eq(XML.attr.get(as, "#text-path", ""), "1"), _ => text.path.mapped(kids, as), _ => text.path.finish(kids)), txt}, text.path.finish(rest)}
+      Con{XML.Element{n, as, U.branch(List<&2, XML.Element>, U.string.equal(XML.attr.get(as, "#text-path", ""), "1"), _ => text.path.mapped(kids, as), _ => text.path.finish(kids)), txt}, text.path.finish(rest)}
 
 def text.cell(+mat: Matrix, +width: F32, box: Bounds) -> Bounds:
   bounds.point(bounds.point(bounds.point(bounds.point(box, matrix.point(mat, Point{0.0, F32.neg(293.0)})),
@@ -2924,7 +3005,7 @@ def text.bounds(xs: List<&2, XML.Element>, +matrix: Matrix, +box: Bounds) -> Bou
       +attrs = as
       +mat = matrix.mul(matrix, transform(XML.attr.get(attrs, "transform", ""), identity()))
       text.bounds(rest, matrix, text.bounds(kids, mat,
-        U.branch(Bounds, String.eq(n, "#glyph"), _ => text.cell(matrix.mul(mat, transform(XML.attr.get(attrs, "#glyph-transform", ""), identity())),
+        U.branch(Bounds, U.string.equal(n, "#glyph"), _ => text.cell(matrix.mul(mat, transform(XML.attr.get(attrs, "#glyph-transform", ""), identity())),
           U.scalar(XML.attr.get(attrs, "#glyph-advance", "0"), 0.0), box), _ => box)))
 
 def text.bounds.show(box: Bounds) -> String:
@@ -2952,8 +3033,8 @@ def text.font.reset(font: TextFont) -> TextFont:
 def text.expand.node(+n: String, +as: List<&2, XML.Attr>, +kids: List<&2, XML.Element>, txt: String, +font: TextFont, +vp: Viewport,
   expand: List<&2, XML.Element> -> TextFont -> F32 -> F32 -> List<&2, XML.Element>) -> XML.Element:
   Viewport{matrix, w, h, clip, valid} = vp
-  +f = U.choose(TextFont, String.eq(n, "#svg-image"), text.font.reset(font), text.font.inherit(font, as))
-  U.branch(XML.Element, String.eq(n, "text"),
+  +f = U.choose(TextFont, U.string.equal(n, "#svg-image"), text.font.reset(font), text.font.inherit(font, as))
+  U.branch(XML.Element, U.string.equal(n, "text"),
     _ => text.finish(text.length(text.layout(kids, f, Con{text.frame(as, 0, w, h, text.font.em(f)), Nil{}}, text.cursor(), w, h, False{}), as, w, text.font.em(f), True{}), as),
     _ => XML.Element{n, as, expand(kids)(f)(w)(h), txt})
 
@@ -2981,7 +3062,7 @@ def text.paint.take(+xs: List<&2, XML.Element>, +acc: List<&2, XML.Element>) -> 
     case Nil{}: TextPaintRun{text.paint.reverse(acc, Nil{}), Nil{}}
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +name = n
-      U.branch(TextPaintRun, String.eq(name, "#glyph"),
+      U.branch(TextPaintRun, U.string.equal(name, "#glyph"),
         _ => text.paint.take(rest, Con{XML.Element{name, as, kids, txt}, acc}), _ => TextPaintRun{text.paint.reverse(acc, Nil{}), xs})
 
 def text.paint.attrs(xs: List<&2, XML.Element>) -> List<&2, XML.Attr>:
@@ -3000,7 +3081,7 @@ def text.paint.group(+xs: List<&2, XML.Element>) -> List<&2, XML.Element>:
     case Nil{}: Nil{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +name = n
-      U.branch(List<&2, XML.Element>, String.eq(name, "#glyph"), _ => text.paint.run(text.paint.take(xs, Nil{}), remaining => text.paint.group(remaining)),
+      U.branch(List<&2, XML.Element>, U.string.equal(name, "#glyph"), _ => text.paint.run(text.paint.take(xs, Nil{}), remaining => text.paint.group(remaining)),
         _ => Con{XML.Element{name, as, text.paint.group(kids), txt}, text.paint.group(rest)})
 
 # Resolve context paints after compiling the finite scene tree. Paint server
@@ -3111,14 +3192,14 @@ def image.svg.wellformed(+tokens: List<&2, XML.Token>, +stack: List<&2, String>,
     case Nil{} Nil{}: seen
     case Nil{} Con{head, tail}: False{}
     case Con{XML.Text{content}, rest} stack:
-      (Bool.not(image.svg.stack.empty(stack)) || String.eq(U.trim.both(content), "")) && image.svg.wellformed(rest, stack, seen)
+      (Bool.not(image.svg.stack.empty(stack)) || U.string.equal(U.trim.both(content), "")) && image.svg.wellformed(rest, stack, seen)
     case Con{XML.Open{name, attrs, closed}, rest} stack:
       +top = image.svg.stack.empty(stack)
-      U.branch(Bool, Bool.not(top) || (Bool.not(seen) && String.eq(name, "svg")),
+      U.branch(Bool, Bool.not(top) || (Bool.not(seen) && U.string.equal(name, "svg")),
         _ => image.svg.wellformed(rest, U.choose(List<&2, String>, closed, stack, Con{name, stack}), seen || top), _ => False{})
     case Con{XML.Shut{name}, rest} Nil{}: False{}
     case Con{XML.Shut{name}, rest} Con{head, tail}:
-      String.eq(U.trim.both(name), head) && image.svg.wellformed(rest, tail, seen)
+      U.string.equal(U.trim.both(name), head) && image.svg.wellformed(rest, tail, seen)
 
 def image.svg.read(+text: String) -> XML.Element:
   +source = U.choose(String, U.prefix(text, "﻿"), U.drop(text, "﻿"), text)
@@ -3174,7 +3255,7 @@ def image.svg.root(+xs: List<&2, XML.Element>) -> XML.Element:
   match xs:
     case Nil{}: XML.Element{"#empty", Nil{}, Nil{}, ""}
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      U.branch(XML.Element, String.eq(n, "svg"), _ => XML.Element{n, as, kids, txt}, _ => image.svg.root(rest))
+      U.branch(XML.Element, U.string.equal(n, "svg"), _ => XML.Element{n, as, kids, txt}, _ => image.svg.root(rest))
 
 def image.svg.document(root: XML.Element) -> XML.Element:
   XML.Element{n, as, kids, txt} = root
@@ -3187,7 +3268,7 @@ def image.svg.attrs(root: XML.Element) -> List<&2, XML.Attr>:
   as
 
 def image.svg.absolute(+s: String) -> F32:
-  U.branch(F32, String.eq(s, "auto") || U.string.contains(s, "%") || Bool.not(text.length.valid(U.number(s))), _ => F32.neg(1.0), _ => U.unit(U.number(s), 0.0))
+  U.branch(F32, U.string.equal(s, "auto") || U.string.contains(s, "%") || Bool.not(text.length.valid(U.number(s))), _ => F32.neg(1.0), _ => U.unit(U.number(s), 0.0))
 
 def image.svg.ratio(+as: List<&2, XML.Attr>) -> F32:
   +w = image.svg.absolute(XML.attr.get(as, "width", "auto"))
@@ -3233,7 +3314,7 @@ def image.svg.node(as: List<&2, XML.Attr>, +root: XML.Element,
 
 def image.svg.mime.name(scan: U.Scan) -> Bool:
   U.Scan{name, rest} = scan
-  String.eq(CSS.css.lower(U.trim.both(name)), "image/svg+xml")
+  U.string.equal(CSS.css.lower(U.trim.both(name)), "image/svg+xml")
 
 def image.svg.mime(scan: U.Scan) -> Bool:
   U.Scan{name, data} = scan
@@ -3241,7 +3322,7 @@ def image.svg.mime(scan: U.Scan) -> Bool:
 
 def image.svg.scheme(scan: U.Scan) -> Bool:
   U.Scan{name, rest} = scan
-  String.eq(CSS.css.lower(name), "data") && image.svg.mime(U.until(rest, 44, ""))
+  U.string.equal(CSS.css.lower(name), "data") && image.svg.mime(U.until(rest, 44, ""))
 
 def image.svg.reference(href: String) -> Bool:
   image.svg.scheme(U.until(href, 58, ""))
@@ -3254,7 +3335,7 @@ def image.svg.expand(+fuel: Nat, +xs: List<&2, XML.Element>, +w: F32, +h: F32) -
     case Succ{d} Con{XML.Element{n, attrs, kids, txt}, rest}:
       +as = CSS.properties(attrs)
       +href = U.trim.both(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", "")))
-      Con{U.branch(XML.Element, String.eq(n, "image") && image.svg.reference(href),
+      Con{U.branch(XML.Element, U.string.equal(n, "image") && image.svg.reference(href),
         _ => image.svg.node(as, image.svg.document(image.svg.read(image.svg.source(U.until(U.drop(href, "data:"), 44, "")))), nodes => iw => ih => image.svg.expand(d, nodes, iw, ih)),
         _ => XML.Element{n, attrs, image.svg.expand(fuel, kids, w, h), txt}), image.svg.expand(fuel, rest, w, h)}
 
@@ -3262,7 +3343,7 @@ def image.svg.expand(+fuel: Nat, +xs: List<&2, XML.Element>, +w: F32, +h: F32) -
 def text.present(+xs: List<&2, XML.Element>) -> Bool:
   match xs:
     case Nil{}: False{}
-    case Con{XML.Element{n, as, kids, txt}, rest}: String.eq(n, "text") || (String.eq(n, "image") && image.svg.reference(U.trim.both(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))))) || text.present(kids) || text.present(rest)
+    case Con{XML.Element{n, as, kids, txt}, rest}: U.string.equal(n, "text") || (U.string.equal(n, "image") && image.svg.reference(U.trim.both(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))))) || text.present(kids) || text.present(rest)
 
 def document.camera.fonts(+root: XML.Element, +w: F32, +h: F32, matrix: Matrix, book: Font.FontBook) -> List<&2, Scene<Brush>>:
   XML.Element{n, a, kids, txt} = root
@@ -3560,11 +3641,11 @@ def cover.stroke.if(paints: Bool, mesh: StrokeMesh, +frame: Raster, +sub: U32) -
 # Whether a style paints its fill or its stroke at all; masks are only built for those.
 def style.fills(+s: Style) -> Bool:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
-  visible && Bool.not(String.eq(fill, "none"))
+  visible && Bool.not(U.string.equal(fill, "none"))
 
 def style.strokes(+s: Style) -> Bool:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
-  visible && Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0)
+  visible && Bool.not(U.string.equal(stroke, "none")) && F32.is_gt(width, 0.0)
 
 def cover.rule(+s: Style) -> Bool:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
@@ -3835,9 +3916,9 @@ def filter.matrix.hue(angle: F32) -> ColorMatrix:
 def filter.matrix.parse(+as: List<&2, XML.Attr>) -> ColorMatrix:
   +kind = XML.attr.get(as, "type", "matrix")
   +vs = U.numbers(XML.attr.get(as, "values", ""))
-  U.branch(ColorMatrix, String.eq(kind, "saturate"), _ => filter.matrix.saturate(U.nth(vs, 0n, 1.0)),
-    _ => U.branch(ColorMatrix, String.eq(kind, "hueRotate"), _ => filter.matrix.hue(U.nth(vs, 0n, 0.0)),
-      _ => U.branch(ColorMatrix, String.eq(kind, "luminanceToAlpha"), _ => ColorMatrix{ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.2125, 0.7154, 0.0721, 0.0, 0.0}},
+  U.branch(ColorMatrix, U.string.equal(kind, "saturate"), _ => filter.matrix.saturate(U.nth(vs, 0n, 1.0)),
+    _ => U.branch(ColorMatrix, U.string.equal(kind, "hueRotate"), _ => filter.matrix.hue(U.nth(vs, 0n, 0.0)),
+      _ => U.branch(ColorMatrix, U.string.equal(kind, "luminanceToAlpha"), _ => ColorMatrix{ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.0, 0.0, 0.0, 0.0, 0.0}, ColorRow{0.2125, 0.7154, 0.0721, 0.0, 0.0}},
         _ => U.choose(ColorMatrix, U32.is_eq(floats.count(vs), 20), ColorMatrix{filter.matrix.row(vs, 0, 0), filter.matrix.row(vs, 5, 1), filter.matrix.row(vs, 10, 2), filter.matrix.row(vs, 15, 3)}, filter.matrix.identity()))))
 
 type Transfer is Data:
@@ -3849,13 +3930,13 @@ def transfer.identity() -> Transfer:
 def transfer.parse(+as: List<&2, XML.Attr>) -> Transfer:
   +kind = XML.attr.get(as, "type", "identity")
   +vs = U.numbers(XML.attr.get(as, "tableValues", ""))
-  Transfer{U.choose(U32, String.eq(kind, "table"), 1, U.choose(U32, String.eq(kind, "discrete"), 2, U.choose(U32, String.eq(kind, "linear"), 3, U.choose(U32, String.eq(kind, "gamma"), 4, 0)))), vs, floats.count(vs), U.scalar(XML.attr.get(as, U.choose(String, String.eq(kind, "gamma"), "amplitude", "slope"), "1"), 1.0), U.scalar(XML.attr.get(as, U.choose(String, String.eq(kind, "gamma"), "exponent", "intercept"), U.choose(String, String.eq(kind, "gamma"), "1", "0")), 0.0), U.scalar(XML.attr.get(as, "offset", "0"), 0.0)}
+  Transfer{U.choose(U32, U.string.equal(kind, "table"), 1, U.choose(U32, U.string.equal(kind, "discrete"), 2, U.choose(U32, U.string.equal(kind, "linear"), 3, U.choose(U32, U.string.equal(kind, "gamma"), 4, 0)))), vs, floats.count(vs), U.scalar(XML.attr.get(as, U.choose(String, U.string.equal(kind, "gamma"), "amplitude", "slope"), "1"), 1.0), U.scalar(XML.attr.get(as, U.choose(String, U.string.equal(kind, "gamma"), "exponent", "intercept"), U.choose(String, U.string.equal(kind, "gamma"), "1", "0")), 0.0), U.scalar(XML.attr.get(as, "offset", "0"), 0.0)}
 
 def transfer.find(xs: List<&2, XML.Element>, +name: String) -> Transfer:
   match xs:
     case Nil{}: transfer.identity()
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      U.branch(Transfer, String.eq(n, name), _ => transfer.parse(as), _ => transfer.find(rest, name))
+      U.branch(Transfer, U.string.equal(n, name), _ => transfer.parse(as), _ => transfer.find(rest, name))
 
 def transfer.apply(+t: Transfer, +x: F32) -> F32:
   Transfer{kind, vs, count, a, b, c} = t
@@ -4190,15 +4271,15 @@ def filter.result(xs: List<&2, FilterResult>, +name: String, +fallback: FilterIn
   match xs:
     case Nil{}: fallback
     case Con{FilterResult{key, input}, rest}:
-      U.branch(FilterInput, String.eq(key, name), _ => input, _ => filter.result(rest, name, fallback))
+      U.branch(FilterInput, U.string.equal(key, name), _ => input, _ => filter.result(rest, name, fallback))
 
 def filter.input.alpha(input: FilterInput) -> FilterInput:
   FilterInput{raster, region, alpha, standard} = input
   FilterInput{raster, region, True{}, standard}
 
 def filter.resolve(+name: String, +source: FilterInput, previous: FilterInput, results: List<&2, FilterResult>) -> FilterInput:
-  U.branch(FilterInput, String.eq(name, "SourceGraphic"), _ => source,
-    _ => U.branch(FilterInput, String.eq(name, "SourceAlpha"), _ => filter.input.alpha(source), _ => filter.result(results, name, previous)))
+  U.branch(FilterInput, U.string.equal(name, "SourceGraphic"), _ => source,
+    _ => U.branch(FilterInput, U.string.equal(name, "SourceAlpha"), _ => filter.input.alpha(source), _ => filter.result(results, name, previous)))
 
 def filter.input.region(input: FilterInput) -> Bounds:
   FilterInput{raster, region, alpha, standard} = input
@@ -4208,7 +4289,7 @@ def filter.merge.inputs(+xs: List<&2, XML.Element>, +source: FilterInput, +previ
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{name, as, kids, txt}, rest}:
-      U.branch(List<&2, FilterInput>, String.eq(name, "feMergeNode"), _ => Con{filter.resolve(XML.attr.get(as, "in", ""), source, previous, results), filter.merge.inputs(rest, source, previous, results)}, _ => filter.merge.inputs(rest, source, previous, results))
+      U.branch(List<&2, FilterInput>, U.string.equal(name, "feMergeNode"), _ => Con{filter.resolve(XML.attr.get(as, "in", ""), source, previous, results), filter.merge.inputs(rest, source, previous, results)}, _ => filter.merge.inputs(rest, source, previous, results))
 
 def filter.inputs.region(xs: List<&2, FilterInput>, box: Bounds) -> Bounds:
   match xs:
@@ -4227,9 +4308,9 @@ def filter.subregion(+as: List<&2, XML.Attr>, box: Bounds, viewport: Point) -> B
   +h = vh
   +left = x0
   +top = y0
-  +x = U.branch(F32, Bool.not(String.eq(XML.attr.get(as, "x", ""), "")), _ => dimension(as, "x", w, "0"), _ => left)
-  +y = U.branch(F32, Bool.not(String.eq(XML.attr.get(as, "y", ""), "")), _ => dimension(as, "y", h, "0"), _ => top)
-  Bounds{x, y, (x + U.branch(F32, Bool.not(String.eq(XML.attr.get(as, "width", ""), "")), _ => dimension(as, "width", w, "0"), _ => (x1 - left : F32)) : F32), (y + U.branch(F32, Bool.not(String.eq(XML.attr.get(as, "height", ""), "")), _ => dimension(as, "height", h, "0"), _ => (y1 - top : F32)) : F32)}
+  +x = U.branch(F32, Bool.not(U.string.equal(XML.attr.get(as, "x", ""), "")), _ => dimension(as, "x", w, "0"), _ => left)
+  +y = U.branch(F32, Bool.not(U.string.equal(XML.attr.get(as, "y", ""), "")), _ => dimension(as, "y", h, "0"), _ => top)
+  Bounds{x, y, (x + U.branch(F32, Bool.not(U.string.equal(XML.attr.get(as, "width", ""), "")), _ => dimension(as, "width", w, "0"), _ => (x1 - left : F32)) : F32), (y + U.branch(F32, Bool.not(U.string.equal(XML.attr.get(as, "height", ""), "")), _ => dimension(as, "height", h, "0"), _ => (y1 - top : F32)) : F32)}
 
 def matrix.vector(+m: Matrix, p: Point) -> Point:
   point.sub(matrix.point(m, p), matrix.point(m, Point{0.0, 0.0}))
@@ -4239,23 +4320,23 @@ def filter.offset(+as: List<&2, XML.Attr>, viewport: Point) -> Point:
   Point{dimension(as, "dx", w, "0"), dimension(as, "dy", h, "0")}
 
 def filter.operator(+name: String) -> U32:
-  U.choose(U32, String.eq(name, "in"), 1, U.choose(U32, String.eq(name, "out"), 2, U.choose(U32, String.eq(name, "atop"), 3, U.choose(U32, String.eq(name, "xor"), 4, U.choose(U32, String.eq(name, "arithmetic"), 5, 0)))))
+  U.choose(U32, U.string.equal(name, "in"), 1, U.choose(U32, U.string.equal(name, "out"), 2, U.choose(U32, U.string.equal(name, "atop"), 3, U.choose(U32, U.string.equal(name, "xor"), 4, U.choose(U32, U.string.equal(name, "arithmetic"), 5, 0)))))
 
 def filter.blend.mode(+name: String) -> U32:
-  U.choose(U32, String.eq(name, "multiply"), 1, U.choose(U32, String.eq(name, "screen"), 2, U.choose(U32, String.eq(name, "darken"), 3, U.choose(U32, String.eq(name, "lighten"), 4, U.choose(U32, String.eq(name, "overlay"), 5, U.choose(U32, String.eq(name, "color-dodge"), 6, U.choose(U32, String.eq(name, "color-burn"), 7, U.choose(U32, String.eq(name, "hard-light"), 8, U.choose(U32, String.eq(name, "soft-light"), 9, U.choose(U32, String.eq(name, "difference"), 10, U.choose(U32, String.eq(name, "exclusion"), 11, U.choose(U32, String.eq(name, "hue"), 12, U.choose(U32, String.eq(name, "saturation"), 13, U.choose(U32, String.eq(name, "color"), 14, U.choose(U32, String.eq(name, "luminosity"), 15, 0)))))))))))))))
+  U.choose(U32, U.string.equal(name, "multiply"), 1, U.choose(U32, U.string.equal(name, "screen"), 2, U.choose(U32, U.string.equal(name, "darken"), 3, U.choose(U32, U.string.equal(name, "lighten"), 4, U.choose(U32, U.string.equal(name, "overlay"), 5, U.choose(U32, U.string.equal(name, "color-dodge"), 6, U.choose(U32, U.string.equal(name, "color-burn"), 7, U.choose(U32, U.string.equal(name, "hard-light"), 8, U.choose(U32, U.string.equal(name, "soft-light"), 9, U.choose(U32, U.string.equal(name, "difference"), 10, U.choose(U32, U.string.equal(name, "exclusion"), 11, U.choose(U32, U.string.equal(name, "hue"), 12, U.choose(U32, U.string.equal(name, "saturation"), 13, U.choose(U32, U.string.equal(name, "color"), 14, U.choose(U32, U.string.equal(name, "luminosity"), 15, 0)))))))))))))))
 
 def filter.flood(+as: List<&2, XML.Attr>) -> Img.Color:
   +ink = XML.attr.get(as, "flood-color", "black")
-  color.fade(color(U.choose(String, String.eq(CSS.css.lower(ink), "currentcolor"), XML.attr.get(as, "color", "black"), ink)), color.opacity(XML.attr.get(as, "flood-opacity", "1"), 1.0))
+  color.fade(color(U.choose(String, U.string.equal(CSS.css.lower(ink), "currentcolor"), XML.attr.get(as, "color", "black"), ink)), color.opacity(XML.attr.get(as, "flood-opacity", "1"), 1.0))
 
 def filter.op.parse(+name: String, +as: List<&2, XML.Attr>, +kids: List<&2, XML.Element>, units: Matrix, viewport: Point, merges: List<&2, FilterInput>) -> FilterOp:
-  U.branch(FilterOp, String.eq(name, "feFlood"), _ => FilterFlood{filter.flood(as)},
-    _ => U.branch(FilterOp, String.eq(name, "feOffset"), _ => FilterOffset{matrix.vector(units, filter.offset(as, viewport))},
-      _ => U.branch(FilterOp, String.eq(name, "feColorMatrix"), _ => FilterMatrix{filter.matrix.parse(as)},
-        _ => U.branch(FilterOp, String.eq(name, "feComponentTransfer"), _ => FilterTransfer{transfer.find(kids, "feFuncR"), transfer.find(kids, "feFuncG"), transfer.find(kids, "feFuncB"), transfer.find(kids, "feFuncA")},
-          _ => U.branch(FilterOp, String.eq(name, "feComposite"), _ => FilterComposite{filter.operator(XML.attr.get(as, "operator", "over")), U.scalar(XML.attr.get(as, "k1", "0"), 0.0), U.scalar(XML.attr.get(as, "k2", "0"), 0.0), U.scalar(XML.attr.get(as, "k3", "0"), 0.0), U.scalar(XML.attr.get(as, "k4", "0"), 0.0)},
-            _ => U.branch(FilterOp, String.eq(name, "feBlend"), _ => FilterBlend{filter.blend.mode(XML.attr.get(as, "mode", "normal"))},
-              _ => U.branch(FilterOp, String.eq(name, "feMerge"), _ => FilterMerge{merges}, _ => FilterCopy{})))))))
+  U.branch(FilterOp, U.string.equal(name, "feFlood"), _ => FilterFlood{filter.flood(as)},
+    _ => U.branch(FilterOp, U.string.equal(name, "feOffset"), _ => FilterOffset{matrix.vector(units, filter.offset(as, viewport))},
+      _ => U.branch(FilterOp, U.string.equal(name, "feColorMatrix"), _ => FilterMatrix{filter.matrix.parse(as)},
+        _ => U.branch(FilterOp, U.string.equal(name, "feComponentTransfer"), _ => FilterTransfer{transfer.find(kids, "feFuncR"), transfer.find(kids, "feFuncG"), transfer.find(kids, "feFuncB"), transfer.find(kids, "feFuncA")},
+          _ => U.branch(FilterOp, U.string.equal(name, "feComposite"), _ => FilterComposite{filter.operator(XML.attr.get(as, "operator", "over")), U.scalar(XML.attr.get(as, "k1", "0"), 0.0), U.scalar(XML.attr.get(as, "k2", "0"), 0.0), U.scalar(XML.attr.get(as, "k3", "0"), 0.0), U.scalar(XML.attr.get(as, "k4", "0"), 0.0)},
+            _ => U.branch(FilterOp, U.string.equal(name, "feBlend"), _ => FilterBlend{filter.blend.mode(XML.attr.get(as, "mode", "normal"))},
+              _ => U.branch(FilterOp, U.string.equal(name, "feMerge"), _ => FilterMerge{merges}, _ => FilterCopy{})))))))
 
 def filter.blur(+as: List<&2, XML.Attr>, +format: Raster, +input: FilterInput, +units: Matrix, window: FilterWindow, +linear: Bool, +aa: U32) -> Raster:
   +vs = U.numbers(XML.attr.get(as, "stdDeviation", "0"))
@@ -4277,7 +4358,7 @@ def filter.morphology(+as: List<&2, XML.Attr>, +format: Raster, +input: FilterIn
   +values = U.numbers(XML.attr.get(as, "radius", "0"))
   +rx = U.max(U.nth(values, 0n, 0.0), 0.0)
   +ry = U.max(U.nth(values, 1n, U.nth(values, 0n, 0.0)), 0.0)
-  +dilate = String.eq(XML.attr.get(as, "operator", "erode"), "dilate")
+  +dilate = U.string.equal(XML.attr.get(as, "operator", "erode"), "dilate")
   +region = filter.input.region(input)
   +first = {FilterInput{filter.draw(format, filter.morphology.axis(matrix.vector(units, Point{rx, 0.0}), raster.scale(format), dilate), input, input, FilterWindow{Bounds{F32.neg(1.0e30), F32.neg(1.0e30), 1.0e30, 1.0e30}, identity(), False{}}, linear, aa), region, False{}, False{}} : FilterInput}
   filter.draw(format, filter.morphology.axis(matrix.vector(units, Point{0.0, ry}), raster.scale(format), dilate), first, first, window, linear, aa)
@@ -4340,19 +4421,19 @@ def filter.convolution.parse(+as: List<&2, XML.Attr>, +units: Matrix, +input: Fi
   +dy = U.choose(Point, explicit, matrix.vector(units, Point{0.0, uy}), Point{0.0, step})
   +edge = XML.attr.get(as, "edgeMode", "duplicate")
   +valid = F32.is_ge(ox, 1.0) && F32.is_ge(oy, 1.0) && F32.is_le(ox, 4096.0) && F32.is_le(oy, 4096.0) && F32.is_le((ox * oy : F32), 4096.0) && U32.is_eq(floats.count(vs), (width * height : U32)) && F32.is_ge(tx, 0.0) && F32.is_lt(tx, ox) && F32.is_ge(ty, 0.0) && F32.is_lt(ty, oy)
-  U.branch(FilterOp, valid, _ => FilterConvolution{Convolution{filter.convolution.taps(vs, 0, width, height, tx, ty, dx, dy), U.choose(F32, F32.is_eq(divisor, 0.0), defaultDivisor, divisor), U.scalar(XML.attr.get(as, "bias", "0"), 0.0), String.eq(XML.attr.get(as, "preserveAlpha", "false"), "true"), U.choose(U32, String.eq(edge, "wrap"), 1, U.choose(U32, String.eq(edge, "none"), 2, 0)), filter.convolution.limits(input, units)}}, _ => FilterCopy{})
+  U.branch(FilterOp, valid, _ => FilterConvolution{Convolution{filter.convolution.taps(vs, 0, width, height, tx, ty, dx, dy), U.choose(F32, F32.is_eq(divisor, 0.0), defaultDivisor, divisor), U.scalar(XML.attr.get(as, "bias", "0"), 0.0), U.string.equal(XML.attr.get(as, "preserveAlpha", "false"), "true"), U.choose(U32, U.string.equal(edge, "wrap"), 1, U.choose(U32, U.string.equal(edge, "none"), 2, 0)), filter.convolution.limits(input, units)}}, _ => FilterCopy{})
 
 def filter.primitive(+name: String, +as: List<&2, XML.Attr>, +kids: List<&2, XML.Element>, +format: Raster, +source: FilterInput, +previous: FilterInput, +results: List<&2, FilterResult>, +region: Bounds, +units: Matrix, +viewport: Point, +aa: U32) -> FilterInput:
   +a = filter.resolve(XML.attr.get(as, "in", ""), source, previous, results)
   +b = filter.resolve(XML.attr.get(as, "in2", ""), source, previous, results)
   +merges = filter.merge.inputs(kids, source, previous, results)
-  +two = String.eq(name, "feComposite") || String.eq(name, "feBlend")
-  +defaultBox = U.branch(Bounds, String.eq(name, "feFlood"), _ => region,
-    _ => U.branch(Bounds, String.eq(name, "feMerge"), _ => filter.inputs.region(merges, bounds.empty()), _ => U.choose(Bounds, two, bounds.merge(filter.input.region(a), filter.input.region(b)), filter.input.region(a))))
+  +two = U.string.equal(name, "feComposite") || U.string.equal(name, "feBlend")
+  +defaultBox = U.branch(Bounds, U.string.equal(name, "feFlood"), _ => region,
+    _ => U.branch(Bounds, U.string.equal(name, "feMerge"), _ => filter.inputs.region(merges, bounds.empty()), _ => U.choose(Bounds, two, bounds.merge(filter.input.region(a), filter.input.region(b)), filter.input.region(a))))
   +box = bounds.intersection(region, filter.subregion(as, defaultBox, viewport))
   +window = {FilterWindow{box, matrix.inverse(units), False{}} : FilterWindow}
-  +linear = U.branch(Bool, String.eq(name, "feFlood"), _ => False{}, _ => U.branch(Bool, String.eq(name, "feOffset"), _ => raster.is.linear(filter.input.raster(a)), _ => Bool.not(String.eq(XML.attr.get(as, "color-interpolation-filters", "linearRGB"), "sRGB"))))
-  FilterInput{U.branch(Raster, String.eq(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => U.branch(Raster, String.eq(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => U.branch(Raster, String.eq(name, "feMorphology"), _ => filter.morphology(as, format, a, units, window, linear, aa), _ => filter.draw(format, U.branch(FilterOp, String.eq(name, "feConvolveMatrix"), _ => filter.convolution.parse(as, units, a, format), _ => filter.op.parse(name, as, kids, units, viewport, merges)), a, b, window, linear, aa)))), box, False{}, False{}}
+  +linear = U.branch(Bool, U.string.equal(name, "feFlood"), _ => False{}, _ => U.branch(Bool, U.string.equal(name, "feOffset"), _ => raster.is.linear(filter.input.raster(a)), _ => Bool.not(U.string.equal(XML.attr.get(as, "color-interpolation-filters", "linearRGB"), "sRGB"))))
+  FilterInput{U.branch(Raster, U.string.equal(name, "feGaussianBlur"), _ => filter.blur(as, format, a, units, window, linear, aa), _ => U.branch(Raster, U.string.equal(name, "feDropShadow"), _ => filter.shadow(as, format, a, units, viewport, window, linear, aa), _ => U.branch(Raster, U.string.equal(name, "feMorphology"), _ => filter.morphology(as, format, a, units, window, linear, aa), _ => filter.draw(format, U.branch(FilterOp, U.string.equal(name, "feConvolveMatrix"), _ => filter.convolution.parse(as, units, a, format), _ => filter.op.parse(name, as, kids, units, viewport, merges)), a, b, window, linear, aa)))), box, False{}, False{}}
 
 @unsafe
 def filter.chain(+xs: List<&2, XML.Element>, +format: Raster, +source: FilterInput, +previous: FilterInput, +results: List<&2, FilterResult>, +region: Bounds, +units: Matrix, +viewport: Point, +aa: U32) -> FilterInput:
@@ -4367,7 +4448,7 @@ def filter.padding(+xs: List<&2, XML.Element>, +units: Matrix, +margin: F32) -> 
   match xs:
     case Nil{}: margin
     case Con{XML.Element{name, as, kids, txt}, rest}:
-      +vs = U.numbers(XML.attr.get(as, "stdDeviation", U.choose(String, String.eq(name, "feDropShadow"), "2", "0")))
+      +vs = U.numbers(XML.attr.get(as, "stdDeviation", U.choose(String, U.string.equal(name, "feDropShadow"), "2", "0")))
       +sx = U.nth(vs, 0n, 0.0)
       +sy = U.nth(vs, 1n, sx)
       +pad = (3.0 * (point.distance(matrix.vector(units, Point{sx, 0.0}), Point{0.0, 0.0}) + point.distance(matrix.vector(units, Point{0.0, sy}), Point{0.0, 0.0})) : F32)
@@ -4375,7 +4456,7 @@ def filter.padding(+xs: List<&2, XML.Element>, +units: Matrix, +margin: F32) -> 
       +rx = U.max(U.nth(radii, 0n, 0.0), 0.0)
       +ry = U.max(U.nth(radii, 1n, U.nth(radii, 0n, 0.0)), 0.0)
       +morphPad = (point.distance(matrix.vector(units, Point{rx, 0.0}), Point{0.0, 0.0}) + point.distance(matrix.vector(units, Point{0.0, ry}), Point{0.0, 0.0}) + 2.0 : F32)
-      filter.padding(rest, units, U.choose(F32, String.eq(name, "feGaussianBlur") || String.eq(name, "feDropShadow"), U.max(margin, pad), U.choose(F32, String.eq(name, "feMorphology"), U.max(margin, morphPad), margin)))
+      filter.padding(rest, units, U.choose(F32, U.string.equal(name, "feGaussianBlur") || U.string.equal(name, "feDropShadow"), U.max(margin, pad), U.choose(F32, U.string.equal(name, "feMorphology"), U.max(margin, morphPad), margin)))
 
 def filter.present(xs: List<&2, XML.Element>) -> Bool:
   match xs:
@@ -4787,8 +4868,8 @@ def paint.stroke.if(cond: Bool, fb: Array<U32>, +mesh: StrokeMesh, +brush: Brush
 def paint.piece(fb: Array<U32>, +which: U32, +s: Style, +ink: Paint<Brush>, +inv: Matrix, +outline: StrokeMesh, +f: Fill, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
   Paint{fc, sc} = ink
-  paint.stroke.if(U32.is_eq(which, 1) && visible && Bool.not(String.eq(stroke, "none")) && F32.is_gt(width, 0.0),
-    paint.fill.if(U32.is_eq(which, 0) && visible && Bool.not(String.eq(fill, "none")), fb, f, fc, inv, linear, clips, tg),
+  paint.stroke.if(U32.is_eq(which, 1) && visible && Bool.not(U.string.equal(stroke, "none")) && F32.is_gt(width, 0.0),
+    paint.fill.if(U32.is_eq(which, 0) && visible && Bool.not(U.string.equal(fill, "none")), fb, f, fc, inv, linear, clips, tg),
     outline, sc, inv, linear, clips, tg)
 
 # paint-order as three steps: the first piece is order / 2, the other two in
@@ -5038,7 +5119,7 @@ def pick.node(c: Img.Color, id: String, inv: Matrix) -> Pick:
 
 def pick.instance(+hit: Pick, id: String, inv: Matrix) -> Pick:
   Pick{found, target, local} = hit
-  U.choose(Pick, found && String.eq(target, ""), Pick{found, id, inv}, hit)
+  U.choose(Pick, found && U.string.equal(target, ""), Pick{found, id, inv}, hit)
 
 def pick(+scenes: List<&2, Scene<Brush>>, +p: Point) -> Pick:
   match scenes:

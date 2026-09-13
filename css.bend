@@ -25,7 +25,7 @@ def css(s: String, attrs: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
     case SCon{c, t}: css.more(U.until(SCon{c, t}, 59, ""), attrs, rest => as => css(rest, as))
 
 def properties(+attrs: List<&2, XML.Attr>) -> List<&2, XML.Attr>:
-  U.branch(List<&2, XML.Attr>, String.eq(XML.attr.get(attrs, "#css-ready", ""), "1"), _ => attrs, _ => css(XML.attr.get(attrs, "style", ""), attrs))
+  U.branch(List<&2, XML.Attr>, U.string.equal(XML.attr.get(attrs, "#css-ready", ""), "1"), _ => attrs, _ => css(XML.attr.get(attrs, "style", ""), attrs))
 
 # Stylesheets are applied to a rendering copy; authored XML stays unchanged.
 def css.stop(+ch: U32, +mode: U32) -> Bool:
@@ -75,7 +75,7 @@ def css.word(+s: String, +acc: String) -> U.Scan:
 
 def css.word.test(scan: U.Scan, +word: String, next: String -> Bool) -> Bool:
   U.Scan{h, t} = scan
-  String.eq(h, word) || next(t)
+  U.string.equal(h, word) || next(t)
 
 @unsafe
 def css.words(s: String, +word: String) -> Bool:
@@ -104,17 +104,17 @@ def css.parts(+s: String, +rel: U32, +acc: List<&2, CSSStep>) -> List<&2, CSSSte
           _ => css.parts.scan(css.scan(s, 0), rel, acc, rest => steps => css.parts(rest, 1, steps))))
 
 def css.attr.value(+actual: String, +expected: String, +op: String) -> Bool:
-  U.branch(Bool, String.eq(op, "="), _ => String.eq(actual, expected),
-    _ => U.branch(Bool, String.eq(expected, ""), _ => False{},
-      _ => U.choose(Bool, String.eq(op, "~="), css.words(U.trim(actual), expected),
-        U.choose(Bool, String.eq(op, "|="), String.eq(actual, expected) || U.prefix(actual, expected ++ "-"),
-          U.choose(Bool, String.eq(op, "^="), U.prefix(actual, expected),
-            U.choose(Bool, String.eq(op, "$="), U.prefix(U.rev(actual, ""), U.rev(expected, "")),
-              Bool.not(String.eq(U.through(actual, expected), "")) || U.prefix(U.rev(actual, ""), U.rev(expected, ""))))))))
+  U.branch(Bool, U.string.equal(op, "="), _ => U.string.equal(actual, expected),
+    _ => U.branch(Bool, U.string.equal(expected, ""), _ => False{},
+      _ => U.choose(Bool, U.string.equal(op, "~="), css.words(U.trim(actual), expected),
+        U.choose(Bool, U.string.equal(op, "|="), U.string.equal(actual, expected) || U.prefix(actual, expected ++ "-"),
+          U.choose(Bool, U.string.equal(op, "^="), U.prefix(actual, expected),
+            U.choose(Bool, U.string.equal(op, "$="), U.prefix(U.rev(actual, ""), U.rev(expected, "")),
+              Bool.not(U.string.equal(U.through(actual, expected), "")) || U.prefix(U.rev(actual, ""), U.rev(expected, ""))))))))
 
 def css.attr.compare(scan: U.Scan, +actual: String, +op: String) -> Bool:
   U.Scan{expected, tail} = scan
-  +ignoreCase = String.eq(css.lower(U.trim.both(tail)), "i")
+  +ignoreCase = U.string.equal(css.lower(U.trim.both(tail)), "i")
   +text = expected
   css.attr.value(U.choose(String, ignoreCase, css.lower(actual), actual), U.choose(String, ignoreCase, css.lower(text), text), op)
 
@@ -125,14 +125,14 @@ def css.attr.test(scan: U.Scan, +as: List<&2, XML.Attr>) -> Bool:
   +op = U.choose(String, U.prefix(rest, "="), "=", U.choose(String, U.prefix(rest, "~="), "~=", U.choose(String, U.prefix(rest, "|="), "|=", U.choose(String, U.prefix(rest, "^="), "^=", U.choose(String, U.prefix(rest, "$="), "$=", "*=")))))
   +v = U.trim(U.drop(rest, op))
   +actual = XML.attr.get(as, key, "#missing-css-attribute#")
-  U.branch(Bool, String.eq(rest, ""), _ => Bool.not(String.eq(actual, "#missing-css-attribute#")),
-    _ => Bool.not(String.eq(actual, "#missing-css-attribute#")) && css.attr.compare(XML.value(v), actual, op))
+  U.branch(Bool, U.string.equal(rest, ""), _ => Bool.not(U.string.equal(actual, "#missing-css-attribute#")),
+    _ => Bool.not(U.string.equal(actual, "#missing-css-attribute#")) && css.attr.compare(XML.value(v), actual, op))
 
 def css.empty(xs: List<&2, XML.Element>) -> Bool:
   match xs:
     case Nil{}: True{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
-      String.eq(n, "#text") && String.eq(txt, "") && css.empty(rest)
+      U.string.equal(n, "#text") && U.string.equal(txt, "") && css.empty(rest)
 
 def css.compact(+s: String) -> String:
   match s:
@@ -145,17 +145,17 @@ def css.nth.formula(scan: U.Scan, +index: U32) -> Bool:
   U.Scan{h, t} = scan
   +head = h
   +tail = t
-  +a = U.choose(F32, String.eq(head, "") || String.eq(head, "+"), 1.0, U.choose(F32, String.eq(head, "-"), F32.neg(1.0), U.scalar(head, 0.0)))
+  +a = U.choose(F32, U.string.equal(head, "") || U.string.equal(head, "+"), 1.0, U.choose(F32, U.string.equal(head, "-"), F32.neg(1.0), U.scalar(head, 0.0)))
   +b = U.scalar(U.drop(tail, "n"), 0.0)
   +difference = (U32.to_f32(index) - b : F32)
   +n = (difference / a : F32)
-  U.branch(Bool, String.eq(tail, ""), _ => F32.is_eq(U32.to_f32(index), U.scalar(head, F32.neg(1.0))),
+  U.branch(Bool, U.string.equal(tail, ""), _ => F32.is_eq(U32.to_f32(index), U.scalar(head, F32.neg(1.0))),
     _ => U.choose(Bool, F32.is_eq(a, 0.0), F32.is_eq(difference, 0.0), F32.is_ge(n, 0.0) && F32.is_eq(n, F32.floor(n))))
 
 def css.nth(+s: String, +index: U32) -> Bool:
   +value = css.lower(css.compact(s))
-  U.choose(Bool, String.eq(value, "odd"), U32.is_eq(U32.mod(index, 2), 1),
-    U.choose(Bool, String.eq(value, "even"), U32.is_eq(U32.mod(index, 2), 0), css.nth.formula(css.scan(value, 110), index)))
+  U.choose(Bool, U.string.equal(value, "odd"), U32.is_eq(U32.mod(index, 2), 1),
+    U.choose(Bool, U.string.equal(value, "even"), U32.is_eq(U32.mod(index, 2), 0), css.nth.formula(css.scan(value, 110), index)))
 
 def css.is.root(parents: List<&2, CSSContext>) -> Bool:
   match parents:
@@ -164,21 +164,21 @@ def css.is.root(parents: List<&2, CSSContext>) -> Bool:
 
 def css.pseudo(+key: String, +arg: String, +context: CSSContext) -> Bool:
   CSSContext{XML.Element{n, as, kids, txt}, parents, previous, index, count} = context
-  U.choose(Bool, String.eq(key, "root"), css.is.root(parents),
-    U.choose(Bool, String.eq(key, "first-child"), U32.is_eq(index, 1),
-      U.choose(Bool, String.eq(key, "last-child"), U32.is_eq(index, count),
-        U.choose(Bool, String.eq(key, "only-child"), U32.is_eq(count, 1),
-          U.choose(Bool, String.eq(key, "nth-child"), css.nth(arg, index),
-            U.choose(Bool, String.eq(key, "nth-last-child"), css.nth(arg, (count + 1 - index : U32)),
-              String.eq(key, "empty") && css.empty(kids)))))))
+  U.choose(Bool, U.string.equal(key, "root"), css.is.root(parents),
+    U.choose(Bool, U.string.equal(key, "first-child"), U32.is_eq(index, 1),
+      U.choose(Bool, U.string.equal(key, "last-child"), U32.is_eq(index, count),
+        U.choose(Bool, U.string.equal(key, "only-child"), U32.is_eq(count, 1),
+          U.choose(Bool, U.string.equal(key, "nth-child"), css.nth(arg, index),
+            U.choose(Bool, U.string.equal(key, "nth-last-child"), css.nth(arg, (count + 1 - index : U32)),
+              U.string.equal(key, "empty") && css.empty(kids)))))))
 
 # Simple selectors compose by conjunction; unsupported pseudo-classes do not match.
 def css.simple.scan(scan: U.Scan, +context: CSSContext, +kind: U32, next: String -> Bool) -> Bool:
   U.Scan{h, t} = scan
   CSSContext{XML.Element{n, as, kids, txt}, parents, previous, index, count} = context
   +name = h
-  Bool.not(String.eq(name, "")) && U.choose(Bool, U32.is_eq(kind, 35), String.eq(XML.attr.get(as, "id", ""), name),
-    U.choose(Bool, U32.is_eq(kind, 46), css.words(U.trim(XML.attr.get(as, "class", "")), name), String.eq(n, name))) && next(t)
+  Bool.not(U.string.equal(name, "")) && U.choose(Bool, U32.is_eq(kind, 35), U.string.equal(XML.attr.get(as, "id", ""), name),
+    U.choose(Bool, U32.is_eq(kind, 46), css.words(U.trim(XML.attr.get(as, "class", "")), name), U.string.equal(n, name))) && next(t)
 
 def css.simple.attr(+scan: U.Scan, +context: CSSContext, next: String -> Bool) -> Bool:
   U.Scan{h, t} = scan
@@ -188,7 +188,7 @@ def css.simple.attr(+scan: U.Scan, +context: CSSContext, next: String -> Bool) -
 def css.simple.pseudo.arg(+scan: U.Scan, +key: String, +context: CSSContext, next: String -> Bool,
   nested: String -> Bool) -> Bool:
   U.Scan{h, t} = scan
-  U.prefix(t, ")") && U.branch(Bool, String.eq(key, "not"), _ => Bool.not(nested(h)), _ => css.pseudo(key, h, context)) && next(U.drop(t, ")"))
+  U.prefix(t, ")") && U.branch(Bool, U.string.equal(key, "not"), _ => Bool.not(nested(h)), _ => css.pseudo(key, h, context)) && next(U.drop(t, ")"))
 
 def css.simple.pseudo(scan: U.Scan, +context: CSSContext, next: String -> Bool, nested: String -> Bool) -> Bool:
   U.Scan{h, t} = scan
@@ -234,7 +234,7 @@ def css.score.arg(scan: U.Scan, negation: Bool, next: String -> U32, nested: Str
 def css.score.pseudo(scan: U.Scan, next: String -> U32, nested: String -> U32) -> U32:
   U.Scan{h, t} = scan
   +tail = t
-  css.score.arg(U.choose(U.Scan, U.prefix(tail, "("), css.scan(U.drop(tail, "("), 41), U.Scan{"", ")" ++ tail}), String.eq(h, "not"), next, nested)
+  css.score.arg(U.choose(U.Scan, U.prefix(tail, "("), css.scan(U.drop(tail, "("), 41), U.Scan{"", ")" ++ tail}), U.string.equal(h, "not"), next, nested)
 
 @unsafe
 def css.score(+fuel: Nat, +s: String) -> U32:
@@ -264,7 +264,7 @@ def css.select.scan(scan: U.Scan, +context: CSSContext, +best: CSSMatch, next: S
   CSSMatch{found, score} = best
   +sel = U.trim.both(h)
   +parts = css.parts(sel, 0, Nil{})
-  +hit = Bool.not(String.eq(sel, "")) && css.match(parts, Con{context, Nil{}}, True{})
+  +hit = Bool.not(U.string.equal(sel, "")) && css.match(parts, Con{context, Nil{}}, True{})
   +weight = css.specificity(parts)
   next(U.drop(t, ","))(CSSMatch{found || hit, U.choose(U32, hit && U32.is_gt(weight, score), weight, score)})
 
@@ -286,7 +286,7 @@ def css.declaration.expand(a: XML.Attr, rest: List<&2, XML.Attr>) -> List<&2, XM
   +key = k
   +val = v
   +tail = rest
-  U.choose(List<&2, XML.Attr>, String.eq(key, "marker"), Con{XML.Attr{"marker-start", val}, Con{XML.Attr{"marker-mid", val}, Con{XML.Attr{"marker-end", val}, tail}}}, Con{XML.Attr{key, val}, tail})
+  U.choose(List<&2, XML.Attr>, U.string.equal(key, "marker"), Con{XML.Attr{"marker-start", val}, Con{XML.Attr{"marker-mid", val}, Con{XML.Attr{"marker-end", val}, tail}}}, Con{XML.Attr{key, val}, tail})
 
 def css.declarations.scan(scan: U.Scan, next: String -> List<&2, XML.Attr>) -> List<&2, XML.Attr>:
   U.Scan{h, t} = scan
@@ -303,26 +303,26 @@ def css.media.feature(scan: U.Scan, +w: F32, +h: F32) -> Bool:
   +key = U.trim.both(k)
   +value = css.lower(U.trim.both(v))
   +x = U.unit(U.number(value), w)
-  U.choose(Bool, String.eq(key, "min-width"), F32.is_ge(w, x),
-    U.choose(Bool, String.eq(key, "max-width"), F32.is_le(w, x),
-      U.choose(Bool, String.eq(key, "width"), F32.is_eq(w, x),
-        U.choose(Bool, String.eq(key, "min-height"), F32.is_ge(h, x),
-          U.choose(Bool, String.eq(key, "max-height"), F32.is_le(h, x),
-            U.choose(Bool, String.eq(key, "height"), F32.is_eq(h, x),
-              String.eq(key, "orientation") && U.choose(Bool, String.eq(value, "portrait"), F32.is_ge(h, w), String.eq(value, "landscape") && F32.is_gt(w, h))))))))
+  U.choose(Bool, U.string.equal(key, "min-width"), F32.is_ge(w, x),
+    U.choose(Bool, U.string.equal(key, "max-width"), F32.is_le(w, x),
+      U.choose(Bool, U.string.equal(key, "width"), F32.is_eq(w, x),
+        U.choose(Bool, U.string.equal(key, "min-height"), F32.is_ge(h, x),
+          U.choose(Bool, U.string.equal(key, "max-height"), F32.is_le(h, x),
+            U.choose(Bool, U.string.equal(key, "height"), F32.is_eq(h, x),
+              U.string.equal(key, "orientation") && U.choose(Bool, U.string.equal(value, "portrait"), F32.is_ge(h, w), U.string.equal(value, "landscape") && F32.is_gt(w, h))))))))
 
 def css.media.parens(scan: U.Scan, w: F32, h: F32, next: String -> Bool) -> Bool:
   U.Scan{body, tail} = scan
   css.media.feature(U.until(body, 58, ""), w, h) && next(U.drop(tail, ")"))
 
 def css.media.result(+word: String, +result: Bool) -> Bool:
-  U.choose(Bool, String.eq(word, "not"), Bool.not(result),
-    (String.eq(word, "screen") || String.eq(word, "all") || String.eq(word, "and") || String.eq(word, "only")) && result)
+  U.choose(Bool, U.string.equal(word, "not"), Bool.not(result),
+    (U.string.equal(word, "screen") || U.string.equal(word, "all") || U.string.equal(word, "and") || U.string.equal(word, "only")) && result)
 
 def css.media.word(scan: U.Scan, next: String -> Bool) -> Bool:
   U.Scan{head, tail} = scan
   +word = head
-  U.branch(Bool, String.eq(word, ""), _ => False{}, _ => css.media.result(word, next(tail)))
+  U.branch(Bool, U.string.equal(word, ""), _ => False{}, _ => css.media.result(word, next(tail)))
 
 @unsafe
 def css.media.query(+s: String, +w: F32, +h: F32) -> Bool:
@@ -344,7 +344,7 @@ def css.media.more(s: String, +w: F32, +h: F32) -> Bool:
     case SCon{c, t}: css.media.list(css.scan(SCon{c, t}, 44), w, h, rest => css.media.more(rest, w, h))
 
 def css.media(+s: String, w: F32, h: F32) -> Bool:
-  String.eq(U.trim(s), "") || css.media.more(s, w, h)
+  U.string.equal(U.trim(s), "") || css.media.more(s, w, h)
 
 def css.rules.append(xs: List<&2, CSSRule>, ys: List<&2, CSSRule>) -> List<&2, CSSRule>:
   match xs:
@@ -384,8 +384,8 @@ def css.sheets(+xs: List<&2, XML.Element>, +w: F32, +h: F32) -> String:
     case Nil{}: ""
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +nodes = kids
-      U.branch(String, String.eq(n, "style"),
-        _ => U.choose(String, String.eq(css.lower(XML.attr.get(as, "type", "text/css")), "text/css") && css.media(XML.attr.get(as, "media", ""), w, h), css.text(nodes), ""),
+      U.branch(String, U.string.equal(n, "style"),
+        _ => U.choose(String, U.string.equal(css.lower(XML.attr.get(as, "type", "text/css")), "text/css") && css.media(XML.attr.get(as, "media", ""), w, h), css.text(nodes), ""),
         _ => css.sheets(nodes, w, h)) ++ "\n" ++ css.sheets(rest, w, h)
 
 type CSSChoice is Data:
@@ -393,7 +393,7 @@ type CSSChoice is Data:
 
 def css.choice.scan(+k: String, value: U.Scan, score: U32) -> CSSChoice:
   U.Scan{h, t} = value
-  +strong = String.eq(css.lower(U.trim.both(U.drop(t, "!"))), "important")
+  +strong = U.string.equal(css.lower(U.trim.both(U.drop(t, "!"))), "important")
   CSSChoice{k, U.trim.both(h), strong, score}
 
 def css.wins(a: CSSChoice, b: CSSChoice) -> Bool:
@@ -409,7 +409,7 @@ def css.insert(+value: CSSChoice, +xs: List<&2, CSSChoice>) -> List<&2, CSSChoic
     case Nil{}: Con{value, Nil{}}
     case Con{CSSChoice{k, v, imp, weight}, rest}:
       +old = {CSSChoice{k, v, imp, weight} : CSSChoice}
-      U.branch(List<&2, CSSChoice>, String.eq(nk, k), _ => Con{U.choose(CSSChoice, css.wins(value, old), value, old), rest},
+      U.branch(List<&2, CSSChoice>, U.string.equal(nk, k), _ => Con{U.choose(CSSChoice, css.wins(value, old), value, old), rest},
         _ => Con{old, css.insert(value, rest)})
 
 def css.cascade(ds: List<&2, XML.Attr>, +score: U32, +choices: List<&2, CSSChoice>) -> List<&2, CSSChoice>:
@@ -418,7 +418,7 @@ def css.cascade(ds: List<&2, XML.Attr>, +score: U32, +choices: List<&2, CSSChoic
     case Con{XML.Attr{k, v}, rest}:
       +value = v
       +key = k
-      css.cascade(rest, score, U.branch(List<&2, CSSChoice>, String.eq(key, "") || String.eq(value, ""), _ => choices,
+      css.cascade(rest, score, U.branch(List<&2, CSSChoice>, U.string.equal(key, "") || U.string.equal(value, ""), _ => choices,
         _ => css.insert(css.choice.scan(key, css.scan(value, 33), score), choices)))
 
 def css.rule.matched(result: CSSMatch, ds: List<&2, XML.Attr>, +choices: List<&2, CSSChoice>) -> List<&2, CSSChoice>:
@@ -445,7 +445,7 @@ def css.styled(+context: CSSContext, rules: List<&2, CSSRule>) -> List<&2, XML.A
 def css.element.count(xs: List<&2, XML.Element>) -> U32:
   match xs:
     case Nil{}: 0
-    case Con{XML.Element{n, as, kids, txt}, rest}: (U.choose(U32, String.eq(n, "#text"), 0, 1) + css.element.count(rest) : U32)
+    case Con{XML.Element{n, as, kids, txt}, rest}: (U.choose(U32, U.string.equal(n, "#text"), 0, 1) + css.element.count(rest) : U32)
 
 @unsafe
 def css.tree(+xs: List<&2, XML.Element>, +rules: List<&2, CSSRule>, +parents: List<&2, CSSContext>, +previous: List<&2, CSSContext>, +index: U32, +count: U32) -> List<&2, XML.Element>:
@@ -456,7 +456,7 @@ def css.tree(+xs: List<&2, XML.Element>, +rules: List<&2, CSSRule>, +parents: Li
       +children = kids
       +node = {XML.Element{tagname, as, children, txt} : XML.Element}
       +context = {CSSContext{node, parents, previous, index, count} : CSSContext}
-      U.branch(List<&2, XML.Element>, String.eq(tagname, "#text"),
+      U.branch(List<&2, XML.Element>, U.string.equal(tagname, "#text"),
         _ => Con{node, css.tree(rest, rules, parents, previous, index, count)},
         _ => Con{XML.Element{tagname, css.styled(context, rules), css.tree(children, rules, Con{context, parents}, Nil{}, 1, css.element.count(children)), txt},
           css.tree(rest, rules, parents, Con{context, previous}, U32.inc(index), count)})
