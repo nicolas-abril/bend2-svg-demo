@@ -1224,3 +1224,79 @@ overhead. The stroker still supplies two thirds of the tiger's lines as
 overlapping bands and joins, which the scan must sort and walk on every
 sub-scanline they reach; a stroker emitting one outline per subpath is the
 next structural step for stroke-heavy documents.
+
+## Within an order of magnitude of resvg
+
+The target for this round was a render within ten times resvg's in-process
+time on every document, measured as the whole process minus a process that
+only reads the file (about 7 ms here). The reference verdict stayed at
+108/117 and the C parity at 117 fixtures and 15 TrueType fixtures
+throughout.
+
+The earlier rounds (exact-area scan, Wang's flattening count, lines in
+arrays ordered by top row, floats read straight from the text, resources
+resolved on demand, the outline stroker, solid runs painted directly) had
+taken the tiger from 125 ms to 38 ms at 256 px. A `sample` profile of a
+build that renders the tiger 150 times then showed where the rest went: 28%
+of the time in `term_drop` (freeing), 17% in `span_fade` and `rfc_wrap`
+(walking data through a reference-counted copy), 8% applying closures. The
+work was not in the algorithms but in how the data was held.
+
+**Own what you walk.** In this runtime a `+` copy of a list costs nothing
+until something walks it: then every node passed becomes a count cell, and
+the last copy dropped walks the whole thing again. The parse held the text
+that way in three places: `xml.name`, `attributes` and the attribute value
+scanner each kept the remaining text in both arms of a `branch`, so every
+character of every value was read as a copy. Each loop now decides its next
+character one step ahead (`until.go`, `name.go`, `separators.go`,
+`trim.go`, the attribute loop through a `Next` record) and the tail is held
+once. The path parser had the same shape at a larger scale: the `d` string
+sat in the element's attribute list, which every lookup copies, so the
+number parser read 60 KB of the tiger as a copy and the tree drop walked it
+again; `compile` now takes `d` out of the list (`attrs.take`) before the
+list is shared, through a `Ready` step of its own loop, and hands it to the
+path parser alone. Fills kept a second reference to their edges (the edge
+tree for point queries) so the cover walked them as a copy; the fill now
+keeps only its bounds, and the cover reads the scene's edges as their owner
+and hands them back; measured, that one changed nothing (rebuilding the
+list costs what the copy did), so the fill keeps its edge tree and the
+idea stands here only as a caution. The painter copied each scene's fill and stroke for
+the three paint-order pieces; `paint.pieces` matches the order and gives
+each mask to exactly one painter, and the target and tint travel through
+the run loops as plain numbers.
+
+**Fewer nodes.** An edge was three heap nodes (an edge and two points) and
+a stroke segment four; both are one node of numbers now, halving what the
+flattener builds, the stroker walks and the drop frees. Join and cap names
+became codes decided once per stroke (`Joins`), so the per-vertex code
+matches numbers instead of comparing strings and allocating branch
+closures. The path command loop no longer uses continuations: the argument
+parser returns the numbers with what follows them already classified
+(`PathNext`), and `path.run` matches that. The per-element style work lost
+its round trips: paint order stays a number when the attribute is absent,
+hex colors parse in one pass, a paint's keyword is decided from its first
+letter, and `pathLength` only measures the subpaths when it is declared. A
+file read in one chunk is no longer copied by the join, and the cover
+gathers its lines' bounds and count as it makes them, skipping the
+rectangle test for anything with more than five lines.
+
+Whole-process times (best of five) against resvg-js in-process, the
+process floor for a read-only run being 6.8 ms for the small files and
+7.6 ms for the tiger:
+
+| Document | bend | in-process | resvg | ratio |
+| --- | --- | --- | --- | --- |
+| twemoji grin 256 | 7.4 ms | 0.5 ms | 0.10 ms | 5× |
+| twemoji grin 1024 | 9.2 ms | 2.4 ms | 0.77 ms | 3× |
+| twemoji bulb 256 | 7.8 ms | 1.0 ms | 0.14 ms | 7× |
+| twemoji bulb 1024 | 10.1 ms | 3.3 ms | 0.84 ms | 4× |
+| tiger 256 | 25.9 ms | 18.3 ms | 2.60 ms | 7× |
+| tiger 1024 | 44.9 ms | 37.3 ms | 8.09 ms | 4.6× |
+| circles 256 | 12.0 ms | 5.0 ms | 1.88 ms | 2.7× |
+| circles 1024 | 29.7 ms | 23.1 ms | 16.33 ms | 1.4× |
+
+Stage times for the tiger at 256 px, cumulative: parse 1.5 ms, compile
++10.2 ms, cover +6.4 ms, paint +0.2 ms. The compile is now the largest
+part, and its profile is still dominated by freeing: the element's
+remaining attribute strings, the styles copied per element and the edge
+lists after their covers are built.

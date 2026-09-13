@@ -62,13 +62,26 @@ def trim(+s: String) -> String:
 type Scan is Data:
   Scan{head: String, tail: String}
 
-def until(+s: String, +end: U32, +acc: String) -> Scan:
+# Scanning loops decide each character one step ahead (`hit` says whether
+# `c` ends the scan), so the rest of the text is only ever held once: a
+# shared tail would make every step pay for the sharing.
+@unsafe
+def until.go(hit: Bool, +c: U32, t: String, +end: U32, acc: String) -> Scan:
+  match hit:
+    case True{}: Scan{rev(acc, ""), t}
+    case False{}:
+      match t:
+        case SNil{}: Scan{rev(SCon{Chr{c}, acc}, ""), ""}
+        case SCon{Chr{c2}, t2}:
+          +cc = c2
+          until.go(U32.is_eq(cc, end), cc, t2, end, SCon{Chr{c}, acc})
+
+def until(s: String, +end: U32, acc: String) -> Scan:
   match s:
     case SNil{}: Scan{rev(acc, ""), ""}
     case SCon{Chr{c}, t}:
-      branch(Scan, U32.is_eq(c, end),
-        _ => Scan{rev(acc, ""), t},
-        _ => until(t, end, SCon{Chr{c}, acc}))
+      +cc = c
+      until.go(U32.is_eq(cc, end), cc, t, end, acc)
 
 # XML tokenizer and document tree. Attribute values remain available to the editor.
 def prefix(s: String, p: String) -> Bool:
@@ -96,11 +109,23 @@ def until.sequence(+s: String, +end: String, +acc: String) -> Scan:
     case SCon{c, t}: branch(Scan, prefix(s, end), _ => Scan{rev(acc, ""), drop(s, end)}, _ => until.sequence(t, end, SCon{c, acc}))
 
 # SVG number grammar, including adjacent signs and scientific notation.
-def separators(+s: String) -> String:
+@unsafe
+def separators.go(skip: Bool, +c: U32, t: String) -> String:
+  match skip:
+    case False{}: SCon{Chr{c}, t}
+    case True{}:
+      match t:
+        case SNil{}: ""
+        case SCon{Chr{c2}, t2}:
+          +cc = c2
+          separators.go(space(cc) || U32.is_eq(cc, 44), cc, t2)
+
+def separators(s: String) -> String:
   match s:
     case SNil{}: ""
     case SCon{Chr{c}, t}:
-      branch(String, space(c) || U32.is_eq(c, 44), _ => separators(t), _ => s)
+      +cc = c
+      separators.go(space(cc) || U32.is_eq(cc, 44), cc, t)
 
 def number.exponent(+s: String) -> Bool:
   match s:
@@ -322,10 +347,20 @@ def rev.decode(s: String, +out: String) -> String:
   rev.decode.go(rev.next(s), out)
 
 # Like until, with entities decoded in the reversal.
-def until.decoded(+s: String, +end: U32, +acc: String) -> Scan:
+@unsafe
+def until.decoded.go(hit: Bool, +c: U32, t: String, +end: U32, acc: String) -> Scan:
+  match hit:
+    case True{}: Scan{rev.decode(acc, ""), t}
+    case False{}:
+      match t:
+        case SNil{}: Scan{rev.decode(SCon{Chr{c}, acc}, ""), ""}
+        case SCon{Chr{c2}, t2}:
+          +cc = c2
+          until.decoded.go(U32.is_eq(cc, end), cc, t2, end, SCon{Chr{c}, acc})
+
+def until.decoded(s: String, +end: U32, acc: String) -> Scan:
   match s:
     case SNil{}: Scan{rev.decode(acc, ""), ""}
     case SCon{Chr{c}, t}:
-      branch(Scan, U32.is_eq(c, end),
-        _ => Scan{rev.decode(acc, ""), t},
-        _ => until.decoded(t, end, SCon{Chr{c}, acc}))
+      +cc = c
+      until.decoded.go(U32.is_eq(cc, end), cc, t, end, acc)

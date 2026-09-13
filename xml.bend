@@ -5,21 +5,37 @@ import ./util.bend as U
 def name.stop(+c: U32) -> Bool:
   U.space(c) || U32.is_eq(c, 61) || U32.is_eq(c, 47) || U32.is_eq(c, 62)
 
-def xml.name(+s: String, +acc: String) -> U.Scan:
+# Each step is decided one character ahead (`stop` says whether `c` ends
+# the name) so the text after the name is held once, never shared.
+@unsafe
+def name.go(stop: Bool, +c: U32, t: String, acc: String) -> U.Scan:
+  match stop:
+    case True{}: U.Scan{U.rev(acc, ""), SCon{Chr{c}, t}}
+    case False{}:
+      match t:
+        case SNil{}: U.Scan{U.rev(SCon{Chr{c}, acc}, ""), ""}
+        case SCon{Chr{c2}, t2}:
+          +cc = c2
+          name.go(name.stop(cc), cc, t2, SCon{Chr{c}, acc})
+
+def xml.name(s: String, acc: String) -> U.Scan:
   match s:
     case SNil{}: U.Scan{U.rev(acc, ""), ""}
     case SCon{Chr{c}, t}:
-      U.branch(U.Scan, name.stop(c), _ => U.Scan{U.rev(acc, ""), s},
-        _ => xml.name(t, SCon{Chr{c}, acc}))
+      +cc = c
+      name.go(name.stop(cc), cc, t, acc)
+
+def value.go(quoted: Bool, +ch: U32, rest: String) -> U.Scan:
+  match quoted:
+    case True{}: U.until.decoded(rest, ch, "")
+    case False{}: xml.name(SCon{Chr{ch}, rest}, "")
 
 def value(s: String) -> U.Scan:
   match s:
     case SNil{}: U.Scan{"", ""}
     case SCon{Chr{c}, t}:
       +ch = c
-      +rest = t
-      U.branch(U.Scan, U32.is_eq(ch, 34) || U32.is_eq(ch, 39),
-        _ => U.until.decoded(rest, ch, ""), _ => xml.name(SCon{Chr{ch}, rest}, ""))
+      value.go(U32.is_eq(ch, 34) || U32.is_eq(ch, 39), ch, t)
 
 def equals(s: String) -> U.Scan:
   match s:
@@ -33,40 +49,51 @@ type Attr is Data:
 type Tag is Data:
   Tag{attrs: List<&2, Attr>, tail: String, closed: Bool}
 
-def attr.append(a: U.Scan, b: U.Scan, attrs: List<&2, Attr>) -> Tag:
-  U.Scan{k, unused} = a
+# The parse position after an attribute: the kind of the next character
+# (see attr.kind; 4 at the end of the text) with the attributes so far.
+# What a character starts inside a tag: 0 space, 1 the end of the tag,
+# 2 a self-closing slash, 3 an attribute.
+def attr.kind(+c: U32) -> U32:
+  U.choose(U32, U.space(c), 0, U.choose(U32, U32.is_eq(c, 62), 1, U.choose(U32, U32.is_eq(c, 47), 2, 3)))
+
+type Next is Data:
+  Next{kind: U32, ch: U32, attrs: List<&2, Attr>, tail: String}
+
+def next.of(attrs: List<&2, Attr>, tail: String) -> Next:
+  match tail:
+    case SNil{}: Next{4, 0, attrs, ""}
+    case SCon{Chr{c}, t}:
+      +cc = c
+      Next{attr.kind(cc), cc, attrs, t}
+
+def attr.append(k: String, b: U.Scan, attrs: List<&2, Attr>) -> Next:
   U.Scan{v, t} = b
-  Tag{Con{Attr{k, v}, attrs}, t, False{}}
+  next.of(Con{Attr{k, v}, attrs}, t)
 
-def attr.read.scan(+a: U.Scan, attrs: List<&2, Attr>) -> Tag:
+def attr.read.scan(a: U.Scan, attrs: List<&2, Attr>) -> Next:
   U.Scan{k, t} = a
-  attr.append(a, equals(U.trim(t)), attrs)
+  attr.append(k, equals(U.trim(t)), attrs)
 
-def attr.read(s: String, attrs: List<&2, Attr>) -> Tag:
+def attr.read(s: String, attrs: List<&2, Attr>) -> Next:
   attr.read.scan(xml.name(s, ""), attrs)
-
-def attributes.more(tag: Tag, next: String -> List<&2, Attr> -> Tag) -> Tag:
-  Tag{attrs, tail, closed} = tag
-  next(tail)(attrs)
 
 def attributes.close(scan: U.Scan, attrs: List<&2, Attr>) -> Tag:
   U.Scan{h, t} = scan
   Tag{attrs, t, True{}}
 
 @unsafe
+def attributes.go(step: Next) -> Tag:
+  match step:
+    case Next{kind, ch, as, tail}:
+      match kind:
+        case 0: attributes.go(next.of(as, tail))
+        case 1: Tag{as, tail, False{}}
+        case 2: attributes.close(U.until(tail, 62, ""), as)
+        case 3: attributes.go(attr.read(SCon{Chr{ch}, tail}, as))
+        case _: Tag{as, "", False{}}
+
 def attributes(s: String, attrs: List<&2, Attr>) -> Tag:
-  match s:
-    case SNil{}: Tag{attrs, "", False{}}
-    case SCon{Chr{c}, t}:
-      +ch = c
-      +tail = t
-      +as = attrs
-      U.branch(Tag, U.space(ch), _ => attributes(tail, as),
-        _ => U.branch(Tag, U32.is_eq(ch, 62), _ => Tag{as, tail, False{}},
-          _ => U.branch(Tag, U32.is_eq(ch, 47),
-            _ => attributes.close(U.until(tail, 62, ""), as),
-            _ => attributes.more(attr.read(SCon{Chr{ch}, tail}, as),
-              next => ats => attributes(next, ats)))))
+  attributes.go(next.of(attrs, s))
 
 type Token is Data:
   Open{name: String, attrs: List<&2, Attr>, closed: Bool}
@@ -272,6 +299,33 @@ def attrs.remove(+as: List<&2, Attr>, +key: String) -> List<&2, Attr>:
 
 def attrs.set(as: List<&2, Attr>, +key: String, value: String) -> List<&2, Attr>:
   Con{Attr{key, value}, attrs.remove(as, key)}
+
+# One attribute's value taken out of the list, so its text has a single
+# owner; "" and the untouched list when absent.
+type Taken is Data:
+  Taken{value: String, rest: List<&2, Attr>}
+
+def taken.push(t: Taken, a: Attr) -> Taken:
+  Taken{v, rest} = t
+  Taken{v, Con{a, rest}}
+
+@unsafe
+def attrs.take.go(hit: Bool, kk: String, v: String, rest: List<&2, Attr>, +key: String) -> Taken:
+  match hit:
+    case True{}: Taken{v, rest}
+    case False{}:
+      match rest:
+        case Nil{}: Taken{"", Con{Attr{kk, v}, Nil{}}}
+        case Con{Attr{k2, v2}, r2}:
+          +kk2 = k2
+          taken.push(attrs.take.go(U.string.equal(kk2, key), kk2, v2, r2, key), Attr{kk, v})
+
+def attrs.take(as: List<&2, Attr>, +key: String) -> Taken:
+  match as:
+    case Nil{}: Taken{"", Nil{}}
+    case Con{Attr{k, v}, rest}:
+      +kk = k
+      attrs.take.go(U.string.equal(kk, key), kk, v, rest, key)
 
 # Build escaped XML in reverse, so large data URIs do not grow the host stack.
 def escape.rev(s: String, acc: String) -> String:

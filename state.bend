@@ -280,10 +280,12 @@ def events(xs: List<Event>, s: State) -> State:
 # Filesystem plumbing is shared so open/save semantics agree between frontends.
 # Chunks are collected last first and joined once at the end, so a large
 # file costs one pass rather than one per chunk.
+# A file read in one chunk is that chunk: nothing is copied.
 def read.join(chunks: List<&2, String>, acc: String) -> String:
   match chunks:
     case Nil{}: acc
-    case Con{c, rest}: read.join(rest, c ++ acc)
+    case Con{c, Nil{}}: c
+    case Con{c, Con{d, rest}}: read.join(Con{d, rest}, c ++ acc)
 
 def read.chunk(got: File & Result<&1, &1, U32 & String, String>, acc: List<&2, String>,
   next: File -> List<&2, String> -> IO(String)) -> IO(String):
@@ -304,7 +306,7 @@ def read.chunk(got: File & Result<&1, &1, U32 & String, String>, acc: List<&2, S
 @unsafe
 def read.loop(file: File, acc: List<&2, String>) -> IO(String):
   do IO<String>:
-    got : File & Result<&1, &1, U32 & String, String> <- File.read(file, 65536)
+    got : File & Result<&1, &1, U32 & String, String> <- File.read(file, 262144)
     read.chunk(got, acc, f => text => read.loop(f, text))
 
 def read(path: String) -> IO(String):

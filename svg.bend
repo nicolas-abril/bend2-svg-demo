@@ -89,8 +89,16 @@ def transform(+s: String, +m: Matrix) -> Matrix:
 
 # Paths are flattened in user coordinates. The fill-only closing edge of an
 # open subpath is kept separate from its stroked edges.
+# An edge is one heap node: its endpoints are stored as four numbers, so
+# building, walking and freeing edge lists touch half the nodes a pair of
+# points would.
 type Edge is Data:
-  Edge{p: Point, q: Point, stroke: Bool, closed: Bool}
+  Edge{x0: F32, y0: F32, x1: F32, y1: F32, stroke: Bool, closed: Bool}
+
+def edge.of(a: Point, b: Point, stroke: Bool, closed: Bool) -> Edge:
+  Point{x0, y0} = a
+  Point{x1, y1} = b
+  Edge{x0, y0, x1, y1, stroke, closed}
 
 # ---- analytic coverage ----
 # A cover is a pixel-space coverage mask (see cover.bend) together with the raster
@@ -196,40 +204,67 @@ def cubic.go(+n: Nat, +i: F32, +step: F32, +p: Point, +a: Point, +b: Point, +q: 
     case 0n: edges
     case 1n+d:
       +next = U.choose(Point, U32.is_zero(U32.from_nat(d)), q, cubic.at(p, a, b, q, (i * step : F32)))
-      cubic.go(d, (i + 1.0 : F32), step, p, a, b, q, next, Con{Edge{prev, next, True{}, False{}}, edges})
+      cubic.go(d, (i + 1.0 : F32), step, p, a, b, q, next, Con{edge.of(prev, next, True{}, False{}), edges})
 
 def cubic(+p: Point, +a: Point, +b: Point, +q: Point, +edges: List<&2, Edge>, +tol: F32) -> List<&2, Edge>:
   +n = cubic.count(p, a, b, q, tol)
   cubic.go(U32.to_nat(n), 1.0, (1.0 / U32.to_f32(n) : F32), p, a, b, q, p, edges)
 
+# What follows a command's numbers, scanned one step ahead: `kind` is 0 at
+# the end of the data, 1 at a letter, 2 at a number repeating the pending
+# command, 3 at anything else.
+type PathNext is Data:
+  PathNext{kind: U32, ch: U32, rest: String}
+
 type Params is Data:
-  Params{values: List<&2, F32>, tail: String, valid: Bool}
+  Params{valid: Bool, values: List<&2, F32>, next: PathNext}
 
-def params.cons(x: F32, ps: Params) -> Params:
-  Params{vs, t, ok} = ps
-  Params{Con{x, vs}, t, ok}
+def path.letter(+ch: U32) -> Bool:
+  (U32.is_ge(ch, 65) && U32.is_le(ch, 90)) || (U32.is_ge(ch, 97) && U32.is_le(ch, 122))
 
-def params.push(+num: U.Number, next: String -> Params) -> Params:
-  U.Number{x, t, valid} = num
-  U.choose(Unit -> Params, valid,
-    _ => params.cons(x, next(t)), _ => Params{Nil{}, t, False{}})(Unit{})
+def path.next(s: String, +cmd: U32) -> PathNext:
+  match s:
+    case SNil{}: PathNext{0, 0, ""}
+    case SCon{Chr{c}, t}:
+      +cc = c
+      PathNext{U.choose(U32, path.letter(cc), 1, U.choose(U32, U32.is_ne(cmd, 0), 2, 3)), cc, t}
 
-def params(n: Nat, s: String) -> Params:
-  match n:
-    case 0n: Params{Nil{}, s, True{}}
-    case 1n+d: params.push(U.number(s), t => params(d, t))
+def floats.rev(xs: List<&2, F32>, acc: List<&2, F32>) -> List<&2, F32>:
+  match xs:
+    case Nil{}: acc
+    case Con{h, t}: floats.rev(t, Con{h, acc})
 
 def arc.flag(+s: String) -> U.Number:
   match s:
     case SNil{}: U.Number{0.0, "", False{}}
     case SCon{Chr{c}, t}: U.Number{U.choose(F32, U32.is_eq(c, 49), 1.0, 0.0), t, U32.is_eq(c, 48) || U32.is_eq(c, 49)}
 
-def path.arguments(+n: Nat, +s: String, +arc: Bool) -> Params:
+def args.number.pick(flag: Bool, s: String) -> U.Number:
+  match flag:
+    case True{}: arc.flag(U.separators(s))
+    case False{}: U.number(s)
+
+# The arguments are counted down; an arc's flags are the 4th and 3rd from its end.
+def args.number(+n: Nat, s: String, +arc: Bool) -> U.Number:
+  args.number.pick(arc && (U32.is_eq(U32.from_nat(n), 4) || U32.is_eq(U32.from_nat(n), 3)), s)
+
+# The numbers of one command, gathered in a loop; `n` counts those still to
+# read after `num`. An invalid number ends the whole parse.
+@unsafe
+def path.args(num: U.Number, +n: Nat, acc: List<&2, F32>, +arc: Bool, +cmd: U32) -> Params:
+  match num:
+    case U.Number{x, t, valid}:
+      match valid:
+        case False{}: Params{False{}, Nil{}, PathNext{0, 0, t}}
+        case True{}:
+          match n:
+            case 0n: Params{True{}, floats.rev(Con{x, acc}, Nil{}), path.next(U.separators(t), cmd)}
+            case 1n+d: path.args(args.number(1n+d, t, arc), d, Con{x, acc}, arc, cmd)
+
+def path.arguments(+n: Nat, s: String, +arc: Bool, +cmd: U32) -> Params:
   match n:
-    case 0n: Params{Nil{}, s, True{}}
-    case 1n+d:
-      params.push(U.branch(U.Number, arc && (U32.is_eq(U32.from_nat(n), 4) || U32.is_eq(U32.from_nat(n), 3)),
-        _ => arc.flag(U.separators(s)), _ => U.number(s)), t => path.arguments(d, t, arc))
+    case 0n: Params{True{}, Nil{}, path.next(U.separators(s), cmd)}
+    case 1n+d: path.args(args.number(1n+d, s, arc), d, Nil{}, arc, cmd)
 
 # Preserve source segment endpoints and analytic tangents only when requested.
 type MarkerSegment is Data:
@@ -270,11 +305,11 @@ def relative(+cmd: U32, +current: Point, p: Point) -> Point:
 def path.move(+p: Path, +q: Point, cmd: U32) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   Path{q, q, q, U.choose(U32, U32.is_ge(cmd, 97), 108, 76), 77,
-    U.choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{Edge{cur, start, False{}, False{}}, es}), marker.segment(trace, marker.line(q, q, 1)), tol}
+    U.choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{edge.of(cur, start, False{}, False{}), es}), marker.segment(trace, marker.line(q, q, 1)), tol}
 
 def path.line(+p: Path, +q: Point, +cmd: U32) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
-  Path{q, start, q, cmd, upper(cmd), Con{Edge{cur, q, True{}, False{}}, es}, marker.segment(trace, marker.line(cur, q, 0)), tol}
+  Path{q, start, q, cmd, upper(cmd), Con{edge.of(cur, q, True{}, False{}), es}, marker.segment(trace, marker.line(cur, q, 0)), tol}
 
 def path.cubic(+p: Path, +a: Point, +b: Point, +q: Point, +cmd: U32) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
@@ -290,7 +325,7 @@ def path.quad(+p: Path, +a: Point, +q: Point, +cmd: U32) -> Path:
 
 def path.close(+p: Path) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
-  Path{start, start, start, 0, 90, Con{Edge{cur, start, True{}, True{}}, es}, marker.segment(trace, marker.line(cur, start, 2)), tol}
+  Path{start, start, start, 0, 90, Con{edge.of(cur, start, True{}, True{}), es}, marker.segment(trace, marker.line(cur, start, 2)), tol}
 
 def path.h(+cur: Point, +v: F32, cmd: U32) -> Point:
   Point{x, y} = cur
@@ -311,7 +346,7 @@ def arc.edges(+n: Nat, +i: F32, +step: F32, +theta: F32, +center: Point,
     case 0n: edges
     case 1n+d:
       +q = U.choose(Point, U32.is_zero(U32.from_nat(d)), endpoint, arc.point(center, rx, ry, phi, (theta + i * step : F32)))
-      arc.edges(d, (i + 1.0 : F32), step, theta, center, rx, ry, phi, endpoint, q, Con{Edge{p, q, True{}, False{}}, edges})
+      arc.edges(d, (i + 1.0 : F32), step, theta, center, rx, ry, phi, endpoint, q, Con{edge.of(p, q, True{}, False{}), edges})
 
 def arc.draw(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
   +center: Point, +theta: F32, +delta: F32) -> Path:
@@ -395,58 +430,62 @@ def path.apply(+p: Path, +cmd: U32, +vs: List<&2, F32>) -> Path:
     _ => p)))))))))
 
 def path.arity(+c: U32) -> Nat:
-  U.choose(Nat, U32.is_eq(c, 72) || U32.is_eq(c, 86), 1n,
+  U.choose(Nat, U32.is_eq(c, 90), 0n, U.choose(Nat, U32.is_eq(c, 72) || U32.is_eq(c, 86), 1n,
     U.choose(Nat, U32.is_eq(c, 67), 6n,
       U.choose(Nat, U32.is_eq(c, 83) || U32.is_eq(c, 81), 4n,
-        U.choose(Nat, U32.is_eq(c, 65), 7n, 2n))))
+        U.choose(Nat, U32.is_eq(c, 65), 7n, 2n)))))
 
-def path.params(p: Path, cmd: U32, ps: Params, next: String -> Path -> Path) -> Path:
-  Params{vs, tail, valid} = ps
-  +state = p
-  U.choose(Unit -> Path, valid,
-    _ => next(tail)(path.apply(state, cmd, vs)), _ => state)(Unit{})
+# A command applied to the path: 0 nothing (before the first command),
+# 1 a close, 2 a drawing command with its numbers.
+def path.step(kind: U32, p: Path, +cmd: U32, vs: List<&2, F32>) -> Path:
+  match kind:
+    case 0: p
+    case 1: path.close(p)
+    case _: path.apply(p, cmd, vs)
 
-def path.command(+s: String, +cmd: U32, +p: Path, next: String -> Path -> Path) -> Path:
-  # Choosing the continuation first avoids duplicating its affine closure.
-  action = U.choose((String -> Path -> Path) -> Path, U32.is_eq(upper(cmd), 90),
-    k => k(s)(path.close(p)),
-    k => path.params(p, cmd, path.arguments(path.arity(upper(cmd)), s, U32.is_eq(upper(cmd), 65)), k))
-  action(next)
+# The command a bare number after `cmd` repeats: a move continues as a
+# line, a close as nothing (the parse ends), any other command as itself.
+def path.follow(+cmd: U32) -> U32:
+  U.choose(U32, U32.is_eq(cmd, 77), 76, U.choose(U32, U32.is_eq(cmd, 109), 108, U.choose(U32, U32.is_eq(upper(cmd), 90), 0, cmd)))
 
-# A non-letter with no command pending ends the parse; with one pending it
-# repeats that command (SVG's implicit repetition).
-def path.repeat(pending: Bool, +ch: U32, +tail: String, +cmd: U32, +p: Path, next: String -> Path -> Path) -> Path:
-  match pending:
-    case True{}: path.command(SCon{Chr{ch}, tail}, cmd, p, next)
-    case False{}: p
+def path.step.kind(+cmd: U32) -> U32:
+  U.choose(U32, U32.is_eq(cmd, 0), 0, U.choose(U32, U32.is_eq(upper(cmd), 90), 1, 2))
 
-def path.char(letter: Bool, +ch: U32, +tail: String, +cmd: U32, +p: Path, next: String -> Path -> Path) -> Path:
-  match letter:
-    case True{}: path.command(tail, ch, p, next)
-    case False{}: path.repeat(U32.is_ne(cmd, 0), ch, tail, cmd, p, next)
-
-def path.scan(+p: Path, s: String, next: String -> Path -> Path) -> Path:
-  Path{cur, start, ctrl, cmd, prev, es, trace, tol} = p
-  match s:
-    case SNil{}: p
-    case SCon{Chr{c}, t}:
-      +ch = c
-      path.char((U32.is_ge(ch, 65) && U32.is_le(ch, 90)) || (U32.is_ge(ch, 97) && U32.is_le(ch, 122)), ch, t, cmd, p, next)
-
+# The commands in turn: each step applies the pending command with the
+# numbers just read, then reads the next command's numbers. A non-letter
+# repeats the pending command (SVG's implicit repetition); with none pending
+# it ends the parse.
 @unsafe
+def path.run(ps: Params, +cmd: U32, p: Path) -> Path:
+  match ps:
+    case Params{valid, vs, nx}:
+      match valid:
+        case False{}: p
+        case True{}:
+          match nx:
+            case PathNext{kind, ch, rest}:
+              match kind:
+                case 1:
+                  +c2 = ch
+                  path.run(path.arguments(path.arity(upper(c2)), rest, U32.is_eq(upper(c2), 65), path.follow(c2)), c2, path.step(path.step.kind(cmd), p, cmd, vs))
+                case 2:
+                  +pending = path.follow(cmd)
+                  path.run(path.arguments(path.arity(upper(pending)), SCon{Chr{ch}, rest}, U32.is_eq(upper(pending), 65), path.follow(pending)), pending, path.step(path.step.kind(cmd), p, cmd, vs))
+                case _: path.step(path.step.kind(cmd), p, cmd, vs)
+
 def path.loop(s: String, p: Path) -> Path:
-  path.scan(p, U.separators(s), t => next => path.loop(t, next))
+  path.run(path.arguments(0n, s, False{}, 0), 0, p)
 
 def path.finish(+p: Path) -> List<&2, Edge>:
   Path{cur, start, ctrl, cmd, prev, es, trace, tol} = p
-  U.choose(List<&2, Edge>, U32.is_eq(prev, 0), Nil{}, Con{Edge{cur, start, False{}, False{}}, es})
+  U.choose(List<&2, Edge>, U32.is_eq(prev, 0), Nil{}, Con{edge.of(cur, start, False{}, False{}), es})
 
 def path(s: String, +tol: F32) -> List<&2, Edge>:
   path.finish(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, None{}, tol}))
 
 # Geometry queries use half-open crossings, supporting both SVG fill rules.
 def edge.cross(+edge: Edge, +p: Point) -> F32:
-  Edge{Point{x1, y1}, Point{x2, y2}, stroked, closed} = edge
+  Edge{x1, y1, x2, y2, stroked, closed} = edge
   Point{x, y} = p
   U.branch(F32, (F32.is_le(y1, y) && F32.is_gt(y2, y)) || (F32.is_le(y2, y) && F32.is_gt(y1, y)),
     _ => U.choose(F32, F32.is_gt((x1 + (y - y1) * (x2 - x1) / (y2 - y1) : F32), x),
@@ -462,8 +501,9 @@ def fill.inside(edges: List<&2, Edge>, p: Point, even: Bool) -> Bool:
   F32.is_gt(F32.abs(U.choose(F32, even, (w % 2.0 : F32), w)), 0.5)
 
 def edge.distance(+e: Edge, +p: Point) -> F32:
-  Edge{a, b, stroked, closed} = e
-  +ab = point.sub(b, a)
+  Edge{ax, ay, bx, by, stroked, closed} = e
+  +a = {Point{ax, ay} : Point}
+  +ab = point.sub(Point{bx, by}, a)
   +den = point.dot(ab, ab)
   +t = U.clamp((point.dot(point.sub(p, a), ab) / U.max(0.000000000001, den) : F32), 0.0, 1.0)
   U.choose(F32, stroked, point.distance(p, point.add(a, point.scale(ab, t))), 100000000000000000000.0)
@@ -483,10 +523,14 @@ def bounds.point(+b: Bounds, +p: Point) -> Bounds:
   Point{x, y} = p
   Bounds{U.min(x0, x), U.min(y0, y), U.max(x1, x), U.max(y1, y)}
 
+def bounds.at(+b: Bounds, +x: F32, +y: F32) -> Bounds:
+  Bounds{x0, y0, x1, y1} = b
+  Bounds{U.min(x0, x), U.min(y0, y), U.max(x1, x), U.max(y1, y)}
+
 def bounds(edges: List<&2, Edge>, box: Bounds) -> Bounds:
   match edges:
     case Nil{}: box
-    case Con{Edge{a, b, stroked, closed}, t}: bounds(t, bounds.point(bounds.point(box, a), b))
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, t}: bounds(t, bounds.at(bounds.at(box, ax, ay), bx, by))
 
 def bounds.inside(b: Bounds, +p: Point, +margin: F32) -> Bool:
   Bounds{x0, y0, x1, y1} = b
@@ -712,8 +756,48 @@ def color.parse(+s: String) -> Img.Color:
     _ => U.branch(Img.Color, U.prefix(s, "hwb("), _ => color.function.args(color.tokens(4n, U.drop(s, "hwb(")), 2),
     _ => U.branch(Img.Color, U.string.equal(s, "none") || U.string.equal(s, "transparent"), _ => Img.clear(), _ => color.named(s))))))
 
+# Hex digits after a '#', read in one pass: the value and count when the
+# rest is only whitespace, else a count of 0 so the general parser decides.
+def color.hex.digit(+ch: U32) -> Bool:
+  U.digit(ch) || (U32.is_ge(U32.or(ch, 32), 97) && U32.is_le(U32.or(ch, 32), 102))
+
+# One character at a time, decided one step ahead: `hexed` says whether `ch`
+# is a hex digit; the rest is scanned only while digits continue.
+@unsafe
+def color.hex.scan(hexed: Bool, +ch: U32, t: String, +acc: U32, +n: U32) -> U32 & U32:
+  match hexed:
+    case True{}:
+      match t:
+        case SNil{}: ((acc * 16 + U.hex.digit(ch) : U32), (n + 1 : U32))
+        case SCon{Chr{c}, t2}:
+          +c2 = c
+          color.hex.scan(color.hex.digit(c2), c2, t2, (acc * 16 + U.hex.digit(ch) : U32), (n + 1 : U32))
+    case False{}: U.choose(U32 & U32, U.space(ch) && U.string.equal(U.trim(t), ""), (acc, n), (0, 0))
+
+def color.hex.start(rest: String) -> U32 & U32:
+  match rest:
+    case SNil{}: (0, 0)
+    case SCon{Chr{c}, t}:
+      +c2 = c
+      color.hex.scan(color.hex.digit(c2), c2, t, 0, 0)
+
+def color.hex.fast(scanned: U32 & U32, s: String) -> Img.Color:
+  (x, n) = scanned
+  +len = n
+  U.branch(Img.Color, U32.is_eq(len, 3) || U32.is_eq(len, 4) || U32.is_eq(len, 6) || U32.is_eq(len, 8),
+    _ => color.hex(x, len), _ => color.parse(CSS.css.lower(U.trim.both(s))))
+
+def color.head(+s: String) -> Img.Color:
+  match s:
+    case SNil{}: color.parse("")
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +rest = t
+      U.branch(Img.Color, U32.is_eq(ch, 35), _ => color.hex.fast(color.hex.start(rest), s),
+        _ => color.parse(CSS.css.lower(U.trim.both(s))))
+
 def color(s: String) -> Img.Color:
-  color.parse(CSS.css.lower(U.trim.both(s)))
+  color.head(U.trim(s))
 
 def color.opacity.number(num: U.Number, fallback: F32) -> F32:
   U.Number{x, tail, ok} = num
@@ -753,11 +837,13 @@ def shape.ellipse.path(+x: F32, +y: F32, +rx: F32, +ry: F32) -> String:
 def edges.transform(es: List<&2, Edge>, +m: Matrix) -> List<&2, Edge>:
   match es:
     case Nil{}: Nil{}
-    case Con{Edge{a, b, stroked, closed}, rest}:
-      Con{Edge{matrix.point(m, a), matrix.point(m, b), stroked, closed}, edges.transform(rest, m)}
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}:
+      Con{edge.of(matrix.point(m, Point{ax, ay}), matrix.point(m, Point{bx, by}), stroked, closed), edges.transform(rest, m)}
 
-def shape.data(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> String:
-  U.branch(String, U.string.equal(name, "path"), _ => XML.attr.get(as, "d", ""),
+# The path data of a shape; a path's own `d` arrives separately (taken out
+# of its attributes) so the parser owns that text outright.
+def shape.data(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32, data: String) -> String:
+  U.branch(String, U.string.equal(name, "path"), _ => data,
     _ => U.branch(String, U.string.equal(name, "rect") || U.string.equal(name, "image") || U.string.equal(name, "#svg-image"), _ => shape.rect(as, vw, vh),
       _ => U.branch(String, U.string.equal(name, "circle"),
         _ => shape.ellipse.path(dimension(as, "cx", vw, "0"), dimension(as, "cy", vh, "0"),
@@ -776,10 +862,13 @@ def shape.data(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> St
 def glyph.path(+d: String, +gm: Matrix, +tol: F32) -> List<&2, Edge>:
   edges.transform(path(d, (tol / matrix.norm(gm) : F32)), gm)
 
-def shape(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32, +tol: F32) -> List<&2, Edge>:
-  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph"),
-    _ => glyph.path(XML.attr.get(as, "d", ""), transform(XML.attr.get(as, "#glyph-transform", ""), identity()), tol),
-    _ => path(shape.data(name, as, vw, vh), tol))
+def shape.of(glyph: Bool, data: String, +name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32, +tol: F32) -> List<&2, Edge>:
+  match glyph:
+    case True{}: glyph.path(data, transform(XML.attr.get(as, "#glyph-transform", ""), identity()), tol)
+    case False{}: path(shape.data(name, as, vw, vh, data), tol)
+
+def shape(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32, +tol: F32, data: String) -> List<&2, Edge>:
+  shape.of(U.string.equal(name, "#glyph"), data, name, as, vw, vh, tol)
 
 # Paint adjacent glyphs with one shared style as one geometry. This keeps all
 # fills together and all strokes together, including overlapping glyphs.
@@ -796,8 +885,8 @@ def glyph.edges(xs: List<&2, XML.Element>, +tol: F32) -> List<&2, Edge>:
       glyph.edges.append(glyph.path(XML.attr.get(attrs, "d", ""), transform(XML.attr.get(attrs, "#glyph-transform", ""), identity()), tol), glyph.edges(rest, tol))
 
 # The element's edges in local units, flattened for the local-to-device matrix m.
-def shape.children(+name: String, as: List<&2, XML.Attr>, kids: List<&2, XML.Element>, vw: F32, vh: F32, +tol: F32) -> List<&2, Edge>:
-  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph-run"), _ => glyph.edges(kids, tol), _ => shape(name, as, vw, vh, tol))
+def shape.children(+name: String, as: List<&2, XML.Attr>, kids: List<&2, XML.Element>, vw: F32, vh: F32, +tol: F32, data: String) -> List<&2, Edge>:
+  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph-run"), _ => glyph.edges(kids, tol), _ => shape(name, as, vw, vh, tol, data))
 
 type MarkerSubpath is Data:
   MarkerSubpath{start: Point, segments: List<&2, MarkerSegment>, closed: Bool}
@@ -904,14 +993,43 @@ def stroke.settings() -> StrokeSettings:
 # A property from an element's attributes: absent means the inherited value
 # (or the initial one for non-inherited properties) with no string work at
 # all; present, the CSS-wide keywords are honoured.
+# The CSS-wide keywords of a value: 1 inherit, 2 initial, 3 unset, 0 none.
+# Decided from the first letter on, case-insensitively, with blanks around
+# allowed, without lowercasing or trimming a copy of every value.
+def keyword.blank(s: String) -> Bool:
+  match s:
+    case SNil{}: True{}
+    case SCon{Chr{c}, t}: U.space(c) && keyword.blank(t)
+
+def keyword.rest(p: String, s: String) -> Bool:
+  match p:
+    case SNil{}: keyword.blank(s)
+    case SCon{Chr{pc}, pt}:
+      match s:
+        case SNil{}: False{}
+        case SCon{Chr{c}, t}: U32.is_eq(U32.or(c, 32), pc) && keyword.rest(pt, t)
+
+def keyword.pick(+s: String) -> U32:
+  U.choose(U32, keyword.rest("inherit", s), 1, U.choose(U32, keyword.rest("initial", s), 2, U.choose(U32, keyword.rest("unset", s), 3, 0)))
+
+def keyword.head(s: String) -> U32:
+  match s:
+    case SNil{}: 0
+    case SCon{Chr{c}, t}:
+      +ch = c
+      U.choose(U32, U32.is_eq(U32.or(ch, 32), 105) || U32.is_eq(U32.or(ch, 32), 117), keyword.pick(SCon{Chr{ch}, t}), 0)
+
+def style.keyword(s: String) -> U32:
+  keyword.head(U.trim(s))
+
 def style.present(found: Maybe<&2, String>, +fallback: String, +initial: String, +inherited: Bool) -> String:
   match found:
     case None{}: U.choose(String, inherited, fallback, initial)
     case Some{v}:
       +vv = v
-      +keyword = CSS.css.lower(U.trim.both(vv))
-      U.choose(String, U.string.equal(keyword, "inherit") || (inherited && U.string.equal(keyword, "unset")), fallback,
-        U.choose(String, U.string.equal(keyword, "initial") || U.string.equal(keyword, "unset"), initial, vv))
+      +k = style.keyword(vv)
+      U.choose(String, U32.is_eq(k, 1) || (inherited && U32.is_eq(k, 3)), fallback,
+        U.choose(String, U32.is_eq(k, 2) || U32.is_eq(k, 3), initial, vv))
 
 def style.value(+as: List<&2, XML.Attr>, key: String, +fallback: String, +initial: String, +inherited: Bool) -> String:
   style.present(XML.attr.find(as, key), fallback, initial, inherited)
@@ -923,20 +1041,92 @@ def style.number.present(found: Maybe<&2, String>, +parent: F32, +initial: F32, 
     case None{}: parent
     case Some{v}:
       +vv = v
-      +keyword = CSS.css.lower(U.trim.both(vv))
-      U.choose(F32, U.string.equal(keyword, "inherit") || U.string.equal(keyword, "unset"), parent,
-        U.choose(F32, U.string.equal(keyword, "initial"), initial, parse(vv)))
+      +k = style.keyword(vv)
+      U.choose(F32, U32.is_eq(k, 1) || U32.is_eq(k, 3), parent,
+        U.choose(F32, U32.is_eq(k, 2), initial, parse(vv)))
 
 def style.number(+as: List<&2, XML.Attr>, key: String, +parent: F32, +initial: F32, parse: String -> F32) -> F32:
   style.number.present(XML.attr.find(as, key), parent, initial, parse)
 
-def stroke.inherit(s: StrokeSettings, +as: List<&2, XML.Attr>) -> StrokeSettings:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = s
-  +lim = limit
-  StrokeSettings{style.value(as, "stroke-linecap", cap, "butt", True{}), style.value(as, "stroke-linejoin", join, "miter", True{}),
-    U.max(0.0, style.number(as, "stroke-miterlimit", lim, 4.0, v => U.scalar(v, lim))),
-    style.value(as, "stroke-dasharray", dash, "none", True{}), style.value(as, "stroke-dashoffset", offset, "0", True{}),
-    style.value(as, "vector-effect", vector, "none", False{})}
+# The style properties an element's own attributes may set, picked up in
+# one pass over the attribute list (the first occurrence of a key counts,
+# as a lookup by name would find it), so inheritance reads them without a
+# walk per property.
+type Picked is Data:
+  Picked{fill: Maybe<&2, String>, stroke: Maybe<&2, String>, color: Maybe<&2, String>, fo: Maybe<&2, String>, so: Maybe<&2, String>,
+    width: Maybe<&2, String>, rule: Maybe<&2, String>, vis: Maybe<&2, String>, render: Maybe<&2, String>, order: Maybe<&2, String>,
+    cap: Maybe<&2, String>, join: Maybe<&2, String>, limit: Maybe<&2, String>, dash: Maybe<&2, String>, offset: Maybe<&2, String>,
+    vector: Maybe<&2, String>, ms: Maybe<&2, String>, mm: Maybe<&2, String>, me: Maybe<&2, String>}
+
+def pick.none() -> Picked:
+  Picked{None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}, None{}}
+
+def pick.first(old: Maybe<&2, String>, v: String) -> Maybe<&2, String>:
+  match old:
+    case None{}: Some{v}
+    case Some{x}: Some{x}
+
+# Which property a key names, 0 for none, by its first letter then the name.
+def pick.slot.f(+k: String) -> U32:
+  U.choose(U32, U.string.equal(k, "fill"), 1, U.choose(U32, U.string.equal(k, "fill-opacity"), 4, U.choose(U32, U.string.equal(k, "fill-rule"), 7, 0)))
+
+def pick.slot.s(+k: String) -> U32:
+  U.choose(U32, U.string.equal(k, "stroke"), 2, U.choose(U32, U.string.equal(k, "stroke-opacity"), 5, U.choose(U32, U.string.equal(k, "stroke-width"), 6,
+    U.choose(U32, U.string.equal(k, "stroke-linecap"), 11, U.choose(U32, U.string.equal(k, "stroke-linejoin"), 12, U.choose(U32, U.string.equal(k, "stroke-miterlimit"), 13,
+      U.choose(U32, U.string.equal(k, "stroke-dasharray"), 14, U.choose(U32, U.string.equal(k, "stroke-dashoffset"), 15, 0))))))))
+
+def pick.slot.m(+k: String) -> U32:
+  U.choose(U32, U.string.equal(k, "marker-start"), 17, U.choose(U32, U.string.equal(k, "marker-mid"), 18, U.choose(U32, U.string.equal(k, "marker-end"), 19, 0)))
+
+def pick.slot.other(+k: String, +c: U32) -> U32:
+  U.choose(U32, U32.is_eq(c, 99) && U.string.equal(k, "color"), 3,
+    U.choose(U32, U32.is_eq(c, 118) && U.string.equal(k, "visibility"), 8, U.choose(U32, U32.is_eq(c, 118) && U.string.equal(k, "vector-effect"), 16,
+      U.choose(U32, U32.is_eq(c, 105) && U.string.equal(k, "image-rendering"), 9, U.choose(U32, U32.is_eq(c, 112) && U.string.equal(k, "paint-order"), 10, 0)))))
+
+def pick.slot(k: String) -> U32:
+  match k:
+    case SNil{}: 0
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +key = {SCon{Chr{ch}, t} : String}
+      U.choose(U32, U32.is_eq(ch, 102), pick.slot.f(key), U.choose(U32, U32.is_eq(ch, 115), pick.slot.s(key), U.choose(U32, U32.is_eq(ch, 109), pick.slot.m(key), pick.slot.other(key, ch))))
+
+def pick.put(p: Picked, +slot: U32, v: String) -> Picked:
+  Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19} = p
+  match slot:
+    case 1: Picked{pick.first(q1, v), q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 2: Picked{q1, pick.first(q2, v), q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 3: Picked{q1, q2, pick.first(q3, v), q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 4: Picked{q1, q2, q3, pick.first(q4, v), q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 5: Picked{q1, q2, q3, q4, pick.first(q5, v), q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 6: Picked{q1, q2, q3, q4, q5, pick.first(q6, v), q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 7: Picked{q1, q2, q3, q4, q5, q6, pick.first(q7, v), q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 8: Picked{q1, q2, q3, q4, q5, q6, q7, pick.first(q8, v), q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 9: Picked{q1, q2, q3, q4, q5, q6, q7, q8, pick.first(q9, v), q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 10: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, pick.first(q10, v), q11, q12, q13, q14, q15, q16, q17, q18, q19}
+    case 11: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, pick.first(q11, v), q12, q13, q14, q15, q16, q17, q18, q19}
+    case 12: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, pick.first(q12, v), q13, q14, q15, q16, q17, q18, q19}
+    case 13: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, pick.first(q13, v), q14, q15, q16, q17, q18, q19}
+    case 14: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, pick.first(q14, v), q15, q16, q17, q18, q19}
+    case 15: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, pick.first(q15, v), q16, q17, q18, q19}
+    case 16: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, pick.first(q16, v), q17, q18, q19}
+    case 17: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, pick.first(q17, v), q18, q19}
+    case 18: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, pick.first(q18, v), q19}
+    case 19: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, pick.first(q19, v)}
+    case _: Picked{q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19}
+
+def style.pick(as: List<&2, XML.Attr>, p: Picked) -> Picked:
+  match as:
+    case Nil{}: p
+    case Con{XML.Attr{k, v}, rest}: style.pick(rest, pick.put(p, pick.slot(k), v))
+
+def stroke.inherit(s: StrokeSettings, cap: Maybe<&2, String>, join: Maybe<&2, String>, lim: Maybe<&2, String>, dash: Maybe<&2, String>, offset: Maybe<&2, String>, vector: Maybe<&2, String>) -> StrokeSettings:
+  StrokeSettings{cap0, join0, limit, dash0, offset0, vector0} = s
+  +lim0 = limit
+  StrokeSettings{style.present(cap, cap0, "butt", True{}), style.present(join, join0, "miter", True{}),
+    U.max(0.0, style.number.present(lim, lim0, 4.0, v => U.scalar(v, lim0))),
+    style.present(dash, dash0, "none", True{}), style.present(offset, offset0, "0", True{}),
+    style.present(vector, vector0, "none", False{})}
 
 def point.cross(p: Point, q: Point) -> F32:
   Point{x, y} = p
@@ -985,8 +1175,8 @@ def points.add(points: List<&2, Point>, a: Point, b: Point) -> List<&2, Point>:
 def subpaths(+es: List<&2, Edge>, +points: List<&2, Point>, +paths: List<&2, Subpath>) -> List<&2, Subpath>:
   match es:
     case Nil{}: subpath.finish(points, False{}, paths)
-    case Con{Edge{a, b, stroked, closed}, rest}:
-      +ps = points.add(points, a, b)
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}:
+      +ps = points.add(points, Point{ax, ay}, Point{bx, by})
       U.branch(List<&2, Subpath>, stroked,
         _ => U.branch(List<&2, Subpath>, closed,
           _ => subpaths(rest, Nil{}, subpath.finish(ps, True{}, paths)),
@@ -994,7 +1184,13 @@ def subpaths(+es: List<&2, Edge>, +points: List<&2, Point>, +paths: List<&2, Sub
         _ => subpaths(rest, Nil{}, subpath.finish(points, False{}, paths)))
 
 type Segment is Data:
-  Segment{p: Point, q: Point, direction: Point, length: F32, distance: F32}
+  Segment{px: F32, py: F32, qx: F32, qy: F32, ux: F32, uy: F32, length: F32, distance: F32}
+
+def segment.of(p: Point, q: Point, u: Point, +length: F32, +distance: F32) -> Segment:
+  Point{px, py} = p
+  Point{qx, qy} = q
+  Point{ux, uy} = u
+  Segment{px, py, qx, qy, ux, uy, length, distance}
 
 def segments(+points: List<&2, Point>, +distance: F32) -> List<&2, Segment>:
   match points:
@@ -1002,12 +1198,12 @@ def segments(+points: List<&2, Point>, +distance: F32) -> List<&2, Segment>:
     case Con{p, Nil{}}: Nil{}
     case Con{p, Con{q, rest}}:
       +len = point.distance(p, q)
-      Con{Segment{p, q, point.unit(point.sub(q, p)), len, distance}, segments(Con{q, rest}, (distance + len : F32))}
+      Con{segment.of(p, q, point.unit(point.sub(q, p)), len, distance), segments(Con{q, rest}, (distance + len : F32))}
 
 def segments.length(xs: List<&2, Segment>) -> F32:
   match xs:
     case Nil{}: 0.0
-    case Con{Segment{p, q, dir, len, distance}, rest}: (len + segments.length(rest) : F32)
+    case Con{Segment{px, py, qx, qy, ux, uy, len, distance}, rest}: (len + segments.length(rest) : F32)
 
 # Dash intervals are measured along each flattened subpath. A dash crossing a
 # vertex gets a join; a dash ending there gets a cap instead.
@@ -1068,6 +1264,11 @@ def dash.pattern(settings: StrokeSettings, +ref: F32, +factor: F32) -> DashPatte
   StrokeSettings{cap, join, limit, dash, offset, vector} = settings
   dash.pattern.values(floats.scale(dash.values(dash, ref), factor), (U.unit(U.number(offset), ref) * factor : F32))
 
+# Whether the pattern dashes at all.
+def dash.some(pattern: DashPattern) -> Bool:
+  DashPattern{values, period, offset} = pattern
+  F32.is_gt(period, 0.0000001)
+
 def dash.seek(xs: List<&2, F32>, +offset: F32, +painted: Bool) -> DashCursor:
   match xs:
     case Nil{}: DashCursor{0.0, Nil{}, painted}
@@ -1113,17 +1314,17 @@ def dash.end(xs: List<&2, DashRun>, +total: F32) -> Bool:
     case Con{DashRun{a, b}, rest}:
       (F32.is_lt(a, total) && F32.is_ge(b, total)) || dash.end(rest, total)
 
-def segment.dir(+s: Segment) -> Point:
-  Segment{p, q, dir, len, distance} = s
-  dir
+def segment.dir(s: Segment) -> Point:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = s
+  Point{ux, uy}
 
-def segment.start(+s: Segment) -> Point:
-  Segment{p, q, dir, len, distance} = s
-  p
+def segment.start(s: Segment) -> Point:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = s
+  Point{px, py}
 
-def segment.end(+s: Segment) -> Point:
-  Segment{p, q, dir, len, distance} = s
-  q
+def segment.end(s: Segment) -> Point:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = s
+  Point{qx, qy}
 
 # ---- outline stroker ----
 # A stroke is filled as an outline with nonzero winding: for an open subpath
@@ -1134,6 +1335,22 @@ def segment.end(+s: Segment) -> Point:
 # inner side the two offsets cross, and the small loop that makes still
 # fills under nonzero winding. Round parts are flattened to the device
 # tolerance through `scale`, the device pixels per local unit.
+
+# The join and cap of a stroke as codes, decided once per stroke instead of
+# by name at every vertex: cap 0 butt, 1 round, 2 square; join 0 miter,
+# 1 round, 2 bevel, 3 miter-clip.
+type Joins is Data:
+  Joins{cap: U32, join: U32, limit: F32}
+
+def cap.code(+s: String) -> U32:
+  U.choose(U32, U.string.equal(s, "round"), 1, U.choose(U32, U.string.equal(s, "square"), 2, 0))
+
+def join.code(+s: String) -> U32:
+  U.choose(U32, U.string.equal(s, "round"), 1, U.choose(U32, U.string.equal(s, "bevel"), 2, U.choose(U32, U.string.equal(s, "miter-clip"), 3, 0)))
+
+def joins.of(settings: StrokeSettings) -> Joins:
+  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
+  Joins{cap.code(cap), join.code(join), limit}
 
 def outline.tolerance(+scale: F32) -> F32:
   (flat.tolerance() / U.max(scale, 0.000001) : F32)
@@ -1169,46 +1386,52 @@ def point.turn(+u: Point, +v: Point) -> F32:
 # outgoing v, when that side is the outer one (the path turns right). Both
 # offset endpoints a = p + r n(u) and b = p + r n(v) are pushed by the
 # segments; only what lies between them is added here.
-def outline.miter(+p: Point, +a: Point, +b: Point, +u: Point, +v: Point, +r: F32, +limit: F32, +join: String, +acc: List<&2, Point>) -> List<&2, Point>:
+def outline.miter.pick(fits: Bool, clip: Bool, +m: Point, +a: Point, +b: Point, +da: F32, +db: F32, +distance: F32, +reach: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match fits:
+    case True{}: Con{m, acc}
+    case False{}:
+      match clip:
+        case True{}:
+          Con{point.add(b, point.scale(point.sub(m, b), U.clamp(((reach - db) / (distance - db) : F32), 0.0, 1.0))),
+            Con{point.add(a, point.scale(point.sub(m, a), U.clamp(((reach - da) / (distance - da) : F32), 0.0, 1.0))), acc}}
+        case False{}: acc
+
+def outline.miter(+p: Point, +a: Point, +b: Point, +u: Point, +v: Point, +r: F32, +limit: F32, +join: U32, acc: List<&2, Point>) -> List<&2, Point>:
   +m = point.add(a, point.scale(u, (point.cross(point.sub(b, a), v) / point.cross(u, v) : F32)))
   +distance = point.distance(p, m)
   +n = point.unit(point.sub(m, p))
-  +da = point.dot(point.sub(a, p), n)
-  +db = point.dot(point.sub(b, p), n)
   +reach = (limit * r : F32)
-  U.branch(List<&2, Point>, F32.is_le(distance, reach), _ => Con{m, acc},
-    _ => U.branch(List<&2, Point>, U.string.equal(join, "miter-clip"),
-      _ => Con{point.add(b, point.scale(point.sub(m, b), U.clamp(((reach - db) / (distance - db) : F32), 0.0, 1.0))),
-        Con{point.add(a, point.scale(point.sub(m, a), U.clamp(((reach - da) / (distance - da) : F32), 0.0, 1.0))), acc}},
-      _ => acc))
+  outline.miter.pick(F32.is_le(distance, reach), U32.is_eq(join, 3), m, a, b, point.dot(point.sub(a, p), n), point.dot(point.sub(b, p), n), distance, reach, acc)
 
-def outline.join.outer(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-  +nu = point.normal(u)
-  U.branch(List<&2, Point>, U.string.equal(join, "round"), _ => outline.sweep(p, r, nu, point.turn(u, v), scale, acc),
-    _ => U.branch(List<&2, Point>, U.string.equal(join, "bevel"), _ => acc,
-      _ => outline.miter(p, point.add(p, point.scale(nu, r)), point.add(p, point.scale(point.normal(v), r)), u, v, r, limit, join, acc)))
+def outline.join.kind(+join: U32, +p: Point, +u: Point, +v: Point, +nu: Point, +r: F32, +limit: F32, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match join:
+    case 1: outline.sweep(p, r, nu, point.turn(u, v), scale, acc)
+    case 2: acc
+    case _: outline.miter(p, point.add(p, point.scale(nu, r)), point.add(p, point.scale(point.normal(v), r)), u, v, r, limit, join, acc)
+
+def outline.join.outer(+p: Point, +u: Point, +v: Point, +r: F32, js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  Joins{cap, join, limit} = js
+  outline.join.kind(join, p, u, v, point.normal(u), r, limit, scale, acc)
 
 # A reversal (v = -u) gets the half circle through p + r u when joins are round.
-def outline.join.back(+p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-  U.branch(List<&2, Point>, U.string.equal(join, "round"), _ => outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc), _ => acc)
+def outline.join.back.kind(join: U32, +p: Point, +u: Point, +r: F32, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match join:
+    case 1: outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc)
+    case _: acc
 
-def outline.join(+p: Point, +u: Point, +v: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
-  +turn = point.cross(u, v)
-  U.branch(List<&2, Point>, F32.is_lt(F32.abs(turn), 0.000001),
-    _ => U.branch(List<&2, Point>, F32.is_lt(point.dot(u, v), 0.0), _ => outline.join.back(p, u, r, settings, scale, acc), _ => acc),
-    _ => U.branch(List<&2, Point>, F32.is_lt(turn, 0.0), _ => outline.join.outer(p, u, v, r, settings, scale, acc), _ => acc))
+def outline.join.back(+p: Point, +u: Point, +r: F32, js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  Joins{cap, join, limit} = js
+  outline.join.back.kind(join, p, u, r, scale, acc)
 
 # The previous segment along a side: its direction, the end of its offset
 # (not yet emitted, since an inner join replaces it) and its length.
 type Prev is Data:
   Prev{dir: Point, end: Point, len: F32}
 
-def prev.of(+seg: Segment, +r: F32) -> Prev:
-  Segment{p, q, dir, len, distance} = seg
-  +u = dir
-  Prev{u, point.add(q, point.scale(point.normal(u), r)), len}
+def prev.of(seg: Segment, +r: F32) -> Prev:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = seg
+  +u = {Point{ux, uy} : Point}
+  Prev{u, point.add(Point{qx, qy}, point.scale(point.normal(u), r)), len}
 
 # On the inner side the two offset lines cross; when they cross within both
 # segments that point replaces both offset ends, so the outline has no loop
@@ -1221,25 +1444,29 @@ def outline.inner(+p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b
   U.choose(List<&2, Point>, F32.is_le(t, 0.0) && F32.is_ge(t, F32.neg(lenPrev)) && F32.is_ge(s, 0.0) && F32.is_le(s, lenNext),
     Con{point.add(a1, point.scale(u, t)), acc}, Con{b0, Con{a1, acc}})
 
-def outline.back.if(reversal: Bool, +p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+def outline.back.if(reversal: Bool, +p: Point, +u: Point, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match reversal:
-    case True{}: outline.join.back(p, u, r, settings, scale, acc)
+    case True{}: outline.join.back(p, u, r, js, scale, acc)
     case False{}: acc
 
 # The points at vertex p between the previous segment (direction u, offset
 # end a1) and the next (direction v, offset start b0).
-def outline.vertex.join(+p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b0: Point, +lenNext: F32, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
-  +turn = point.cross(u, v)
-  U.branch(List<&2, Point>, F32.is_lt(F32.abs(turn), 0.000001),
-    _ => Con{b0, outline.back.if(F32.is_lt(point.dot(u, v), 0.0), p, u, r, settings, scale, Con{a1, acc})},
-    _ => U.branch(List<&2, Point>, F32.is_lt(turn, 0.0),
-      _ => Con{b0, outline.join.outer(p, u, v, r, settings, scale, Con{a1, acc})},
-      _ => outline.inner(p, u, a1, lenPrev, v, b0, lenNext, acc)))
+def outline.vertex.pick(straight: Bool, outer: Bool, +p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b0: Point, +lenNext: F32, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match straight:
+    case True{}: Con{b0, outline.back.if(F32.is_lt(point.dot(u, v), 0.0), p, u, r, js, scale, Con{a1, acc})}
+    case False{}:
+      match outer:
+        case True{}: Con{b0, outline.join.outer(p, u, v, r, js, scale, Con{a1, acc})}
+        case False{}: outline.inner(p, u, a1, lenPrev, v, b0, lenNext, acc)
 
-def outline.vertex(previous: Maybe<&2, Prev>, +p: Point, +v: Point, +lenNext: F32, +b0: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+def outline.vertex.join(+p: Point, +u: Point, +a1: Point, +lenPrev: F32, +v: Point, +b0: Point, +lenNext: F32, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  +turn = point.cross(u, v)
+  outline.vertex.pick(F32.is_lt(F32.abs(turn), 0.000001), F32.is_lt(turn, 0.0), p, u, a1, lenPrev, v, b0, lenNext, r, js, scale, acc)
+
+def outline.vertex(previous: Maybe<&2, Prev>, +p: Point, +v: Point, +lenNext: F32, +b0: Point, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match previous:
     case None{}: Con{b0, acc}
-    case Some{Prev{u, a1, lenPrev}}: outline.vertex.join(p, u, a1, lenPrev, v, b0, lenNext, r, settings, scale, acc)
+    case Some{Prev{u, a1, lenPrev}}: outline.vertex.join(p, u, a1, lenPrev, v, b0, lenNext, r, js, scale, acc)
 
 # At the end of an open side the last offset end is emitted; a closed loop
 # emitted it through its first vertex.
@@ -1254,30 +1481,33 @@ def outline.side.end(previous: Maybe<&2, Prev>, closed: Bool, acc: List<&2, Poin
 # The left side of a polyline: each segment's offset endpoints with the
 # joins between segments. `previous` carries the segment arriving at the
 # first vertex (the last one, for a closed subpath).
-def outline.side(xs: List<&2, Segment>, previous: Maybe<&2, Prev>, +closed: Bool, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+def outline.side(xs: List<&2, Segment>, previous: Maybe<&2, Prev>, +closed: Bool, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match xs:
     case Nil{}: outline.side.end(previous, closed, acc)
-    case Con{Segment{p, q, dir, len, distance}, rest}:
-      +u = dir
-      +pp = p
+    case Con{Segment{px, py, qx, qy, ux, uy, len, distance}, rest}:
+      +u = {Point{ux, uy} : Point}
+      +pp = {Point{px, py} : Point}
       +ln = len
       +n = point.scale(point.normal(u), r)
-      outline.side(rest, Some{Prev{u, point.add(q, n), ln}}, closed, r, settings, scale, outline.vertex(previous, pp, u, ln, point.add(pp, n), r, settings, scale, acc))
+      outline.side(rest, Some{Prev{u, point.add(Point{qx, qy}, n), ln}}, closed, r, js, scale, outline.vertex(previous, pp, u, ln, point.add(pp, n), r, js, scale, acc))
 
 # The cap at point p leaving in direction u, between the offsets p + r n and
 # p - r n (which the sides push): nothing for butt.
-def outline.cap(+p: Point, +u: Point, +r: F32, +cap: String, +scale: F32, +acc: List<&2, Point>) -> List<&2, Point>:
-  +n = point.scale(point.normal(u), r)
-  +ahead = point.scale(u, r)
-  U.branch(List<&2, Point>, U.string.equal(cap, "round"), _ => outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc),
-    _ => U.branch(List<&2, Point>, U.string.equal(cap, "square"), _ => Con{point.sub(point.add(p, ahead), n), Con{point.add(point.add(p, ahead), n), acc}}, _ => acc))
+def outline.cap(cap: U32, +p: Point, +u: Point, +r: F32, +scale: F32, acc: List<&2, Point>) -> List<&2, Point>:
+  match cap:
+    case 1: outline.sweep(p, r, point.normal(u), F32.neg(3.141592653589793), scale, acc)
+    case 2:
+      +n = point.scale(point.normal(u), r)
+      +ahead = point.add(p, point.scale(u, r))
+      Con{point.sub(ahead, n), Con{point.add(ahead, n), acc}}
+    case _: acc
 
 def outline.edges.go(+first: Point, pts: List<&2, Point>, +prev: Point, acc: List<&2, Edge>) -> List<&2, Edge>:
   match pts:
-    case Nil{}: Con{Edge{prev, first, True{}, True{}}, acc}
+    case Nil{}: Con{edge.of(prev, first, True{}, True{}), acc}
     case Con{p, rest}:
       +pp = p
-      outline.edges.go(first, rest, pp, Con{Edge{prev, pp, True{}, False{}}, acc})
+      outline.edges.go(first, rest, pp, Con{edge.of(prev, pp, True{}, False{}), acc})
 
 # The closed polygon through the points, as edges.
 def outline.edges(pts: List<&2, Point>, acc: List<&2, Edge>) -> List<&2, Edge>:
@@ -1294,52 +1524,68 @@ def segments.last(xs: List<&2, Segment>, fallback: Segment) -> Segment:
 
 # The outline of an open polyline: the left side, the end cap, the right side
 # (the left side of the reversed points) and the start cap.
-def settings.cap(+s: StrokeSettings) -> String:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = s
+def joins.cap(+s: Joins) -> U32:
+  Joins{cap, join, limit} = s
   cap
 
-def outline.open.go(forward: List<&2, Segment>, back: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.open.go(forward: List<&2, Segment>, back: List<&2, Segment>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match forward:
     case Nil{}: acc
     case Con{h, t}:
       +first = h
       +tt = t
       +last = segments.last(tt, first)
-      +cap = settings.cap(settings)
-      outline.edges(outline.cap(segment.start(first), point.scale(segment.dir(first), F32.neg(1.0)), r, cap, scale,
-        outline.side(back, None{}, False{}, r, settings, scale,
-          outline.cap(segment.end(last), segment.dir(last), r, cap, scale,
-            outline.side(Con{first, tt}, None{}, False{}, r, settings, scale, Nil{})))), acc)
+      +cap = joins.cap(js)
+      outline.edges(outline.cap(cap, segment.start(first), point.scale(segment.dir(first), F32.neg(1.0)), r, scale,
+        outline.side(back, None{}, False{}, r, js, scale,
+          outline.cap(cap, segment.end(last), segment.dir(last), r, scale,
+            outline.side(Con{first, tt}, None{}, False{}, r, js, scale, Nil{})))), acc)
 
-def outline.open(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
-  outline.open.go(segments(pts, 0.0), segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, acc)
+# The segments backwards, each turned around, for the right side.
+def segments.flip(xs: List<&2, Segment>, acc: List<&2, Segment>) -> List<&2, Segment>:
+  match xs:
+    case Nil{}: acc
+    case Con{Segment{px, py, qx, qy, ux, uy, len, distance}, rest}: segments.flip(rest, Con{Segment{qx, qy, px, py, F32.neg(ux), F32.neg(uy), len, distance}, acc})
+
+def outline.open.segs(+forward: List<&2, Segment>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.open.go(forward, segments.flip(forward, Nil{}), r, js, scale, acc)
+
+def outline.open(pts: List<&2, Point>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.open.segs(segments(pts, 0.0), r, js, scale, acc)
 
 # A closed subpath: one closed loop per side, each joined at the start vertex.
-def outline.loop(+xs: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.loop(+xs: List<&2, Segment>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match xs:
     case Nil{}: acc
     case Con{h, t}:
       +first = h
-      outline.edges(outline.side(Con{h, t}, Some{prev.of(segments.last(t, first), r)}, True{}, r, settings, scale, Nil{}), acc)
+      outline.edges(outline.side(Con{h, t}, Some{prev.of(segments.last(t, first), r)}, True{}, r, js, scale, Nil{}), acc)
 
-def outline.closed(+pts: List<&2, Point>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
-  outline.loop(segments(points.rev(pts, Nil{}), 0.0), r, settings, scale, outline.loop(segments(pts, 0.0), r, settings, scale, acc))
+def outline.closed.segs(+forward: List<&2, Segment>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.loop(segments.flip(forward, Nil{}), r, js, scale, outline.loop(forward, r, js, scale, acc))
+
+def outline.closed(pts: List<&2, Point>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.closed.segs(segments(pts, 0.0), r, js, scale, acc)
 
 # A zero-length piece: a dot for round caps, a square for square caps.
-def outline.dot(+p: Point, +u: Point, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
-  StrokeSettings{cap, join, limit, dash, offset, vector} = settings
-  +n = point.scale(point.normal(u), r)
-  U.branch(List<&2, Edge>, U.string.equal(cap, "butt"), _ => acc,
-    _ => outline.edges(outline.cap(p, point.scale(u, F32.neg(1.0)), r, cap, scale, Con{point.sub(p, n), outline.cap(p, u, r, cap, scale, Con{point.add(p, n), Nil{}})}), acc))
+def outline.dot.cap(+cap: U32, +p: Point, +u: Point, +r: F32, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match cap:
+    case 0: acc
+    case _:
+      +n = point.scale(point.normal(u), r)
+      outline.edges(outline.cap(cap, p, point.scale(u, F32.neg(1.0)), r, scale, Con{point.sub(p, n), outline.cap(cap, p, u, r, scale, Con{point.add(p, n), Nil{}})}), acc)
+
+def outline.dot(+p: Point, +u: Point, +r: F32, js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  outline.dot.cap(joins.cap(js), p, u, r, scale, acc)
 
 # ---- dashes as polylines ----
 # The point at distance d along the segments, and the direction there.
-def segment.at(+s: Segment, +d: F32) -> Point:
-  Segment{p, q, dir, len, distance} = s
-  point.add(p, point.scale(dir, U.clamp((d - distance : F32), 0.0, len)))
+def segment.at(s: Segment, +d: F32) -> Point:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = s
+  point.add(Point{px, py}, point.scale(Point{ux, uy}, U.clamp((d - distance : F32), 0.0, len)))
 
-def segment.reaches(+s: Segment, +d: F32) -> Bool:
-  Segment{p, q, dir, len, distance} = s
+def segment.reaches(s: Segment, +d: F32) -> Bool:
+  Segment{px, py, qx, qy, ux, uy, len, distance} = s
   F32.is_le(d, (distance + len : F32))
 
 @unsafe
@@ -1369,25 +1615,25 @@ def points.push.if(hit: Bool, +p: Point, tail: List<&2, Point>) -> List<&2, Poin
 def segments.between(xs: List<&2, Segment>, +s: F32, +e: F32, acc: List<&2, Point>) -> List<&2, Point>:
   match xs:
     case Nil{}: acc
-    case Con{Segment{p, q, dir, len, distance}, rest}:
+    case Con{Segment{px, py, qx, qy, ux, uy, len, distance}, rest}:
       +at = (distance + len : F32)
-      points.push.if(F32.is_gt(at, s) && F32.is_lt(at, e), q, segments.between(rest, s, e, acc))
+      points.push.if(F32.is_gt(at, s) && F32.is_lt(at, e), Point{qx, qy}, segments.between(rest, s, e, acc))
 
 # The polyline of the run [s, e] along the segments.
 def dash.points(+xs: List<&2, Segment>, +s: F32, +e: F32) -> List<&2, Point>:
   Con{segments.at(xs, s, Point{0.0, 0.0}), segments.between(xs, s, e, Con{segments.at(xs, e, Point{0.0, 0.0}), Nil{}})}
 
-def outline.run(+xs: List<&2, Segment>, +s: F32, +e: F32, +r: F32, +settings: StrokeSettings, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.run(+xs: List<&2, Segment>, +s: F32, +e: F32, +r: F32, +js: Joins, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
   U.branch(List<&2, Edge>, F32.is_le((e - s : F32), 0.000001),
-    _ => outline.dot(segments.at(xs, s, Point{0.0, 0.0}), segments.dir.at(xs, s, Point{1.0, 0.0}), r, settings, scale, acc),
-    _ => outline.open(dash.points(xs, s, e), r, settings, scale, acc))
+    _ => outline.dot(segments.at(xs, s, Point{0.0, 0.0}), segments.dir.at(xs, s, Point{1.0, 0.0}), r, js, scale, acc),
+    _ => outline.open(dash.points(xs, s, e), r, js, scale, acc))
 
 # The runs of an open subpath, or of a closed one whose dashes do not meet at
 # the seam. A closed subpath painted along its whole length is a closed loop.
-def outline.runs(runs: List<&2, DashRun>, +xs: List<&2, Segment>, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.runs(runs: List<&2, DashRun>, +xs: List<&2, Segment>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match runs:
     case Nil{}: acc
-    case Con{DashRun{s, e}, rest}: outline.runs(rest, xs, r, settings, scale, outline.run(xs, s, e, r, settings, scale, acc))
+    case Con{DashRun{s, e}, rest}: outline.runs(rest, xs, r, js, scale, outline.run(xs, s, e, r, js, scale, acc))
 
 def dash.first.end(xs: List<&2, DashRun>) -> F32:
   match xs:
@@ -1426,52 +1672,69 @@ def points.append(xs: List<&2, Point>, ys: List<&2, Point>) -> List<&2, Point>:
 
 # The dashes of a closed subpath crossing the seam merge into one polyline:
 # the last run's points followed by the first run's, minus the shared point.
-def outline.seam(+xs: List<&2, Segment>, +runs: List<&2, DashRun>, +total: F32, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.seam(+xs: List<&2, Segment>, +runs: List<&2, DashRun>, +total: F32, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   +s = dash.last.start(runs, 0.0)
   +e = dash.first.end(runs)
-  outline.runs(dash.drop.last(dash.drop.first(runs)), xs, r, settings, scale,
-    outline.open(points.append(dash.points(xs, s, total), dash.points.tail(xs, 0.0, e)), r, settings, scale, acc))
+  outline.runs(dash.drop.last(dash.drop.first(runs)), xs, r, js, scale,
+    outline.open(points.append(dash.points(xs, s, total), dash.points.tail(xs, 0.0, e)), r, js, scale, acc))
 
-def outline.dashed(+pts: List<&2, Point>, +closed: Bool, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.dashed.runs(+pts: List<&2, Point>, +closed: Bool, +r: F32, +js: Joins, +pattern: DashPattern, +scale: F32, +acc: List<&2, Edge>) -> List<&2, Edge>:
   +xs = segments(pts, 0.0)
   +total = segments.length(xs)
   +runs = dash.runs(pattern, total)
-  U.branch(List<&2, Edge>, closed && dash.whole(runs, total), _ => outline.closed(pts, r, settings, scale, acc),
+  U.branch(List<&2, Edge>, closed && dash.whole(runs, total), _ => outline.closed(pts, r, js, scale, acc),
     _ => U.branch(List<&2, Edge>, closed && dash.start(runs) && dash.end(runs, total) && Bool.not(dash.whole(runs, total)),
-      _ => outline.seam(xs, runs, total, r, settings, scale, acc),
-      _ => outline.runs(runs, xs, r, settings, scale, acc)))
+      _ => outline.seam(xs, runs, total, r, js, scale, acc),
+      _ => outline.runs(runs, xs, r, js, scale, acc)))
+
+# An undashed subpath is outlined whole; only a dash pattern measures it.
+def outline.plain(closed: Bool, pts: List<&2, Point>, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match closed:
+    case True{}: outline.closed(pts, r, js, scale, acc)
+    case False{}: outline.open(pts, r, js, scale, acc)
+
+def outline.dashed(dashed: Bool, pts: List<&2, Point>, +closed: Bool, +r: F32, +js: Joins, pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+  match dashed:
+    case True{}: outline.dashed.runs(pts, closed, r, js, pattern, scale, acc)
+    case False{}: outline.plain(closed, pts, r, js, scale, acc)
 
 def dash.any(xs: List<&2, DashRun>) -> Bool:
   match xs:
     case Nil{}: False{}
     case Con{h, t}: True{}
 
-def outline.dot.if(paint: Bool, +p: Point, +r: F32, +settings: StrokeSettings, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.dot.if(paint: Bool, +p: Point, +r: F32, +js: Joins, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match paint:
-    case True{}: outline.dot(p, Point{1.0, 0.0}, r, settings, scale, acc)
+    case True{}: outline.dot(p, Point{1.0, 0.0}, r, js, scale, acc)
     case False{}: acc
 
 # A subpath of one point: caps only, as a dot in the x direction, when the
 # dash pattern paints at its start.
-def outline.subpath(+pts: List<&2, Point>, +closed: Bool, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.subpath(+pts: List<&2, Point>, +closed: Bool, +r: F32, +js: Joins, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match pts:
     case Nil{}: acc
-    case Con{p, Nil{}}: outline.dot.if(dash.any(dash.runs(pattern, 0.0)), p, r, settings, scale, acc)
-    case Con{p, Con{q, rest}}: outline.dashed(Con{p, Con{q, rest}}, closed, r, settings, pattern, scale, acc)
+    case Con{p, Nil{}}: outline.dot.if(dash.any(dash.runs(pattern, 0.0)), p, r, js, scale, acc)
+    case Con{p, Con{q, rest}}: outline.dashed(dash.some(pattern), Con{p, Con{q, rest}}, closed, r, js, pattern, scale, acc)
 
-def outline.subpaths(paths: List<&2, Subpath>, +r: F32, +settings: StrokeSettings, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
+def outline.subpaths(paths: List<&2, Subpath>, +r: F32, +js: Joins, +pattern: DashPattern, +scale: F32, acc: List<&2, Edge>) -> List<&2, Edge>:
   match paths:
     case Nil{}: acc
-    case Con{Subpath{points, closed}, rest}: outline.subpaths(rest, r, settings, pattern, scale, outline.subpath(points, closed, r, settings, pattern, scale, acc))
+    case Con{Subpath{points, closed}, rest}: outline.subpaths(rest, r, js, pattern, scale, outline.subpath(points, closed, r, js, pattern, scale, acc))
 
 def subpaths.length(paths: List<&2, Subpath>) -> F32:
   match paths:
     case Nil{}: 0.0
     case Con{Subpath{points, closed}, rest}: (segments.length(segments(points, 0.0)) + subpaths.length(rest) : F32)
 
-def stroke.compile.paths(+paths: List<&2, Subpath>, r: F32, +settings: StrokeSettings, ref: F32, +declared: F32, +scale: F32) -> List<&2, Edge>:
-  +factor = U.choose(F32, F32.is_gt(declared, 0.0), (subpaths.length(paths) / declared : F32), 1.0)
-  outline.subpaths(paths, r, settings, dash.pattern(settings, ref, factor), scale, Nil{})
+def stroke.compile.pick(measured: Bool, paths: List<&2, Subpath>, r: F32, +settings: StrokeSettings, ref: F32, +declared: F32, +scale: F32) -> List<&2, Edge>:
+  match measured:
+    case True{}:
+      +ps = paths
+      outline.subpaths(ps, r, joins.of(settings), dash.pattern(settings, ref, (subpaths.length(ps) / declared : F32)), scale, Nil{})
+    case False{}: outline.subpaths(paths, r, joins.of(settings), dash.pattern(settings, ref, 1.0), scale, Nil{})
+
+def stroke.compile.paths(paths: List<&2, Subpath>, r: F32, +settings: StrokeSettings, ref: F32, +declared: F32, +scale: F32) -> List<&2, Edge>:
+  stroke.compile.pick(F32.is_gt(declared, 0.0), paths, r, settings, ref, declared, scale)
 
 # The stroke outline edges of a shape's edges, in the same units.
 def stroke.compile(es: List<&2, Edge>, r: F32, settings: StrokeSettings, ref: F32, declared: F32, +scale: F32) -> List<&2, Edge>:
@@ -1485,63 +1748,20 @@ def bounds.merge(a: Bounds, b: Bounds) -> Bounds:
   Bounds{u0, v0, u1, v1} = b
   Bounds{U.min(x0, u0), U.min(y0, v0), U.max(x1, u1), U.max(y1, v1)}
 
-# Ray queries skip edge branches whose bounds cannot cross the sample's row.
+# A shape's edges with their bounds. Point queries walk the list; rasters
+# read the list back directly, so no per-edge tree is ever built.
 type EdgeTree is Data:
-  EdgeEmpty{}
-  EdgeLeaf{box: Bounds, edge: Edge}
-  EdgeFork{box: Bounds, left: EdgeTree, right: EdgeTree}
+  EdgeFlat{box: Bounds, edges: List<&2, Edge>}
 
 def edge.tree.bounds(t: EdgeTree) -> Bounds:
   match t:
-    case EdgeEmpty{}: bounds.empty()
-    case EdgeLeaf{box, edge}: box
-    case EdgeFork{box, left, right}: box
-
-def edge.tree.fork(+a: EdgeTree, +b: EdgeTree) -> EdgeTree:
-  EdgeFork{bounds.merge(edge.tree.bounds(a), edge.tree.bounds(b)), a, b}
-
-def edges.count(xs: List<&2, Edge>) -> U32:
-  match xs:
-    case Nil{}: 0
-    case Con{h, t}: U32.inc(edges.count(t))
-
-def edges.take(n: Nat, xs: List<&2, Edge>) -> List<&2, Edge>:
-  match n xs:
-    case 0n _: Nil{}
-    case 1n+d Nil{}: Nil{}
-    case 1n+d Con{h, t}: Con{h, edges.take(d, t)}
-
-def edges.drop(n: Nat, xs: List<&2, Edge>) -> List<&2, Edge>:
-  match n xs:
-    case 0n _: xs
-    case 1n+d Nil{}: Nil{}
-    case 1n+d Con{h, t}: edges.drop(d, t)
-
-# The tree is built bottom-up: every edge becomes a leaf, and adjacent trees
-# are paired into forks until one remains, a linear amount of work instead of
-# splitting the list again at every level.
-def edge.leaves(es: List<&2, Edge>) -> List<&2, EdgeTree>:
-  match es:
-    case Nil{}: Nil{}
-    case Con{e, rest}:
-      +ee = e
-      Con{EdgeLeaf{bounds(Con{ee, Nil{}}, bounds.empty()), ee}, edge.leaves(rest)}
-
-def edge.pairs(ts: List<&2, EdgeTree>) -> List<&2, EdgeTree>:
-  match ts:
-    case Nil{}: Nil{}
-    case Con{a, Nil{}}: Con{a, Nil{}}
-    case Con{a, Con{b, rest}}: Con{edge.tree.fork(a, b), edge.pairs(rest)}
-
-@unsafe
-def edge.reduce(ts: List<&2, EdgeTree>) -> EdgeTree:
-  match ts:
-    case Nil{}: EdgeEmpty{}
-    case Con{a, Nil{}}: a
-    case Con{a, Con{b, rest}}: edge.reduce(edge.pairs(Con{a, Con{b, rest}}))
+    case EdgeFlat{box, edges}: box
 
 def edge.tree(+es: List<&2, Edge>) -> EdgeTree:
-  edge.reduce(edge.leaves(es))
+  EdgeFlat{bounds(es, bounds.empty()), es}
+
+def edge.tree.empty() -> EdgeTree:
+  EdgeFlat{bounds.empty(), Nil{}}
 
 def bounds.ray(b: Bounds, p: Point) -> Bool:
   Bounds{x0, y0, x1, y1} = b
@@ -1549,12 +1769,14 @@ def bounds.ray(b: Bounds, p: Point) -> Bool:
   +py = y
   F32.is_ge(py, y0) && F32.is_lt(py, y1) && F32.is_le(x, x1)
 
+def edges.winding(es: List<&2, Edge>, +p: Point, +acc: F32) -> F32:
+  match es:
+    case Nil{}: acc
+    case Con{e, rest}: edges.winding(rest, p, (acc + edge.cross(e, p) : F32))
+
 def edge.tree.winding(t: EdgeTree, +p: Point) -> F32:
   match t:
-    case EdgeEmpty{}: 0.0
-    case EdgeLeaf{box, edge}: edge.cross(edge, p)
-    case EdgeFork{box, left, right}: U.branch(F32, bounds.ray(box, p),
-      _ => (edge.tree.winding(left, p) + edge.tree.winding(right, p) : F32), _ => 0.0)
+    case EdgeFlat{box, edges}: U.branch(F32, bounds.ray(box, p), _ => edges.winding(edges, p, 0.0), _ => 0.0)
 
 def edge.tree.inside(t: EdgeTree, p: Point, even: Bool) -> Bool:
   +w = edge.tree.winding(t, p)
@@ -1603,9 +1825,9 @@ def stroke.coverage(mesh: StrokeMesh, +p: Point) -> F32:
 type MarkerStyle is Data:
   MarkerStyle{start: String, middle: String, end: String}
 
-def marker.style(ms: MarkerStyle, +as: List<&2, XML.Attr>) -> MarkerStyle:
+def marker.style(ms: MarkerStyle, s: Maybe<&2, String>, m: Maybe<&2, String>, e: Maybe<&2, String>) -> MarkerStyle:
   MarkerStyle{start, middle, end} = ms
-  MarkerStyle{style.value(as, "marker-start", start, "none", True{}), style.value(as, "marker-mid", middle, "none", True{}), style.value(as, "marker-end", end, "none", True{})}
+  MarkerStyle{style.present(s, start, "none", True{}), style.present(m, middle, "none", True{}), style.present(e, end, "none", True{})}
 
 # Normalize the small CSS paint-order vocabulary; omitted operations follow in
 # default fill/stroke/markers order. Invalid values retain the inherited order.
@@ -1632,6 +1854,15 @@ def paint.order.value(+s: String, fallback: U32) -> U32:
           U.choose(U32, U.string.equal(v, "markers") || U.string.equal(v, "markers fill") || U.string.equal(v, "markers fill stroke"), 4,
             U.choose(U32, U.string.equal(v, "markers stroke") || U.string.equal(v, "markers stroke fill"), 5, fallback))))))
 
+# The order from an element's own attribute, else the inherited one as it is.
+def paint.order.pick(found: Maybe<&2, String>, +inherited: U32) -> U32:
+  match found:
+    case None{}: inherited
+    case Some{v}:
+      +vv = v
+      +k = style.keyword(vv)
+      U.choose(U32, U32.is_eq(k, 1) || U32.is_eq(k, 3), inherited, U.choose(U32, U32.is_eq(k, 2), 0, paint.order.value(vv, inherited)))
+
 # Compilation resolves geometry and inherited presentation once per edit.
 type Style is Data:
   Style{fill: String, stroke: String, color: String, fillOpacity: F32,
@@ -1640,15 +1871,19 @@ type Style is Data:
 def style.default() -> Style:
   Style{"black", "none", "black", 1.0, 1.0, 1.0, False{}, True{}, stroke.settings(), MarkerStyle{"none", "none", "none"}, "auto", 0}
 
-def style.inherit(+s: Style, +as: List<&2, XML.Attr>, +ref: F32) -> Style:
+def style.inherit.picked(+s: Style, p: Picked, +ref: F32) -> Style:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+  Picked{pfill, pstroke, pcolor, pfo, pso, pwidth, prule, pvis, prender, porder, pcap, pjoin, plimit, pdash, poffset, pvector, pms, pmm, pme} = p
   +po = order
-  Style{style.value(as, "fill", fill, "black", True{}), style.value(as, "stroke", stroke, "none", True{}), style.value(as, "color", col, "black", True{}),
-    style.number(as, "fill-opacity", fo, 1.0, v => color.opacity(v, fo)),
-    style.number(as, "stroke-opacity", so, 1.0, v => color.opacity(v, so)),
-    U.max(0.0, style.number(as, "stroke-width", width, U.unit(U.number("1"), ref), v => U.unit(U.number(v), ref))),
-    U.string.equal(style.value(as, "fill-rule", U.choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
-    U.string.equal(style.value(as, "visibility", U.choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, as), marker.style(ms, as), style.value(as, "image-rendering", rendering, "auto", True{}), paint.order.value(style.value(as, "paint-order", paint.order.name(po), "normal", True{}), po)}
+  Style{style.present(pfill, fill, "black", True{}), style.present(pstroke, stroke, "none", True{}), style.present(pcolor, col, "black", True{}),
+    style.number.present(pfo, fo, 1.0, v => color.opacity(v, fo)),
+    style.number.present(pso, so, 1.0, v => color.opacity(v, so)),
+    U.max(0.0, style.number.present(pwidth, width, 1.0, v => U.unit(U.number(v), ref))),
+    U.string.equal(style.present(prule, U.choose(String, even, "evenodd", "nonzero"), "nonzero", True{}), "evenodd"),
+    U.string.equal(style.present(pvis, U.choose(String, visible, "visible", "hidden"), "visible", True{}), "visible"), stroke.inherit(ss, pcap, pjoin, plimit, pdash, poffset, pvector), marker.style(ms, pms, pmm, pme), style.present(prender, rendering, "auto", True{}), paint.order.pick(porder, po)}
+
+def style.inherit(+s: Style, as: List<&2, XML.Attr>, +ref: F32) -> Style:
+  style.inherit.picked(s, style.pick(as, pick.none()), ref)
 
 # The properties a resource may inherit, in the order every resolved list
 # carries them; a resolved parent list starts with the same keys in the same
@@ -2120,10 +2355,26 @@ def brush.url(+scan: U.Scan, +all: List<&2, XML.Element>, box: Bounds, w: F32, h
   brush.resource(resource.find(all, U.drop(U.unquote(U.trim.both(url)), "#")), all, box, w, h, opacity,
     U.choose(String, U.string.equal(U.trim(fallback), ""), "none", U.trim(fallback)), patterns)
 
+# A paint's keyword, decided from its first letter: 1 currentcolor,
+# 2 context-fill, 3 context-stroke, 0 a color or none.
+def paint.keyword.head(s: String) -> U32:
+  match s:
+    case SNil{}: 0
+    case SCon{Chr{c}, t}:
+      +ch = c
+      +rest = t
+      U.choose(U32, U32.is_eq(U32.or(ch, 32), 99), U.choose(U32, keyword.rest("urrentcolor", rest), 1, U.choose(U32, keyword.rest("ontext-fill", rest), 2, U.choose(U32, keyword.rest("ontext-stroke", rest), 3, 0))), 0)
+
+def paint.keyword(s: String) -> U32:
+  paint.keyword.head(U.trim(s))
+
+def brush.keyword(+k: U32, +s: String, current: String, +opacity: F32) -> Brush:
+  U.choose(Brush, U32.is_eq(k, 2) || U32.is_eq(k, 3), PendingContext{U32.is_eq(k, 3), opacity},
+    brush.solid(color(U.choose(String, U32.is_eq(k, 1), current, s)), opacity))
+
 def brush(+s: String, current: String, +opacity: F32, +all: List<&2, XML.Element>, box: Bounds, w: F32, h: F32, patterns: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Brush:
   U.branch(Brush, U.prefix(s, "url("), _ => brush.url(U.until(U.drop(s, "url("), 41, ""), all, box, w, h, opacity, patterns),
-    _ => U.branch(Brush, U.string.equal(CSS.css.lower(U.trim.both(s)), "context-fill") || U.string.equal(CSS.css.lower(U.trim.both(s)), "context-stroke"), _ => PendingContext{U.string.equal(CSS.css.lower(U.trim.both(s)), "context-stroke"), opacity},
-      _ => brush.solid(color(U.choose(String, U.string.equal(CSS.css.lower(U.trim.both(s)), "currentcolor"), current, s)), opacity)))
+    _ => brush.keyword(paint.keyword(s), s, current, opacity))
 
 def style.colors(+s: Style, +all: List<&2, XML.Element>, +box: Bounds, +w: F32, +h: F32, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Paint<Brush>:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
@@ -2154,7 +2405,7 @@ def clip.fade(+cov: F32, render: Unit -> Img.Color) -> Img.Color:
   U.branch(Img.Color, F32.is_gt(cov, 0.0), _ => color.fade(render(Unit{}), cov), _ => Img.clear())
 
 def clip.empty() -> Clip:
-  ClipShape{EdgeEmpty{}, identity(), False{}, cover.none()}
+  ClipShape{edge.tree.empty(), identity(), False{}, cover.none()}
 
 def clip.reference(result: Maybe<&2, XML.Element>, +box: Bounds, +m: Matrix,
   build: List<&2, XML.Element> -> Matrix -> Clip) -> Clip:
@@ -2189,7 +2440,7 @@ def clip.build(fuel: Nat, +xs: List<&2, XML.Element>, +all: List<&2, XML.Element
           +matrix = matrix.mul(matrix.mul(m, transform(XML.attr.get(as, "transform", ""), identity())),
             U.choose(Matrix, U.string.equal(n, "use"), translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0")), identity()))
           +rule = U.string.equal(XML.attr.get(as, "clip-rule", U.choose(String, even, "evenodd", "nonzero")), "evenodd")
-          +es = shape.children(n, as, kids, w, h, local.tolerance(matrix, scale))
+          +es = shape.children(n, as, kids, w, h, local.tolerance(matrix, scale), XML.attr.get(as, "d", ""))
           +box = bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})
           U.branch(Clip, U.string.equal(XML.attr.get(as, "display", "inline"), "none"),
             _ => clip.build(1n+dd, rest, all, m, w, h, even, scale),
@@ -2216,8 +2467,8 @@ def style.outline(+s: Style, +es: List<&2, Edge>, +m: Matrix, ref: F32, declared
 def bounds.transformed(es: List<&2, Edge>, +m: Matrix, box: Bounds) -> Bounds:
   match es:
     case Nil{}: box
-    case Con{Edge{a, b, stroked, closed}, rest}:
-      bounds.transformed(rest, m, bounds.point(bounds.point(box, matrix.point(m, a)), matrix.point(m, b)))
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}:
+      bounds.transformed(rest, m, bounds.point(bounds.point(box, matrix.point(m, Point{ax, ay})), matrix.point(m, Point{bx, by})))
 
 # These bounds enclose rendered coverage, including descendant strokes and
 # markers. They are distinct from objectBoundingBox paint coordinates.
@@ -2746,12 +2997,39 @@ def marker.enabled(ms: MarkerStyle) -> Bool:
   MarkerStyle{start, middle, end} = ms
   U.prefix(start, "url(") || U.prefix(middle, "url(") || U.prefix(end, "url(")
 
-def marker.instances(+name: String, as: List<&2, XML.Attr>, +s: Style, all: List<&2, XML.Element>, active: List<&2, String>, +w: F32, +h: F32) -> List<&2, XML.Element>:
-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
-  U.branch(List<&2, XML.Element>, marker.enabled(ms) && (U.string.equal(name, "path") || U.string.equal(name, "line") || U.string.equal(name, "polyline") || U.string.equal(name, "polygon")),
-    _ => marker.instances.loop(marker.trace(shape.data(name, as, w, h)), True{}, ms, all, active, width, w, h), _ => Nil{})
+def marker.shape(+name: String) -> Bool:
+  U.string.equal(name, "path") || U.string.equal(name, "line") || U.string.equal(name, "polyline") || U.string.equal(name, "polygon")
 
-def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Element>, +vp: Viewport, inherited: Style, +all: List<&2, XML.Element>, +active: List<&2, String>, +scale: F32,
+def marker.wanted(+name: String, s: Style) -> Bool:
+  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+  marker.enabled(ms) && marker.shape(name)
+
+def marker.instances(+name: String, +as: List<&2, XML.Attr>, +s: Style, all: List<&2, XML.Element>, active: List<&2, String>, +w: F32, +h: F32) -> List<&2, XML.Element>:
+  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
+  U.branch(List<&2, XML.Element>, marker.enabled(ms) && marker.shape(name),
+    _ => marker.instances.loop(marker.trace(shape.data(name, as, w, h, XML.attr.get(as, "d", ""))), True{}, ms, all, active, width, w, h), _ => Nil{})
+
+# A shape's edges and its marker instances. Path data is shared with the
+# marker trace only when markers are wanted.
+def compile.geometry(marked: Bool, data: String, +n: String, +attrs: List<&2, XML.Attr>, glyphs: List<&2, XML.Element>, +vw: F32, +vh: F32, +tol: F32, +style: Style, all: List<&2, XML.Element>, active: List<&2, String>) -> List<&2, Edge> & List<&2, XML.Element>:
+  match marked:
+    case False{}: (shape.children(n, attrs, glyphs, vw, vh, tol, data), Nil{})
+    case True{}:
+      +dd = data
+      (shape.children(n, attrs, glyphs, vw, vh, tol, dd), marker.instances(n, Con{XML.Attr{"d", dd}, attrs}, style, all, active, vw, vh))
+
+def compile.visible(geo: List<&2, Edge> & List<&2, XML.Element>, +n: String, +matrix: Matrix, +vw: F32, +vh: F32, viewportClip: Clip, +style: Style, embedded: EmbeddedImage, +attrs: List<&2, XML.Attr>, +all: List<&2, XML.Element>, +active: List<&2, String>, +scale: F32,
+  masks: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, fills: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, strokes: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
+  markers: List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
+  children: Style -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
+  (edges, markerNodes) = geo
+  Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(edges, matrix, style,
+    color.opacity(XML.attr.get(attrs, "opacity", "1"), 1.0), U.branch(List<&2, Scene<Brush>>, U.string.equal(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
+    XML.attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
+      node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills, (scale * matrix.norm(matrix) : F32)),
+      node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes, (scale * matrix.norm(matrix) : F32)), scale), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(markerNodes)(matrix)(vw)(vh)), Nil{}}
+
+def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Element>, +vp: Viewport, inherited: Style, +all: List<&2, XML.Element>, +active: List<&2, String>, +scale: F32, data: String,
   masks: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, fills: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, strokes: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
   markers: List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
   children: Style -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
@@ -2761,28 +3039,41 @@ def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Elem
   +attrs = bitmap.attrs(embedded, as)
   +style = U.choose(Style, U.string.equal(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
   U.branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (U.string.equal(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
-    _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape.children(n, attrs, glyphs, vw, vh, local.tolerance(matrix, scale)), matrix, style,
-      color.opacity(XML.attr.get(attrs, "opacity", "1"), 1.0), U.branch(List<&2, Scene<Brush>>, U.string.equal(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
-      XML.attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
-        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills, (scale * matrix.norm(matrix) : F32)),
-        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes, (scale * matrix.norm(matrix) : F32)), scale), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
+    _ => compile.visible(compile.geometry(marker.wanted(n, style), data, n, attrs, glyphs, vw, vh, local.tolerance(matrix, scale), style, all, active),
+      n, matrix, vw, vh, viewportClip, style, embedded, attrs, all, active, scale, masks, fills, strokes, markers, children))
+
+# An element's path data is taken out of its attributes before they are
+# shared, so the path parser owns that text; the loop carries the element in
+# that state as a step of its own.
+type Work is Data:
+  Pending{xs: List<&2, XML.Element>}
+  Ready{taken: XML.Taken, tagname: String, kids: List<&2, XML.Element>, rest: List<&2, XML.Element>}
 
 @unsafe
-def compile(+fuel: Nat, +xs: List<&2, XML.Element>, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
+def compile.work(+fuel: Nat, work: Work, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
   +all: List<&2, XML.Element>, +root: Bool, +active: List<&2, String>, +scale: F32) -> List<&2, Scene<Brush>>:
-  match fuel xs:
+  match fuel work:
     case 0n _: Nil{}
-    case 1n+d Nil{}: Nil{}
-    case 1n+d Con{XML.Element{tagname, attrs, kids, txt}, rest}:
-      +as = image.layout.attrs(CSS.properties(attrs), w, h)
+    case 1n+d Pending{xs}:
+      match xs:
+        case Nil{}: Nil{}
+        case Con{XML.Element{tagname, attrs, kids, txt}, rest}:
+          compile.work(fuel, Ready{XML.attrs.take(image.layout.attrs(CSS.properties(attrs), w, h), "d"), tagname, kids, rest}, inherited, m, w, h, all, root, active, scale)
+    case 1n+d Ready{XML.Taken{data, as0}, tagname, kids, rest}:
+      +as = as0
+      +ks = kids
       +n = tagname
-      scenes.append(compile.node(n, as, kids, element.viewport(n, as, m, w, h, root), inherited, all, active, scale,
-        used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, scale),
-        used => sc => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
-        used => sc => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
-        nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, active, scale),
-        style => mat => vw => vh => compile(U.choose(Nat, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), kids, U.choose(Style, U.string.equal(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), resources(kids, Nil{}), all), False{}, U.choose(List<&2, String>, U.string.equal(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})), scale)),
-        compile(fuel, rest, inherited, m, w, h, all, root, active, scale))
+      scenes.append(compile.node(n, as, ks, element.viewport(n, as, m, w, h, root), inherited, all, active, scale, data,
+        used => nodes => mat => vw => vh => compile.work(d, Pending{nodes}, style.default(), mat, vw, vh, all, False{}, Con{used, active}, scale),
+        used => sc => nodes => mat => vw => vh => compile.work(d, Pending{nodes}, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
+        used => sc => nodes => mat => vw => vh => compile.work(d, Pending{nodes}, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
+        nodes => mat => vw => vh => compile.work(d, Pending{nodes}, style.default(), mat, vw, vh, all, False{}, active, scale),
+        style => mat => vw => vh => compile.work(U.choose(Nat, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), Pending{ks}, U.choose(Style, U.string.equal(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), resources(ks, Nil{}), all), False{}, U.choose(List<&2, String>, U.string.equal(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})), scale)),
+        compile.work(fuel, Pending{rest}, inherited, m, w, h, all, root, active, scale))
+
+def compile(+fuel: Nat, xs: List<&2, XML.Element>, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
+  +all: List<&2, XML.Element>, +root: Bool, +active: List<&2, String>, +scale: F32) -> List<&2, Scene<Brush>>:
+  compile.work(fuel, Pending{xs}, inherited, m, w, h, all, root, active, scale)
 
 # XML.Text layout produces internal glyph geometry while preserving text/tspan groups.
 type TextFont is Data:
@@ -2896,7 +3187,7 @@ def text.path.target(target: Maybe<&2, XML.Element>, +w: F32, +h: F32) -> List<&
     case None{}: Nil{}
     case Some{XML.Element{n, as, kids, txt}}:
       +attrs = CSS.properties(as)
-      Con{XML.Attr{"#text-path-data", shape.data(n, attrs, w, h)}, Con{XML.Attr{"#text-path-transform", XML.attr.get(attrs, "transform", "")}, Con{XML.Attr{"#text-path-length", XML.attr.get(attrs, "pathLength", "0")}, Nil{}}}}
+      Con{XML.Attr{"#text-path-data", shape.data(n, attrs, w, h, XML.attr.get(attrs, "d", ""))}, Con{XML.Attr{"#text-path-transform", XML.attr.get(attrs, "transform", "")}, Con{XML.Attr{"#text-path-length", XML.attr.get(attrs, "pathLength", "0")}, Nil{}}}}
 
 def text.path.attrs(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, +w: F32, +h: F32) -> List<&2, XML.Attr>:
   +direct = XML.attr.get(as, "path", "")
@@ -2921,7 +3212,7 @@ def text.path.resolve(xs: List<&2, XML.Element>, +all: List<&2, XML.Element>, +w
 def text.path.edges(+xs: List<&2, Edge>, +acc: List<&2, Edge>) -> List<&2, Edge>:
   match xs:
     case Nil{}: acc
-    case Con{Edge{p, q, stroked, closed}, rest}: text.path.edges(rest, U.choose(List<&2, Edge>, stroked && F32.is_gt(point.distance(p, q), 0.000001), Con{Edge{p, q, stroked, closed}, acc}, acc))
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}: text.path.edges(rest, U.choose(List<&2, Edge>, stroked && F32.is_gt(point.distance(Point{ax, ay}, Point{bx, by}), 0.000001), Con{Edge{ax, ay, bx, by, stroked, closed}, acc}, acc))
 
 def text.path.geometry(+as: List<&2, XML.Attr>) -> List<&2, Edge>:
   text.path.edges(edges.transform(path(XML.attr.get(as, "#text-path-data", ""), 0.001), transform(XML.attr.get(as, "#text-path-transform", ""), identity())), Nil{})
@@ -2929,12 +3220,12 @@ def text.path.geometry(+as: List<&2, XML.Attr>) -> List<&2, Edge>:
 def text.path.total(xs: List<&2, Edge>) -> F32:
   match xs:
     case Nil{}: 0.0
-    case Con{Edge{p, q, stroked, closed}, rest}: (point.distance(p, q) + text.path.total(rest) : F32)
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}: (point.distance(Point{ax, ay}, Point{bx, by}) + text.path.total(rest) : F32)
 
 def text.path.at(+xs: List<&2, Edge>, +distance: F32, fallback: Matrix) -> Matrix:
   match xs:
     case Nil{}: fallback
-    case Con{Edge{Point{x, y}, Point{u, v}, stroked, closed}, rest}:
+    case Con{Edge{x, y, u, v, stroked, closed}, rest}:
       +dx = (u - x : F32)
       +dy = (v - y : F32)
       +len = F32.sqrt((dx * dx + dy * dy : F32))
@@ -3716,29 +4007,32 @@ def cover.line(a: Point, b: Point) -> Cov.CovLine:
 def cover.lines(es: List<&2, Edge>, +frame: Raster) -> List<&2, Cov.CovLine>:
   match es:
     case Nil{}: Nil{}
-    case Con{Edge{a, b, stroked, closed}, rest}: Con{cover.line(cover.pixel(frame, a), cover.pixel(frame, b)), cover.lines(rest, frame)}
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}: Con{cover.line(cover.pixel(frame, Point{ax, ay}), cover.pixel(frame, Point{bx, by})), cover.lines(rest, frame)}
 
 # Local edges through m onto the frame's pixel grid in one pass.
-def cover.lines.through(es: List<&2, Edge>, +m: Matrix, +frame: Raster, acc: List<&2, Cov.CovLine>) -> List<&2, Cov.CovLine>:
+def cover.lines.add(acc: Cov.CovLines, a: Point, b: Point) -> Cov.CovLines:
+  Point{ax, ay} = a
+  Point{bx, by} = b
+  Cov.lines.add(acc, ax, ay, bx, by)
+
+def cover.lines.through(es: List<&2, Edge>, +m: Matrix, +frame: Raster, acc: Cov.CovLines) -> Cov.CovLines:
   match es:
     case Nil{}: acc
-    case Con{Edge{a, b, stroked, closed}, rest}: cover.lines.through(rest, m, frame, Con{cover.line(cover.pixel(frame, matrix.point(m, a)), cover.pixel(frame, matrix.point(m, b))), acc})
+    case Con{Edge{ax, ay, bx, by, stroked, closed}, rest}: cover.lines.through(rest, m, frame, cover.lines.add(acc, cover.pixel(frame, matrix.point(m, Point{ax, ay})), cover.pixel(frame, matrix.point(m, Point{bx, by}))))
 
 # With `trees` the mask carries the quadtree that clip and pixel queries
 # need; a fill painted directly keeps only its rows of runs.
-def cover.build(+lines: List<&2, Cov.CovLine>, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
+def cover.build(lines: Cov.CovLines, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
   Raster{origin, step, width, height, depth, linear, pixels} = frame
-  Cover{Cov.mask(lines, even, width, height, sub, trees), origin, step}
+  Cover{Cov.mask.lined(lines, even, width, height, sub, trees), origin, step}
 
 # Local edges through m (local to device) onto the frame's pixel grid.
 def cover.edges(es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
-  cover.build(cover.lines.through(es, m, frame, Nil{}), even, frame, sub, trees)
+  cover.build(cover.lines.through(es, m, frame, Cov.lines.empty()), even, frame, sub, trees)
 
 def cover.tree.edges(t: EdgeTree, acc: List<&2, Edge>) -> List<&2, Edge>:
   match t:
-    case EdgeEmpty{}: acc
-    case EdgeLeaf{box, edge}: Con{edge, acc}
-    case EdgeFork{box, left, right}: cover.tree.edges(left, cover.tree.edges(right, acc))
+    case EdgeFlat{box, edges}: edges
 
 def cover.reverse(pts: List<&2, Point>, acc: List<&2, Point>) -> List<&2, Point>:
   match pts:
@@ -3765,10 +4059,10 @@ def cover.oriented(pts: List<&2, Point>) -> List<&2, Point>:
 def cover.close(pts: List<&2, Point>, +first: Point, acc: List<&2, Edge>) -> List<&2, Edge>:
   match pts:
     case Nil{}: acc
-    case Con{p, Nil{}}: Con{Edge{p, first, True{}, True{}}, acc}
+    case Con{p, Nil{}}: Con{edge.of(p, first, True{}, True{}), acc}
     case Con{p, Con{q, rest}}:
       +qq = q
-      Con{Edge{p, qq, True{}, True{}}, cover.close(Con{qq, rest}, first, acc)}
+      Con{edge.of(p, qq, True{}, True{}), cover.close(Con{qq, rest}, first, acc)}
 
 def cover.polygon(pts: List<&2, Point>, acc: List<&2, Edge>) -> List<&2, Edge>:
   match pts:
@@ -5093,12 +5387,15 @@ def paint.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32
 
 # Rows of runs painted straight into the target, no tree needed.
 @unsafe
-def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +fixed: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+def paint.rows.go(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +fixed: F32, +tx: U32, +ty: U32, +tw: U32, +th: U32, +ctx: PaintCtx) -> Array<U32>:
   match rows:
     case Nil{}: fb
     case Con{r, rest}:
-      Target{tx, ty, tw, th} = t
-      paint.rows.of(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, fixed, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), fixed, Target{tx, ty, tw, th}, ctx)
+      paint.rows.go(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, fixed, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), fixed, tx, ty, tw, th, ctx)
+
+def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +fixed: F32, t: Target, +ctx: PaintCtx) -> Array<U32>:
+  Target{tx, ty, tw, th} = t
+  paint.rows.go(fb, rows, gx, y, fixed, tx, ty, tw, th, ctx)
 
 # A solid brush with a uniform clip limit paints runs straight: the front
 # for full coverage is packed once per shape, a partial run packs its own,
@@ -5108,37 +5405,42 @@ def paint.solid.row.mode(opaque: Bool, fb: Array<U32>, +i: U32, +cols: Nat, +fro
     case True{}: set.row(fb, cols, i, front)
     case False{}: fill.row(fb, cols, i, front)
 
-def paint.solid.run.some(skip: Bool, fb: Array<U32>, +bx: U32, +cols: U32, +v: F32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+# The target rectangle and the tint travel as plain numbers through the run
+# loops: a record passed along would be shared and read again at every run.
+def paint.solid.run.some(skip: Bool, fb: Array<U32>, +bx: U32, +cols: U32, +v: F32, +y: U32, +tx: U32, +ty: U32, +tw: U32, +full: U32, +tr: F32, +tg: F32, +tb: F32, +ta: F32, +limit: F32) -> Array<U32>:
   match skip:
     case True{}: fb
     case False{}:
-      +front = U.choose(U32, F32.is_ge(v, 1.0), full, pixel.pack(tint, U.min(v, limit)))
-      paint.solid.row.mode(U32.is_eq(U32.div(front, 16777216), 255), fb, target.index(t, bx, y), U32.to_nat(cols), front)
+      +front = U.choose(U32, F32.is_ge(v, 1.0), full, pixel.pack(Img.Color{tr, tg, tb, ta}, U.min(v, limit)))
+      paint.solid.row.mode(U32.is_eq(U32.div(front, 16777216), 255), fb, ((y - ty) * tw + bx - tx : U32), U32.to_nat(cols), front)
 
-def paint.solid.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
-  Target{tx, ty, tw, th} = t
+def paint.solid.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +tx: U32, +ty: U32, +tw: U32, +full: U32, +tr: F32, +tg: F32, +tb: F32, +ta: F32, +limit: F32) -> Array<U32>:
   +bx = paint.from(x0, tx)
   +cols = paint.span(x0, (x1 - x0 : U32), tx, (tx + tw : U32))
-  paint.solid.run.some(U32.is_eq(cols, 0), fb, bx, cols, v, y, Target{tx, ty, tw, th}, full, tint, limit)
+  paint.solid.run.some(U32.is_eq(cols, 0), fb, bx, cols, v, y, tx, ty, tw, full, tr, tg, tb, ta, limit)
 
 @unsafe
-def paint.solid.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+def paint.solid.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +tx: U32, +ty: U32, +tw: U32, +full: U32, +tr: F32, +tg: F32, +tb: F32, +ta: F32, +limit: F32) -> Array<U32>:
   match runs:
     case Nil{}: fb
-    case Con{Cov.Run{x0, x1, v}, rest}: paint.solid.runs(paint.solid.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, t, full, tint, limit), rest, gx, y, t, full, tint, limit)
+    case Con{Cov.Run{x0, x1, v}, rest}: paint.solid.runs(paint.solid.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, tx, ty, tw, full, tr, tg, tb, ta, limit), rest, gx, y, tx, ty, tw, full, tr, tg, tb, ta, limit)
 
-def paint.solid.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+def paint.solid.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +tx: U32, +ty: U32, +tw: U32, +full: U32, +tr: F32, +tg: F32, +tb: F32, +ta: F32, +limit: F32) -> Array<U32>:
   match inside:
-    case True{}: paint.solid.runs(fb, runs, gx, y, t, full, tint, limit)
+    case True{}: paint.solid.runs(fb, runs, gx, y, tx, ty, tw, full, tr, tg, tb, ta, limit)
     case False{}: fb
 
 @unsafe
-def paint.solid.rows(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +t: Target, +full: U32, +tint: Img.Color, +limit: F32) -> Array<U32>:
+def paint.solid.rows.go(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +tx: U32, +ty: U32, +tw: U32, +th: U32, +full: U32, +tr: F32, +tg: F32, +tb: F32, +ta: F32, +limit: F32) -> Array<U32>:
   match rows:
     case Nil{}: fb
     case Con{r, rest}:
-      Target{tx, ty, tw, th} = t
-      paint.solid.rows(paint.solid.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, Target{tx, ty, tw, th}, full, tint, limit), rest, gx, (y + 1 : U32), Target{tx, ty, tw, th}, full, tint, limit)
+      paint.solid.rows.go(paint.solid.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, tx, ty, tw, full, tr, tg, tb, ta, limit), rest, gx, (y + 1 : U32), tx, ty, tw, th, full, tr, tg, tb, ta, limit)
+
+def paint.solid.rows(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, t: Target, +full: U32, tint: Img.Color, +limit: F32) -> Array<U32>:
+  Target{tx, ty, tw, th} = t
+  Img.Color{tr, tg, tb, ta} = tint
+  paint.solid.rows.go(fb, rows, gx, y, tx, ty, tw, th, full, tr, tg, tb, ta, limit)
 
 def paint.rows.mode(solid: Bool, fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +gy: U32, +fixed: F32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
   match solid:
@@ -5177,27 +5479,43 @@ def paint.cover(fb: Array<U32>, +cov: Cover, +tg: Target, +ctx: PaintCtx) -> Arr
   Cover{Cov.CovMask{gx, gy, w, h, size, depth, data, present}, origin, step} = cov
   paint.data.if(present, data, fb, gx, gy, w, h, size, tg, ctx)
 
-def paint.fill.if(cond: Bool, fb: Array<U32>, +f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
+def paint.fill.if(cond: Bool, fb: Array<U32>, f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   match cond:
     case True{}:
       Fill{tree, cover} = f
       paint.cover(fb, cover, tg, paint.context(brush, inv, linear, clips))
     case False{}: fb
 
-def paint.stroke.if(cond: Bool, fb: Array<U32>, +mesh: StrokeMesh, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
+def paint.stroke.if(cond: Bool, fb: Array<U32>, mesh: StrokeMesh, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   match cond:
     case True{}:
       StrokeMesh{tree, meshInverse, cover} = mesh
       paint.cover(fb, cover, tg, paint.context(brush, inv, linear, clips))
     case False{}: fb
 
-# Fill (which = 0) or stroke (1) of a shape; markers (2) are painted by the caller.
-def paint.piece(fb: Array<U32>, +which: U32, +s: Style, +ink: Paint<Brush>, +inv: Matrix, +outline: StrokeMesh, +f: Fill, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
-  Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
-  Paint{fc, sc} = ink
-  paint.stroke.if(U32.is_eq(which, 1) && visible && Bool.not(U.string.equal(stroke, "none")) && F32.is_gt(width, 0.0),
-    paint.fill.if(U32.is_eq(which, 0) && visible && Bool.not(U.string.equal(fill, "none")), fb, f, fc, inv, linear, clips, tg),
-    outline, sc, inv, linear, clips, tg)
+# The fill, stroke and markers of a shape in its paint order (see
+# paint.order.first): each arm hands the fill's and the stroke's masks to
+# exactly one painter, so the masks are never shared and walked as copies.
+def paint.pieces(order: U32, fb: Array<U32>, +fills: Bool, +strokes: Bool, ink: Paint<Brush>, +inv: Matrix, outline: StrokeMesh, f: Fill, markers: Array<U32> -> Array<U32>, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
+  match order:
+    case 0:
+      Paint{fc, sc} = ink
+      markers(paint.stroke.if(strokes, paint.fill.if(fills, fb, f, fc, inv, linear, clips, tg), outline, sc, inv, linear, clips, tg))
+    case 1:
+      Paint{fc, sc} = ink
+      paint.stroke.if(strokes, markers(paint.fill.if(fills, fb, f, fc, inv, linear, clips, tg)), outline, sc, inv, linear, clips, tg)
+    case 2:
+      Paint{fc, sc} = ink
+      markers(paint.fill.if(fills, paint.stroke.if(strokes, fb, outline, sc, inv, linear, clips, tg), f, fc, inv, linear, clips, tg))
+    case 3:
+      Paint{fc, sc} = ink
+      paint.fill.if(fills, markers(paint.stroke.if(strokes, fb, outline, sc, inv, linear, clips, tg)), f, fc, inv, linear, clips, tg)
+    case 4:
+      Paint{fc, sc} = ink
+      paint.stroke.if(strokes, paint.fill.if(fills, markers(fb), f, fc, inv, linear, clips, tg), outline, sc, inv, linear, clips, tg)
+    case _:
+      Paint{fc, sc} = ink
+      paint.fill.if(fills, paint.stroke.if(strokes, markers(fb), outline, sc, inv, linear, clips, tg), f, fc, inv, linear, clips, tg)
 
 # paint-order as three steps: the first piece is order / 2, the other two in
 # ascending order for an even value and descending for an odd one.
@@ -5347,32 +5665,39 @@ def filter.raster(effect: FilterEffect) -> Raster:
 # three) and the layer, or the filter raster, is composited within the node's
 # coverage box; a mask is a layer painted from the mask nodes.
 @unsafe
-def paint.scenes(fb: Array<U32>, +xs: List<&2, Scene<Brush>>, +t: Target, +linear: Bool, +clips: List<&2, Clip>) -> Array<U32>:
+# A scene with an effect, a mask or partial opacity is painted into a layer
+# of its own first (the scene without those, over a fresh layer), then
+# composited; a filtered scene's raster stands in for the layer.
+def paint.layered(rendered: Bool, fb: Array<U32>, es: List<&2, Edge>, box: Bounds, inv: Matrix, style: Style, +opacity: F32, kids: List<&2, Scene<Brush>>, id: String, ink: Paint<Brush>, clip: Clip, outline: StrokeMesh, fill: Fill,
+  maskNodes: List<&2, Scene<Brush>>, +maskMode: U32, markerNodes: List<&2, Scene<Brush>>, coverage: Bounds, effect: FilterEffect, +t: Target, +lt: Target, +linear: Bool, +clips: List<&2, Clip>,
+  again: List<&2, Scene<Brush>> -> Target -> Bool -> List<&2, Clip> -> Array<U32> -> Array<U32>, more: List<&2, Scene<Brush>> -> Target -> Bool -> List<&2, Clip> -> Array<U32> -> Array<U32>) -> Array<U32>:
+  match rendered:
+    case True{}: comp.raster(fb, again(paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes))(lt)(U32.is_eq(maskMode, 3))(Nil{})(layer.new(lt)), filter.raster(effect), clip, t, lt, linear, opacity, maskMode)
+    case False{}: comp.layer(fb,
+      again(Con{Scene{es, box, inv, style, 1.0, kids, id, ink, clip, outline, fill, Nil{}, 0, markerNodes, coverage, NoFilter{}}, Nil{}})(lt)(linear)(clips)(layer.new(lt)),
+      more(paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes))(lt)(U32.is_eq(maskMode, 3))(Nil{})(layer.new(lt)),
+      t, lt, opacity, maskMode)
+
+# A scene painted directly: its pieces in paint order, then its children.
+def paint.node(direct: Bool, fb: Array<U32>, es: List<&2, Edge>, box: Bounds, +inv: Matrix, +style: Style, +opacity: F32, kids: List<&2, Scene<Brush>>, id: String, ink: Paint<Brush>, clip: Clip, outline: StrokeMesh, fill: Fill,
+  maskNodes: List<&2, Scene<Brush>>, +maskMode: U32, markerNodes: List<&2, Scene<Brush>>, coverage: Bounds, +effect: FilterEffect, +t: Target, +linear: Bool, +clips: List<&2, Clip>, +inner: List<&2, Clip>, +lt: Target,
+  again: List<&2, Scene<Brush>> -> Target -> Bool -> List<&2, Clip> -> Array<U32> -> Array<U32>, more: List<&2, Scene<Brush>> -> Target -> Bool -> List<&2, Clip> -> Array<U32> -> Array<U32>) -> Array<U32>:
+  match direct:
+    case True{}: again(kids)(t)(linear)(inner)(paint.pieces(paint.order.of(style), fb, style.fills(style), style.strokes(style), ink, inv, outline, fill, fbm => more(markerNodes)(t)(linear)(inner)(fbm), linear, inner, t))
+    case False{}: paint.layered(filter.rendered(effect), fb, es, box, inv, style, opacity, kids, id, ink, clip, outline, fill, maskNodes, maskMode, markerNodes, coverage, effect, t, lt, linear, clips, again, more)
+
+@unsafe
+def paint.scenes(fb: Array<U32>, xs: List<&2, Scene<Brush>>, +t: Target, +linear: Bool, +clips: List<&2, Clip>) -> Array<U32>:
   match xs:
     case Nil{}: fb
     case Con{Scene{es, box, inv, style, opacity, kids, id, ink, clip, outline, fill, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
-      +inner = paint.clips(clip, clips)
-      +direct = F32.is_ge(opacity, 1.0) && U32.is_eq(maskMode, 0) && Bool.not(filter.rendered(effect))
-      +order = paint.order.of(style)
-      +first = paint.order.first(order)
-      +second = paint.order.second(order)
-      +third = paint.order.third(order)
-      +lt = target.within(t, coverage)
-      paint.scenes(paint.with(direct, fb,
-        fb1 => paint.scenes(
-          paint.scenes(paint.piece(
-            paint.scenes(paint.piece(
-              paint.scenes(paint.piece(fb1, first, style, ink, inv, outline, fill, linear, inner, t), paint.markers.at(first, markerNodes), t, linear, inner),
-              second, style, ink, inv, outline, fill, linear, inner, t), paint.markers.at(second, markerNodes), t, linear, inner),
-            third, style, ink, inv, outline, fill, linear, inner, t), paint.markers.at(third, markerNodes), t, linear, inner),
-          kids, t, linear, inner),
-        fb1 => paint.with(filter.rendered(effect), fb1,
-          fb2 => comp.raster(fb2, paint.scenes(layer.new(lt), paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes), lt, U32.is_eq(maskMode, 3), Nil{}), filter.raster(effect), clip, t, lt, linear, opacity, maskMode),
-          fb2 => comp.layer(fb2,
-            paint.scenes(layer.new(lt), Con{Scene{es, box, inv, style, 1.0, kids, id, ink, clip, outline, fill, Nil{}, 0, markerNodes, coverage, NoFilter{}}, Nil{}}, lt, linear, clips),
-            paint.scenes(layer.new(lt), paint.markers.at(U.choose(U32, U32.is_ne(maskMode, 0), 2, 0), maskNodes), lt, U32.is_eq(maskMode, 3), Nil{}),
-            t, lt, opacity, maskMode))),
-        rest, t, linear, clips)
+      +cl = clip
+      +eff = effect
+      +mm = maskMode
+      +op = opacity
+      +cov = coverage
+      paint.scenes(paint.node(F32.is_ge(op, 1.0) && U32.is_eq(mm, 0) && Bool.not(filter.rendered(eff)), fb, es, box, inv, style, op, kids, id, ink, cl, outline, fill, maskNodes, mm, markerNodes, cov, eff, t, linear, clips, paint.clips(cl, clips), target.within(t, cov),
+        nodes => tt => lin => cls => fbx => paint.scenes(fbx, nodes, tt, lin, cls), nodes => tt => lin => cls => fbx => paint.scenes(fbx, nodes, tt, lin, cls)), rest, t, linear, clips)
 
 # The whole document at w by h device pixels, packed premultiplied RGBA.
 def paint.frame(scene: List<&2, Scene<Brush>>, +w: U32, +h: U32, +aa: U32) -> Array<U32>:

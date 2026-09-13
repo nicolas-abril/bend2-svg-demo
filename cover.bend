@@ -1251,5 +1251,30 @@ def mask(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U
   +box = lines.bounds(xs, 1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0))
   mask.shape(rect.aligned(xs, box), xs, even, width, height, sub, box, trees)
 
+# Lines gathered with their bounds and count as they are made, so the mask
+# needs no pass of its own over them; only a handful of lines can be a
+# rectangle, so the others skip that test too.
+type CovLines is Data:
+  CovLines{lines: List<&2, CovLine>, x0: F32, y0: F32, x1: F32, y1: F32, count: U32}
+
+def lines.empty() -> CovLines:
+  CovLines{Nil{}, 1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0), 0}
+
+def lines.add(l: CovLines, +ax: F32, +ay: F32, +bx: F32, +by: F32) -> CovLines:
+  CovLines{xs, x0, y0, x1, y1, n} = l
+  CovLines{Con{CovLine{ax, ay, bx, by}, xs}, U.min(x0, U.min(ax, bx)), U.min(y0, U.min(ay, by)), U.max(x1, U.max(ax, bx)), U.max(y1, U.max(ay, by)), (n + 1 : U32)}
+
+def mask.lined.pick(few: Bool, xs: List<&2, CovLine>, box: CovBox, +even: Bool, +width: U32, +height: U32, +sub: U32, +trees: Bool) -> CovMask:
+  match few:
+    case True{}:
+      +ls = xs
+      +b = box
+      mask.shape(rect.aligned(ls, b), ls, even, width, height, sub, b, trees)
+    case False{}: mask.box(xs, even, width, height, sub, box, trees)
+
+def mask.lined(l: CovLines, +even: Bool, +width: U32, +height: U32, +sub: U32, +trees: Bool) -> CovMask:
+  CovLines{xs, x0, y0, x1, y1, n} = l
+  mask.lined.pick(U32.is_le(n, 5), xs, CovBox{x0, y0, x1, y1}, even, width, height, sub, trees)
+
 def mask.scanned(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U32, +trees: Bool) -> CovMask:
   mask.box(xs, even, width, height, sub, lines.bounds(xs, 1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)), trees)
