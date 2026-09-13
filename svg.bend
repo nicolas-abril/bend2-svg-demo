@@ -176,20 +176,31 @@ def cubic.flat(+p: Point, +a: Point, +b: Point, +q: Point, +tol: F32) -> Bool:
   +reach = (tol * 1.3333334 : F32)
   chord.near(p, q, a, reach) && chord.near(p, q, b, reach)
 
-def cubic(depth: Nat, +p: Point, +a: Point, +b: Point, +q: Point,
-  +edges: List<&2, Edge>, +tol: F32) -> List<&2, Edge>:
-  match depth:
-    case 0n: Con{Edge{p, q, True{}, False{}}, edges}
+# Wang's bound: a cubic cut into n equal parameter steps stays within e of
+# its chords when n >= sqrt(3/4 * L / e), L the larger second difference of
+# the control points. The bound assumes the curvature all sits in one place,
+# so the tolerance is doubled to land near the adaptive count; the count is
+# fixed up front and each point costs one evaluation and no flatness test.
+def cubic.count(+p: Point, +a: Point, +b: Point, +q: Point, +tol: F32) -> U32:
+  +l = U.max(point.distance(point.add(p, b), point.scale(a, 2.0)), point.distance(point.add(a, q), point.scale(b, 2.0)))
+  F32.to_u32(U.clamp(F32.ceil(F32.sqrt((0.375 * l / U.max(tol, 0.000001) : F32))), 1.0, 1024.0))
+
+def cubic.at(+p: Point, +a: Point, +b: Point, +q: Point, +t: F32) -> Point:
+  +u = (1.0 - t : F32)
+  point.add(point.add(point.scale(p, (u * u * u : F32)), point.scale(a, (3.0 * u * u * t : F32))),
+    point.add(point.scale(b, (3.0 * u * t * t : F32)), point.scale(q, (t * t * t : F32))))
+
+@unsafe
+def cubic.go(+n: Nat, +i: F32, +step: F32, +p: Point, +a: Point, +b: Point, +q: Point, +prev: Point, +edges: List<&2, Edge>) -> List<&2, Edge>:
+  match n:
+    case 0n: edges
     case 1n+d:
-      +dd = d
-      +pa = point.mid(p, a)
-      +ab = point.mid(a, b)
-      +bq = point.mid(b, q)
-      +l = point.mid(pa, ab)
-      +r = point.mid(ab, bq)
-      +m = point.mid(l, r)
-      U.branch(List<&2, Edge>, cubic.flat(p, a, b, q, tol), _ => Con{Edge{p, q, True{}, False{}}, edges},
-        _ => cubic(dd, m, r, bq, q, cubic(dd, p, pa, l, m, edges, tol), tol))
+      +next = U.choose(Point, U32.is_zero(U32.from_nat(d)), q, cubic.at(p, a, b, q, (i * step : F32)))
+      cubic.go(d, (i + 1.0 : F32), step, p, a, b, q, next, Con{Edge{prev, next, True{}, False{}}, edges})
+
+def cubic(+p: Point, +a: Point, +b: Point, +q: Point, +edges: List<&2, Edge>, +tol: F32) -> List<&2, Edge>:
+  +n = cubic.count(p, a, b, q, tol)
+  cubic.go(U32.to_nat(n), 1.0, (1.0 / U32.to_f32(n) : F32), p, a, b, q, p, edges)
 
 type Params is Data:
   Params{values: List<&2, F32>, tail: String, valid: Bool}
@@ -268,14 +279,14 @@ def path.line(+p: Path, +q: Point, +cmd: U32) -> Path:
 def path.cubic(+p: Path, +a: Point, +b: Point, +q: Point, +cmd: U32) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   +tt = tol
-  Path{q, start, b, cmd, upper(cmd), cubic(10n, cur, a, b, q, es, tt), marker.segment(trace, marker.cubic(cur, a, b, q)), tt}
+  Path{q, start, b, cmd, upper(cmd), cubic(cur, a, b, q, es, tt), marker.segment(trace, marker.cubic(cur, a, b, q)), tt}
 
 def path.quad(+p: Path, +a: Point, +q: Point, +cmd: U32) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   ca = point.add(cur, point.scale(point.sub(a, cur), 0.6666666666666666))
   cb = point.add(q, point.scale(point.sub(a, q), 0.6666666666666666))
   +tt = tol
-  Path{q, start, a, cmd, upper(cmd), cubic(10n, cur, ca, cb, q, es, tt), marker.segment(trace, marker.cubic(cur, a, a, q)), tt}
+  Path{q, start, a, cmd, upper(cmd), cubic(cur, ca, cb, q, es, tt), marker.segment(trace, marker.cubic(cur, a, a, q)), tt}
 
 def path.close(+p: Path) -> Path:
   Path{cur, start, ctrl, old, prev, es, trace, tol} = p
@@ -4849,12 +4860,25 @@ def paint.rows(fb: Array<U32>, n: Nat, +x0: U32, +y: U32, +cols: Nat, +v: F32, +
     case 0n: fb
     case 1n+d: paint.rows(paint.row(fb, cols, x0, y, v, known, t, ctx), d, x0, (y + 1 : U32), cols, v, known, t, ctx)
 
-# The fast pixel: a constant packed front blended along the row.
+# The fast pixel: a constant packed front blended along the row, its
+# channels split once per row.
+def pixel.under(+fr: U32, +fg: U32, +fb: U32, +fa: U32, +keep: U32, +back: U32) -> U32:
+  (fr + U32.div((U32.mod(back, 256) * keep + 127 : U32), 255) + (fg + U32.div((U32.mod(U32.div(back, 256), 256) * keep + 127 : U32), 255)) * 256
+    + (fb + U32.div((U32.mod(U32.div(back, 65536), 256) * keep + 127 : U32), 255)) * 65536 + (fa + U32.div((U32.div(back, 16777216) * keep + 127 : U32), 255)) * 16777216 : U32)
+
+def blend.pre.got(got: Array<U32> & U32, +i: U32, +fr: U32, +fg: U32, +fb: U32, +fa: U32, +keep: U32) -> Array<U32>:
+  (a, back) = got
+  Array.set(U32, a, i, pixel.under(fr, fg, fb, fa, keep, back))
+
 @unsafe
-def fill.row(fb: Array<U32>, n: Nat, +i: U32, +front: U32) -> Array<U32>:
+def fill.row.pre(fb: Array<U32>, n: Nat, +i: U32, +fr: U32, +fg: U32, +fbl: U32, +fa: U32, +keep: U32) -> Array<U32>:
   match n:
     case 0n: fb
-    case 1n+d: fill.row(blend(fb, i, front), d, (i + 1 : U32), front)
+    case 1n+d: fill.row.pre(blend.pre.got(Array.get(U32, fb, i), i, fr, fg, fbl, fa, keep), d, (i + 1 : U32), fr, fg, fbl, fa, keep)
+
+def fill.row(fb: Array<U32>, n: Nat, +i: U32, +front: U32) -> Array<U32>:
+  +fa = U32.div(front, 16777216)
+  fill.row.pre(fb, n, i, U32.mod(front, 256), U32.mod(U32.div(front, 256), 256), U32.mod(U32.div(front, 65536), 256), fa, (255 - fa : U32))
 
 @unsafe
 def fill.rows(fb: Array<U32>, n: Nat, +x0: U32, +y: U32, +cols: Nat, +t: Target, +front: U32) -> Array<U32>:
