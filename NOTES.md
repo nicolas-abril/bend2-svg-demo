@@ -1066,3 +1066,31 @@ that is the process. The stroked circle shows the next cost: a stroke's mask
 comes from its parts (bands, joins, caps) as polygons, hundreds of lines for a
 smooth curve, and a curved mask still takes the dense scan and fold, which is
 what the filled circle (95 ms) and the stroke (466 ms) are paying for.
+
+## Stroke masks: active lines and sorted crossings
+
+A stroke's mask is scanned from its pieces as polygons: a band per flattened
+segment plus a join per vertex, about 3000 lines for a circle at a 6-unit
+width. Two things made that slow. Every row filtered the whole line list, and
+a scanline running along a nearly horizontal stretch of the curve meets every
+band and join on the way (116 to 180 crossings on the top rows of the circle,
+12 across the middle), which an insertion sort turned quadratic; it was 60
+percent of the stroke's time. The scan now sorts the lines by their top once
+and keeps an active list per row (lines are taken from the sorted list as
+their top passes and retired as their bottom does), collects each scanline's
+crossings unsorted and merge sorts them, and branches through matches instead
+of U.branch lambdas on the per-line paths. Outputs are byte-identical.
+
+| Document | 64x64 | 256x256 | 1024x1024 | 1024 before |
+| --- | --- | --- | --- | --- |
+| circle stroke | 17 ms | 42 ms | 205 ms | 466 ms |
+| circle fill | 8 ms | 12 ms | 87 ms | 95 ms |
+| stroke-vector | 8 ms | 12 ms | 56 ms | 66 ms |
+| text-path-styles | 27 ms | 30 ms | 64 ms | 81 ms |
+| basic | 8 ms | 10 ms | 46 ms | 49 ms |
+
+What remains for strokes is structural: the pieces overlap, so a scanline
+still walks a crossing per band and join edge it meets and adds a span per
+interval. A stroker that emits the offset outline as one polygon per subpath
+would bring a stroke's mask to the cost of a fill's, which is the next step
+if strokes matter more.

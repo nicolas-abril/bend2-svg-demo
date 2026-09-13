@@ -163,15 +163,66 @@ def acc.span(a: Array<F32>, n: Nat, +i: U32, +delta: F32) -> Array<F32>:
 type CovCross is Data:
   CovCross{x: F32, dir: F32}
 
+# The loops below run once per line per scanline, so they branch through
+# matches on parameters rather than lambdas (a match cannot scrutinize a local).
+def cross.place(before: Bool, +x: F32, +dir: F32, +hx: F32, +hd: F32, tt: List<&2, CovCross>, rest: List<&2, CovCross>) -> List<&2, CovCross>:
+  match before:
+    case True{}: Con{CovCross{x, dir}, Con{CovCross{hx, hd}, tt}}
+    case False{}: Con{CovCross{hx, hd}, rest}
+
 @unsafe
 def cross.insert(+x: F32, +dir: F32, xs: List<&2, CovCross>) -> List<&2, CovCross>:
   match xs:
     case Nil{}: Con{CovCross{x, dir}, Nil{}}
     case Con{CovCross{hx, hd}, t}:
       +hxx = hx
-      +hdd = hd
       +tt = t
-      U.branch(List<&2, CovCross>, F32.is_le(x, hxx), _ => Con{CovCross{x, dir}, Con{CovCross{hxx, hdd}, tt}}, _ => Con{CovCross{hxx, hdd}, cross.insert(x, dir, tt)})
+      cross.place(F32.is_le(x, hxx), x, dir, hxx, hd, tt, cross.insert(x, dir, tt))
+
+def crossings.add(hit: Bool, +cx: F32, +dir: F32, acc: List<&2, CovCross>) -> List<&2, CovCross>:
+  match hit:
+    case True{}: Con{CovCross{cx, dir}, acc}
+    case False{}: acc
+
+# Crossings are collected unsorted and merge sorted by x: a scanline along a
+# stroked curve meets every band and join it runs through, hundreds of
+# crossings, where an insertion sort was quadratic.
+def cross.x(+c: CovCross) -> F32:
+  CovCross{x, dir} = c
+  x
+
+@unsafe
+def cross.merge(xs: List<&2, CovCross>, ys: List<&2, CovCross>) -> List<&2, CovCross>:
+  match xs:
+    case Nil{}: ys
+    case Con{x, xt}:
+      match ys:
+        case Nil{}: Con{x, xt}
+        case Con{y, yt}:
+          +xx = x
+          +yy = y
+          +xs2 = xt
+          +ys2 = yt
+          U.branch(List<&2, CovCross>, F32.is_le(cross.x(xx), cross.x(yy)), _ => Con{xx, cross.merge(xs2, Con{yy, ys2})}, _ => Con{yy, cross.merge(Con{xx, xs2}, ys2)})
+
+def cross.deal(xs: List<&2, CovCross>, left: List<&2, CovCross>, right: List<&2, CovCross>) -> List<&2, CovCross> & List<&2, CovCross>:
+  match xs:
+    case Nil{}: (left, right)
+    case Con{x, Nil{}}: (Con{x, left}, right)
+    case Con{x, Con{y, rest}}: cross.deal(rest, Con{x, left}, Con{y, right})
+
+def cross.halves(halves: List<&2, CovCross> & List<&2, CovCross>, next: List<&2, CovCross> -> List<&2, CovCross> -> List<&2, CovCross>) -> List<&2, CovCross>:
+  (left, right) = halves
+  next(left)(right)
+
+@unsafe
+def cross.sort(xs: List<&2, CovCross>) -> List<&2, CovCross>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{x, rest}:
+      match rest:
+        case Nil{}: Con{x, Nil{}}
+        case Con{y, more}: cross.halves(cross.deal(Con{x, Con{y, more}}, Nil{}, Nil{}), left => right => cross.merge(cross.sort(left), cross.sort(right)))
 
 # Crossings of the lines with height sy, sorted by x. A line covers [top, bottom),
 # so a vertex shared by two lines counts once; horizontal lines never cross.
@@ -183,11 +234,8 @@ def crossings(xs: List<&2, CovLine>, +sy: F32, acc: List<&2, CovCross>) -> List<
       +ay = y0
       +bx = x1
       +by = y1
-      +ac = acc
-      +hit = (F32.is_le(ay, sy) && F32.is_lt(sy, by)) || (F32.is_le(by, sy) && F32.is_lt(sy, ay))
-      +cx = (ax + (sy - ay) * (bx - ax) / (by - ay) : F32)
-      +dir = U.choose(F32, F32.is_lt(ay, by), 1.0, F32.neg(1.0))
-      crossings(rest, sy, U.branch(List<&2, CovCross>, hit, _ => cross.insert(cx, dir, ac), _ => ac))
+      crossings(rest, sy, crossings.add((F32.is_le(ay, sy) && F32.is_lt(sy, by)) || (F32.is_le(by, sy) && F32.is_lt(sy, ay)),
+        (ax + (sy - ay) * (bx - ax) / (by - ay) : F32), U.choose(F32, F32.is_lt(ay, by), 1.0, F32.neg(1.0)), acc))
 
 # Add weight over the cells of [xa, xb); both ends lie within [0, w]. A row
 # has two slots per cell: the even slot takes the partial coverage of the two
@@ -214,17 +262,76 @@ def walk(a: Array<F32>, cs: List<&2, CovCross>, +base: U32, +wind: F32, +last: F
       +xx = x
       walk(with(Array<F32>, winding.inside(wind, even), a, arr => span.add(arr, base, last, xx, weight), arr => arr), rest, base, (wind + d : F32), xx, even, weight)
 
-# The lines that reach into the row band [top, bottom).
-def lines.band(xs: List<&2, CovLine>, +top: F32, +bottom: F32) -> List<&2, CovLine>:
+# ---- active lines ----
+# Lines are sorted by their top once; each row takes the lines whose top lies
+# above its bottom from the sorted list and drops those whose bottom lies
+# above its top, so a row only looks at the lines that reach into it.
+
+def line.top(+l: CovLine) -> F32:
+  CovLine{x0, y0, x1, y1} = l
+  U.min(y0, y1)
+
+def line.bottom(+l: CovLine) -> F32:
+  CovLine{x0, y0, x1, y1} = l
+  U.max(y0, y1)
+
+@unsafe
+def lines.merge(xs: List<&2, CovLine>, ys: List<&2, CovLine>) -> List<&2, CovLine>:
+  match xs:
+    case Nil{}: ys
+    case Con{x, xt}:
+      match ys:
+        case Nil{}: Con{x, xt}
+        case Con{y, yt}:
+          +xx = x
+          +yy = y
+          +xs2 = xt
+          +ys2 = yt
+          U.branch(List<&2, CovLine>, F32.is_le(line.top(xx), line.top(yy)), _ => Con{xx, lines.merge(xs2, Con{yy, ys2})}, _ => Con{yy, lines.merge(Con{xx, xs2}, ys2)})
+
+def lines.deal(xs: List<&2, CovLine>, left: List<&2, CovLine>, right: List<&2, CovLine>) -> List<&2, CovLine> & List<&2, CovLine>:
+  match xs:
+    case Nil{}: (left, right)
+    case Con{x, Nil{}}: (Con{x, left}, right)
+    case Con{x, Con{y, rest}}: lines.deal(rest, Con{x, left}, Con{y, right})
+
+def lines.halves(halves: List<&2, CovLine> & List<&2, CovLine>, next: List<&2, CovLine> -> List<&2, CovLine> -> List<&2, CovLine>) -> List<&2, CovLine>:
+  (left, right) = halves
+  next(left)(right)
+
+# Merge sort by top; a single line or none is already sorted.
+@unsafe
+def lines.sort(xs: List<&2, CovLine>) -> List<&2, CovLine>:
   match xs:
     case Nil{}: Nil{}
-    case Con{CovLine{x0, y0, x1, y1}, rest}:
-      +ax = x0
-      +ay = y0
-      +bx = x1
-      +by = y1
-      +more = lines.band(rest, top, bottom)
-      U.branch(List<&2, CovLine>, F32.is_lt(U.min(ay, by), bottom) && F32.is_gt(U.max(ay, by), top), _ => Con{CovLine{ax, ay, bx, by}, more}, _ => more)
+    case Con{x, rest}:
+      match rest:
+        case Nil{}: Con{x, Nil{}}
+        case Con{y, more}: lines.halves(lines.deal(Con{x, Con{y, more}}, Nil{}, Nil{}), left => right => lines.merge(lines.sort(left), lines.sort(right)))
+
+def lines.keep(keep: Bool, +l: CovLine, more: List<&2, CovLine>) -> List<&2, CovLine>:
+  match keep:
+    case True{}: Con{l, more}
+    case False{}: more
+
+# The active lines still reaching below top.
+def lines.retire(xs: List<&2, CovLine>, +top: F32) -> List<&2, CovLine>:
+  match xs:
+    case Nil{}: Nil{}
+    case Con{l, rest}:
+      +ll = l
+      lines.keep(F32.is_gt(line.bottom(ll), top), ll, lines.retire(rest, top))
+
+# Lines from the sorted pending list whose top lies above bottom move to the
+# active list; the list is sorted, so the first line that does not ends the take.
+@unsafe
+def lines.take(pending: List<&2, CovLine>, +bottom: F32, +active: List<&2, CovLine>) -> List<&2, CovLine> & List<&2, CovLine>:
+  match pending:
+    case Nil{}: (active, Nil{})
+    case Con{l, rest}:
+      +ll = l
+      +rs = rest
+      U.branch(List<&2, CovLine> & List<&2, CovLine>, F32.is_lt(line.top(ll), bottom), _ => lines.take(rs, bottom, Con{ll, active}), _ => (active, Con{ll, rs}))
 
 @unsafe
 def scan.subs(a: Array<F32>, n: Nat, +s: U32, +sub: U32, +y: U32, +stride: U32, +xs: List<&2, CovLine>, +even: Bool) -> Array<F32>:
@@ -232,15 +339,34 @@ def scan.subs(a: Array<F32>, n: Nat, +s: U32, +sub: U32, +y: U32, +stride: U32, 
     case 0n: a
     case 1n+d:
       +sy = (U32.to_f32(y) + (U32.to_f32(s) + 0.5) / U32.to_f32(sub) : F32)
-      scan.subs(walk(a, crossings(xs, sy, Nil{}), (y * stride * 2 : U32), 0.0, 0.0, even, (1.0 / U32.to_f32(sub) : F32)), d, (s + 1 : U32), sub, y, stride, xs, even)
+      scan.subs(walk(a, cross.sort(crossings(xs, sy, Nil{})), (y * stride * 2 : U32), 0.0, 0.0, even, (1.0 / U32.to_f32(sub) : F32)), d, (s + 1 : U32), sub, y, stride, xs, even)
+
+def scan.row(taken: List<&2, CovLine> & List<&2, CovLine>, a: Array<F32>, +sub: U32, +y: U32, +stride: U32, +even: Bool) -> Array<F32> & (List<&2, CovLine> & List<&2, CovLine>):
+  (active, pending) = taken
+  +live = active
+  (scan.subs(a, U32.to_nat(sub), 0, sub, y, stride, live, even), (live, pending))
+
+def scan.rows.lists(lists: List<&2, CovLine> & List<&2, CovLine>, a: Array<F32>, +y: U32, +stride: U32, +sub: U32, +even: Bool) -> Array<F32> & (List<&2, CovLine> & List<&2, CovLine>):
+  (active, pending) = lists
+  +yf = U32.to_f32(y)
+  scan.row(lines.take(pending, (yf + 1.0 : F32), lines.retire(active, yf)), a, sub, y, stride, even)
+
+def scan.rows.step(state: Array<F32> & (List<&2, CovLine> & List<&2, CovLine>), +y: U32, +stride: U32, +sub: U32, +even: Bool) -> Array<F32> & (List<&2, CovLine> & List<&2, CovLine>):
+  (a, lists) = state
+  scan.rows.lists(lists, a, y, stride, sub, even)
 
 @unsafe
-def scan.rows(a: Array<F32>, n: Nat, +y: U32, +stride: U32, +sub: U32, +xs: List<&2, CovLine>, +even: Bool) -> Array<F32>:
+def scan.rows.go(state: Array<F32> & (List<&2, CovLine> & List<&2, CovLine>), n: Nat, +y: U32, +stride: U32, +sub: U32, +even: Bool) -> Array<F32> & (List<&2, CovLine> & List<&2, CovLine>):
   match n:
-    case 0n: a
-    case 1n+d:
-      +yf = U32.to_f32(y)
-      scan.rows(scan.subs(a, U32.to_nat(sub), 0, sub, y, stride, lines.band(xs, yf, (yf + 1.0 : F32)), even), d, (y + 1 : U32), stride, sub, xs, even)
+    case 0n: state
+    case 1n+d: scan.rows.go(scan.rows.step(state, y, stride, sub, even), d, (y + 1 : U32), stride, sub, even)
+
+def scan.done(state: Array<F32> & (List<&2, CovLine> & List<&2, CovLine>)) -> Array<F32>:
+  (a, lists) = state
+  a
+
+def scan.rows(a: Array<F32>, n: Nat, +y: U32, +stride: U32, +sub: U32, +xs: List<&2, CovLine>, +even: Bool) -> Array<F32>:
+  scan.done(scan.rows.go((a, (Nil{}, lines.sort(xs))), n, y, stride, sub, even))
 
 # ---- run deltas into coverage ----
 
