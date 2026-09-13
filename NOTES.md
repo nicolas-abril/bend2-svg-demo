@@ -984,3 +984,39 @@ per-pixel Point and Color terms, a tenth in the blend arithmetic, and a
 twentieth each in the clip mask reads and the printf of the output; the four
 frame-sized layers its opacity groups and masks allocate are the rest.
 
+## Packed 8-bit layers
+
+The painter's layers are now packed 8-bit premultiplied RGBA, one U32 per
+pixel, and its inner loop has no constructor or lambda: a uniform mask block
+of a solid, unclipped shape computes its blended front once and each pixel is
+an array read, an integer over (front + back * (255 - alpha) / 255 per lane)
+and a write; clipped or sampled pixels still build a point and read the clip
+masks, whose reads now branch through matches rather than U.branch lambdas,
+and the gradient and tile samplers are unchanged. Layers composite by scaling
+their packed pixel with opacity and the mask factor, a filter node packs its
+raster color, and the final pass folds every pixel over white in place. The
+recorded matrices moved by at most two levels (mean under 0.12) from the
+8-bit rounding of the layers; the reference verdict stays 108 of 117. The
+pixel-writing effect formats bytes by hand instead of printf per pixel.
+
+Timings, whole process, best of five, before (F32 layers, printf output)
+and after:
+
+| Fixture | 64x64 | after | 256x256 | after | 1024x1024 | after |
+| --- | --- | --- | --- | --- | --- | --- |
+| empty document | 6.5 ms | 6.8 ms | 6.5 ms | 6.7 ms | 6.5 ms | 6.7 ms |
+| basic | 8.6 ms | 8.6 ms | 22 ms | 18.5 ms | 227 ms | 162 ms |
+| stroke-vector | | 9.3 ms | | 20.5 ms | | 188 ms |
+| text-path-styles | 26 ms | 28 ms | 41 ms | 39 ms | 224 ms | 167 ms |
+| markers-compositing | 24 ms | 24 ms | 87 ms | 73 ms | 1062 ms | 825 ms |
+
+The gain is a quarter to a third at 1024x1024 and small below it, and the
+profile explains the ceiling: the compiled program runs its calls through the
+runtime's evaluator (`corpus_eval` applying compiled closures), so a pixel's
+handful of array and integer operations is a handful of dispatches, about
+150 ns per pixel of a solid fill, and no rearrangement of the Bend source
+changes that constant. The remaining structural cost is the frame-sized layer
+each opacity group or mask allocates and composites (markers-compositing has
+four, hence its 5x over basic). Beyond that the gap to resvg is the runtime's
+per-call cost, not the renderer.
+

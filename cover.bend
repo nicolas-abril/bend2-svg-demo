@@ -25,6 +25,7 @@ def mask.present(+m: CovMask) -> Bool:
   CovMask{x, y, size, depth, tree, present} = m
   present
 
+@unsafe
 def tree.at(t: CovTree, +half: U32, +x: U32, +y: U32) -> F32:
   match t:
     case CovFlat{v}: v
@@ -34,10 +35,15 @@ def tree.at(t: CovTree, +half: U32, +x: U32, +y: U32) -> F32:
       +xx = U.choose(U32, left, x, (x - half : U32))
       +yy = U.choose(U32, top, y, (y - half : U32))
       +next = U32.div(half, 2)
-      U.branch(F32, top, _ => U.branch(F32, left, _ => tree.at(a, next, xx, yy), _ => tree.at(b, next, xx, yy)),
-        _ => U.branch(F32, left, _ => tree.at(c, next, xx, yy), _ => tree.at(d, next, xx, yy)))
+      tree.at(U.choose(CovTree, top, U.choose(CovTree, left, a, b), U.choose(CovTree, left, c, d)), next, xx, yy)
 
-# Coverage of the pixel containing (px, py), in grid pixel coordinates.
+def mask.at.in(outside: Bool, t: CovTree, +half: U32, +x: U32, +y: U32) -> F32:
+  match outside:
+    case True{}: 0.0
+    case False{}: tree.at(t, half, x, y)
+
+# Coverage of the pixel containing (px, py), in grid pixel coordinates; the
+# reads branch through matches, not lambdas, since they run once per pixel.
 def mask.at(+m: CovMask, +px: F32, +py: F32) -> F32:
   CovMask{x, y, size, depth, tree, present} = m
   +sizeDup = size
@@ -47,8 +53,7 @@ def mask.at(+m: CovMask, +px: F32, +py: F32) -> F32:
   +fy = F32.floor(py)
   +ix = (F32.to_u32(U.max(fx, 0.0)) - xDup : U32)
   +iy = (F32.to_u32(U.max(fy, 0.0)) - yDup : U32)
-  U.branch(F32, F32.is_lt(fx, U32.to_f32(xDup)) || F32.is_lt(fy, U32.to_f32(yDup)) || U32.is_ge(ix, sizeDup) || U32.is_ge(iy, sizeDup), _ => 0.0,
-    _ => tree.at(tree, U32.div(sizeDup, 2), ix, iy))
+  mask.at.in(F32.is_lt(fx, U32.to_f32(xDup)) || F32.is_lt(fy, U32.to_f32(yDup)) || U32.is_ge(ix, sizeDup) || U32.is_ge(iy, sizeDup), tree, U32.div(sizeDup, 2), ix, iy)
 
 # ---- clipping to the grid's horizontal extent ----
 
