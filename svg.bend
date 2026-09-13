@@ -136,12 +136,48 @@ def point.distance(+p: Point, +q: Point) -> F32:
   +d = point.sub(p, q)
   F32.sqrt(point.dot(d, d))
 
-def cubic.flat(+p: Point, +a: Point, +b: Point, +q: Point) -> Bool:
-  F32.is_lt((point.distance(p, a) + point.distance(a, b) + point.distance(b, q)
-    - point.distance(p, q) : F32), 0.0005)
+# Curves are flattened to a tolerance measured in device pixels (converted to
+# local units through the element's matrix by the caller), so a curve gets as
+# many segments as the output size needs and no more.
+def flat.tolerance() -> F32:
+  0.03
+
+# The largest scale the matrix applies to any direction, bounded by its
+# Frobenius norm; local tolerance = pixel tolerance / scale.
+def matrix.norm(+m: Matrix) -> F32:
+  Matrix{a, b, c, d, e, f} = m
+  U.max(0.000001, F32.sqrt((a * a + b * b + c * c + d * d : F32)))
+
+# scale is the device pixels per unit of the frame m maps into (1 when m
+# maps to the device, the tile's density for pattern content).
+def local.tolerance(+m: Matrix, +scale: F32) -> F32:
+  (flat.tolerance() / (scale * matrix.norm(m)) : F32)
+
+def chord.cross(p: Point, q: Point) -> F32:
+  Point{x, y} = p
+  Point{u, v} = q
+  (x * v - y * u : F32)
+
+# Whether x lies within tol of the chord pq: at most tol from its line and
+# not beyond either end by more than tol.
+def chord.near(+p: Point, +q: Point, +x: Point, +tol: F32) -> Bool:
+  +d = point.sub(q, p)
+  +len = F32.sqrt(point.dot(d, d))
+  +off = point.sub(x, p)
+  U.branch(Bool, F32.is_lt(len, 0.000001), _ => F32.is_le(point.distance(p, x), tol),
+    _ => F32.is_le(F32.abs(chord.cross(d, off)), (tol * len : F32))
+      && F32.is_ge(point.dot(d, off), (F32.neg(tol) * len : F32))
+      && F32.is_le(point.dot(d, off), ((len + tol) * len : F32)))
+
+# A cubic's distance from its chord is 3t(1-t) times a mix of its control
+# points' distances, at most three quarters of the larger, so the curve is
+# within tol when both control points are within 4/3 tol.
+def cubic.flat(+p: Point, +a: Point, +b: Point, +q: Point, +tol: F32) -> Bool:
+  +reach = (tol * 1.3333334 : F32)
+  chord.near(p, q, a, reach) && chord.near(p, q, b, reach)
 
 def cubic(depth: Nat, +p: Point, +a: Point, +b: Point, +q: Point,
-  +edges: List<&2, Edge>) -> List<&2, Edge>:
+  +edges: List<&2, Edge>, +tol: F32) -> List<&2, Edge>:
   match depth:
     case 0n: Con{Edge{p, q, True{}, False{}}, edges}
     case 1n+d:
@@ -152,8 +188,8 @@ def cubic(depth: Nat, +p: Point, +a: Point, +b: Point, +q: Point,
       +l = point.mid(pa, ab)
       +r = point.mid(ab, bq)
       +m = point.mid(l, r)
-      U.branch(List<&2, Edge>, cubic.flat(p, a, b, q), _ => Con{Edge{p, q, True{}, False{}}, edges},
-        _ => cubic(dd, m, r, bq, q, cubic(dd, p, pa, l, m, edges)))
+      U.branch(List<&2, Edge>, cubic.flat(p, a, b, q, tol), _ => Con{Edge{p, q, True{}, False{}}, edges},
+        _ => cubic(dd, m, r, bq, q, cubic(dd, p, pa, l, m, edges, tol), tol))
 
 type Params is Data:
   Params{values: List<&2, F32>, tail: String, valid: Bool}
@@ -212,7 +248,7 @@ def marker.arc.tangent(+rx: F32, +ry: F32, +phi: F32, +theta: F32, +delta: F32) 
     ((F32.neg(rx) * F32.sin(phi) * F32.sin(theta) + ry * F32.cos(phi) * F32.cos(theta)) * direction : F32)}
 
 type Path is Data:
-  Path{current: Point, start: Point, control: Point, command: U32, previous: U32, edges: List<&2, Edge>, trace: Maybe<&2, List<&2, MarkerSegment>>}
+  Path{current: Point, start: Point, control: Point, command: U32, previous: U32, edges: List<&2, Edge>, trace: Maybe<&2, List<&2, MarkerSegment>>, tolerance: F32}
 
 def upper(+c: U32) -> U32:
   U.choose(U32, U32.is_ge(c, 97) && U32.is_le(c, 122), (c - 32 : U32), c)
@@ -221,27 +257,29 @@ def relative(+cmd: U32, +current: Point, p: Point) -> Point:
   point.add(U.choose(Point, U32.is_ge(cmd, 97), current, Point{0.0, 0.0}), p)
 
 def path.move(+p: Path, +q: Point, cmd: U32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   Path{q, q, q, U.choose(U32, U32.is_ge(cmd, 97), 108, 76), 77,
-    U.choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{Edge{cur, start, False{}, False{}}, es}), marker.segment(trace, marker.line(q, q, 1))}
+    U.choose(List<&2, Edge>, U32.is_eq(prev, 0), es, Con{Edge{cur, start, False{}, False{}}, es}), marker.segment(trace, marker.line(q, q, 1)), tol}
 
 def path.line(+p: Path, +q: Point, +cmd: U32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
-  Path{q, start, q, cmd, upper(cmd), Con{Edge{cur, q, True{}, False{}}, es}, marker.segment(trace, marker.line(cur, q, 0))}
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  Path{q, start, q, cmd, upper(cmd), Con{Edge{cur, q, True{}, False{}}, es}, marker.segment(trace, marker.line(cur, q, 0)), tol}
 
 def path.cubic(+p: Path, +a: Point, +b: Point, +q: Point, +cmd: U32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
-  Path{q, start, b, cmd, upper(cmd), cubic(10n, cur, a, b, q, es), marker.segment(trace, marker.cubic(cur, a, b, q))}
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  +tt = tol
+  Path{q, start, b, cmd, upper(cmd), cubic(10n, cur, a, b, q, es, tt), marker.segment(trace, marker.cubic(cur, a, b, q)), tt}
 
 def path.quad(+p: Path, +a: Point, +q: Point, +cmd: U32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   ca = point.add(cur, point.scale(point.sub(a, cur), 0.6666666666666666))
   cb = point.add(q, point.scale(point.sub(a, q), 0.6666666666666666))
-  Path{q, start, a, cmd, upper(cmd), cubic(10n, cur, ca, cb, q, es), marker.segment(trace, marker.cubic(cur, a, a, q))}
+  +tt = tol
+  Path{q, start, a, cmd, upper(cmd), cubic(10n, cur, ca, cb, q, es, tt), marker.segment(trace, marker.cubic(cur, a, a, q)), tt}
 
 def path.close(+p: Path) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
-  Path{start, start, start, 0, 90, Con{Edge{cur, start, True{}, True{}}, es}, marker.segment(trace, marker.line(cur, start, 2))}
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  Path{start, start, start, 0, 90, Con{Edge{cur, start, True{}, True{}}, es}, marker.segment(trace, marker.line(cur, start, 2)), tol}
 
 def path.h(+cur: Point, +v: F32, cmd: U32) -> Point:
   Point{x, y} = cur
@@ -266,11 +304,14 @@ def arc.edges(+n: Nat, +i: F32, +step: F32, +theta: F32, +center: Point,
 
 def arc.draw(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
   +center: Point, +theta: F32, +delta: F32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
-  # At most 1/128 revolution per edge, further refined for larger radii.
-  +count = U.max(1.0, F32.ceil((F32.abs(delta) * F32.sqrt(U.max(rx, ry)) * 8.0 : F32)))
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  # A chord of angle step on the larger radius stays within the tolerance:
+  # step = 2 acos(1 - tol / r), approximated by 2 sqrt(2 tol / r).
+  +tt = tol
+  +step = U.max(0.001, (2.0 * F32.sqrt((2.0 * U.max(tt, 0.000001) / U.max(rx, ry) : F32)) : F32))
+  +count = U.max(1.0, F32.ceil((F32.abs(delta) / step : F32)))
   Path{q, start, q, cmd, 65, arc.edges(U32.to_nat(F32.to_u32(U.min(4096.0, count))),
-    1.0, (delta / U.min(4096.0, count) : F32), theta, center, rx, ry, phi, q, cur, es), marker.segment(trace, MarkerSegment{cur, q, marker.arc.tangent(rx, ry, phi, theta, delta), marker.arc.tangent(rx, ry, phi, (theta + delta : F32), delta), 0})}
+    1.0, (delta / U.min(4096.0, count) : F32), theta, center, rx, ry, phi, q, cur, es), marker.segment(trace, MarkerSegment{cur, q, marker.arc.tangent(rx, ry, phi, theta, delta), marker.arc.tangent(rx, ry, phi, (theta + delta : F32), delta), 0}), tt}
 
 def arc.angles(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
   +xp: F32, +yp: F32, +cx: F32, +cy: F32, +center: Point, sweep: F32) -> Path:
@@ -286,7 +327,7 @@ def arc.angles(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
 
 def arc.center(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, +phi: F32,
   +xp: F32, +yp: F32, +coef: F32, sweep: F32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   +cx = (coef * rx * yp / ry : F32)
   +cy = (0.0 - coef * ry * xp / rx : F32)
   center = point.add(point.mid(cur, q), Point{(F32.cos(phi) * cx - F32.sin(phi) * cy : F32),
@@ -313,14 +354,14 @@ def arc.prepare(+p: Path, +q: Point, cmd: U32, rx: F32, ry: F32, +phi: F32,
 
 def path.arc(+p: Path, +q: Point, +cmd: U32, +rx: F32, +ry: F32, phi: F32,
   large: F32, sweep: F32) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
-  U.branch(Path, F32.is_lt(point.distance(cur, q), 0.000001), _ => Path{q, start, q, cmd, 65, es, trace},
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
+  U.branch(Path, F32.is_lt(point.distance(cur, q), 0.000001), _ => Path{q, start, q, cmd, 65, es, trace, tol},
     _ => U.branch(Path, F32.is_eq(rx, 0.0) || F32.is_eq(ry, 0.0), _ => path.line(p, q, cmd),
       _ => arc.prepare(p, q, cmd, F32.abs(rx), F32.abs(ry), (phi * 0.017453292519943295 : F32),
         large, sweep, point.scale(point.sub(cur, q), 0.5))))
 
 def path.apply(+p: Path, +cmd: U32, +vs: List<&2, F32>) -> Path:
-  Path{cur, start, ctrl, old, prev, es, trace} = p
+  Path{cur, start, ctrl, old, prev, es, trace, tol} = p
   +c = upper(cmd)
   +x = U.nth(vs, 0n, 0.0)
   +y = U.nth(vs, 1n, 0.0)
@@ -374,7 +415,7 @@ def path.char(letter: Bool, +ch: U32, +tail: String, +cmd: U32, +p: Path, next: 
     case False{}: path.repeat(U32.is_ne(cmd, 0), ch, tail, cmd, p, next)
 
 def path.scan(+p: Path, s: String, next: String -> Path -> Path) -> Path:
-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
+  Path{cur, start, ctrl, cmd, prev, es, trace, tol} = p
   match s:
     case SNil{}: p
     case SCon{Chr{c}, t}:
@@ -386,11 +427,11 @@ def path.loop(s: String, p: Path) -> Path:
   path.scan(p, U.separators(s), t => next => path.loop(t, next))
 
 def path.finish(+p: Path) -> List<&2, Edge>:
-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
+  Path{cur, start, ctrl, cmd, prev, es, trace, tol} = p
   U.choose(List<&2, Edge>, U32.is_eq(prev, 0), Nil{}, Con{Edge{cur, start, False{}, False{}}, es})
 
-def path(s: String) -> List<&2, Edge>:
-  path.finish(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, None{}}))
+def path(s: String, +tol: F32) -> List<&2, Edge>:
+  path.finish(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, None{}, tol}))
 
 # Geometry queries use half-open crossings, supporting both SVG fill rules.
 def edge.cross(+edge: Edge, +p: Point) -> F32:
@@ -721,10 +762,13 @@ def shape.data(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> St
               _ => "M" ++ XML.attr.get(as, "points", "") ++ U.choose(String, U.string.equal(name, "polygon"), "Z", ""),
               _ => ""))))))
 
-def shape(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32) -> List<&2, Edge>:
+def glyph.path(+d: String, +gm: Matrix, +tol: F32) -> List<&2, Edge>:
+  edges.transform(path(d, (tol / matrix.norm(gm) : F32)), gm)
+
+def shape(+name: String, +as: List<&2, XML.Attr>, +vw: F32, +vh: F32, +tol: F32) -> List<&2, Edge>:
   U.branch(List<&2, Edge>, U.string.equal(name, "#glyph"),
-    _ => edges.transform(path(XML.attr.get(as, "d", "")), transform(XML.attr.get(as, "#glyph-transform", ""), identity())),
-    _ => path(shape.data(name, as, vw, vh)))
+    _ => glyph.path(XML.attr.get(as, "d", ""), transform(XML.attr.get(as, "#glyph-transform", ""), identity()), tol),
+    _ => path(shape.data(name, as, vw, vh), tol))
 
 # Paint adjacent glyphs with one shared style as one geometry. This keeps all
 # fills together and all strokes together, including overlapping glyphs.
@@ -733,15 +777,16 @@ def glyph.edges.append(xs: List<&2, Edge>, ys: List<&2, Edge>) -> List<&2, Edge>
     case Nil{}: ys
     case Con{h, t}: Con{h, glyph.edges.append(t, ys)}
 
-def glyph.edges(xs: List<&2, XML.Element>) -> List<&2, Edge>:
+def glyph.edges(xs: List<&2, XML.Element>, +tol: F32) -> List<&2, Edge>:
   match xs:
     case Nil{}: Nil{}
     case Con{XML.Element{n, as, kids, txt}, rest}:
       +attrs = as
-      glyph.edges.append(edges.transform(path(XML.attr.get(attrs, "d", "")), transform(XML.attr.get(attrs, "#glyph-transform", ""), identity())), glyph.edges(rest))
+      glyph.edges.append(glyph.path(XML.attr.get(attrs, "d", ""), transform(XML.attr.get(attrs, "#glyph-transform", ""), identity()), tol), glyph.edges(rest, tol))
 
-def shape.children(+name: String, as: List<&2, XML.Attr>, kids: List<&2, XML.Element>, vw: F32, vh: F32) -> List<&2, Edge>:
-  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph-run"), _ => glyph.edges(kids), _ => shape(name, as, vw, vh))
+# The element's edges in local units, flattened for the local-to-device matrix m.
+def shape.children(+name: String, as: List<&2, XML.Attr>, kids: List<&2, XML.Element>, vw: F32, vh: F32, +tol: F32) -> List<&2, Edge>:
+  U.branch(List<&2, Edge>, U.string.equal(name, "#glyph-run"), _ => glyph.edges(kids, tol), _ => shape(name, as, vw, vh, tol))
 
 type MarkerSubpath is Data:
   MarkerSubpath{start: Point, segments: List<&2, MarkerSegment>, closed: Bool}
@@ -831,11 +876,11 @@ def marker.trace.result(trace: Maybe<&2, List<&2, MarkerSegment>>) -> List<&2, M
     case Some{segments}: marker.vertices(marker.subpaths(marker.segments.reverse(segments, Nil{}), Point{0.0, 0.0}, Nil{}, False{}, Nil{}))
 
 def marker.trace.path(p: Path) -> List<&2, MarkerVertex>:
-  Path{cur, start, ctrl, cmd, prev, es, trace} = p
+  Path{cur, start, ctrl, cmd, prev, es, trace, tol} = p
   marker.trace.result(trace)
 
 def marker.trace(s: String) -> List<&2, MarkerVertex>:
-  marker.trace.path(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, Some{Nil{}}}))
+  marker.trace.path(path.loop(s, Path{Point{0.0, 0.0}, Point{0.0, 0.0}, Point{0.0, 0.0}, 0, 0, Nil{}, Some{Nil{}}, 1.0}))
 
 # Stroke geometry is compiled once. Overlapping parts form a union, so alpha
 # is applied once even at joins, caps and self intersections.
@@ -1996,7 +2041,7 @@ def clip.attach(+as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bound
 
 @unsafe
 def clip.build(fuel: Nat, +xs: List<&2, XML.Element>, +all: List<&2, XML.Element>, +m: Matrix,
-  +w: F32, +h: F32, +even: Bool) -> Clip:
+  +w: F32, +h: F32, +even: Bool, +scale: F32) -> Clip:
   match fuel:
     case 0n: clip.empty()
     case 1n+d:
@@ -2008,17 +2053,17 @@ def clip.build(fuel: Nat, +xs: List<&2, XML.Element>, +all: List<&2, XML.Element
           +matrix = matrix.mul(matrix.mul(m, transform(XML.attr.get(as, "transform", ""), identity())),
             U.choose(Matrix, U.string.equal(n, "use"), translate(dimension(as, "x", w, "0"), dimension(as, "y", h, "0")), identity()))
           +rule = U.string.equal(XML.attr.get(as, "clip-rule", U.choose(String, even, "evenodd", "nonzero")), "evenodd")
-          +es = shape.children(n, as, kids, w, h)
+          +es = shape.children(n, as, kids, w, h, local.tolerance(matrix, scale))
           +box = bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})
           U.branch(Clip, U.string.equal(XML.attr.get(as, "display", "inline"), "none"),
-            _ => clip.build(1n+dd, rest, all, m, w, h, even),
+            _ => clip.build(1n+dd, rest, all, m, w, h, even, scale),
             _ => ClipUnion{ClipIntersect{
-              ClipUnion{ClipShape{edge.tree(es), matrix.inverse(matrix), rule, cover.none()}, clip.build(1n+dd, kids, all, matrix, w, h, rule)},
-              clip.attach(as, all, box, matrix, nodes => mat => clip.build(dd, nodes, all, mat, w, h, False{}))},
-              clip.build(1n+dd, rest, all, m, w, h, even)})
+              ClipUnion{ClipShape{edge.tree(es), matrix.inverse(matrix), rule, cover.none()}, clip.build(1n+dd, kids, all, matrix, w, h, rule, scale)},
+              clip.attach(as, all, box, matrix, nodes => mat => clip.build(dd, nodes, all, mat, w, h, False{}, scale))},
+              clip.build(1n+dd, rest, all, m, w, h, even, scale)})
 
-def clip.compile(as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bounds, m: Matrix, +w: F32, +h: F32) -> Clip:
-  clip.attach(as, all, box, m, nodes => mat => clip.build(128n, nodes, all, mat, w, h, False{}))
+def clip.compile(as: List<&2, XML.Attr>, +all: List<&2, XML.Element>, box: Bounds, m: Matrix, +w: F32, +h: F32, +scale: F32) -> Clip:
+  clip.attach(as, all, box, m, nodes => mat => clip.build(128n, nodes, all, mat, w, h, False{}, scale))
 
 def style.nonScaling(s: Style) -> Bool:
   Style{fill, stroke, col, fo, so, width, even, visible, ss, ms, rendering, order} = s
@@ -2084,9 +2129,9 @@ def filter.spec(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, box: Bounds
   U.branch(FilterEffect, U.prefix(value, "url("), _ => filter.resource(XML.element.find(all, id), box, m, w, h), _ => NoFilter{})
 
 def scene.make(+es: List<&2, Edge>, +m: Matrix, +s: Style, opacity: F32, +children: List<&2, Scene<Brush>>, id: String,
-  +all: List<&2, XML.Element>, +w: F32, +h: F32, +as: List<&2, XML.Attr>, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush) -> Scene<Brush>:
+  +all: List<&2, XML.Element>, +w: F32, +h: F32, +as: List<&2, XML.Attr>, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, +scale: F32) -> Scene<Brush>:
   +box = bounds.spec(as, scene.bounds(children, matrix.inverse(m), bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})))
-  Scene{es, box, matrix.inverse(m), s, opacity, children, id, style.colors(s, all, box, w, h, fills, strokes), clip.compile(as, all, box, m, w, h), style.outline(s, es, m, F32.sqrt(((w * w + h * h) / 2.0 : F32)), U.scalar(XML.attr.get(as, "pathLength", "0"), 0.0)), fill.new(es), Nil{}, 0, Nil{}, bounds.empty(), filter.spec(as, all, box, m, w, h)}
+  Scene{es, box, matrix.inverse(m), s, opacity, children, id, style.colors(s, all, box, w, h, fills, strokes), clip.compile(as, all, box, m, w, h, scale), style.outline(s, es, m, F32.sqrt(((w * w + h * h) / 2.0 : F32)), U.scalar(XML.attr.get(as, "pathLength", "0"), 0.0)), fill.new(es), Nil{}, 0, Nil{}, bounds.empty(), filter.spec(as, all, box, m, w, h)}
 
 # SVG viewports establish local units and intersect their children with overflow clips.
 def viewbox.matrix(+v: List<&2, F32>, +w: F32, +h: F32, +aspect: String) -> Matrix:
@@ -2167,7 +2212,7 @@ type Viewport is Data:
   Viewport{matrix: Matrix, width: F32, height: F32, clip: Clip, valid: Bool}
 
 def viewport.clip(+w: F32, +h: F32, m: Matrix) -> Clip:
-  ClipShape{edge.tree(path(shape.rect.path(0.0, 0.0, w, h, 0.0, 0.0))), matrix.inverse(m), False{}, cover.none()}
+  ClipShape{edge.tree(path(shape.rect.path(0.0, 0.0, w, h, 0.0, 0.0), 1.0)), matrix.inverse(m), False{}, cover.none()}
 
 def viewport.dimension(+as: List<&2, XML.Attr>, key: String, +ref: F32) -> F32:
   +value = XML.attr.get(as, key, "auto")
@@ -2284,7 +2329,7 @@ def mask.region(+as: List<&2, XML.Attr>, +box: Bounds, +m: Matrix, +w: F32, +h: 
   +width = dimension(as, "width", vw, "120%")
   +height = dimension(as, "height", vh, "120%")
   U.branch(Clip, F32.is_gt(width, 0.0) && F32.is_gt(height, 0.0),
-    _ => ClipShape{edge.tree(path(shape.rect.path(dimension(as, "x", vw, "-10%"), dimension(as, "y", vh, "-10%"), width, height, 0.0, 0.0))),
+    _ => ClipShape{edge.tree(path(shape.rect.path(dimension(as, "x", vw, "-10%"), dimension(as, "y", vh, "-10%"), width, height, 0.0, 0.0), 1.0)),
       matrix.inverse(matrix.mul(m, U.choose(Matrix, user, identity(), gradient.box(box)))), False{}, cover.none()}, _ => clip.empty())
 
 def mask.resource(result: Maybe<&2, XML.Element>, +id: String, +mode: String, +box: Bounds, +m: Matrix, +w: F32, +h: F32,
@@ -2432,8 +2477,15 @@ def pattern.resolve(depth: Nat, +node: XML.Element, +all: List<&2, XML.Element>)
 def pattern.paint(+nodes: List<&2, Scene<Brush>>, inv: Matrix, width: F32, height: F32, opacity: F32) -> Brush:
   Pattern{inv, width, height, opacity, nodes}
 
+# pixels is the device pixels per user unit of the referencing element; the
+# content is compiled for the pattern frame's own device scale.
+# Pattern space to the referencing element's user space.
+def pattern.frame(+as: List<&2, XML.Attr>, +units: Matrix, +uw: F32, +uh: F32) -> Matrix:
+  matrix.mul(transform(XML.attr.get(as, "patternTransform", ""), identity()), matrix.mul(units,
+    translate(dimension(as, "x", uw, "0"), dimension(as, "y", uh, "0"))))
+
 def pattern.tile(e: XML.Element, box: Bounds, +w: F32, +h: F32, opacity: F32,
-  build: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> Brush:
+  build: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, +pixels: F32) -> Brush:
   XML.Element{n, attrs, kids, txt} = e
   Bounds{x0, y0, x1, y1} = box
   +as = CSS.properties(attrs)
@@ -2458,16 +2510,15 @@ def pattern.tile(e: XML.Element, box: Bounds, +w: F32, +h: F32, opacity: F32,
       (U.choose(F32, contentUser, 1.0, bh) / U.choose(F32, user, 1.0, U.max(bh, 0.0000001)) : F32)))
   U.branch(Brush, F32.is_gt(width, 0.0) && F32.is_gt(height, 0.0) && F32.is_gt(vw, 0.0) && F32.is_gt(vh, 0.0)
       && (user || (F32.is_gt(bw, 0.0) && F32.is_gt(bh, 0.0))),
-    _ => pattern.paint(build(XML.attr.get(as, "id", ""))(Con{XML.Element{"g", Con{XML.Attr{"display", "inline"}, as}, kids, txt}, Nil{}})(content)(vw)(vh),
-      matrix.inverse(matrix.mul(transform(XML.attr.get(as, "patternTransform", ""), identity()), matrix.mul(units,
-        translate(dimension(as, "x", uw, "0"), dimension(as, "y", uh, "0"))))), width, height, opacity),
+    _ => pattern.paint(build(XML.attr.get(as, "id", ""))((pixels * matrix.norm(pattern.frame(as, units, uw, uh)) : F32))(Con{XML.Element{"g", Con{XML.Attr{"display", "inline"}, as}, kids, txt}, Nil{}})(content)(vw)(vh),
+      matrix.inverse(pattern.frame(as, units, uw, uh)), width, height, opacity),
     _ => Solid{Img.clear(), Img.clear()})
 
 def pattern.build(+node: XML.Element, +all: List<&2, XML.Element>, active: List<&2, String>, box: Bounds, w: F32, h: F32, opacity: F32,
-  build: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> Brush:
+  build: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, +pixels: F32) -> Brush:
   XML.Element{n, as, kids, txt} = node
   U.branch(Brush, U.strings.has(active, XML.attr.get(as, "id", "")), _ => Solid{Img.clear(), Img.clear()},
-    _ => pattern.tile(pattern.resolve(32n, node, all), box, w, h, opacity, build))
+    _ => pattern.tile(pattern.resolve(32n, node, all), box, w, h, opacity, build, pixels))
 
 def matrix.show(m: Matrix) -> String:
   Matrix{a, b, c, d, e, f} = m
@@ -2539,8 +2590,8 @@ def marker.instances(+name: String, as: List<&2, XML.Attr>, +s: Style, all: List
   U.branch(List<&2, XML.Element>, marker.enabled(ms) && (U.string.equal(name, "path") || U.string.equal(name, "line") || U.string.equal(name, "polyline") || U.string.equal(name, "polygon")),
     _ => marker.instances.loop(marker.trace(shape.data(name, as, w, h)), True{}, ms, all, active, width, w, h), _ => Nil{})
 
-def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Element>, +vp: Viewport, inherited: Style, +all: List<&2, XML.Element>, +active: List<&2, String>,
-  masks: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, fills: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, strokes: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
+def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Element>, +vp: Viewport, inherited: Style, +all: List<&2, XML.Element>, +active: List<&2, String>, +scale: F32,
+  masks: String -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, fills: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>, strokes: String -> F32 -> List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
   markers: List<&2, XML.Element> -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>,
   children: Style -> Matrix -> F32 -> F32 -> List<&2, Scene<Brush>>) -> List<&2, Scene<Brush>>:
   Viewport{matrix, vw, vh, viewportClip, valid} = vp
@@ -2549,28 +2600,28 @@ def compile.node(+n: String, +as: List<&2, XML.Attr>, +glyphs: List<&2, XML.Elem
   +attrs = bitmap.attrs(embedded, as)
   +style = U.choose(Style, U.string.equal(n, "#svg-image"), style.embedded(baseStyle), bitmap.style(embedded, baseStyle))
   U.branch(List<&2, Scene<Brush>>, element.hidden(n, as) || Bool.not(valid) || (U.string.equal(n, "#svg-image") && Bool.not(style.is.visible(baseStyle))), _ => Nil{},
-    _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape.children(n, attrs, glyphs, vw, vh), matrix, style,
+    _ => Con{scene.marked(scene.masked(scene.clipped(scene.bitmap(scene.make(shape.children(n, attrs, glyphs, vw, vh, local.tolerance(matrix, scale)), matrix, style,
       color.opacity(XML.attr.get(attrs, "opacity", "1"), 1.0), U.branch(List<&2, Scene<Brush>>, U.string.equal(n, "#glyph-run"), _ => Nil{}, _ => children(style)(matrix)(vw)(vh)),
       XML.attr.get(attrs, "#editor-id", ""), all, vw, vh, attrs,
-        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills),
-        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes)), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
+        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, fills, (scale * matrix.norm(matrix) : F32)),
+        node => box => pw => ph => alpha => pattern.build(node, all, active, box, pw, ph, alpha, strokes, (scale * matrix.norm(matrix) : F32)), scale), embedded), viewportClip), attrs, all, active, vw, vh, masks), markers(marker.instances(n, attrs, style, all, active, vw, vh))(matrix)(vw)(vh)), Nil{}})
 
 @unsafe
 def compile(+fuel: Nat, +xs: List<&2, XML.Element>, +inherited: Style, +m: Matrix, +w: F32, +h: F32,
-  +all: List<&2, XML.Element>, +root: Bool, +active: List<&2, String>) -> List<&2, Scene<Brush>>:
+  +all: List<&2, XML.Element>, +root: Bool, +active: List<&2, String>, +scale: F32) -> List<&2, Scene<Brush>>:
   match fuel xs:
     case 0n _: Nil{}
     case 1n+d Nil{}: Nil{}
     case 1n+d Con{XML.Element{tagname, attrs, kids, txt}, rest}:
       +as = image.layout.attrs(CSS.properties(attrs), w, h)
       +n = tagname
-      scenes.append(compile.node(n, as, kids, element.viewport(n, as, m, w, h, root), inherited, all, active,
-        used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
-        used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
-        used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}),
-        nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, active),
-        style => mat => vw => vh => compile(U.choose(Nat, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), kids, U.choose(Style, U.string.equal(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), resources(kids, Nil{}), all), False{}, U.choose(List<&2, String>, U.string.equal(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})))),
-        compile(fuel, rest, inherited, m, w, h, all, root, active))
+      scenes.append(compile.node(n, as, kids, element.viewport(n, as, m, w, h, root), inherited, all, active, scale,
+        used => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, scale),
+        used => sc => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
+        used => sc => nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, Con{used, active}, sc),
+        nodes => mat => vw => vh => compile(d, nodes, style.default(), mat, vw, vh, all, False{}, active, scale),
+        style => mat => vw => vh => compile(U.choose(Nat, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), fuel, d), kids, U.choose(Style, U.string.equal(n, "#svg-image"), style.default(), style), mat, vw, vh, U.choose(List<&2, XML.Element>, U.string.equal(n, "#svg-image"), resources(kids, Nil{}), all), False{}, U.choose(List<&2, String>, U.string.equal(n, "#svg-image"), Nil{}, U.choose(List<&2, String>, U.string.equal(XML.attr.get(as, "#marker-source", ""), ""), active, Con{XML.attr.get(as, "#marker-source", ""), active})), scale)),
+        compile(fuel, rest, inherited, m, w, h, all, root, active, scale))
 
 # XML.Text layout produces internal glyph geometry while preserving text/tspan groups.
 type TextFont is Data:
@@ -2712,7 +2763,7 @@ def text.path.edges(+xs: List<&2, Edge>, +acc: List<&2, Edge>) -> List<&2, Edge>
     case Con{Edge{p, q, stroked, closed}, rest}: text.path.edges(rest, U.choose(List<&2, Edge>, stroked && F32.is_gt(point.distance(p, q), 0.000001), Con{Edge{p, q, stroked, closed}, acc}, acc))
 
 def text.path.geometry(+as: List<&2, XML.Attr>) -> List<&2, Edge>:
-  text.path.edges(edges.transform(path(XML.attr.get(as, "#text-path-data", "")), transform(XML.attr.get(as, "#text-path-transform", ""), identity())), Nil{})
+  text.path.edges(edges.transform(path(XML.attr.get(as, "#text-path-data", ""), 0.001), transform(XML.attr.get(as, "#text-path-transform", ""), identity())), Nil{})
 
 def text.path.total(xs: List<&2, Edge>) -> F32:
   match xs:
@@ -3351,7 +3402,7 @@ def document.camera.fonts(+root: XML.Element, +w: F32, +h: F32, matrix: Matrix, 
   +embedded = image.svg.expand(16n, styled, w, h)
   +used = use.expand(64n, embedded, embedded, Nil{})
   +nodes = text.paint.group(text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{}))
-  context.scenes(compile(64n, nodes, style.default(), matrix, w, h, resources(nodes, a), True{}, Nil{}), context.empty(), identity())
+  context.scenes(compile(64n, nodes, style.default(), matrix, w, h, resources(nodes, a), True{}, Nil{}, 1.0), context.empty(), identity())
 
 def document.fonts(root: XML.Element, w: F32, h: F32, book: Font.FontBook) -> List<&2, Scene<Brush>>:
   document.camera.fonts(root, w, h, identity(), book)
@@ -3813,7 +3864,7 @@ def paint.fill(+ink: Paint<Brush>) -> Brush:
 
 def cover.image.rect(+raster: Raster) -> List<&2, Edge>:
   Raster{origin, step, width, height, depth, linear, pixels} = raster
-  path(shape.rect.path(0.0, 0.0, U32.to_f32(width), U32.to_f32(height), 0.0, 0.0))
+  path(shape.rect.path(0.0, 0.0, U32.to_f32(width), U32.to_f32(height), 0.0, 0.0), 1.0)
 
 # An image's own rectangle joins the scene clip, so its edges get coverage like
 # any shape (the bitmap read clamps to its edge pixels); iv maps device to local.

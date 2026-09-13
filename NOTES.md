@@ -1151,3 +1151,76 @@ At 256 the tiger's masks are small, so the run-based tree saves little there
 and the scan itself (flattened curves, sub-scanline crossings) is what
 remains; at 1024 the tree build was the larger share. The compile is now a
 flat profile of attribute lookups, path parsing and bounds.
+
+## Coverage: flattening for the output size, masks without a dense buffer
+
+Three changes to the cover stage, in the order they matter.
+
+**Curves are flattened for the device.** Cubics were subdivided until the
+control polygon was within 0.0005 user units of the chord, whatever the
+output size, and arcs took a fixed 1/128 revolution per edge scaled by the
+root of the radius. The tiger's 1,883 curves became 38,216 edges at any
+size, and the two-path Twemoji face (a 36-unit viewBox) 574; at 256 px a
+shape 20 px across carried hundreds of lines, so every sub-scanline sorted
+crossings over an active list ten times longer than its pixels justified.
+The path builder now carries a tolerance in local units, derived from a
+device tolerance of 0.03 px through the norm of the element's matrix: a
+cubic stops splitting when both control points are within 4/3 of the
+tolerance of the chord (the curve's distance from the chord is 3t(1-t)
+times a mix of theirs, so at most three quarters of the larger), and an arc
+takes the chord angle whose sagitta is the tolerance. Content compiled in a
+frame that is not the device (pattern tiles) gets the frame's device scale
+through a `scale` argument of `compile`, so a pattern with a viewBox is not
+flattened in pattern units. The tiger now has 19,546 fill edges and 40,820
+stroke lines at 256 px, the face 590 at 1024 px and far fewer at 64 px, and
+the reference verdict is unchanged at 108/117 (a first try at 0.1 px with
+the control-point distance alone cost three fixtures).
+
+**Rows of runs straight from the crossings.** The scan wrote span deltas
+into a dense float array over the mask's box and a second pass read every
+cell back into runs; both were proportional to box area, 130 ms of the
+tiger's 1024 px cover stage and 28 ms of the face's. Each inside span now
+becomes three events (a direct contribution to each end cell and a delta
+that applies from the first interior cell and stops after the last), the
+sub-scanlines' descending event lists are merged, and one sweep from the
+right turns them into runs: a cell's coverage is its direct contributions
+minus the sum of the deltas to its right, since a row's deltas cancel. No
+buffer is allocated and nothing touches a cell no span reaches.
+
+**A tree whose nodes own their rows.** The top-down build copied the rows
+list at every node (uniformity test, take, drop), which in this runtime
+turns every traversal of a shared list into reference-count cells on every
+node and run it passes, and the uniformity test walked whole rows. One pass
+per node now computes the node's uniform value and cuts the rows into the
+four quarters (each row's runs split at the middle column), so children own
+their rows and a uniform node's rows are never read again. The merges and
+sorts of the scan (lines by top, crossings by x, events by cell) also branch
+through a small record instead of a closure per comparison.
+
+Cumulative stage times, compiled:
+
+| Stage | tiger 256 | tiger 1024 | face 256 | face 1024 |
+| --- | --- | --- | --- | --- |
+| parse XML | 12 ms | 13 ms | 7 ms | 7 ms |
+| compile the document | +49 ms | +57 ms | +1 ms | +1 ms |
+| coverage masks | +55 ms (was +157) | +200 ms (was +534) | +2 ms | +8 ms (was +45) |
+| paint and write | +11 ms | +48 ms | +1 ms | +5 ms |
+
+Whole-process times, best of three:
+
+| Document | 64x64 | 256x256 | 1024x1024 | 1024 before |
+| --- | --- | --- | --- | --- |
+| tiger | 78 ms | 125 ms | 321 ms | 652 ms |
+| twemoji face | 8 ms | 10 ms | 26 ms | 62 ms |
+| openmoji bulb | 10 ms | 15 ms | 52 ms | 63 ms |
+| basic | 8 ms | 9 ms | 19 ms | 31 ms |
+| stroke-vector | 8 ms | 9 ms | 21 ms | 56 ms |
+
+The cover profile is flat now. At 1024 px the tree build (splitting runs
+into quarters) and the per-shape line sort are the largest items, followed
+by the crossing sort and event merge per sub-scanline; reference-count
+churn from the shared active line list is what is left of the runtime
+overhead. The stroker still supplies two thirds of the tiger's lines as
+overlapping bands and joins, which the scan must sort and walk on every
+sub-scanline they reach; a stroker emitting one outline per subpath is the
+next structural step for stroke-heavy documents.

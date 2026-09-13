@@ -18,9 +18,9 @@
     },
     {
       "fixture": "use.svg",
-      "meanAbsoluteError": 0.046549479166666664,
-      "rootMeanSquareError": 0.3341461444238633,
-      "maxChannelError": 7,
+      "meanAbsoluteError": 0.03564453125,
+      "rootMeanSquareError": 0.24239742246291865,
+      "maxChannelError": 5,
       "pixelsAbove32": 0
     },
     {
@@ -32,8 +32,8 @@
     },
     {
       "fixture": "filters-composite.svg",
-      "meanAbsoluteError": 0.2638346354166667,
-      "rootMeanSquareError": 1.2945196985754988,
+      "meanAbsoluteError": 0.257568359375,
+      "rootMeanSquareError": 1.280900612931516,
       "maxChannelError": 17,
       "pixelsAbove32": 0
     },
@@ -46,17 +46,17 @@
     },
     {
       "fixture": "clipping.svg",
-      "meanAbsoluteError": 0.22550455729166666,
-      "rootMeanSquareError": 2.26899892459024,
-      "maxChannelError": 44,
-      "pixelsAbove32": 16
+      "meanAbsoluteError": 0.210205078125,
+      "rootMeanSquareError": 2.219831749207959,
+      "maxChannelError": 45,
+      "pixelsAbove32": 15
     },
     {
       "fixture": "text-path-styles.svg",
-      "meanAbsoluteError": 0.8011067708333334,
-      "rootMeanSquareError": 3.595629037746154,
-      "maxChannelError": 42,
-      "pixelsAbove32": 16
+      "meanAbsoluteError": 0.780517578125,
+      "rootMeanSquareError": 3.4932622087920913,
+      "maxChannelError": 48,
+      "pixelsAbove32": 11
     },
     {
       "fixture": "convolve-edges.svg",
@@ -67,10 +67,10 @@
     },
     {
       "fixture": "text-spans.svg",
-      "meanAbsoluteError": 1.7225748697916667,
-      "rootMeanSquareError": 9.70971495220766,
+      "meanAbsoluteError": 1.71923828125,
+      "rootMeanSquareError": 9.69593886473868,
       "maxChannelError": 198,
-      "pixelsAbove32": 51
+      "pixelsAbove32": 52
     },
     {
       "fixture": "markers-viewports.svg",
@@ -81,9 +81,9 @@
     },
     {
       "fixture": "filters-blur.svg",
-      "meanAbsoluteError": 0.4313151041666667,
-      "rootMeanSquareError": 1.4947281490569895,
-      "maxChannelError": 39,
+      "meanAbsoluteError": 0.4327799479166667,
+      "rootMeanSquareError": 1.465976992202356,
+      "maxChannelError": 37,
       "pixelsAbove32": 2
     },
     {
@@ -95,8 +95,8 @@
     },
     {
       "fixture": "viewports.svg",
-      "meanAbsoluteError": 0.021728515625,
-      "rootMeanSquareError": 0.27317695920715324,
+      "meanAbsoluteError": 0.026774088541666668,
+      "rootMeanSquareError": 0.30257682392245444,
       "maxChannelError": 8,
       "pixelsAbove32": 0
     },
@@ -109,15 +109,15 @@
     },
     {
       "fixture": "svg-image-contexts.svg",
-      "meanAbsoluteError": 0.073974609375,
-      "rootMeanSquareError": 0.3417317646317552,
-      "maxChannelError": 7,
+      "meanAbsoluteError": 0.079833984375,
+      "rootMeanSquareError": 0.361182050991371,
+      "maxChannelError": 6,
       "pixelsAbove32": 0
     },
     {
       "fixture": "filters-blend-compositing.svg",
-      "meanAbsoluteError": 0.24519856770833334,
-      "rootMeanSquareError": 0.5842858666426335,
+      "meanAbsoluteError": 0.3314615885416667,
+      "rootMeanSquareError": 0.7510301085564635,
       "maxChannelError": 6,
       "pixelsAbove32": 0
     },
@@ -137,9 +137,9 @@
     },
     {
       "fixture": "pattern-nested.svg",
-      "meanAbsoluteError": 0.14095052083333334,
-      "rootMeanSquareError": 0.5074317482841083,
-      "maxChannelError": 5,
+      "meanAbsoluteError": 0.12923177083333334,
+      "rootMeanSquareError": 0.4318835925339142,
+      "maxChannelError": 3,
       "pixelsAbove32": 0
     },
     {
@@ -158,9 +158,9 @@
     },
     {
       "fixture": "symbols.svg",
-      "meanAbsoluteError": 0.039957682291666664,
-      "rootMeanSquareError": 0.2888160548544119,
-      "maxChannelError": 7,
+      "meanAbsoluteError": 0.042561848958333336,
+      "rootMeanSquareError": 0.33280394159574894,
+      "maxChannelError": 10,
       "pixelsAbove32": 0
     },
     {
@@ -179,15 +179,15 @@
     },
     {
       "fixture": "markers-vertices.svg",
-      "meanAbsoluteError": 0.11865234375,
-      "rootMeanSquareError": 0.7927281808728639,
+      "meanAbsoluteError": 0.121826171875,
+      "rootMeanSquareError": 0.7966707254516552,
       "maxChannelError": 14,
       "pixelsAbove32": 0
     },
     {
       "fixture": "compact-paths.svg",
-      "meanAbsoluteError": 0.15226236979166666,
-      "rootMeanSquareError": 0.9022451019309184,
+      "meanAbsoluteError": 0.151123046875,
+      "rootMeanSquareError": 0.9271564811966748,
       "maxChannelError": 15,
       "pixelsAbove32": 0
     },
@@ -214,9 +214,9 @@
     },
     {
       "fixture": "filters-transforms.svg",
-      "meanAbsoluteError": 0.6188151041666666,
-      "rootMeanSquareError": 1.8357435624518295,
-      "maxChannelError": 40,
+      "meanAbsoluteError": 0.616943359375,
+      "rootMeanSquareError": 1.8351893422410124,
+      "maxChannelError": 39,
       "pixelsAbove32": 8
     },
     {
@@ -228,8 +228,8 @@
     },
     {
       "fixture": "text-length.svg",
-      "meanAbsoluteError": 1.1668294270833333,
-      "rootMeanSquareError": 3.3814319498180057,
+      "meanAbsoluteError": 1.1690266927083333,
+      "rootMeanSquareError": 3.3891365780669958,
       "maxChannelError": 25,
       "pixelsAbove32": 0
     },
@@ -249,17 +249,17 @@
     },
     {
       "fixture": "mask-alpha.svg",
-      "meanAbsoluteError": 0.024576822916666668,
-      "rootMeanSquareError": 0.18087245160609727,
-      "maxChannelError": 3,
+      "meanAbsoluteError": 0.03271484375,
+      "rootMeanSquareError": 0.21986323874172325,
+      "maxChannelError": 4,
       "pixelsAbove32": 0
     },
     {
       "fixture": "images-compositing.svg",
-      "meanAbsoluteError": 0.4523111979166667,
-      "rootMeanSquareError": 2.5428617409000696,
-      "maxChannelError": 51,
-      "pixelsAbove32": 18
+      "meanAbsoluteError": 0.437255859375,
+      "rootMeanSquareError": 2.3903186078167487,
+      "maxChannelError": 48,
+      "pixelsAbove32": 16
     },
     {
       "fixture": "morphology-units.svg",
@@ -284,9 +284,9 @@
     },
     {
       "fixture": "svg-image-nested.svg",
-      "meanAbsoluteError": 0.07039388020833333,
-      "rootMeanSquareError": 0.36499233011347876,
-      "maxChannelError": 8,
+      "meanAbsoluteError": 0.082275390625,
+      "rootMeanSquareError": 0.3927028072113397,
+      "maxChannelError": 6,
       "pixelsAbove32": 0
     },
     {
@@ -319,16 +319,16 @@
     },
     {
       "fixture": "pattern-viewbox.svg",
-      "meanAbsoluteError": 0.059244791666666664,
-      "rootMeanSquareError": 0.32775276505317236,
+      "meanAbsoluteError": 0.048828125,
+      "rootMeanSquareError": 0.30082352246236777,
       "maxChannelError": 3,
       "pixelsAbove32": 0
     },
     {
       "fixture": "paths.svg",
-      "meanAbsoluteError": 0.057861328125,
-      "rootMeanSquareError": 0.4075500033227007,
-      "maxChannelError": 16,
+      "meanAbsoluteError": 0.048421223958333336,
+      "rootMeanSquareError": 0.3858035783163068,
+      "maxChannelError": 17,
       "pixelsAbove32": 0
     },
     {
@@ -340,8 +340,8 @@
     },
     {
       "fixture": "text-paint-order.svg",
-      "meanAbsoluteError": 2.9777018229166665,
-      "rootMeanSquareError": 8.391686967246216,
+      "meanAbsoluteError": 3.046142578125,
+      "rootMeanSquareError": 8.436250872042727,
       "maxChannelError": 51,
       "pixelsAbove32": 174
     },
@@ -354,9 +354,9 @@
     },
     {
       "fixture": "text-path-shapes.svg",
-      "meanAbsoluteError": 2.9009602864583335,
-      "rootMeanSquareError": 16.90560736994903,
-      "maxChannelError": 202,
+      "meanAbsoluteError": 2.9012858072916665,
+      "rootMeanSquareError": 16.89553389967918,
+      "maxChannelError": 205,
       "pixelsAbove32": 140
     },
     {
@@ -375,15 +375,15 @@
     },
     {
       "fixture": "pattern-reference.svg",
-      "meanAbsoluteError": 24.02001953125,
-      "rootMeanSquareError": 54.66626819992609,
+      "meanAbsoluteError": 24.0029296875,
+      "rootMeanSquareError": 54.66585285852586,
       "maxChannelError": 217,
       "pixelsAbove32": 1056
     },
     {
       "fixture": "viewports-nested.svg",
-      "meanAbsoluteError": 0.10481770833333333,
-      "rootMeanSquareError": 0.5676844413932797,
+      "meanAbsoluteError": 0.06705729166666667,
+      "rootMeanSquareError": 0.40424183149858867,
       "maxChannelError": 12,
       "pixelsAbove32": 0
     },
@@ -396,10 +396,10 @@
     },
     {
       "fixture": "svg-image-sizing.svg",
-      "meanAbsoluteError": 11.396728515625,
-      "rootMeanSquareError": 43.95954931424409,
+      "meanAbsoluteError": 11.387288411458334,
+      "rootMeanSquareError": 43.93101410906698,
       "maxChannelError": 255,
-      "pixelsAbove32": 367
+      "pixelsAbove32": 362
     },
     {
       "fixture": "css-structural.svg",
@@ -410,30 +410,30 @@
     },
     {
       "fixture": "text-length-spans.svg",
-      "meanAbsoluteError": 9.302571614583334,
-      "rootMeanSquareError": 32.19521044380411,
+      "meanAbsoluteError": 9.303792317708334,
+      "rootMeanSquareError": 32.19605595224682,
       "maxChannelError": 215,
-      "pixelsAbove32": 357
+      "pixelsAbove32": 358
     },
     {
       "fixture": "opacity.svg",
-      "meanAbsoluteError": 0.3584798177083333,
-      "rootMeanSquareError": 0.609107847422496,
-      "maxChannelError": 4,
+      "meanAbsoluteError": 0.3614095052083333,
+      "rootMeanSquareError": 0.6099089541002548,
+      "maxChannelError": 3,
       "pixelsAbove32": 0
     },
     {
       "fixture": "text-path-positions.svg",
-      "meanAbsoluteError": 1.052978515625,
-      "rootMeanSquareError": 4.225139836813097,
-      "maxChannelError": 34,
+      "meanAbsoluteError": 1.05126953125,
+      "rootMeanSquareError": 4.2203122107552655,
+      "maxChannelError": 36,
       "pixelsAbove32": 2
     },
     {
       "fixture": "filters-basic.svg",
-      "meanAbsoluteError": 0.2516276041666667,
-      "rootMeanSquareError": 1.3133677686898415,
-      "maxChannelError": 18,
+      "meanAbsoluteError": 0.2819010416666667,
+      "rootMeanSquareError": 1.541103500742244,
+      "maxChannelError": 20,
       "pixelsAbove32": 0
     },
     {
@@ -452,29 +452,29 @@
     },
     {
       "fixture": "convolve-kernels.svg",
-      "meanAbsoluteError": 0.314453125,
-      "rootMeanSquareError": 2.431014341620935,
-      "maxChannelError": 84,
-      "pixelsAbove32": 11
+      "meanAbsoluteError": 0.2593587239583333,
+      "rootMeanSquareError": 2.0963719590342262,
+      "maxChannelError": 73,
+      "pixelsAbove32": 9
     },
     {
       "fixture": "svg-image-text.svg",
-      "meanAbsoluteError": 0.7246907552083334,
-      "rootMeanSquareError": 2.511675211844013,
+      "meanAbsoluteError": 0.725830078125,
+      "rootMeanSquareError": 2.5070700809161677,
       "maxChannelError": 29,
       "pixelsAbove32": 0
     },
     {
       "fixture": "basic.svg",
-      "meanAbsoluteError": 0.038492838541666664,
-      "rootMeanSquareError": 0.25048780534189685,
+      "meanAbsoluteError": 0.042399088541666664,
+      "rootMeanSquareError": 0.2622332473994605,
       "maxChannelError": 5,
       "pixelsAbove32": 0
     },
     {
       "fixture": "markers-basic.svg",
-      "meanAbsoluteError": 0.097412109375,
-      "rootMeanSquareError": 0.7177869453802663,
+      "meanAbsoluteError": 0.098876953125,
+      "rootMeanSquareError": 0.7122098276081752,
       "maxChannelError": 17,
       "pixelsAbove32": 0
     },
@@ -501,9 +501,9 @@
     },
     {
       "fixture": "use-cycles.svg",
-      "meanAbsoluteError": 0.017415364583333332,
-      "rootMeanSquareError": 0.2092428065270903,
-      "maxChannelError": 5,
+      "meanAbsoluteError": 0.015462239583333334,
+      "rootMeanSquareError": 0.17068718341847852,
+      "maxChannelError": 4,
       "pixelsAbove32": 0
     },
     {
@@ -515,29 +515,29 @@
     },
     {
       "fixture": "mask-nested.svg",
-      "meanAbsoluteError": 0.07259114583333333,
-      "rootMeanSquareError": 0.3358466446906981,
+      "meanAbsoluteError": 0.07568359375,
+      "rootMeanSquareError": 0.3125,
       "maxChannelError": 6,
       "pixelsAbove32": 0
     },
     {
       "fixture": "css-resources.svg",
-      "meanAbsoluteError": 0.044840494791666664,
-      "rootMeanSquareError": 0.23263241077215932,
-      "maxChannelError": 4,
+      "meanAbsoluteError": 0.0439453125,
+      "rootMeanSquareError": 0.24473625259314022,
+      "maxChannelError": 5,
       "pixelsAbove32": 0
     },
     {
       "fixture": "text-unicode.svg",
-      "meanAbsoluteError": 1.0179036458333333,
-      "rootMeanSquareError": 3.062978278979464,
+      "meanAbsoluteError": 1.0294596354166667,
+      "rootMeanSquareError": 3.0823654167700494,
       "maxChannelError": 27,
       "pixelsAbove32": 0
     },
     {
       "fixture": "text-paints.svg",
-      "meanAbsoluteError": 0.9058430989583334,
-      "rootMeanSquareError": 2.7098603467629716,
+      "meanAbsoluteError": 0.9121907552083334,
+      "rootMeanSquareError": 2.7299964943887747,
       "maxChannelError": 24,
       "pixelsAbove32": 0
     },
@@ -557,10 +557,10 @@
     },
     {
       "fixture": "text-position.svg",
-      "meanAbsoluteError": 3.0735677083333335,
-      "rootMeanSquareError": 15.097232603747836,
+      "meanAbsoluteError": 3.0789388020833335,
+      "rootMeanSquareError": 15.096062840398154,
       "maxChannelError": 183,
-      "pixelsAbove32": 112
+      "pixelsAbove32": 111
     },
     {
       "fixture": "jpeg-uris.svg",
@@ -571,17 +571,17 @@
     },
     {
       "fixture": "pattern-units.svg",
-      "meanAbsoluteError": 0.036376953125,
-      "rootMeanSquareError": 0.20551478809321727,
+      "meanAbsoluteError": 0.029052734375,
+      "rootMeanSquareError": 0.17469281074217108,
       "maxChannelError": 2,
       "pixelsAbove32": 0
     },
     {
       "fixture": "text-path-references.svg",
-      "meanAbsoluteError": 1.3977864583333333,
-      "rootMeanSquareError": 4.813362341570599,
+      "meanAbsoluteError": 1.3546549479166667,
+      "rootMeanSquareError": 4.6807590419005045,
       "maxChannelError": 40,
-      "pixelsAbove32": 10
+      "pixelsAbove32": 4
     },
     {
       "fixture": "filters-blend-opaque.svg",
@@ -620,17 +620,17 @@
     },
     {
       "fixture": "transforms.svg",
-      "meanAbsoluteError": 0.058268229166666664,
-      "rootMeanSquareError": 0.45679191561001453,
+      "meanAbsoluteError": 0.053955078125,
+      "rootMeanSquareError": 0.43404513854168053,
       "maxChannelError": 12,
       "pixelsAbove32": 0
     },
     {
       "fixture": "jpeg-compositing.svg",
-      "meanAbsoluteError": 0.5493977864583334,
-      "rootMeanSquareError": 2.6851521963770195,
-      "maxChannelError": 55,
-      "pixelsAbove32": 12
+      "meanAbsoluteError": 0.5331217447916666,
+      "rootMeanSquareError": 2.5213767062443617,
+      "maxChannelError": 52,
+      "pixelsAbove32": 8
     },
     {
       "fixture": "stroke-caps.svg",
@@ -662,16 +662,16 @@
     },
     {
       "fixture": "mask-inheritance.svg",
-      "meanAbsoluteError": 0.02880859375,
-      "rootMeanSquareError": 0.25129871003780874,
-      "maxChannelError": 7,
+      "meanAbsoluteError": 0.025227864583333332,
+      "rootMeanSquareError": 0.2715335499528557,
+      "maxChannelError": 8,
       "pixelsAbove32": 0
     },
     {
       "fixture": "filters-regions.svg",
-      "meanAbsoluteError": 0.060384114583333336,
-      "rootMeanSquareError": 0.3194538796915761,
-      "maxChannelError": 4,
+      "meanAbsoluteError": 0.06559244791666667,
+      "rootMeanSquareError": 0.3435131759966906,
+      "maxChannelError": 5,
       "pixelsAbove32": 0
     },
     {
@@ -690,16 +690,16 @@
     },
     {
       "fixture": "convolve-units.svg",
-      "meanAbsoluteError": 6.599934895833333,
-      "rootMeanSquareError": 22.706718214734014,
+      "meanAbsoluteError": 6.596272786458333,
+      "rootMeanSquareError": 22.701612274677576,
       "maxChannelError": 183,
       "pixelsAbove32": 351
     },
     {
       "fixture": "masks.svg",
-      "meanAbsoluteError": 0.12662760416666666,
-      "rootMeanSquareError": 0.47238176430721796,
-      "maxChannelError": 7,
+      "meanAbsoluteError": 0.10595703125,
+      "rootMeanSquareError": 0.3782412011534439,
+      "maxChannelError": 6,
       "pixelsAbove32": 0
     },
     {
@@ -711,10 +711,10 @@
     },
     {
       "fixture": "filters-nested.svg",
-      "meanAbsoluteError": 0.5023600260416666,
-      "rootMeanSquareError": 2.9610233881562524,
+      "meanAbsoluteError": 0.5131022135416666,
+      "rootMeanSquareError": 2.953483223423093,
       "maxChannelError": 53,
-      "pixelsAbove32": 21
+      "pixelsAbove32": 20
     },
     {
       "fixture": "morphology-radius.svg",
@@ -732,9 +732,9 @@
     },
     {
       "fixture": "markers-context.svg",
-      "meanAbsoluteError": 0.11857096354166667,
-      "rootMeanSquareError": 0.537418235059995,
-      "maxChannelError": 5,
+      "meanAbsoluteError": 0.08732096354166667,
+      "rootMeanSquareError": 0.35619060177335765,
+      "maxChannelError": 4,
       "pixelsAbove32": 0
     },
     {
@@ -746,16 +746,16 @@
     },
     {
       "fixture": "text-path-basic.svg",
-      "meanAbsoluteError": 1.78955078125,
-      "rootMeanSquareError": 5.879458636147265,
+      "meanAbsoluteError": 1.7023111979166667,
+      "rootMeanSquareError": 5.54880394863764,
       "maxChannelError": 54,
-      "pixelsAbove32": 54
+      "pixelsAbove32": 38
     },
     {
       "fixture": "stroke-dash-curves.svg",
-      "meanAbsoluteError": 0.18416341145833334,
-      "rootMeanSquareError": 0.7803640810277811,
-      "maxChannelError": 18,
+      "meanAbsoluteError": 0.22119140625,
+      "rootMeanSquareError": 0.8818555838873695,
+      "maxChannelError": 17,
       "pixelsAbove32": 0
     },
     {
@@ -774,8 +774,8 @@
     },
     {
       "fixture": "text-whitespace.svg",
-      "meanAbsoluteError": 0.4994303385416667,
-      "rootMeanSquareError": 2.1632397277675137,
+      "meanAbsoluteError": 0.50439453125,
+      "rootMeanSquareError": 2.186979104647931,
       "maxChannelError": 25,
       "pixelsAbove32": 0
     },
@@ -788,9 +788,9 @@
     },
     {
       "fixture": "text-basic.svg",
-      "meanAbsoluteError": 0.9007975260416666,
-      "rootMeanSquareError": 2.8602002452115713,
-      "maxChannelError": 23,
+      "meanAbsoluteError": 0.9072265625,
+      "rootMeanSquareError": 2.881248870209468,
+      "maxChannelError": 24,
       "pixelsAbove32": 0
     },
     {
@@ -809,16 +809,16 @@
     },
     {
       "fixture": "text-style.svg",
-      "meanAbsoluteError": 1.664306640625,
-      "rootMeanSquareError": 4.23279875336146,
+      "meanAbsoluteError": 1.6803385416666667,
+      "rootMeanSquareError": 4.265768083680827,
       "maxChannelError": 29,
       "pixelsAbove32": 0
     },
     {
       "fixture": "filters-blend.svg",
-      "meanAbsoluteError": 0.86572265625,
-      "rootMeanSquareError": 2.5429577492721607,
-      "maxChannelError": 23,
+      "meanAbsoluteError": 0.9456380208333334,
+      "rootMeanSquareError": 2.8705808427912287,
+      "maxChannelError": 26,
       "pixelsAbove32": 0
     }
   ]
