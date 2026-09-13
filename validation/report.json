@@ -569,10 +569,10 @@
       "fixture": "mask-gradients.svg",
       "width": 64,
       "height": 64,
-      "meanAbsoluteError": 0.03076171875,
-      "rootMeanSquareError": 0.18266331163281438,
+      "meanAbsoluteError": 0.031412760416666664,
+      "rootMeanSquareError": 0.18443678343360181,
       "maxChannelError": 2,
-      "differingPixels": 196,
+      "differingPixels": 200,
       "pixelsAbove32": 0,
       "fractionAbove32": 0
     },

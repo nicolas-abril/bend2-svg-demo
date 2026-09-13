@@ -2172,12 +2172,36 @@ def bounds.transformed(es: List<&2, Edge>, +m: Matrix, box: Bounds) -> Bounds:
     case Con{Edge{a, b, stroked, closed}, rest}:
       bounds.transformed(rest, m, bounds.point(bounds.point(box, matrix.point(m, a)), matrix.point(m, b)))
 
+# These bounds enclose rendered coverage, including descendant strokes and
+# markers. They are distinct from objectBoundingBox paint coordinates.
+def bounds.finite(b: Bounds) -> Bool:
+  Bounds{x0, y0, x1, y1} = b
+  F32.is_lt(F32.abs(x0), 1.0e25) && F32.is_lt(F32.abs(y0), 1.0e25) && F32.is_lt(F32.abs(x1), 1.0e25) && F32.is_lt(F32.abs(y1), 1.0e25)
+
+def bounds.safe(+box: Bounds) -> Bounds:
+  U.choose(Bounds, bounds.finite(box), box, Bounds{F32.neg(1.0e30), F32.neg(1.0e30), 1.0e30, 1.0e30})
+
+def bounds.transform(box: Bounds, +mat: Matrix) -> Bounds:
+  Bounds{x0, y0, x1, y1} = box
+  +left = x0
+  +top = y0
+  +right = x1
+  +bottom = y1
+  # Include the local stroke tests' tolerances before transforming the corners.
+  +a = (left - 0.0001 : F32)
+  +b = (top - 0.0001 : F32)
+  +c = (right + 0.0001 : F32)
+  +d = (bottom + 0.0001 : F32)
+  U.branch(Bounds, F32.is_gt(left, right) || F32.is_gt(top, bottom), _ => bounds.empty(),
+    _ => bounds.safe(bounds.point(bounds.point(bounds.point(bounds.point(bounds.empty(), matrix.point(mat, Point{a, b})), matrix.point(mat, Point{c, b})), matrix.point(mat, Point{a, d})), matrix.point(mat, Point{c, d}))))
+
+# A child's box already holds its own children, so the parent's box is the
+# union of the children's boxes brought into its space.
 def scene.bounds(xs: List<&2, Scene<Brush>>, +parentInverse: Matrix, box: Bounds) -> Bounds:
   match xs:
     case Nil{}: box
     case Con{Scene{es, childbox, inv, style, opacity, kids, id, ink, mask, outline, fillTree, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
-      scene.bounds(rest, parentInverse, scene.bounds(kids, parentInverse,
-        bounds.transformed(es, matrix.mul(parentInverse, matrix.inverse(inv)), box)))
+      scene.bounds(rest, parentInverse, bounds.merge(box, bounds.transform(childbox, matrix.mul(parentInverse, matrix.inverse(inv)))))
 
 def bounds.spec(+as: List<&2, XML.Attr>, box: Bounds) -> Bounds:
   +value = XML.attr.get(as, "#paint-box", "")
@@ -2219,8 +2243,9 @@ def filter.spec(+as: List<&2, XML.Attr>, all: List<&2, XML.Element>, box: Bounds
 
 def scene.make(+es: List<&2, Edge>, +m: Matrix, +s: Style, opacity: F32, +children: List<&2, Scene<Brush>>, id: String,
   +all: List<&2, XML.Element>, +w: F32, +h: F32, +as: List<&2, XML.Attr>, fills: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, strokes: XML.Element -> Bounds -> F32 -> F32 -> F32 -> Brush, +scale: F32) -> Scene<Brush>:
-  +box = bounds.spec(as, scene.bounds(children, matrix.inverse(m), bounds(es, Bounds{1000000000.0, 1000000000.0, F32.neg(1000000000.0), F32.neg(1000000000.0)})))
-  Scene{es, box, matrix.inverse(m), s, opacity, children, id, style.colors(s, all, box, w, h, fills, strokes), clip.compile(as, all, box, m, w, h, scale), style.outline(s, es, m, F32.sqrt(((w * w + h * h) / 2.0 : F32)), U.scalar(XML.attr.get(as, "pathLength", "0"), 0.0)), fill.new(es), Nil{}, 0, Nil{}, bounds.empty(), filter.spec(as, all, box, m, w, h)}
+  +f = fill.new(es)
+  +box = bounds.spec(as, scene.bounds(children, matrix.inverse(m), fill.bounds(f)))
+  Scene{es, box, matrix.inverse(m), s, opacity, children, id, style.colors(s, all, box, w, h, fills, strokes), clip.compile(as, all, box, m, w, h, scale), style.outline(s, es, m, F32.sqrt(((w * w + h * h) / 2.0 : F32)), U.scalar(XML.attr.get(as, "pathLength", "0"), 0.0)), f, Nil{}, 0, Nil{}, bounds.empty(), filter.spec(as, all, box, m, w, h)}
 
 # SVG viewports establish local units and intersect their children with overflow clips.
 def viewbox.matrix(+v: List<&2, F32>, +w: F32, +h: F32, +aspect: String) -> Matrix:
@@ -3256,29 +3281,6 @@ def context.empty() -> Paint<Brush>:
 def context.paint(ink: Paint<Brush>, +paint: Paint<Brush>, +matrix: Matrix, fills: List<&2, Scene<Brush>> -> List<&2, Scene<Brush>>, strokes: List<&2, Scene<Brush>> -> List<&2, Scene<Brush>>) -> Paint<Brush>:
   Paint{f, s} = ink
   Paint{context.brush(f, paint, matrix, fills), context.brush(s, paint, matrix, strokes)}
-
-# These bounds enclose rendered coverage, including descendant strokes and
-# markers. They are distinct from objectBoundingBox paint coordinates.
-def bounds.finite(b: Bounds) -> Bool:
-  Bounds{x0, y0, x1, y1} = b
-  F32.is_lt(F32.abs(x0), 1.0e25) && F32.is_lt(F32.abs(y0), 1.0e25) && F32.is_lt(F32.abs(x1), 1.0e25) && F32.is_lt(F32.abs(y1), 1.0e25)
-
-def bounds.safe(+box: Bounds) -> Bounds:
-  U.choose(Bounds, bounds.finite(box), box, Bounds{F32.neg(1.0e30), F32.neg(1.0e30), 1.0e30, 1.0e30})
-
-def bounds.transform(box: Bounds, +mat: Matrix) -> Bounds:
-  Bounds{x0, y0, x1, y1} = box
-  +left = x0
-  +top = y0
-  +right = x1
-  +bottom = y1
-  # Include the local stroke tests' tolerances before transforming the corners.
-  +a = (left - 0.0001 : F32)
-  +b = (top - 0.0001 : F32)
-  +c = (right + 0.0001 : F32)
-  +d = (bottom + 0.0001 : F32)
-  U.branch(Bounds, F32.is_gt(left, right) || F32.is_gt(top, bottom), _ => bounds.empty(),
-    _ => bounds.safe(bounds.point(bounds.point(bounds.point(bounds.point(bounds.empty(), matrix.point(mat, Point{a, b})), matrix.point(mat, Point{c, b})), matrix.point(mat, Point{a, d})), matrix.point(mat, Point{c, d}))))
 
 def stroke.mesh.bounds(mesh: StrokeMesh) -> Bounds:
   StrokeMesh{stree, inv, cover} = mesh
@@ -5061,8 +5063,13 @@ def paint.data.known(empty: Bool, +known: F32, d: Cov.CovData, fb: Array<U32>, +
 def paint.data.if(present: Bool, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +w: U32, +h: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
   match present:
     case True{}:
-      +known = paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), gx, gy, (gx + w : U32), (gy + h : U32))
-      paint.data.known(F32.is_eq(known, 0.0), known, d, fb, gx, gy, size, tg, ctx)
+      Target{tx, ty, tw, th} = tg
+      +x0 = U.max.u32(gx, tx)
+      +y0 = U.max.u32(gy, ty)
+      +x1 = U.min.u32((gx + w : U32), (tx + tw : U32))
+      +y1 = U.min.u32((gy + h : U32), (ty + th : U32))
+      +known = U.choose(F32, U32.is_ge(x0, x1) || U32.is_ge(y0, y1), 0.0, paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), x0, y0, x1, y1))
+      paint.data.known(F32.is_eq(known, 0.0), known, d, fb, gx, gy, size, Target{tx, ty, tw, th}, ctx)
     case False{}: fb
 
 # A shape's coverage mask on the frame grid, painted with its brush.

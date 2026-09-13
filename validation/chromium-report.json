@@ -361,8 +361,8 @@
     },
     {
       "fixture": "mask-gradients.svg",
-      "meanAbsoluteError": 0.039306640625,
-      "rootMeanSquareError": 0.20472129173993275,
+      "meanAbsoluteError": 0.039957682291666664,
+      "rootMeanSquareError": 0.2063052325035246,
       "maxChannelError": 2,
       "pixelsAbove32": 0
     },
