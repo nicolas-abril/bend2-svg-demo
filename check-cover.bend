@@ -19,12 +19,12 @@ def total(+m: Cov.CovMask, n: Nat, +i: U32, +w: U32, +acc: F32) -> F32:
     case 1n+d: total(m, d, (i + 1 : U32), w, (acc + Cov.mask.at(m, (U32.to_f32(U32.mod(i, w)) + 0.5 : F32), (U32.to_f32(U32.div(i, w)) + 0.5 : F32)) : F32))
 
 def main() -> IO(Unit):
-  +half = Cov.mask(square(2.5, 2.5, 6.5, 6.5), False{}, 10, 10, 8)
-  +tri = Cov.mask(Con{Cov.CovLine{1.0, 1.0, 9.0, 1.0}, Con{Cov.CovLine{9.0, 1.0, 1.0, 7.0}, Con{Cov.CovLine{1.0, 7.0, 1.0, 1.0}, Nil{}}}}, False{}, 10, 10, 8)
-  +overlap = Cov.mask(Cov.lines.append(square(1.0, 1.0, 5.0, 5.0), square(3.0, 3.0, 7.0, 7.0)), True{}, 8, 8, 8)
-  +reversed = Cov.mask(square(6.5, 6.5, 2.5, 2.5), False{}, 10, 10, 8)
-  +outside = Cov.mask(square(F32.neg(3.0), F32.neg(3.0), 4.5, 4.5), False{}, 8, 8, 8)
-  +double = Cov.mask(Cov.lines.append(square(1.5, 1.5, 5.5, 5.5), square(1.5, 1.5, 5.5, 5.5)), False{}, 8, 8, 8)
+  +half = Cov.mask(square(2.5, 2.5, 6.5, 6.5), False{}, 10, 10, 8, True{})
+  +tri = Cov.mask(Con{Cov.CovLine{1.0, 1.0, 9.0, 1.0}, Con{Cov.CovLine{9.0, 1.0, 1.0, 7.0}, Con{Cov.CovLine{1.0, 7.0, 1.0, 1.0}, Nil{}}}}, False{}, 10, 10, 8, True{})
+  +overlap = Cov.mask(Cov.lines.append(square(1.0, 1.0, 5.0, 5.0), square(3.0, 3.0, 7.0, 7.0)), True{}, 8, 8, 8, True{})
+  +reversed = Cov.mask(square(6.5, 6.5, 2.5, 2.5), False{}, 10, 10, 8, True{})
+  +outside = Cov.mask(square(F32.neg(3.0), F32.neg(3.0), 4.5, 4.5), False{}, 8, 8, 8, True{})
+  +double = Cov.mask(Cov.lines.append(square(1.5, 1.5, 5.5, 5.5), square(1.5, 1.5, 5.5, 5.5)), False{}, 8, 8, 8, True{})
   do IO<Unit>:
     Unit <- IO.print(row(half, 10n, 0, 2))
     Unit <- IO.print(row(half, 10n, 0, 4))

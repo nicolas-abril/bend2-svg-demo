@@ -173,8 +173,8 @@
     },
     {
       "fixture": "markers-viewports.svg",
-      "meanAbsoluteError": 0.21061197916666666,
-      "rootMeanSquareError": 1.9058230396165676,
+      "meanAbsoluteError": 0.21134440104166666,
+      "rootMeanSquareError": 1.906015183624814,
       "maxChannelError": 48,
       "pixelsAbove32": 14,
       "reference": "chromium",
@@ -1464,8 +1464,8 @@
     },
     {
       "fixture": "paint-order-markers.svg",
-      "meanAbsoluteError": 0.009195963541666666,
-      "rootMeanSquareError": 0.09589558666417691,
+      "meanAbsoluteError": 0.010172526041666666,
+      "rootMeanSquareError": 0.10085894130748481,
       "maxChannelError": 1,
       "pixelsAbove32": 0,
       "reference": "chromium",

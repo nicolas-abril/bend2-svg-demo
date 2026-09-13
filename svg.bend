@@ -3396,12 +3396,30 @@ def text.present(+xs: List<&2, XML.Element>) -> Bool:
     case Nil{}: False{}
     case Con{XML.Element{n, as, kids, txt}, rest}: U.string.equal(n, "text") || (U.string.equal(n, "image") && image.svg.reference(U.trim.both(XML.attr.get(as, "href", XML.attr.get(as, "xlink:href", ""))))) || text.present(kids) || text.present(rest)
 
+# The expansion passes each rebuild the whole tree, so a document without
+# images, uses or text skips them; an embedded SVG image may bring any of the
+# three, so images imply all passes.
+def expand.images(has: Bool, xs: List<&2, XML.Element>, +w: F32, +h: F32) -> List<&2, XML.Element>:
+  match has:
+    case True{}: image.svg.expand(16n, xs, w, h)
+    case False{}: xs
+
+def expand.uses(has: Bool, +xs: List<&2, XML.Element>) -> List<&2, XML.Element>:
+  match has:
+    case True{}: use.expand(64n, xs, xs, Nil{})
+    case False{}: xs
+
+def expand.text(has: Bool, +xs: List<&2, XML.Element>, book: Font.FontBook, +w: F32, +h: F32) -> List<&2, XML.Element>:
+  match has:
+    case True{}: text.paint.group(text.expand(text.path.resolve(xs, xs, w, h, True{}), text.font.default(book), w, h, True{}))
+    case False{}: xs
+
 def document.camera.fonts(+root: XML.Element, +w: F32, +h: F32, matrix: Matrix, book: Font.FontBook) -> List<&2, Scene<Brush>>:
   XML.Element{n, a, kids, txt} = root
+  +kinds = XML.elements.kinds(kids, 0)
+  +images = U32.is_gt(U32.and(kinds, 1), 0)
   +styled = CSS.css.tree(kids, CSS.css.rules(CSS.css.sheets(kids, w, h), w, h), Nil{}, Nil{}, 1, CSS.css.element.count(kids))
-  +embedded = image.svg.expand(16n, styled, w, h)
-  +used = use.expand(64n, embedded, embedded, Nil{})
-  +nodes = text.paint.group(text.expand(text.path.resolve(used, used, w, h, True{}), text.font.default(book), w, h, True{}))
+  +nodes = expand.text(images || U32.is_gt(U32.and(kinds, 4), 0), expand.uses(images || U32.is_gt(U32.and(kinds, 2), 0), expand.images(images, styled, w, h)), book, w, h)
   context.scenes(compile(64n, nodes, style.default(), matrix, w, h, resources(nodes, a), True{}, Nil{}, 1.0), context.empty(), identity())
 
 def document.fonts(root: XML.Element, w: F32, h: F32, book: Font.FontBook) -> List<&2, Scene<Brush>>:
@@ -3554,13 +3572,15 @@ def cover.lines(es: List<&2, Edge>, +frame: Raster) -> List<&2, Cov.CovLine>:
     case Nil{}: Nil{}
     case Con{Edge{a, b, stroked, closed}, rest}: Con{cover.line(cover.pixel(frame, a), cover.pixel(frame, b)), cover.lines(rest, frame)}
 
-def cover.build(+lines: List<&2, Cov.CovLine>, +even: Bool, +frame: Raster, +sub: U32) -> Cover:
+# With `trees` the mask carries the quadtree that clip and pixel queries
+# need; a fill painted directly keeps only its rows of runs.
+def cover.build(+lines: List<&2, Cov.CovLine>, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
   Raster{origin, step, width, height, depth, linear, pixels} = frame
-  Cover{Cov.mask(lines, even, width, height, sub), origin, step}
+  Cover{Cov.mask(lines, even, width, height, sub, trees), origin, step}
 
 # Local edges through m (local to device) onto the frame's pixel grid.
-def cover.edges(es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32) -> Cover:
-  cover.build(cover.lines(edges.transform(es, m), frame), even, frame, sub)
+def cover.edges(es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Cover:
+  cover.build(cover.lines(edges.transform(es, m), frame), even, frame, sub, trees)
 
 def cover.tree.edges(t: EdgeTree, acc: List<&2, Edge>) -> List<&2, Edge>:
   match t:
@@ -3659,12 +3679,12 @@ def cover.scale(+m: Matrix, +frame: Raster) -> F32:
   Raster{origin, step, width, height, depth, linear, pixels} = frame
   (F32.sqrt(F32.abs((a * d - b * c : F32))) / step : F32)
 
-def cover.stroke(mesh: StrokeMesh, +frame: Raster, +sub: U32) -> StrokeMesh:
+def cover.stroke(mesh: StrokeMesh, +frame: Raster, +sub: U32, +trees: Bool) -> StrokeMesh:
   StrokeMesh{stree, inv, old} = mesh
   +tree = stree
   +iv = inv
   +m = matrix.inverse(iv)
-  StrokeMesh{tree, iv, cover.build(cover.lines(edges.transform(cover.parts.edges(cover.parts(tree, Nil{}), cover.scale(m, frame), Nil{}), m), frame), False{}, frame, sub)}
+  StrokeMesh{tree, iv, cover.build(cover.lines(edges.transform(cover.parts.edges(cover.parts(tree, Nil{}), cover.scale(m, frame), Nil{}), m), frame), False{}, frame, sub, trees)}
 
 def cover.clip(c: Clip, +frame: Raster, +sub: U32) -> Clip:
   match c:
@@ -3673,20 +3693,20 @@ def cover.clip(c: Clip, +frame: Raster, +sub: U32) -> Clip:
       +tree = es
       +iv = inv
       +ev = even
-      ClipShape{tree, iv, ev, cover.edges(cover.tree.edges(tree, Nil{}), matrix.inverse(iv), ev, frame, sub)}
+      ClipShape{tree, iv, ev, cover.edges(cover.tree.edges(tree, Nil{}), matrix.inverse(iv), ev, frame, sub, True{})}
     case ClipUnion{a, b}: ClipUnion{cover.clip(a, frame, sub), cover.clip(b, frame, sub)}
     case ClipIntersect{a, b}: ClipIntersect{cover.clip(a, frame, sub), cover.clip(b, frame, sub)}
 
-def cover.fill.if(paints: Bool, f: Fill, es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32) -> Fill:
+def cover.fill.if(paints: Bool, f: Fill, es: List<&2, Edge>, +m: Matrix, +even: Bool, +frame: Raster, +sub: U32, +trees: Bool) -> Fill:
   match paints:
     case True{}:
       Fill{tree, old} = f
-      Fill{tree, cover.edges(es, m, even, frame, sub)}
+      Fill{tree, cover.edges(es, m, even, frame, sub, trees)}
     case False{}: f
 
-def cover.stroke.if(paints: Bool, mesh: StrokeMesh, +frame: Raster, +sub: U32) -> StrokeMesh:
+def cover.stroke.if(paints: Bool, mesh: StrokeMesh, +frame: Raster, +sub: U32, +trees: Bool) -> StrokeMesh:
   match paints:
-    case True{}: cover.stroke(mesh, frame, sub)
+    case True{}: cover.stroke(mesh, frame, sub, trees)
     case False{}: mesh
 
 # Whether a style paints its fill or its stroke at all; masks are only built for those.
@@ -3873,7 +3893,7 @@ def cover.image.clip(+brush: Brush, clip: Clip, +iv: Matrix, +frame: Raster, +su
     case Bitmap{raster, inv, nearest}:
       +to = matrix.mul(inv, iv)
       +rect = cover.image.rect(raster)
-      ClipIntersect{clip, ClipShape{edge.tree(rect), to, False{}, cover.edges(rect, matrix.inverse(to), False{}, frame, sub)}}
+      ClipIntersect{clip, ClipShape{edge.tree(rect), to, False{}, cover.edges(rect, matrix.inverse(to), False{}, frame, sub, True{})}}
     case _: clip
 
 # Half a device pixel in local units, so a scene whose box only reaches into part
@@ -3883,7 +3903,9 @@ def cover.reach(+inv: Matrix, +half: F32) -> F32:
   (half * U.max(F32.sqrt((a * a + b * b : F32)), F32.sqrt((c * c + d * d : F32))) + 0.0001 : F32)
 
 @unsafe
-def cover.scenes(xs: List<&2, Scene<Brush>>, +frame: Raster, +sub: U32) -> List<&2, Scene<Brush>>:
+# Scenes painted directly keep rows-only fill masks (trees false); scenes
+# sampled per pixel (pattern tiles, filter and mask rasters) need trees.
+def cover.scenes(xs: List<&2, Scene<Brush>>, +frame: Raster, +sub: U32, +trees: Bool) -> List<&2, Scene<Brush>>:
   match xs:
     case Nil{}: Nil{}
     case Con{Scene{es, box, inv, style, opacity, kids, id, ink, clip, outline, fill, maskNodes, maskMode, markerNodes, coverage, effect}, rest}:
@@ -3893,12 +3915,12 @@ def cover.scenes(xs: List<&2, Scene<Brush>>, +frame: Raster, +sub: U32) -> List<
       +m = matrix.inverse(iv)
       +half = (raster.scale(frame) * 0.5 + 0.01 : F32)
       +ik = ink
-      Con{Scene{edges, bounds.expand(box, cover.reach(iv, half)), iv, st, opacity, cover.scenes(kids, frame, sub), id, cover.paint(ik, m, frame, sub, nodes => f => n => cover.scenes(nodes, f, n), nodes => f => n => cover.scenes(nodes, f, n)), cover.image.clip(paint.fill(ik), cover.clip(clip, frame, sub), iv, frame, sub), cover.stroke.if(style.strokes(st), outline, frame, sub),
-        cover.fill.if(style.fills(st), fill, edges, m, cover.rule(st), frame, sub), cover.scenes(maskNodes, frame, sub), maskMode, cover.scenes(markerNodes, frame, sub), bounds.expand(coverage, half), effect}, cover.scenes(rest, frame, sub)}
+      Con{Scene{edges, bounds.expand(box, cover.reach(iv, half)), iv, st, opacity, cover.scenes(kids, frame, sub, trees), id, cover.paint(ik, m, frame, sub, nodes => f => n => cover.scenes(nodes, f, n, True{}), nodes => f => n => cover.scenes(nodes, f, n, True{})), cover.image.clip(paint.fill(ik), cover.clip(clip, frame, sub), iv, frame, sub), cover.stroke.if(style.strokes(st), outline, frame, sub, trees),
+        cover.fill.if(style.fills(st), fill, edges, m, cover.rule(st), frame, sub, trees), cover.scenes(maskNodes, frame, sub, trees), maskMode, cover.scenes(markerNodes, frame, sub, trees), bounds.expand(coverage, half), effect}, cover.scenes(rest, frame, sub, trees)}
 
 def raster.scene(+format: Raster, +nodes: List<&2, Scene<Brush>>, +aa: U32) -> Raster:
   Raster{origin, step, width, height, depth, pixelsLinear, pixels} = format
-  +covered = cover.scenes(nodes, format, cover.sub(aa))
+  +covered = cover.scenes(nodes, format, cover.sub(aa), True{})
   raster.store(format, raster.scene.tiles(depth, 0, 0, format, covered, scene.coverage(covered, bounds.empty()), aa), False{})
 
 # A source alpha input shares its buffer; only the returned RGB channels change.
@@ -4896,10 +4918,49 @@ def paint.tree.if(cond: Bool, fb: Array<U32>, t: Cov.CovTree, +x0: U32, +y0: U32
     case True{}: paint.tree(fb, t, x0, y0, size, tg, ctx)
     case False{}: fb
 
+# One run of a row: the columns within the target, the clip limit over them
+# (per pixel when a clip edge crosses the run), then the row painter.
+def paint.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+  Target{tx, ty, tw, th} = t
+  +bx = paint.from(x0, tx)
+  +cols = paint.span(x0, (x1 - x0 : U32), tx, (tx + tw : U32))
+  +known = paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), bx, y, (bx + cols : U32), (y + 1 : U32))
+  paint.block.some(U32.is_eq(cols, 0) || F32.is_eq(known, 0.0), fb, bx, y, 1n, U32.to_nat(cols), v, known, t, ctx)
+
+@unsafe
+def paint.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+  match runs:
+    case Nil{}: fb
+    case Con{Cov.Run{x0, x1, v}, rest}: paint.runs(paint.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, t, ctx), rest, gx, y, t, ctx)
+
+def paint.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+  match inside:
+    case True{}: paint.runs(fb, runs, gx, y, t, ctx)
+    case False{}: fb
+
+# Rows of runs painted straight into the target, no tree needed.
+@unsafe
+def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+  match rows:
+    case Nil{}: fb
+    case Con{r, rest}:
+      Target{tx, ty, tw, th} = t
+      paint.rows.of(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), Target{tx, ty, tw, th}, ctx)
+
+def paint.data(d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+  match d:
+    case Cov.CovRows{rows}: paint.rows.of(fb, rows, gx, gy, tg, ctx)
+    case Cov.CovTreed{tree}: paint.tree(fb, tree, gx, gy, size, tg, ctx)
+
+def paint.data.if(present: Bool, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+  match present:
+    case True{}: paint.data(d, fb, gx, gy, size, tg, ctx)
+    case False{}: fb
+
 # A shape's coverage mask on the frame grid, painted with its brush.
 def paint.cover(fb: Array<U32>, +cov: Cover, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
-  Cover{Cov.CovMask{gx, gy, size, depth, tree, present}, origin, step} = cov
-  paint.tree.if(present, fb, tree, gx, gy, size, tg, ctx)
+  Cover{Cov.CovMask{gx, gy, size, depth, data, present}, origin, step} = cov
+  paint.data.if(present, data, fb, gx, gy, size, tg, ctx)
 
 def paint.fill.if(cond: Bool, fb: Array<U32>, +f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   match cond:
@@ -5100,7 +5161,7 @@ def paint.scenes(fb: Array<U32>, +xs: List<&2, Scene<Brush>>, +t: Target, +linea
 
 # The whole document at w by h device pixels, packed premultiplied RGBA.
 def paint.frame(scene: List<&2, Scene<Brush>>, +w: U32, +h: U32, +aa: U32) -> Array<U32>:
-  paint.scenes(layer.new(Target{0, 0, w, h}), cover.scenes(prepare.scenes(scene, identity(), aa), frame(w, h), cover.sub(aa)), Target{0, 0, w, h}, False{}, Nil{})
+  paint.scenes(layer.new(Target{0, 0, w, h}), cover.scenes(prepare.scenes(scene, identity(), aa), frame(w, h), cover.sub(aa), False{}), Target{0, 0, w, h}, False{}, Nil{})
 
 # ---- packed output ----
 

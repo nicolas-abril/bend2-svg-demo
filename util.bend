@@ -6,6 +6,12 @@ def choose(-A: Type, yes: Bool, a: A, b: A) -> A:
     case True{}: a
     case False{}: b
 
+def max.u32(+a: U32, +b: U32) -> U32:
+  choose(U32, U32.is_gt(a, b), a, b)
+
+def min.u32(+a: U32, +b: U32) -> U32:
+  choose(U32, U32.is_lt(a, b), a, b)
+
 def min(+a: F32, +b: F32) -> F32:
   choose(F32, F32.is_lt(a, b), a, b)
 
