@@ -4978,47 +4978,60 @@ def paint.tree.if(cond: Bool, fb: Array<U32>, t: Cov.CovTree, +x0: U32, +y0: U32
 
 # One run of a row: the columns within the target, the clip limit over them
 # (per pixel when a clip edge crosses the run), then the row painter.
-def paint.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+# One run of a row: the columns within the target, the clip limit over
+# them (the box's limit when that is uniform, else read per run and per
+# pixel when a clip edge crosses the run), then the row painter.
+def paint.run(fb: Array<U32>, +x0: U32, +x1: U32, +v: F32, +y: U32, +fixed: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
   Target{tx, ty, tw, th} = t
   +bx = paint.from(x0, tx)
   +cols = paint.span(x0, (x1 - x0 : U32), tx, (tx + tw : U32))
-  +known = paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), bx, y, (bx + cols : U32), (y + 1 : U32))
+  +known = U.choose(F32, F32.is_lt(fixed, 0.0), paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), bx, y, (bx + cols : U32), (y + 1 : U32)), fixed)
   paint.block.some(U32.is_eq(cols, 0) || F32.is_eq(known, 0.0), fb, bx, y, 1n, U32.to_nat(cols), v, known, t, ctx)
 
 @unsafe
-def paint.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+def paint.runs(fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +fixed: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
   match runs:
     case Nil{}: fb
-    case Con{Cov.Run{x0, x1, v}, rest}: paint.runs(paint.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, t, ctx), rest, gx, y, t, ctx)
+    case Con{Cov.Run{x0, x1, v}, rest}: paint.runs(paint.run(fb, (gx + x0 : U32), (gx + x1 : U32), v, y, fixed, t, ctx), rest, gx, y, fixed, t, ctx)
 
-def paint.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+def paint.row.if(inside: Bool, fb: Array<U32>, runs: List<&2, Cov.Run>, +gx: U32, +y: U32, +fixed: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
   match inside:
-    case True{}: paint.runs(fb, runs, gx, y, t, ctx)
+    case True{}: paint.runs(fb, runs, gx, y, fixed, t, ctx)
     case False{}: fb
 
 # Rows of runs painted straight into the target, no tree needed.
 @unsafe
-def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
+def paint.rows.of(fb: Array<U32>, rows: List<&2, List<&2, Cov.Run>>, +gx: U32, +y: U32, +fixed: F32, +t: Target, +ctx: PaintCtx) -> Array<U32>:
   match rows:
     case Nil{}: fb
     case Con{r, rest}:
       Target{tx, ty, tw, th} = t
-      paint.rows.of(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), Target{tx, ty, tw, th}, ctx)
+      paint.rows.of(paint.row.if(U32.is_ge(y, ty) && U32.is_lt(y, (ty + th : U32)), fb, r, gx, y, fixed, Target{tx, ty, tw, th}, ctx), rest, gx, (y + 1 : U32), fixed, Target{tx, ty, tw, th}, ctx)
 
-def paint.data(d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+# The clips are read once over the mask's whole box: uniform there (the
+# usual case, a shape inside the viewport clip), that limit serves every
+# run and nothing reads the clips again; zero there paints nothing.
+def paint.data(d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +fixed: F32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
   match d:
-    case Cov.CovRows{rows}: paint.rows.of(fb, rows, gx, gy, tg, ctx)
+    case Cov.CovRows{rows}: paint.rows.of(fb, rows, gx, gy, fixed, tg, ctx)
     case Cov.CovTreed{tree}: paint.tree(fb, tree, gx, gy, size, tg, ctx)
 
-def paint.data.if(present: Bool, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+def paint.data.known(empty: Bool, +known: F32, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
+  match empty:
+    case True{}: fb
+    case False{}: paint.data(d, fb, gx, gy, size, known, tg, ctx)
+
+def paint.data.if(present: Bool, d: Cov.CovData, fb: Array<U32>, +gx: U32, +gy: U32, +w: U32, +h: U32, +size: U32, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
   match present:
-    case True{}: paint.data(d, fb, gx, gy, size, tg, ctx)
+    case True{}:
+      +known = paint.block.limit(paint.ctx.clipped(ctx), paint.ctx.clips(ctx), gx, gy, (gx + w : U32), (gy + h : U32))
+      paint.data.known(F32.is_eq(known, 0.0), known, d, fb, gx, gy, size, tg, ctx)
     case False{}: fb
 
 # A shape's coverage mask on the frame grid, painted with its brush.
 def paint.cover(fb: Array<U32>, +cov: Cover, +tg: Target, +ctx: PaintCtx) -> Array<U32>:
-  Cover{Cov.CovMask{gx, gy, size, depth, data, present}, origin, step} = cov
-  paint.data.if(present, data, fb, gx, gy, size, tg, ctx)
+  Cover{Cov.CovMask{gx, gy, w, h, size, depth, data, present}, origin, step} = cov
+  paint.data.if(present, data, fb, gx, gy, w, h, size, tg, ctx)
 
 def paint.fill.if(cond: Bool, fb: Array<U32>, +f: Fill, +brush: Brush, +inv: Matrix, +linear: Bool, +clips: List<&2, Clip>, +tg: Target) -> Array<U32>:
   match cond:

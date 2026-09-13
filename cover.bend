@@ -26,11 +26,12 @@ type CovData is Data:
   CovTreed{tree: CovTree}
 
 # A mask placed at pixel (x, y) of its grid, size = 2^depth cells on a side.
+# w by h cells of it hold coverage; size = 2^depth is the tree's side.
 type CovMask is Data:
-  CovMask{x: U32, y: U32, size: U32, depth: Nat, data: CovData, present: Bool}
+  CovMask{x: U32, y: U32, w: U32, h: U32, size: U32, depth: Nat, data: CovData, present: Bool}
 
 def mask.none() -> CovMask:
-  CovMask{0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, False{}}
+  CovMask{0, 0, 0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, False{}}
 
 # Coverage of a cell from rows of runs; a slow path for masks built without a tree.
 def runs.at(rs: List<&2, Run>, +x: U32) -> F32:
@@ -48,7 +49,7 @@ def rows.at(rows: List<&2, List<&2, Run>>, +y: U32, +x: U32) -> F32:
     case Con{r, rest}: U.choose(F32, U32.is_eq(y, 0), runs.at(r, x), rows.at(rest, (y - 1 : U32), x))
 
 def mask.present(+m: CovMask) -> Bool:
-  CovMask{x, y, size, depth, tree, present} = m
+  CovMask{x, y, w, h, size, depth, tree, present} = m
   present
 
 @unsafe
@@ -76,7 +77,7 @@ def mask.at.in(outside: Bool, d: CovData, +half: U32, +x: U32, +y: U32) -> F32:
 # Coverage of the pixel containing (px, py), in grid pixel coordinates; the
 # reads branch through matches, not lambdas, since they run once per pixel.
 def mask.at(+m: CovMask, +px: F32, +py: F32) -> F32:
-  CovMask{x, y, size, depth, data, present} = m
+  CovMask{x, y, w, h, size, depth, data, present} = m
   +sizeDup = size
   +yDup = y
   +xDup = x
@@ -138,7 +139,7 @@ def data.uniform(d: CovData, +mx: U32, +my: U32, +sz: U32, +x0: U32, +y0: U32, +
     case CovRows{rows}: rows.over(rows, 0, (x0 - mx : U32), (y0 - my : U32), (x1 - mx : U32), (y1 - my : U32), 2.0)
 
 def mask.uniform.in(+m: CovMask, +x0: U32, +y0: U32, +x1: U32, +y1: U32) -> F32:
-  CovMask{x, y, size, depth, data, present} = m
+  CovMask{x, y, w, h, size, depth, data, present} = m
   +mx = x
   +my = y
   +sz = size
@@ -176,13 +177,14 @@ def lines.split(xs: List<&2, CovLine>, +at: F32) -> List<&2, CovLine>:
 
 # Pieces left of 0 or right of w become vertical lines on that boundary, which keeps
 # the winding of every cell inside [0, w) intact.
-def lines.clamp(xs: List<&2, CovLine>, +w: F32) -> List<&2, CovLine>:
+def lines.clamp(xs: List<&2, CovLine>, +w: F32, acc: List<&2, CovLine>, +n: U32) -> List<&2, CovLine> & U32:
   match xs:
-    case Nil{}: Nil{}
-    case Con{CovLine{x0, y0, x1, y1}, rest}: Con{CovLine{U.clamp(x0, 0.0, w), y0, U.clamp(x1, 0.0, w), y1}, lines.clamp(rest, w)}
+    case Nil{}: (acc, n)
+    case Con{CovLine{x0, y0, x1, y1}, rest}: lines.clamp(rest, w, Con{CovLine{U.clamp(x0, 0.0, w), y0, U.clamp(x1, 0.0, w), y1}, acc}, (n + 1 : U32))
 
-def lines.clip(xs: List<&2, CovLine>, +w: F32) -> List<&2, CovLine>:
-  lines.clamp(lines.split(lines.split(xs, 0.0), w), w)
+# The clipped lines, in no particular order, with their count.
+def lines.clip(xs: List<&2, CovLine>, +w: F32) -> List<&2, CovLine> & U32:
+  lines.clamp(lines.split(lines.split(xs, 0.0), w), w, Nil{}, 0)
 
 # ---- sub-scanline winding ----
 # Each pixel row is sampled on `sub` horizontal scanlines. The lines reaching
@@ -669,33 +671,177 @@ def line.bottom(+l: CovLine) -> F32:
   CovLine{x0, y0, x1, y1} = l
   U.max(y0, y1)
 
-# Lines from the sorted pending list whose top lies above the row's bottom;
-# a horizontal one is skipped.
-type PieceTake is Data:
-  PieceTake{done: Bool, pending: List<&2, CovLine>, active: List<&2, Piece>}
+# ---- lines in arrays, ordered by top row ----
+# The lines go into one array of four floats each, and an index array orders
+# them by the row their top lies in (a counting sort over the rows), so the
+# scan takes lines as its rows reach them without a comparison sort and
+# without a list per pass. The fallback scans read the lines back in order.
 
-def piece.take.add(flat: Bool, l: CovLine, rest: List<&2, CovLine>, active: List<&2, Piece>) -> PieceTake:
-  match flat:
-    case True{}: PieceTake{False{}, rest, active}
-    case False{}: PieceTake{False{}, rest, Con{piece.of(l), active}}
+def row.of(+top: F32, +h: U32) -> U32:
+  F32.to_u32(U.clamp(F32.floor(top), 0.0, U32.to_f32(h)))
 
-def piece.take.pick(hit: Bool, flat: Bool, l: CovLine, rest: List<&2, CovLine>, active: List<&2, Piece>) -> PieceTake:
-  match hit:
-    case True{}: piece.take.add(flat, l, rest, active)
-    case False{}: PieceTake{True{}, Con{l, rest}, active}
+def counts.inc.got(got: Array<U32> & U32, +r: U32) -> Array<U32>:
+  (c, v) = got
+  Array.set(U32, c, r, (v + 1 : U32))
+
+def counts.inc(c: Array<U32>, +r: U32) -> Array<U32>:
+  counts.inc.got(Array.get(U32, c, r), r)
+
+# Store each line at 4i and count its top row.
+def soa.store.go(xs: List<&2, CovLine>, a: Array<F32>, counts: Array<U32>, +i: U32, +h: U32) -> Array<F32> & Array<U32>:
+  match xs:
+    case Nil{}: (a, counts)
+    case Con{CovLine{x0, y0, x1, y1}, rest}:
+      +ay = y0
+      +by = y1
+      +base = (i * 4 : U32)
+      soa.store.go(rest, Array.set(F32, Array.set(F32, Array.set(F32, Array.set(F32, a, base, x0), (base + 1 : U32), ay), (base + 2 : U32), x1), (base + 3 : U32), by),
+        counts.inc(counts, row.of(U.min(ay, by), h)), (i + 1 : U32), h)
+
+# Turn counts into starting positions.
+def counts.prefix.got(got: Array<U32> & U32, +i: U32, +acc: U32) -> Array<U32> & U32:
+  (c, v) = got
+  (Array.set(U32, c, i, acc), (acc + v : U32))
 
 @unsafe
-def piece.take(t: PieceTake, +bottom: F32) -> PieceTake:
+def counts.prefix(st: Array<U32> & U32, n: Nat, +i: U32) -> Array<U32> & U32:
+  (c, acc) = st
+  match n:
+    case 0n: (c, acc)
+    case 1n+d: counts.prefix(counts.prefix.got(Array.get(U32, c, i), i, acc), d, (i + 1 : U32))
+
+def counts.done(st: Array<U32> & U32) -> Array<U32>:
+  (c, acc) = st
+  c
+
+# Place line i at its row's next position.
+def soa.place.pos(got: Array<U32> & U32, a: Array<F32>, order: Array<U32>, +i: U32, +r: U32) -> Array<F32> & (Array<U32> & Array<U32>):
+  (starts, pos) = got
+  +p = pos
+  (a, (Array.set(U32, starts, r, (p + 1 : U32)), Array.set(U32, order, p, i)))
+
+def soa.place.y1(got: Array<F32> & F32, starts: Array<U32>, order: Array<U32>, +y0: F32, +i: U32, +h: U32) -> Array<F32> & (Array<U32> & Array<U32>):
+  (a, y1) = got
+  +r = row.of(U.min(y0, y1), h)
+  soa.place.pos(Array.get(U32, starts, r), a, order, i, r)
+
+def soa.place.y0(got: Array<F32> & F32, starts: Array<U32>, order: Array<U32>, +i: U32, +h: U32) -> Array<F32> & (Array<U32> & Array<U32>):
+  (a, y0) = got
+  soa.place.y1(Array.get(F32, a, (i * 4 + 3 : U32)), starts, order, y0, i, h)
+
+@unsafe
+def soa.place(st: Array<F32> & (Array<U32> & Array<U32>), n: Nat, +i: U32, +h: U32) -> Array<F32> & (Array<U32> & Array<U32>):
+  (a, (starts, order)) = st
+  match n:
+    case 0n: (a, (starts, order))
+    case 1n+d: soa.place(soa.place.y0(Array.get(F32, a, (i * 4 + 1 : U32)), starts, order, i, h), d, (i + 1 : U32), h)
+
+def soa.placed(st: Array<F32> & (Array<U32> & Array<U32>)) -> Array<F32> & Array<U32>:
+  (a, (starts, order)) = st
+  (a, order)
+
+def soa.stored(st: Array<F32> & Array<U32>, +n: U32, +h: U32) -> Array<F32> & Array<U32>:
+  (a, counts) = st
+  soa.placed(soa.place((a, (counts.done(counts.prefix((counts, 0), U32.to_nat((h + 2 : U32)), 0)), Array.new(U32, depth.for((n + 1 : U32), 1, 0n), 0))), U32.to_nat(n), 0, h))
+
+# The lines as (values, order) arrays, ordered by top row.
+def soa.build(xs: List<&2, CovLine>, +n: U32, +h: U32) -> Array<F32> & Array<U32>:
+  soa.stored(soa.store.go(xs, Array.new(F32, depth.for((n * 4 + 4 : U32), 1, 0n), 0.0), Array.new(U32, depth.for((h + 3 : U32), 1, 0n), 0), 0, h), n, h)
+
+# The lines back as a list in order, for the sub-scanline scans.
+def soa.line.x1(got: Array<F32> & F32, +x0: F32, +y0: F32, +y1: F32, acc: List<&2, CovLine>) -> Array<F32> & List<&2, CovLine>:
+  (a, x1) = got
+  (a, Con{CovLine{x0, y0, x1, y1}, acc})
+
+def soa.line.y1(got: Array<F32> & F32, +x0: F32, +y0: F32, +base: U32, acc: List<&2, CovLine>) -> Array<F32> & List<&2, CovLine>:
+  (a, y1) = got
+  soa.line.x1(Array.get(F32, a, (base + 2 : U32)), x0, y0, y1, acc)
+
+def soa.line.y0(got: Array<F32> & F32, +x0: F32, +base: U32, acc: List<&2, CovLine>) -> Array<F32> & List<&2, CovLine>:
+  (a, y0) = got
+  soa.line.y1(Array.get(F32, a, (base + 3 : U32)), x0, y0, base, acc)
+
+def soa.line.x0(got: Array<F32> & F32, +base: U32, acc: List<&2, CovLine>) -> Array<F32> & List<&2, CovLine>:
+  (a, x0) = got
+  soa.line.y0(Array.get(F32, a, (base + 1 : U32)), x0, base, acc)
+
+def soa.line.pair(got: Array<F32> & List<&2, CovLine>, order: Array<U32>) -> Array<F32> & (Array<U32> & List<&2, CovLine>):
+  (a, acc) = got
+  (a, (order, acc))
+
+def soa.line.idx(got: Array<U32> & U32, a: Array<F32>, acc: List<&2, CovLine>) -> Array<F32> & (Array<U32> & List<&2, CovLine>):
+  (order, i) = got
+  +base = (i * 4 : U32)
+  soa.line.pair(soa.line.x0(Array.get(F32, a, base), base, acc), order)
+
+@unsafe
+def soa.lines.go(st: Array<F32> & (Array<U32> & List<&2, CovLine>), n: Nat, +k: U32) -> Array<F32> & (Array<U32> & List<&2, CovLine>):
+  (a, (order, acc)) = st
+  match n:
+    case 0n: (a, (order, acc))
+    case 1n+d: soa.lines.go(soa.line.idx(Array.get(U32, order, k), a, acc), d, (k - 1 : U32))
+
+def soa.lines.done(st: Array<F32> & (Array<U32> & List<&2, CovLine>)) -> List<&2, CovLine>:
+  (a, (order, acc)) = st
+  acc
+
+def soa.lines(arrays: Array<F32> & Array<U32>, +n: U32) -> List<&2, CovLine>:
+  (a, order) = arrays
+  soa.lines.done(soa.lines.go((a, (order, {Nil{} : List<&2, CovLine>})), U32.to_nat(n), (n - 1 : U32)))
+
+# Lines whose top the row's bottom has passed become pieces; a horizontal
+# one is skipped. The cursor k walks the order array.
+type PieceTake is Data:
+  PieceTake{done: Bool, k: U32, n: U32, active: List<&2, Piece>}
+
+def piece.take.x1(got: Array<F32> & F32, order: Array<U32>, +x0: F32, +y0: F32, +y1: F32, +k: U32, +n: U32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (a, x1) = got
+  ((a, order), PieceTake{False{}, (k + 1 : U32), n, Con{piece.of(CovLine{x0, y0, x1, y1}), active}})
+
+def piece.take.x0(got: Array<F32> & F32, order: Array<U32>, +y0: F32, +y1: F32, +base: U32, +k: U32, +n: U32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (a, x0) = got
+  piece.take.x1(Array.get(F32, a, (base + 2 : U32)), order, x0, y0, y1, k, n, active)
+
+def piece.take.pick(hit: Bool, flat: Bool, a: Array<F32>, order: Array<U32>, +y0: F32, +y1: F32, +base: U32, +k: U32, +n: U32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  match hit:
+    case False{}: ((a, order), PieceTake{True{}, k, n, active})
+    case True{}:
+      match flat:
+        case True{}: ((a, order), PieceTake{False{}, (k + 1 : U32), n, active})
+        case False{}: piece.take.x0(Array.get(F32, a, base), order, y0, y1, base, k, n, active)
+
+def piece.take.y1(got: Array<F32> & F32, order: Array<U32>, +y0: F32, +base: U32, +k: U32, +n: U32, +bottom: F32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (a, y1) = got
+  +yy1 = y1
+  +top = U.min(y0, yy1)
+  piece.take.pick(F32.is_lt(top, bottom), F32.is_le(U.max(y0, yy1), top), a, order, y0, yy1, base, k, n, active)
+
+def piece.take.y0(got: Array<F32> & F32, order: Array<U32>, +base: U32, +k: U32, +n: U32, +bottom: F32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (a, y0) = got
+  piece.take.y1(Array.get(F32, a, (base + 3 : U32)), order, y0, base, k, n, bottom, active)
+
+def piece.take.idx(got: Array<U32> & U32, a: Array<F32>, +k: U32, +n: U32, +bottom: F32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (order, i) = got
+  +base = (i * 4 : U32)
+  piece.take.y0(Array.get(F32, a, (base + 1 : U32)), order, base, k, n, bottom, active)
+
+def piece.take.more(arrays: Array<F32> & Array<U32>, more: Bool, +k: U32, +n: U32, +bottom: F32, active: List<&2, Piece>) -> (Array<F32> & Array<U32>) & PieceTake:
+  (a, order) = arrays
+  match more:
+    case True{}: piece.take.idx(Array.get(U32, order, k), a, k, n, bottom, active)
+    case False{}: ((a, order), PieceTake{True{}, k, n, active})
+
+@unsafe
+def piece.take(st: (Array<F32> & Array<U32>) & PieceTake, +bottom: F32) -> (Array<F32> & Array<U32>) & PieceTake:
+  (arrays, t) = st
   match t:
-    case PieceTake{done, pending, active}:
+    case PieceTake{done, k, n, active}:
       match done:
-        case True{}: PieceTake{True{}, pending, active}
+        case True{}: (arrays, PieceTake{True{}, k, n, active})
         case False{}:
-          match pending:
-            case Nil{}: PieceTake{True{}, Nil{}, active}
-            case Con{l, rest}:
-              +ll = l
-              piece.take(piece.take.pick(F32.is_lt(line.top(ll), bottom), F32.is_le(line.bottom(ll), line.top(ll)), ll, rest, active), bottom)
+          +kk = k
+          +nn = n
+          piece.take(piece.take.more(arrays, U32.is_lt(kk, nn), kk, nn, bottom, active), bottom)
 
 # Reading the runs off the buffer, touched cells only, from hi down to lo: a
 # cell's coverage is the magnitude of its direct area minus the deltas to its
@@ -776,40 +922,48 @@ def xrow.runs(b: (Array<F32> & Array<U32>) & (U32 & U32), +w: U32) -> (List<&2, 
   (arrays, (lo, hi)) = b
   xrow.from(arrays, lo, hi, w)
 
-# The scan state: (buffer, (rows so far, (active pieces, (pending lines, overlap seen)))).
-def xscan.push(r: (List<&2, Run> & Bool) & ((Array<F32> & Array<U32>) & (U32 & U32)), rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, pending: List<&2, CovLine>, +bad: Bool) -> ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))):
-  ((runs, worse), b) = r
-  (b, (Con{runs, rows}, (active, (pending, bad || worse))))
+# The scan state: the row buffer, the line arrays, and the rest as a record.
+type XData is Data:
+  XData{lo: U32, hi: U32, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, k: U32, n: U32, bad: Bool}
 
-def xscan.rowed(s: List<&2, Piece> & ((Array<F32> & Array<U32>) & (U32 & U32)), rows: List<&2, List<&2, Run>>, pending: List<&2, CovLine>, +bad: Bool, +w: U32) -> ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))):
+def xscan.push(r: (List<&2, Run> & Bool) & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, active: List<&2, Piece>, +k: U32, +n: U32, +bad: Bool) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+  ((runs, worse), (buf, (lo, hi))) = r
+  ((buf, lines), XData{lo, hi, Con{runs, rows}, active, k, n, bad || worse})
+
+def xscan.rowed(s: List<&2, Piece> & ((Array<F32> & Array<U32>) & (U32 & U32)), lines: Array<F32> & Array<U32>, rows: List<&2, List<&2, Run>>, +k: U32, +n: U32, +bad: Bool, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
   (active, b) = s
-  xscan.push(xrow.runs(b, w), rows, active, pending, bad)
+  xscan.push(xrow.runs(b, w), lines, rows, active, k, n, bad)
 
-def xscan.taken(t: PieceTake, rows: List<&2, List<&2, Run>>, +y: F32, +bad: Bool, +w: U32, b: (Array<F32> & Array<U32>) & (U32 & U32)) -> ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))):
-  PieceTake{done, pending, active} = t
-  xscan.rowed(pieces.row(active, y, w, Nil{}, b), rows, pending, bad, w)
+def xscan.taken(t: (Array<F32> & Array<U32>) & PieceTake, buf: (Array<F32> & Array<U32>) & (U32 & U32), rows: List<&2, List<&2, Run>>, +y: F32, +bad: Bool, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+  (lines, take) = t
+  PieceTake{done, k, n, active} = take
+  xscan.rowed(pieces.row(active, y, w, Nil{}, buf), lines, rows, k, n, bad, w)
 
-def xscan.row(st: ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))), +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))):
-  (b, (rows, (active, (pending, bad)))) = st
+def xscan.row(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData, +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
+  ((buf, lines), data) = st
+  XData{lo, hi, rows, active, k, n, bad} = data
   +yf = U32.to_f32(y)
-  xscan.taken(piece.take(PieceTake{False{}, pending, active}, (yf + 1.0 : F32)), rows, yf, bad, w, b)
+  xscan.taken(piece.take((lines, PieceTake{False{}, k, n, active}), (yf + 1.0 : F32)), (buf, (lo, hi)), rows, yf, bad, w)
 
 @unsafe
-def xscan.rows.go(st: ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))), n: Nat, +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool))):
+def xscan.rows.go(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData, n: Nat, +y: U32, +w: U32) -> ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData:
   match n:
     case 0n: st
     case 1n+d: xscan.rows.go(xscan.row(st, y, w), d, (y + 1 : U32), w)
 
+# The rows of runs, whether an overlap showed, and the line arrays back.
 type Rows is Data:
   Rows{rows: List<&2, List<&2, Run>>, bad: Bool}
 
-def xscan.done(st: ((Array<F32> & Array<U32>) & (U32 & U32)) & (List<&2, List<&2, Run>> & (List<&2, Piece> & (List<&2, CovLine> & Bool)))) -> Rows:
-  (b, (rows, (active, (pending, bad)))) = st
-  Rows{rows.reverse(rows, Nil{}), bad}
+def xscan.done(st: ((Array<F32> & Array<U32>) & (Array<F32> & Array<U32>)) & XData) -> (Array<F32> & Array<U32>) & Rows:
+  ((buf, lines), data) = st
+  XData{lo, hi, rows, active, k, n, bad} = data
+  (lines, Rows{rows.reverse(rows, Nil{}), bad})
 
-# The rows of runs of the sorted lines by exact areas, and whether an overlap showed.
-def xscan.rows(+h: U32, sorted: List<&2, CovLine>, +w: U32) -> Rows:
-  xscan.done(xscan.rows.go((((Array.new(F32, depth.for((w * 2 + 4 : U32), 1, 0n), 0.0), Array.new(U32, depth.for((U32.div(w, 32) + 2 : U32), 1, 0n), 0)), ((w + 1 : U32), 0)), ({Nil{} : List<&2, List<&2, Run>>}, ({Nil{} : List<&2, Piece>}, (sorted, False{})))), U32.to_nat(h), 0, w))
+# The rows of runs of the lines (in their arrays, n of them) by exact areas.
+def xscan.rows(+h: U32, lines: Array<F32> & Array<U32>, +n: U32, +w: U32) -> (Array<F32> & Array<U32>) & Rows:
+  xscan.done(xscan.rows.go((((Array.new(F32, depth.for((w * 2 + 4 : U32), 1, 0n), 0.0), Array.new(U32, depth.for((U32.div(w, 32) + 2 : U32), 1, 0n), 0)), lines),
+    XData{(w + 1 : U32), 0, {Nil{} : List<&2, List<&2, Run>>}, {Nil{} : List<&2, Piece>}, 0, n, False{}}), U32.to_nat(h), 0, w))
 
 # ---- the tree ----
 # A node is built top-down from the rows of runs that lie inside it, clipped
@@ -917,24 +1071,33 @@ def mask.data(trees: Bool, rows: List<&2, List<&2, Run>>, +size: U32, +depth: Na
     case True{}: CovTreed{tree.node(node.of(rows, size, 0), depth, 0, size)}
     case False{}: CovRows{rows}
 
-# Exact areas unless an overlap showed, then the sub-scanline scan.
-def mask.exact(r: Rows, +sorted: List<&2, CovLine>, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
+# Exact areas unless an overlap showed, then the sub-scanline scan over the
+# lines read back from their arrays (sorted by top, as that scan takes them).
+def mask.exact.go(r: Rows, lines: Array<F32> & Array<U32>, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
   Rows{rows, bad} = r
   match bad:
-    case True{}: scan.rows(h, sub, sorted, False{}, w)
+    case True{}: scan.rows(h, sub, lines.sort(soa.lines(lines, n)), False{}, w)
     case False{}: rows
 
+def mask.exact(got: (Array<F32> & Array<U32>) & Rows, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
+  (lines, r) = got
+  mask.exact.go(r, lines, n, h, sub, w)
+
+def mask.arrays(xs: List<&2, CovLine>, +n: U32, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
+  mask.exact(xscan.rows(h, soa.build(xs, n, h), n, w), n, h, sub, w)
+
 # Even-odd fills rely on the winding parity, which only the sub-scanline scan follows.
-def mask.scan(even: Bool, +sorted: List<&2, CovLine>, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
+def mask.scan(clipped: List<&2, CovLine> & U32, even: Bool, +h: U32, +sub: U32, +w: U32) -> List<&2, List<&2, Run>>:
+  (xs, n) = clipped
   match even:
-    case True{}: scan.rows(h, sub, sorted, True{}, w)
-    case False{}: mask.exact(xscan.rows(h, sorted, w), sorted, h, sub, w)
+    case True{}: scan.rows(h, sub, lines.sort(xs), True{}, w)
+    case False{}: mask.arrays(xs, n, h, sub, w)
 
 def mask.build(+xs: List<&2, CovLine>, +gx: U32, +gy: U32, +w: U32, +h: U32, +even: Bool, +sub: U32, +trees: Bool) -> CovMask:
   +side = U.choose(U32, U32.is_gt(w, h), w, h)
   +depth = depth.for(side, 1, 0n)
   +size = U32.shln(1, depth)
-  CovMask{gx, gy, size, depth, mask.data(trees, mask.scan(even, lines.sort(lines.clip(xs, U32.to_f32(w))), h, sub, w), size, depth), True{}}
+  CovMask{gx, gy, w, h, size, depth, mask.data(trees, mask.scan(lines.clip(xs, U32.to_f32(w)), even, h, sub, w), size, depth), True{}}
 
 def mask.box(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U32, box: CovBox, +trees: Bool) -> CovMask:
   CovBox{x0, y0, x1, y1} = box
@@ -942,7 +1105,7 @@ def mask.box(+xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +su
   +gy = F32.to_u32(U.clamp(F32.floor(y0), 0.0, U32.to_f32(height)))
   +ex = F32.to_u32(U.clamp(F32.ceil(x1), 0.0, U32.to_f32(width)))
   +ey = F32.to_u32(U.clamp(F32.ceil(y1), 0.0, U32.to_f32(height)))
-  U.branch(CovMask, U32.is_ge(gx, ex) || U32.is_ge(gy, ey), _ => CovMask{0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, True{}},
+  U.branch(CovMask, U32.is_ge(gx, ex) || U32.is_ge(gy, ey), _ => CovMask{0, 0, 0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, True{}},
     _ => mask.build(lines.shift(xs, U32.to_f32(gx), U32.to_f32(gy)), gx, gy, (ex - gx : U32), (ey - gy : U32), even, sub, trees))
 
 # A closed rectangle on whole pixels: four axis-aligned lines on the box edges
@@ -1002,8 +1165,8 @@ def mask.rect(+width: U32, +height: U32, +box: CovBox, +trees: Bool) -> CovMask:
   +w = (ex - gx : U32)
   +h = (ey - gy : U32)
   +depth = depth.for(U.choose(U32, U32.is_gt(w, h), w, h), 1, 0n)
-  U.branch(CovMask, U32.is_ge(gx, ex) || U32.is_ge(gy, ey), _ => CovMask{0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, True{}},
-    _ => CovMask{gx, gy, U32.shln(1, depth), depth, rect.data(trees, depth, w, h), True{}})
+  U.branch(CovMask, U32.is_ge(gx, ex) || U32.is_ge(gy, ey), _ => CovMask{0, 0, 0, 0, 0, 0n, CovTreed{CovFlat{0.0}}, True{}},
+    _ => CovMask{gx, gy, w, h, U32.shln(1, depth), depth, rect.data(trees, depth, w, h), True{}})
 
 def mask.shape(aligned: Bool, +xs: List<&2, CovLine>, +even: Bool, +width: U32, +height: U32, +sub: U32, +box: CovBox, +trees: Bool) -> CovMask:
   match aligned:
