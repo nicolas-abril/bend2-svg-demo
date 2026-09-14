@@ -1368,7 +1368,14 @@ the same scan over a hand-built array runs fine. The two programs
 `repro-bytes-read-fault.bend` and `repro-bytes-read-fault-ok.bend` differ
 only in where the array comes from: through the effect it faults,
 hand-built it prints (they sit beside `bin.bend`: imported from another
-directory the module's constructor names no longer match the effect's C). The editor's font loading uses the effect through
-copied references and has not shown this; it is the runtime's to fix, and
-the parser rewrite waits on it.
+directory the module's constructor names no longer match the effect's C). Narrowed further: running the effect and dropping its result is fine;
+reading the record's numbers is fine; reading the tree through copied
+references (`+bytes`, as the font loader does) is fine; consuming the tree
+by matching on it, even without writing anything, is what breaks (the
+fault then surfaces at the next run of allocations, so a program that
+does little afterwards passes). The effect seals the tree's nodes with
+reference cells of count one (`io_seal` with the `SCon` hotness bit) and a
+consuming match takes those cells and nodes back through the ordinary
+path; something in that hand-over is wrong, and it is the runtime's to
+fix. The parser rewrite waits on it.
 
