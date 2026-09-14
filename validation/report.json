@@ -173,8 +173,8 @@
       "fixture": "svg-image-contexts.svg",
       "width": 64,
       "height": 64,
-      "meanAbsoluteError": 0.093994140625,
-      "rootMeanSquareError": 0.40393974514565084,
+      "meanAbsoluteError": 0.09513346354166667,
+      "rootMeanSquareError": 0.4077496359593715,
       "maxChannelError": 4,
       "differingPixels": 379,
       "pixelsAbove32": 0,
@@ -371,12 +371,12 @@
       "fixture": "css-selectors.svg",
       "width": 64,
       "height": 64,
-      "meanAbsoluteError": 32.0712890625,
-      "rootMeanSquareError": 64.70795016923475,
+      "meanAbsoluteError": 31.15234375,
+      "rootMeanSquareError": 62.32999796112088,
       "maxChannelError": 178,
-      "differingPixels": 1768,
-      "pixelsAbove32": 1384,
-      "fractionAbove32": 0.337890625
+      "differingPixels": 1460,
+      "pixelsAbove32": 1460,
+      "fractionAbove32": 0.3564453125
     },
     {
       "fixture": "colors-hwb.svg",
@@ -459,12 +459,12 @@
       "fixture": "markers-styles.svg",
       "width": 64,
       "height": 64,
-      "meanAbsoluteError": 3.8352864583333335,
-      "rootMeanSquareError": 23.64575532292565,
+      "meanAbsoluteError": 5.7177734375,
+      "rootMeanSquareError": 28.703597063347303,
       "maxChannelError": 204,
-      "differingPixels": 182,
-      "pixelsAbove32": 128,
-      "fractionAbove32": 0.03125
+      "differingPixels": 246,
+      "pixelsAbove32": 192,
+      "fractionAbove32": 0.046875
     },
     {
       "fixture": "images-aspect.svg",

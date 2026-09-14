@@ -36,11 +36,11 @@ Term pixels_write_run(Env e, Term* f, IoWork* io) {
   int bad = fwrite(buf, 1, len, stdout) != len || fflush(stdout) != 0;
   free(buf);
   if (bad) {
-    return io_tup(e, arr, io_fail(e, io_sys_fall(errno != 0 ? (uint32_t)errno : EIO)));
+    return io_tup(e, arr, io_fail(e, errno != 0 ? (u32)errno : EIO, NULL));
   }
   return io_tup(e, arr, io_done(e, term_pak(CID_UNIT, 0)));
 }
 
 static void __attribute__((constructor)) pixels_write_use(void) {
-  io_eff(FID_PIXELS_WRITE, CID_PIXELS_WRITE, pixels_write_run, 0);
+  io_eff(CID_PIXELS_WRITE, pixels_write_run, 0);
 }

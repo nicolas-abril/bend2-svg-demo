@@ -1358,24 +1358,34 @@ its state record and every read goes through a helper that returns the
 next state.
 
 **The byte-read effect and native builds.** `Bin.bytes.read` builds its
-tree in C; a native build compiles only when Bend code constructs the
-tree's nodes somewhere (otherwise the effect's `CID_BIN_...` names are
-undefined), which `bytes.read` now guarantees by building and dropping a
-two-node tree beside the effect's result; and after the effect has run, a program that walks the tree
-into an array and then scans it dies with the runtime's "memory fault
-(machine stack overflow?)" even though the array's bytes are correct and
-the same scan over a hand-built array runs fine. The two programs
-`repro-bytes-read-fault.bend` and `repro-bytes-read-fault-ok.bend` differ
-only in where the array comes from: through the effect it faults,
-hand-built it prints (they sit beside `bin.bend`: imported from another
-directory the module's constructor names no longer match the effect's C). Narrowed further: running the effect and dropping its result is fine;
-reading the record's numbers is fine; reading the tree through copied
-references (`+bytes`, as the font loader does) is fine; consuming the tree
-by matching on it, even without writing anything, is what breaks (the
-fault then surfaces at the next run of allocations, so a program that
-does little afterwards passes). The effect seals the tree's nodes with
-reference cells of count one (`io_seal` with the `SCon` hotness bit) and a
-consuming match takes those cells and nodes back through the ordinary
-path; something in that hand-over is wrong, and it is the runtime's to
-fix. The parser rewrite waits on it.
+tree in C, and a native build of a program using it ran into three
+things, all since fixed. First, after the effect had run, a program that
+consumed the tree by matching on it died with the runtime's "memory fault
+(machine stack overflow?)", even though the array it had built from the
+tree was correct and the same scan over a hand-built array ran fine (the
+two programs `repro-bytes-read-fault.bend` and
+`repro-bytes-read-fault-ok.bend` differ only in where the array comes
+from). The effect was the culprit: it sealed the tree's nodes in
+reference cells of count one (`io_seal` with the `SCon` hotness bit, as the
+runtime's own string builder does), and a consuming match on a type of the
+program's own takes its nodes the way it takes any node the program built,
+plain; taking a sealed one corrupted the heap, and the fault surfaced at
+the next run of allocations. Laid plain instead, the repros print but the
+renderer fails: it shares its font bytes, and a shared take expects sealed
+fields. Which of its types a program shares only the compiler knows, and
+it now says so with a `HOT_` macro beside every `CID_` (as `IO_HOTS` told
+the base effects); `effs/bytes_read.c` seals by `HOT_BIN_BYTENODE` and
+`HOT_BIN_BYTES`, and both the repros (plain) and the renderer (sealed)
+run. Second, the effect's `CID_BIN_...` names were only
+defined when Bend code constructed those constructors somewhere (a program
+that only matches what the effect returns builds none, and `bytes.read`
+carried a two-node tree built and dropped beside the effect's result to
+keep them defined); the compiler now defines the macro and arity of every
+constructor of every datatype an effect's type reaches, and the anchor is
+gone. Third, importing `bin.bend` from another directory named its
+constructors with the path walked to it (`CID_______BIN_...`), so the
+effect's C did not compile; a module's C and JS names are now its file's
+from every importer. The parser rewrite is still not worth keeping for
+its own sake (see the measurements above), but the road to reading the
+file straight into an array is open.
 

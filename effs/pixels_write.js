@@ -1,19 +1,11 @@
 // Pixels
 // ======
 
-// Writes w by h packed 0xRRGGBB pixels as a P3 text matrix to standard output.
-function pixels_write_flat(a, out, at) {
-  if (a.$ === "ALeaf") {
-    out[at] = a.value >>> 0;
-    return at + 1;
-  }
-  return pixels_write_flat(a.ys, out, pixels_write_flat(a.xs, out, at));
-}
-
+// Writes w by h packed 0xRRGGBB pixels as a P3 text matrix to standard
+// output; an array is a plain JavaScript array of its words.
 function pixels_write(a, w, h) {
   const fs = require("fs");
-  const words = new Uint32Array(array_len(a));
-  pixels_write_flat(a, words, 0);
+  const words = a;
   const n = w * h, parts = [`P3\n${w} ${h}\n255\n`];
   for (let i = 0; i < n; i++) {
     const v = words[i];
