@@ -1328,3 +1328,47 @@ and freed again; a parser over the bytes as an array would remove three
 node operations per character at the cost of rewriting the XML, number and
 path scanners.
 
+## A parser over an array of the text: measured, and what it found
+
+The next lever named above was tried in full: the XML tokenizer rewritten
+to scan by index over an `Array<U32>` of the file, gathering only the
+names, keys, values and text the tree keeps (reversed, turned at the end,
+entities decoded in that pass). It parses every fixture and the real
+documents to the same tree as the string parser. It is not kept: over a
+string read it measures the same as the string parser (tiger 256 px, parse
+8.5 vs 8.7 ms whole process; packed 22.7 vs 22.6), because the character
+work only moved from the scanner into filling the array. The saving would
+have to come from reading the file straight into the array, and that path
+runs into two things worth recording.
+
+**Code that the compiler multiplies.** A recursive loop whose mode is a
+bare parameter matched on literals, called with literal modes, gets
+specialized per literal and its mode cycle unrolled: three literal modes
+in a fourteen-line CDATA scanner gave 23 MB of C and did not finish
+compiling; a match on the byte nested inside a match on the mode did the
+same (8.8 MB for the comment skipper). One flat match per loop on a single
+key computed from mode and byte at runtime (`mode * 256 + byte`, or the
+byte alone in the plain mode) keeps such a loop at half a megabyte. A
+non-recursive helper with many string-literal branches (the entity
+decoder) inlined into a scanning loop multiplies it the same way; the
+decoding belongs in a separate pass. Since a tuple's field cannot be both
+matched on and used, and a value read from an array can only be matched
+as a parameter's field, a loop over an array carries each byte twice in
+its state record and every read goes through a helper that returns the
+next state.
+
+**The byte-read effect and native builds.** `Bin.bytes.read` builds its
+tree in C; a native build compiles only when Bend code constructs the
+tree's nodes somewhere (otherwise the effect's `CID_BIN_...` names are
+undefined), which `bytes.read` now guarantees by building and dropping a
+two-node tree beside the effect's result; and after the effect has run, a program that walks the tree
+into an array and then scans it dies with the runtime's "memory fault
+(machine stack overflow?)" even though the array's bytes are correct and
+the same scan over a hand-built array runs fine. The two programs
+`repro-bytes-read-fault.bend` and `repro-bytes-read-fault-ok.bend` differ
+only in where the array comes from: through the effect it faults,
+hand-built it prints (they sit beside `bin.bend`: imported from another
+directory the module's constructor names no longer match the effect's C). The editor's font loading uses the effect through
+copied references and has not shown this; it is the runtime's to fix, and
+the parser rewrite waits on it.
+

@@ -428,5 +428,18 @@ def bytes.read.raw(path: String) -> IO(Result<&1, &1, U32 & String, Bytes>):
   import "./effs/bytes_read.c"
   import "./effs/bytes_read.js"
 
+# The effect names the constructors it builds, which a native build only
+# defines when Bend code constructs them too; a small tree built here and
+# dropped keeps them defined whatever else the program does. The effect's
+# own result is passed on untouched.
+def bytes.anchor() -> Bytes:
+  Bytes{ByteNode{ByteWord{0}, ByteFlat{0}}, 0, 2}
+
+def bytes.anchored(got: Result<&1, &1, U32 & String, Bytes>, junk: Bytes) -> Result<&1, &1, U32 & String, Bytes>:
+  match junk:
+    case Bytes{t, s, c}: got
+
 def bytes.read(path: String) -> IO(Result<&1, &1, U32 & String, Bytes>):
-  bytes.read.raw(path)
+  do IO<Result<&1, &1, U32 & String, Bytes>>:
+    got : Result<&1, &1, U32 & String, Bytes> <- bytes.read.raw(path)
+    return bytes.anchored(got, bytes.anchor())
