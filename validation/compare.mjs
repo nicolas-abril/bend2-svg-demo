@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 const here = dirname(import.meta.filename);
 const root = resolve(here, '..');
-const bend = process.env.BEND_MAIN || resolve(root, '../../bend2-core/bend2/main.ts');
+const bend = process.env.BEND_MAIN || resolve(root, '../bend2-core/bend2/main.ts');
 const filter = process.env.SVG_COMPARE_FILTER;
 // SVG_RENDER_BIN points at a compiled build/render to skip the interpreter (the C parity run still checks the two agree).
 const binary = process.env.SVG_RENDER_BIN ? resolve(process.env.SVG_RENDER_BIN) : null;

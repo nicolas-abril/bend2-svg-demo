@@ -1,5 +1,5 @@
 import{spawnSync}from'node:child_process';import{readFileSync,writeFileSync}from'node:fs';import{resolve,dirname}from'node:path';
-const here=dirname(import.meta.filename),root=resolve(here,'..'),bend=process.env.BEND_MAIN||resolve(root,'../../bend2-core/bend2/main.ts');
+const here=dirname(import.meta.filename),root=resolve(here,'..'),bend=process.env.BEND_MAIN||resolve(root,'../bend2-core/bend2/main.ts');
 const out=spawnSync('bun',[bend,resolve(here,'text-metrics.bend')],{env:{...process.env,SVG_FONTS:resolve(root,'fonts'),SVG_INPUT:resolve(root,'fixtures/text-length.svg')},encoding:'utf8',maxBuffer:1024*1024});if(out.status!==0)throw Error(out.stderr||out.stdout);
 const lines=out.stdout.trim().split('\n').map(l=>l.split('|').map(Number)),reference=JSON.parse(readFileSync(resolve(here,'text-length-browser-metrics.json'),'utf8')).length,results=[];let offset=0;
 for(const row of reference){const characters=row.chars.map(ref=>{const[index,x,y,a,b,advance]=lines[offset++];return{index,bendX:x,chromiumX:ref.x,deltaX:x-ref.x,bendEndX:x+a*advance,chromiumEndX:ref.endx};});results.push({text:row.text,characters});}

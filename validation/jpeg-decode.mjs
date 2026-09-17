@@ -8,7 +8,7 @@ const cases=JSON.parse(fs.readFileSync(path.join(dir,process.env.JPEG_CASES||'jp
 const report=[];
 for(const c of cases.filter(c=>!process.env.JPEG_CASE_FILTER||c.name.includes(process.env.JPEG_CASE_FILTER))){
  const input=path.join(dir,'jpeg-input.tmp');fs.writeFileSync(input,c.jpeg);
- const result=spawnSync('bun',[process.env.BEND_MAIN||'/Users/macolas/Software/bend2-core/bend2/main.ts',path.join(dir,'probe-jpeg.bend')],{env:{...process.env,JPEG_INPUT:input},encoding:'utf8',maxBuffer:16*1024*1024,timeout:120000});
+ const result=spawnSync('bun',[(process.env.BEND_MAIN||resolve(here,'../../bend2-core/bend2/main.ts')),path.join(dir,'probe-jpeg.bend')],{env:{...process.env,JPEG_INPUT:input},encoding:'utf8',maxBuffer:16*1024*1024,timeout:120000});
  if(result.status!==0)throw Error(result.stderr||result.stdout||result.error);
  const words=result.stdout.trim().split(/\s+/);if(words.shift()!=='P3')throw Error(result.stdout);
  const w=Number(words.shift()),h=Number(words.shift());words.shift();

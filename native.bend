@@ -1,55 +1,66 @@
-# Native pixel window. All SVG and editing behavior lives in the shared modules.
+# Native presentation adapter. Bend renders at the view's backing pixel size.
 import Base
 import ./state.bend as Editor
+import ./inspect.bend as Inspect
+import ./svg.bend as SVG
+import ./util.bend as U
 
-type Session is Data:
-  Session{state: Editor.State, image: Image}
+def canvas.present(pixels: Array<U32>, w: U32, h: U32) -> IO(Unit):
+  import "./effs/canvas.c"
 
-def session(+state: Editor.State) -> Session:
-  Session{state, Editor.canvas(state)}
+def canvas.poll() -> IO(String):
+  import "./effs/canvas.c"
 
-def view(+s: Session) -> Session & Image:
-  Session{state, image} = s
-  (s, image)
+def inspector.step(info: String) -> IO(String):
+  import "./effs/inspector_step.c"
+  import "./effs/inspector_step.js"
+
+def present(+s: Editor.State, dirty: Bool) -> IO(Unit):
+  Editor.State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+  match dirty:
+    case False{}: IO.pure(Unit, Unit{})
+    case True{}: canvas.present(SVG.paint.packed(nodes, w, h, Editor.quality(s)), w, h)
+
+def command(+text: String) -> IO(String):
+  U.branch(IO(String), U.string.equal(text, ""), _ => canvas.poll(), _ => IO.pure(String, text))
 
 def save.key(save: Bool, state: Editor.State) -> IO(Unit):
   match save:
     case False{}: IO.pure(Unit, Unit{})
     case True{}: Editor.save(state)
 
-def event.changed(s: Session, +action: Editor.Action) -> Session:
-  Session{state, image} = s
-  Session{Editor.apply(state, action), image}
+def loop.command(+state: Editor.State, +info: String, +text: String, close: Bool,
+  next: Editor.State -> String -> Bool -> IO(Unit)) -> IO(Unit):
+  match close:
+    case True{}:
+      do IO<Unit>:
+        ignored : String <- inspector.step("")
+        return Unit{}
+    case False{}:
+      +action = Editor.input(text)
+      +changed = Editor.changed(action, state)
+      +updated = Editor.apply(state, action)
+      do IO<Unit>:
+        Unit <- save.key(U.string.equal(text, "save") || U.string.equal(text, "key\n115"), state)
+        next(updated)(U.branch(String, changed, _ => Inspect.json(updated), _ => info))(changed)
 
-def refresh(s: Session, dirty: Bool) -> Session:
-  Session{state, image} = s
-  match dirty:
-    case False{}: Session{state, image}
-    case True{}: session(state)
+def loop.text(state: Editor.State, info: String, +text: String, next: Editor.State -> String -> Bool -> IO(Unit)) -> IO(Unit):
+  loop.command(state, info, text, U.string.equal(text, "close"), next)
 
-def session.state(s: Session) -> Editor.State:
-  Session{state, image} = s
-  state
+@unsafe
+def loop(+state: Editor.State, +info: String, dirty: Bool) -> IO(Unit):
+  do IO<Unit>:
+    Unit <- present(state, dirty)
+    panel : String <- inspector.step(info)
+    text : String <- command(panel)
+    loop.text(state, info, text, s => i => d => loop(s, i, d))
 
-def tick.loop(events: List<Event>, +s: Session, +dirty: Bool) -> IO(Maybe<Session>):
-  match events:
-    case Nil{}: IO.pure(Maybe<Session>, Some{refresh(s, dirty)})
-    case Con{Close{}, rest}: IO.pure(Maybe<Session>, None{})
-    case Con{Key{code, down}, rest}:
-      +k = code
-      +pressed = down
-      +action = Editor.event(Key{k, pressed})
-      do IO<Maybe<Session>>:
-        Unit <- save.key(U32.is_eq(k, 115) && pressed, session.state(s))
-        tick.loop(rest, event.changed(s, action), dirty || Editor.changed(action, session.state(s)))
-    case Con{ev, rest}:
-      +action = Editor.event(ev)
-      tick.loop(rest, event.changed(s, action), dirty || Editor.changed(action, session.state(s)))
-
-def tick(events: List<Event>, s: Session) -> IO(Maybe<Session>):
-  tick.loop(events, s, False{})
+def start(+state: Editor.State) -> IO(Unit):
+  do IO<Unit>:
+    text : String <- canvas.poll()
+    loop.text(state, Inspect.json(state), text, s => i => d => loop(s, i, d))
 
 def main() -> IO(Unit):
   do IO<Unit>:
     state : Editor.State <- Editor.initial()
-    App.run(~Session, ~App{s => view(s), tick}, "Bend SVG - F fit / +/- zoom / HJKL pan / Z undo", 256, 256, session(state))
+    start(state)

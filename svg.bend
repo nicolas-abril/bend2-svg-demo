@@ -3021,7 +3021,9 @@ def pattern.build(+node: XML.Element, +all: List<&2, XML.Element>, active: List<
 
 def matrix.show(m: Matrix) -> String:
   Matrix{a, b, c, d, e, f} = m
-  "matrix(" ++ xy(a, b) ++ xy(c, d) ++ xy(e, f) ++ ")"
+  # Commas between all six values are required in CSS style declarations.
+  "matrix(" ++ F32.show(a) ++ "," ++ F32.show(b) ++ "," ++ F32.show(c)
+    ++ "," ++ F32.show(d) ++ "," ++ F32.show(e) ++ "," ++ F32.show(f) ++ ")"
 
 # Marker instances have independent styles and viewports. Their geometry does not
 # enlarge the referring shape's object bounding box.

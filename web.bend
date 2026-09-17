@@ -1,8 +1,9 @@
-# A local HTTP server for the same Bend editor. Responses contain pixel matrices.
+# A local HTTP server for the same Bend editor. Frames are lossless PNGs.
 import Base
 import ./svg.bend as SVG
 import ./util.bend as U
 import ./state.bend as Editor
+import ./inspect.bend as Inspect
 
 def contains(+s: String, +needle: String) -> Bool:
   match s:
@@ -76,23 +77,36 @@ def send(socket: Socket, body: String) -> IO(Unit):
     sent : Socket & Result<&1, &1, U32 & String, Unit> <- TCP.send(socket, body)
     response.done(sent)
 
+# Encode and send already rasterized pixels; the effect consumes the array.
+def frame.send(socket: Socket, pixels: Array<U32>, +w: U32, +h: U32) -> IO(Socket & Result<&1, &1, U32 & String, Unit>):
+  import "./effs/frame_send.c"
+  import "./effs/frame_send.js"
+
+def frame.reply(socket: Socket, +state: Editor.State) -> IO(Unit):
+  Editor.State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = state
+  do IO<Unit>:
+    sent : Socket & Result<&1, &1, U32 & String, Unit> <- frame.send(socket, SVG.paint.packed(nodes, w, h, Editor.quality(state)), w, h)
+    response.done(sent)
+
 def request.state(+request: String, +state: Editor.State) -> Editor.State:
   U.branch(Editor.State, U.prefix(request, "POST /event "),
     _ => Editor.apply(state, Editor.input(Editor.wire.decode(U.through(request, "\r\n\r\n")))), _ => state)
 
-def request.body(+request: String, +state: Editor.State, html: String) -> String:
-  U.branch(String, U.prefix(request, "GET /source "),
-    _ => response("text/plain; charset=utf-8", Editor.get.source(state)),
-    _ => U.branch(String, U.prefix(request, "GET /frame ") || U.prefix(request, "POST /event "),
-      _ => response("text/plain; charset=utf-8", Editor.frame(state)),
-      _ => response("text/html; charset=utf-8", html)))
+def request.reply(socket: Socket, +request: String, +state: Editor.State, html: String) -> IO(Unit):
+  U.choose(Socket -> IO(Unit), U.prefix(request, "GET /frame ") || U.prefix(request, "POST /event "),
+    s => frame.reply(s, state),
+    s => send(s, U.branch(String, U.prefix(request, "GET /inspector "),
+      _ => response("application/json; charset=utf-8", Inspect.json(state)),
+      _ => U.branch(String, U.prefix(request, "GET /source "),
+        _ => response("text/plain; charset=utf-8", Editor.get.source(state)),
+        _ => response("text/html; charset=utf-8", html)))))(socket)
 
 def request.handle(got: Socket & String, state: Editor.State, html: String) -> IO(Editor.State):
   (socket, request) = got
   +req = request
   +next = request.state(req, state)
   do IO<Editor.State>:
-    Unit <- send(socket, request.body(req, next, html))
+    Unit <- request.reply(socket, req, next, html)
     return next
 
 def accepted(got: Listener & Result<&1, &1, U32 & String, Socket>, state: Editor.State, html: String) -> IO(Listener & Editor.State):

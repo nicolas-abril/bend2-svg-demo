@@ -19,6 +19,7 @@ type Action is Data:
   Load{source: String}
   Source{source: String}
   Navigate{kind: U32}
+  Resize{width: U32, height: U32}
   Press{x: U32, y: U32}
   Drag{x: U32, y: U32}
   Release{}
@@ -202,11 +203,39 @@ def navigate.ready(+s: State, kind: U32) -> State:
 def navigate(s: State, kind: U32) -> State:
   navigate.ready(release(s), kind)
 
+def camera.matrix(camera: Camera) -> SVG.Matrix:
+  Camera{matrix} = camera
+  matrix
+
+def camera.of(matrix: SVG.Matrix) -> Camera:
+  Camera{matrix}
+
+def resize.camera(+s: State, +width: U32, +height: U32, oldFit: Camera, newFit: Camera) -> State:
+  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+  +delta = SVG.matrix.mul(camera.matrix(newFit), SVG.matrix.inverse(camera.matrix(oldFit)))
+  +next = camera.of(SVG.matrix.mul(delta, camera.matrix(camera)))
+  State{doc, camera.render(doc, fonts, next, width, height), id,
+    SVG.matrix.mul(inv, SVG.matrix.inverse(delta)), False{}, SVG.Point{0.0, 0.0},
+    doc, history, width, height, fonts, next}
+
+# Resizing scales the existing camera relative to its fitted view. It is not
+# a document edit; finish any gesture and preserve selection and undo history.
+def resize.ready(+s: State, +width: U32, +height: U32) -> State:
+  State{doc, nodes, id, inv, down, anchor, base, history, w, h, fonts, camera} = s
+  +oldFit = camera.fit(doc, U32.to_f32(w), U32.to_f32(h))
+  +newFit = camera.fit(doc, U32.to_f32(width), U32.to_f32(height))
+  resize.camera(s, width, height, oldFit, newFit)
+
+def resize(+s: State, +width: U32, +height: U32) -> State:
+  U.branch(State, U32.is_gt(width, 0) && U32.is_gt(height, 0) && U32.is_le(width, 4096) && U32.is_le(height, 4096),
+    _ => resize.ready(release(s), width, height), _ => s)
+
 def apply(s: State, action: Action) -> State:
   match action:
     case Load{text}: replace(s, text)
     case Source{text}: source(s, text)
     case Navigate{kind}: navigate(s, kind)
+    case Resize{w, h}: resize(s, w, h)
     case Press{x, y}: press(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
     case Drag{x, y}: move(s, SVG.Point{U32.to_f32(x), U32.to_f32(y)})
     case Release{}: release(s)
@@ -223,7 +252,8 @@ def view(+s: State) -> State & Image:
 def command.coords(+cmd: String, +vs: List<&2, F32>) -> Action:
   +x = F32.to_u32(U.max(0.0, U.nth(vs, 0n, 0.0)))
   +y = F32.to_u32(U.max(0.0, U.nth(vs, 1n, 0.0)))
-  U.choose(Action, U.string.equal(cmd, "down"), Press{x, y}, Drag{x, y})
+  U.choose(Action, U.string.equal(cmd, "resize"), Resize{x, y},
+    U.choose(Action, U.string.equal(cmd, "down"), Press{x, y}, Drag{x, y}))
 
 def command.property(scan: U.Scan) -> Action:
   U.Scan{k, v} = scan
@@ -235,7 +265,7 @@ def command.split(scan: U.Scan) -> Action:
   +b = body
   U.branch(Action, U.string.equal(c, "source"), _ => Source{b},
     _ => U.branch(Action, U.string.equal(c, "load"), _ => Load{b},
-    _ => U.branch(Action, U.string.equal(c, "down") || U.string.equal(c, "move"), _ => command.coords(c, U.numbers(b)),
+    _ => U.branch(Action, U.string.equal(c, "down") || U.string.equal(c, "move") || U.string.equal(c, "resize"), _ => command.coords(c, U.numbers(b)),
       _ => U.branch(Action, U.string.equal(c, "up"), _ => Release{},
         _ => U.branch(Action, U.string.equal(c, "set"), _ => command.property(U.until(b, 10, "")),
           _ => U.choose(Action, U.string.equal(c, "delete"), Delete{}, U.choose(Action, U.string.equal(c, "undo"), Undo{}, Nothing{})))))))

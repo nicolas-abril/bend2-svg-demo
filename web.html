@@ -7,52 +7,118 @@
 :root {color-scheme:light; font:15px/1.5 system-ui,sans-serif;color:#202b32;background:#eeeae2}
 * {box-sizing:border-box} body {margin:0} header {display:flex;align-items:center;justify-content:space-between;padding:22px 32px;border-bottom:1px solid #d5d0c6;background:#faf8f3}
 h1 {margin:0;font-size:21px;letter-spacing:-.5px} header small {color:#6f756f} main {max-width:1180px;margin:28px auto;padding:0 24px;display:grid;grid-template-columns:minmax(320px,1fr) 340px;gap:24px}
-.work {padding:24px;background:#d9dedb;border-radius:12px;min-height:620px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-canvas {width:min(100%,512px);height:auto;aspect-ratio:1;background:white;box-shadow:0 12px 40px #23352b24;touch-action:none;cursor:crosshair;outline:none}
+.work {padding:24px;background:#d9dedb;border-radius:12px;min-height:620px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:20px}
+#viewport {width:512px;height:512px;max-width:100%;min-width:128px;min-height:128px;resize:both;overflow:hidden;position:relative;background:white;box-shadow:0 12px 40px #23352b24}
+canvas {display:block;position:absolute;left:0;top:0;background:white;touch-action:none;cursor:crosshair;outline:none}
 canvas:focus-visible {outline:2px solid #426c58} aside {display:flex;flex-direction:column;gap:18px} section {padding:18px;background:#faf8f3;border:1px solid #ddd7cd;border-radius:10px}
-h2 {font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;color:#5e6b62} button,.file {font:inherit;border:1px solid #c5cabe;border-radius:6px;padding:8px 12px;background:#fff;cursor:pointer;color:inherit;display:inline-block} button:hover,.file:hover {background:#e5eee7}.primary{background:#315e48;color:white;border-color:#315e48}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center} label{display:block;font-size:13px}input,select,textarea{font:inherit;border:1px solid #c5cabe;border-radius:5px;padding:7px;background:white;max-width:100%}input[type=color]{width:46px;height:37px;padding:3px}input[type=file]{display:none}textarea{width:100%;height:260px;font:12px/1.5 ui-monospace,monospace;resize:vertical;margin:10px 0}p{margin:10px 0 0;color:#667067;font-size:13px}#status{font-size:12px;min-height:18px}#value{width:175px}@media(max-width:780px){main{grid-template-columns:1fr}.work{min-height:350px}header{padding:18px}header small{display:none}}
+h2 {font-size:13px;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;color:#5e6b62} button,.file {font:inherit;border:1px solid #c5cabe;border-radius:6px;padding:8px 12px;background:#fff;cursor:pointer;color:inherit;display:inline-block} button:hover,.file:hover {background:#e5eee7}.primary{background:#315e48;color:white;border-color:#315e48}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center} label{display:block;font-size:13px}input,select,textarea{font:inherit;border:1px solid #c5cabe;border-radius:5px;padding:7px;background:white;max-width:100%}input[type=color]{width:46px;height:37px;padding:3px}input[type=file]{display:none}textarea{width:100%;height:260px;font:12px/1.5 ui-monospace,monospace;resize:vertical;margin:10px 0}p{margin:10px 0 0;color:#667067;font-size:13px}#status{font-size:12px;min-height:18px}#value,#valueOptions{width:175px} [hidden]{display:none!important} #selectedId{text-transform:none;letter-spacing:0;overflow-wrap:anywhere} button:disabled,input:disabled,select:disabled{opacity:.5;cursor:default}@media(max-width:780px){main{grid-template-columns:1fr}.work{min-height:350px}header{padding:18px}header small{display:none}}
 </style>
 <header><h1>Bend SVG Studio</h1><small>Open a drawing. Select a shape. Make it yours.</small></header>
 <main>
-<div class="work"><canvas id="canvas" width="256" height="256" tabindex="0" aria-label="SVG drawing; click and drag shapes"></canvas><div class="row" aria-label="View controls"><button id="fit">Fit</button><button id="actual">100%</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button><button id="panLeft" aria-label="Pan left">←</button><button id="panUp" aria-label="Pan up">↑</button><button id="panDown" aria-label="Pan down">↓</button><button id="panRight" aria-label="Pan right">→</button></div><span id="status" role="status">Loading drawing…</span></div>
+<div class="work"><div id="viewport" aria-label="Resizable drawing canvas"><canvas id="canvas" width="256" height="256" tabindex="0" aria-label="SVG drawing; click and drag shapes"></canvas></div><small>Drag the bottom-right corner to resize the canvas.</small><div class="row" aria-label="View controls"><button id="fit">Fit</button><button id="actual">100%</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button><button id="panLeft" aria-label="Pan left">←</button><button id="panUp" aria-label="Pan up">↑</button><button id="panDown" aria-label="Pan down">↓</button><button id="panRight" aria-label="Pan right">→</button></div><span id="status" role="status">Loading drawing…</span></div>
 <aside>
 <section><h2>Document</h2><div class="row"><label class="file">Open SVG<input id="file" type="file" accept=".svg,image/svg+xml"></label><button id="download">Save SVG</button><button id="undo">Undo</button></div><p>Drag a shape to move it. Use arrow keys to nudge, or Delete to remove it.</p></section>
-<section><h2>Selected shape</h2><div class="row"><label>Fill <input id="fill" type="color" value="#4682b4"></label><button id="noFill">No fill</button><button id="delete">Delete</button></div><div class="row" style="margin-top:14px"><select id="property" aria-label="Property"><option>paint-order</option><option>stroke</option><option>fill</option><option>stroke-width</option><option>stroke-linecap</option><option>stroke-linejoin</option><option>stroke-miterlimit</option><option>stroke-dasharray</option><option>stroke-dashoffset</option><option>vector-effect</option><option>pathLength</option><option>marker</option><option>marker-start</option><option>marker-mid</option><option>marker-end</option><option>filter</option><option>mask</option><option>mask-mode</option><option>clip-path</option><option>fill-rule</option><option>stroke-opacity</option><option>opacity</option><option>fill-opacity</option><option>transform</option><option>x</option><option>y</option><option>width</option><option>height</option><option>preserveAspectRatio</option><option>image-rendering</option><option>href</option><option>textLength</option><option>lengthAdjust</option><option>font-size</option><option>font-weight</option><option>font-style</option><option>text-anchor</option><option>letter-spacing</option><option>word-spacing</option><option>baseline-shift</option></select><input id="value" value="#202b32" aria-label="Property value"><button id="set">Apply</button></div><p>Changes affect the shape you last clicked.</p></section>
+<section><h2>Selected shape <span id="selectedId">— None</span></h2><div class="row"><label>Fill <input id="fill" type="color" value="#4682b4"></label><button id="noFill">No fill</button><button id="delete">Delete</button></div><div class="row" style="margin-top:14px"><select id="property" aria-label="Property"></select><input id="value" aria-label="Property value" aria-describedby="valueHint"><select id="valueOptions" aria-label="Property value" aria-describedby="valueHint" hidden></select><button id="set">Apply</button></div><p id="valueHint">Select a shape to edit its properties.</p></section>
 <section><h2>SVG source</h2><textarea id="source" spellcheck="false" aria-label="SVG source"></textarea><button class="primary" id="apply">Apply source</button><p>Editing source and dragging shapes update the same document.</p></section>
 </aside></main>
 <script type="module">
-// Presentation adapter only: transport input, display a received RGB matrix.
+// Presentation adapter only: transport input, display a received lossless PNG.
 // No SVG parsing, path drawing, styling, hit testing, or editing logic here.
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
-let queue = Promise.resolve(), pointer = null, pendingMove = null;
+const viewport = $('viewport');
+let desired = null, pendingResize = null, alignment = {x:0,y:0};
+let queue = Promise.resolve(), pointer = null, pendingMove = null, inspector = null;
 async function show(response) {
   if (!response.ok) throw Error(`Server returned ${response.status}`);
-  const data = (await response.text()).trim().split(/\s+/);
-  if (data[0] !== 'P3') throw Error('Invalid pixel matrix');
-  const w = Number(data[1]), h = Number(data[2]);
-  if (data[3] !== '255' || data.length !== 4 + w*h*3) throw Error('Incomplete pixel matrix');
-  const frame = ctx.createImageData(w,h);
-  for (let i=0; i<w*h; ++i) {
-    for(let c=0;c<3;++c) frame.data[i*4+c] = Number(data[4+i*3+c]);
-    frame.data[i*4+3] = 255;
+  if (response.headers.get('Content-Type') !== 'image/png') throw Error('Invalid frame format');
+  const frame = await createImageBitmap(await response.blob(), {colorSpaceConversion:'none'});
+  try {
+    // A resize may overtake an in-flight frame. Never stretch stale pixels.
+    if(frame.width!==desired.width||frame.height!==desired.height)return;
+    canvas.width=frame.width; canvas.height=frame.height;
+    canvas.style.width=`${frame.width/desired.scale}px`;
+    canvas.style.height=`${frame.height/desired.scale}px`;
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(frame,0,0);
+    canvas.dataset.rendered=`${frame.width}x${frame.height}@${desired.scale}`;
+  } finally {
+    frame.close();
   }
-  canvas.width=w; canvas.height=h; ctx.putImageData(frame,0,0);
 }
+function propertyValue() {
+  const prop=inspector?.properties.find(p=>p.key===$('property').value);
+  if(!prop)return;
+  const choices=prop.options?prop.options.split('|'):[];
+  $('value').hidden=choices.length>0;$('valueOptions').hidden=choices.length===0;
+  $('value').value=prop.value;$('value').placeholder=prop.example||prop.value;
+  if(choices.length){
+    if(prop.value&&!choices.includes(prop.value))choices.unshift(prop.value);
+    $('valueOptions').replaceChildren(...choices.map(v=>new Option(v,v)));
+    $('valueOptions').value=prop.value;
+  }
+  $('valueHint').textContent=!inspector.selected?'Select a shape to edit its properties.':
+    prop.origin==='example'?`Example: ${prop.example}`:
+    prop.origin==='default'?`Default: ${prop.value}`:
+    prop.origin==='inherited'?`Inherited value: ${prop.value}`:'Current value';
+}
+async function syncInspector() {
+  const response=await fetch('/inspector');if(!response.ok)throw Error('Could not read selection');
+  inspector=await response.json();
+  const key=$('property').value||'fill';
+  $('property').replaceChildren(...inspector.properties.map(p=>new Option(p.key,p.key)));
+  $('property').value=key;propertyValue();
+  $('selectedId').textContent=inspector.selected?(inspector.id?`— #${inspector.id}`:`— ${inspector.tag} (no id)`):'— None';
+  for(const id of ['property','value','valueOptions','set','fill','noFill','delete'])$(id).disabled=!inspector.selected;
+  const fill=inspector.properties.find(p=>p.key==='fill')?.value;
+  // The color well is a shortcut; the text field retains paints such as url(#g).
+  const swatch=document.createElement('canvas').getContext('2d');
+  if(fill&&CSS.supports('color',fill)){swatch.fillStyle=fill;const color=swatch.fillStyle;if(/^#[0-9a-f]{6}$/i.test(color))$('fill').value=color;}
+}
+$('property').onchange=propertyValue;
 function send(text, syncSource=true, coalesce=false) {
   if(coalesce && pendingMove) {pendingMove.text=text;return queue;}
   const job={text};
   pendingMove=coalesce?job:null;
   queue=queue.catch(()=>{}).then(async()=>{
     if(pendingMove===job)pendingMove=null;
+    if(pendingResize===job)pendingResize=null;
     $('status').textContent='Updating…';
     const body=Array.from(job.text,c=>c.codePointAt(0).toString(16)).join(' ');
     await show(await fetch('/event',{method:'POST',headers:{'Content-Type':'text/plain'},body}));
     if(syncSource) $('source').value=await (await fetch('/source')).text();
+    if(syncSource||job.text.startsWith('down\n'))await syncInspector();
     $('status').textContent='Ready';
   }).catch(error=>{$('status').textContent=error.message;});
+  if(text.startsWith('resize\n'))pendingResize=job;
   return queue;
 }
+function resizeCanvas() {
+  const scale=window.devicePixelRatio||1;
+  viewport.style.maxWidth=`min(100%, ${4096/scale}px)`;
+  viewport.style.maxHeight=`${4096/scale}px`;
+  const r=viewport.getBoundingClientRect();
+  const left=r.left-alignment.x,top=r.top-alignment.y;
+  const grid=Number.isInteger(scale)?1:scale;
+  alignment={x:Math.round(left*grid)/grid-left,y:Math.round(top*grid)/grid-top};
+  viewport.style.left=`${alignment.x}px`;viewport.style.top=`${alignment.y}px`;
+  const width=Math.max(1,Math.min(4096,Math.round(r.width*scale)));
+  const height=Math.max(1,Math.min(4096,Math.round(r.height*scale)));
+  if(desired?.width===width&&desired?.height===height&&desired?.scale===scale)return queue;
+  desired={width,height,scale};
+  // Clear while awaiting the new raster, rather than magnifying the old one.
+  delete canvas.dataset.rendered;
+  canvas.width=width;canvas.height=height;
+  canvas.style.width=`${width/scale}px`;canvas.style.height=`${height/scale}px`;
+  const text=`resize\n${width} ${height}`;
+  if(pendingResize){pendingResize.text=text;return queue;}
+  return send(text,false);
+}
+new ResizeObserver(resizeCanvas).observe(viewport);
+// Browser zoom or moving between displays can change DPR without a CSS resize.
+let displayScale=devicePixelRatio;
+function watchScale(){if(displayScale!==devicePixelRatio){displayScale=devicePixelRatio;resizeCanvas();}requestAnimationFrame(watchScale);}
+requestAnimationFrame(watchScale);window.addEventListener('resize',resizeCanvas);
 function position(e){const r=canvas.getBoundingClientRect();return `${Math.round((e.clientX-r.left)*canvas.width/r.width)} ${Math.round((e.clientY-r.top)*canvas.height/r.height)}`;}
 canvas.onpointerdown=e=>{pointer=e.pointerId;canvas.setPointerCapture(pointer);canvas.focus();send(`down\n${position(e)}`,false);};
 canvas.onpointermove=e=>{if(pointer===e.pointerId)send(`move\n${position(e)}`,false,true);};
@@ -64,9 +130,9 @@ for(const [id,code] of [['fit',102],['actual',48],['zoomIn',43],['zoomOut',45],[
 $('fill').onchange=e=>send(`set\nfill\n${e.target.value}`);
 $('noFill').onclick=()=>send('set\nfill\nnone');
 $('delete').onclick=()=>send('delete');$('undo').onclick=()=>send('undo');
-$('set').onclick=()=>send(`set\n${$('property').value}\n${$('value').value}`);
+$('set').onclick=()=>{const value=$('valueOptions').hidden?$('value').value:$('valueOptions').value;if(value.trim())send(`set\n${$('property').value}\n${value}`);};
 $('apply').onclick=()=>send(`source\n${$('source').value}`);
 $('download').onclick=async()=>{await queue;const text=await(await fetch('/source')).text();const url=URL.createObjectURL(new Blob([text],{type:'image/svg+xml'}));const a=document.createElement('a');a.href=url;a.download='drawing.svg';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-try{await show(await fetch('/frame'));$('source').value=await(await fetch('/source')).text();$('status').textContent='Ready';}catch(error){$('status').textContent=error.message;}
+try{await resizeCanvas();await queue;$('source').value=await(await fetch('/source')).text();await syncInspector();$('status').textContent='Ready';}catch(error){$('status').textContent=error.message;}
 </script>
 </html>

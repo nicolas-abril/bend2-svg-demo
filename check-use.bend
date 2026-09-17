@@ -20,4 +20,4 @@ def main() -> IO(Unit):
 #|16711680
 #|65280
 #|255
-#|<svg><defs><g transform="scale(2)" id="tile"><rect height="5" width="5"></rect></g></defs><use style=";transform:matrix(1,0 0,1 10,0 );fill:lime" fill="red" y="4" x="4" href="#tile"></use><use fill="blue" y="4" x="24" href="#tile"></use></svg>
+#|<svg><defs><g transform="scale(2)" id="tile"><rect height="5" width="5"></rect></g></defs><use style=";transform:matrix(1,0,0,1,10,0);fill:lime" fill="red" y="4" x="4" href="#tile"></use><use fill="blue" y="4" x="24" href="#tile"></use></svg>

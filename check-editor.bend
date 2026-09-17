@@ -18,4 +18,4 @@ def main() -> IO(Unit):
 #|16777215
 #|255
 #|16711680
-#|<svg viewBox="0 0 64 64"><rect style=";transform:matrix(1,0 0,1 10,5 );fill:blue" fill="red" height="20" width="20" y="4" x="4"></rect></svg>
+#|<svg viewBox="0 0 64 64"><rect style=";transform:matrix(1,0,0,1,10,5);fill:blue" fill="red" height="20" width="20" y="4" x="4"></rect></svg>

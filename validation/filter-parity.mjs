@@ -1,6 +1,6 @@
 // Verify that filter support preserves all existing non-filter fixture matrices.
 import{readFileSync,writeFileSync,readdirSync}from'node:fs';import{spawnSync}from'node:child_process';import{createHash}from'node:crypto';import{resolve,dirname}from'node:path';
-const here=dirname(import.meta.filename),root=resolve(here,'..'),results=[],bend=process.env.BEND_MAIN||resolve(root,'../../bend2-core/bend2/main.ts');
+const here=dirname(import.meta.filename),root=resolve(here,'..'),results=[],bend=process.env.BEND_MAIN||resolve(root,'../bend2-core/bend2/main.ts');
 for(const fixture of readdirSync(resolve(root,'fixtures')).filter(f=>f.endsWith('.svg')&&!f.startsWith('filters-')).sort()){
  const expected=readFileSync(resolve(here,fixture.replace('.svg','.ppm')),'utf8'),start=performance.now();
  const got=spawnSync('bun',[bend,resolve(root,'render.bend')],{env:{...process.env,SVG_FONTS:resolve(root,'fonts'),SVG_INPUT:resolve(root,'fixtures',fixture),SVG_WIDTH:'64',SVG_HEIGHT:'64',SVG_AA:'8'},encoding:'utf8',maxBuffer:32*1024*1024});if(got.status!==0)throw Error(got.stderr||got.stdout);

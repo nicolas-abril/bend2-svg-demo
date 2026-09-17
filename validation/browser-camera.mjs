@@ -11,6 +11,8 @@ const browser=await chromium.launch({headless:true}),start=performance.now();let
 try {
  const page=await browser.newPage({viewport:{width:1180,height:850}}),errors=[];page.setDefaultTimeout(180000);page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8088');await page.waitForFunction(()=>document.querySelector('#status').textContent==='Ready');
+ await page.locator('#viewport').evaluate(v=>{v.style.width='256px';v.style.height='256px';});
+ await page.waitForFunction(()=>document.querySelector('canvas').dataset.rendered==='256x256@1'&&document.querySelector('#status').textContent==='Ready');
  const pixels=()=>page.locator('canvas').evaluate(c=>Array.from(c.getContext('2d').getImageData(0,0,256,256).data));
  const source=()=>page.locator('#source').inputValue();
  const same=(a,b,label)=>{if(a.join()!==b.join())throw Error(label+' matrix differs');};
@@ -32,5 +34,20 @@ try {
  stage='keyboard navigation';await page.locator('canvas').focus();await action(()=>page.locator('canvas').press('+'));same(await pixels(),zoomed,'Keyboard zoom');await action(()=>page.locator('canvas').press('f'));same(await pixels(),original,'Keyboard fit');
  ({original,before}=await load('camera-tall'));await undo(before,original);({original,before}=await load('camera-resources'));await undo(before,original);
  stage='save';const downloading=page.waitForEvent('download');await page.getByRole('button',{name:'Save SVG'}).click();const download=await downloading;if(readFileSync(await download.path(),'utf8')!==before)throw Error('Saved source differs');if(errors.length)throw Error(errors.join('\n'));await page.screenshot({path:resolve(here,`web-${prefix}-editor.png`),fullPage:true});
- writeFileSync(reportPath,JSON.stringify({passed:true,serverBackend:process.env.SVG_SERVER_BACKEND||'native',binarySHA256:process.env.SVG_SERVER_BINARY_SHA256||null,sourceSHA256,durationSeconds:(performance.now()-start)/1000,checks:['three complete 65536-pixel fitted headless AA4 matrices','no SVG presentation DOM','fit, actual size, center zoom and inverse zoom','four pan directions and exact inverse pan','pick, recolor, drag, nudge and undo after pan','navigation preserves document source and edit history','source editing and unchanged apply after pan','keyboard zoom and fit','opening a file resets history','save excludes view changes']},null,2)+'\n');console.log('Camera browser flow passed');
+ stage='save moved shape and open in independent SVG renderer';
+ await load('camera-wide');await button('panLeft');
+ await action(async()=>{await page.mouse.move(...await point(80,110));await page.mouse.down();await page.mouse.move(...await point(84,114));await page.mouse.up();});
+ await action(()=>page.locator('canvas').press('ArrowRight'));await property('fill','blue');
+ const movedSource=await source(),savingMoved=page.waitForEvent('download');await page.getByRole('button',{name:'Save SVG'}).click();
+ const savedMoved=readFileSync(await(await savingMoved).path(),'utf8');if(savedMoved!==movedSource)throw Error('Moved source was not saved');
+ const viewer=await browser.newPage();
+ try {
+  await viewer.goto('data:image/svg+xml;base64,'+Buffer.from(savedMoved).toString('base64'));
+  const geometry=await viewer.locator('#box').evaluate(el=>{const m=el.getCTM();return{a:m.a,b:m.b,c:m.c,d:m.d,e:m.e,f:m.f,fill:getComputedStyle(el).fill};});
+  if(JSON.stringify(geometry)!==JSON.stringify({a:1,b:0,c:0,d:1,e:10,f:8,fill:'rgb(0, 0, 255)'}))throw Error('Saved SVG lost its movement in browser renderer: '+JSON.stringify(geometry));
+ } finally {await viewer.close();}
+ stage='reopen saved moved shape';await button('fit');const movedPixels=await pixels();
+ await action(()=>page.locator('#file').setInputFiles({name:'moved.svg',mimeType:'image/svg+xml',buffer:Buffer.from(savedMoved)}));
+ same(await pixels(),movedPixels,'Reopened moved SVG');
+ writeFileSync(reportPath,JSON.stringify({passed:true,serverBackend:process.env.SVG_SERVER_BACKEND||'native',binarySHA256:process.env.SVG_SERVER_BINARY_SHA256||null,sourceSHA256,durationSeconds:(performance.now()-start)/1000,checks:['three complete 65536-pixel fitted headless AA4 matrices','no SVG presentation DOM','fit, actual size, center zoom and inverse zoom','four pan directions and exact inverse pan','pick, recolor, drag, nudge and undo after pan','navigation preserves document source and edit history','source editing and unchanged apply after pan','keyboard zoom and fit','opening a file resets history','save excludes view changes','saved drag and nudge preserve geometry in independent browser SVG renderer','saved moved and recolored SVG reopens with identical pixels']},null,2)+'\n');console.log('Camera browser flow passed');
 } catch(error){writeFileSync(reportPath,JSON.stringify({passed:false,stage,sourceSHA256,error:String(error)},null,2)+'\n');throw error;} finally {await browser.close();}

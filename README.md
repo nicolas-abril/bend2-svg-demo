@@ -1,9 +1,15 @@
 # Bend SVG Studio
 
+Standalone repository: [nicolas-abril/bend2-svg-demo](https://github.com/nicolas-abril/bend2-svg-demo).
+Extracted from `bend3-demos/svg` with its Git history.
+
+Keep this checkout beside `bend2-core` for the default build paths.
+
 A native and web SVG viewer/editor with SVG parsing, geometry, painting,
 rasterization, hit testing and editing written in Bend. Both frontends use the
-same document reducer. The browser displays an RGB matrix with `putImageData`;
-it does not render SVG. Independent SVG libraries are used only by validation.
+same document reducer. The server sends lossless PNG frames encoded from Bend's
+RGB pixels. The browser decodes and displays those bitmaps; it does not render
+SVG. Independent SVG libraries are used only by validation.
 
 The implementation runs and supports a broad SVG subset. Pixel conformance is
 unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
@@ -20,7 +26,8 @@ unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
 | `png.bend`, `jpeg.bend` | PNG and JPEG decoders producing `img.bend` pictures |
 | `bin.bend`, `img.bend`, `util.bend` | Bytes/DEFLATE/base64 and the `effs/` raw file read, colors and pixel quadtrees, text scanning helpers |
 | `state.bend` | Shared document, view, input reducer, picking, edits, undo and file IO |
-| `native.bend` | Native window, input forwarding and pixel presentation |
+| `inspect.bend` | Shared selection, property values, defaults and finite choices |
+| `native.bend` | Native canvas and AppKit property inspector |
 | `web.bend` | HTTP server forwarding requests to the shared reducer |
 | `web.html` | Browser controls, input transport and matrix presentation |
 | `render.bend` | Headless matrix export |
@@ -29,14 +36,15 @@ unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
 
 ## Run
 
-Requires Bun, the neighboring `bend2-core` checkout and a C toolchain. The native
+Requires Bun, the neighboring `bend2-core` checkout and a C toolchain. The C web
+server also links zlib (`-lz`, included in the macOS SDK). The native
 window requires a macOS graphical session. Rendering runs on the CPU. The
 libraries import each other by relative path (`import ./xml.bend as XML`); each
 of `util`, `xml`, `css`, `bin`, `img`, `png`, `jpeg` and `font` depends only on
 the ones listed before it, never on `svg.bend`.
 
 ```sh
-cd ../bend3-demos/svg
+cd bend2-svg-demo
 make check
 make all                    # compiles all three executables (about a minute)
 make native                 # opens the native window
@@ -55,6 +63,11 @@ table-directory read.
 Set `SVG_INPUT=/absolute/path/drawing.svg` to load a document at startup.
 The web server maintains one shared editor state and processes requests
 sequentially. HTTP carries the input/response protocol.
+`/frame` and `/event` return compressed binary `image/png` bodies; `/source`
+returns SVG text. `/inspector` returns the shared selection and property metadata
+as JSON. The PNG send effects only encode the already rasterized
+pixels, using RGB8, a Sub row filter and fast DEFLATE compression. PNG decoding
+in the browser replaces decimal pixel formatting and parsing on the web path.
 
 Open SVG files in the web UI or paste and apply source. Source edits are
 undoable; opening a new file resets history. Click to select, drag to
@@ -62,7 +75,15 @@ move, use arrow keys to nudge, Delete to remove, and Z or Undo to undo. A drag
 creates one undo entry; a click or a drag back to the origin preserves source.
 The property controls support paints, strokes, transforms, dimensions, fonts,
 resource references and image fitting. Save downloads Bend's serialized SVG.
-Native R/G/B keys recolor; S saves to `edited.svg` or `SVG_OUTPUT`.
+Both property editors show the selected element's authored SVG `id`, or its tag
+and “no id” if it has none. Private selection IDs are never presented as authored
+IDs or added to saved files. Property fields show the current attribute or
+cascaded value, including inheritance; absent values show a labeled default or
+an example placeholder. Finite choices use dropdowns, preserving an existing
+unlisted value. Selection, edits, delete and undo refresh the displayed values.
+The native app opens an AppKit property panel beside its canvas, with Apply,
+Undo, Delete and Save SVG controls. Native R/G/B keys still recolor; S and the
+Save SVG button save to `edited.svg` or `SVG_OUTPUT`.
 
 Documents fit the window when opened. Both frontends support F to fit, 0 for
 100%, +/− to zoom about the window center, and H/J/K/L to pan left/down/up/right.
@@ -71,12 +92,21 @@ nudging moves a selected shape by one output pixel at any zoom. Navigation
 preserves document source and edit history. Source edits preserve the current
 view; opening a file resets it.
 
-Both frontends display a 256×256 matrix. Shapes are rasterized with
+Both frontends rasterize at the canvas’s backing pixel dimensions (logical
+size × display scale), including Retina displays. Drag the web canvas’s
+bottom-right corner, or resize the native window by its edges or corners.
+Rectangular views are supported, up to 4096 pixels per side. Resize keeps the
+existing zoom and pan relative to the fitted document, selection and edit
+history; it never changes the saved SVG. Stale frames are cleared while the
+replacement is rendered, and pixels are displayed without upscaling. The web
+transport remains lossless compressed binary PNG; the native view receives
+packed pixels directly and repaints only when needed.
+
+Shapes are rasterized with
 scan-converted coverage masks and painted back to front into a flat RGBA array
 straight from those masks (one blend per covered pixel, a solid brush sampled
-once per shape), so a frame costs about the same idle or dragging. The native window currently lacks the web
-UI's source and property panels. Configurable interactive viewport size remains
-unfinished.
+once per shape), so a frame costs about the same idle or dragging. The native
+window currently lacks the web UI’s source panel.
 
 Headless export supports rectangular output and dimensions 1–1024. `SVG_AA`
 (1–8) sets the scanlines per pixel row of the coverage rasterizer (never below
@@ -141,7 +171,7 @@ history are in [NOTES.md](NOTES.md).
 
 ## Validation
 
-The integrated sources pass **55 Bend regression files (576 assertions)**.
+The integrated sources pass **56 Bend regression files (588 assertions)**.
 The current C and JavaScript headless renderers produce **byte-identical
 matrices for all 117 fixtures**. Both current web backends pass fit, zoom, pan,
 transformed picking/dragging/nudging, property and source undo, opening and saving.
@@ -190,6 +220,9 @@ failure; Bend follows the SVG working group's alpha-scaled bias formula.
 
 ```sh
 make compare                         # exits unsuccessfully while fixtures fail
+make check-frames                    # C/JS PNG transport and current browser pixels
+make check-resize                    # both web backends, DPR changes and AppKit resize
+make check-inspector                 # both web backends and AppKit controls (macOS)
 bun validation/native-all.mjs
 bun validation/run-browser-camera.mjs
 bun validation/run-browser-convolve.mjs
@@ -197,6 +230,17 @@ bun validation/native-camera-fit.mjs
 ```
 
 The comparison command installs development-only reference dependencies.
+`check-frames` uses the same installed `validation/` dependencies. It checks PNG
+checksums, HTTP lengths and exact RGB values through both compiled send effects,
+then runs the browser editing flow against freshly generated headless matrices.
+It writes temporary results outside the repository and preserves saved references.
+`check-inspector` uses the same dependencies plus a macOS graphical session. Its
+native test exercises the real canvas input handlers and AppKit controls inside
+its own app process, including selection, defaults, dropdown edits, save, delete
+and undo; it sends no global keyboard or mouse events. `check-resize` additionally
+checks both web backends at display scales 1 and 2, the visible resize grip,
+rectangular frames against headless rendering, displayed screenshot pixels,
+display-scale changes and saved movement after resizing.
 `SVG_SERVER_BACKEND=javascript` selects the optional backend for browser tests.
 The test launchers start and stop their own local server on port 8088. Older
 browser scripts and reports preserve earlier checkpoints; their fixed coordinates

@@ -4,3 +4,5 @@ validation/browsers/
 edited.svg
 validation/venv/
 validation/*.tmp
+
+.DS_Store
