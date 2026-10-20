@@ -63,8 +63,10 @@ function frame_send(socket, pixels, w, h) {
       if (n === 0) return io_tup(socket, io_fail(32)); // EPIPE
       at += n;
     }
-    return io_tup(socket, io_done({$: "Unit"}));
+    return io_tup(socket, io_done({$: CID(Unit)}));
   } catch (error) {
     return io_tup(socket, io_fail(Math.abs(error.errno ?? 5)));
   }
 }
+
+io_eff(CID(frame.send), frame_send);

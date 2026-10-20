@@ -1,9 +1,9 @@
 # Fitting uses the natural viewport while percentages and CSS remain document-local.
 import Base
 import ./state.bend as Editor
-import ./svg.bend as SVG
-import ./util.bend as U
-import ./xml.bend as XML
+import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-text-scan@0.1.0.0/scan.bend as U
+import gralha-xml-doc@0.1.0.0/xml.bend as XML
 
 def equal(source: String, body: String) -> String:
   U.choose(String, U.string.equal(Editor.frame(Editor.load(source, 64, 64)), SVG.ppm(64, 64, SVG.document(XML.parse("<svg>" ++ body ++ "</svg>"), 64.0, 64.0), 4)), "PASS", "FAIL")

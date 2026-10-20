@@ -9,17 +9,15 @@ all: $(BUILD)/native $(BUILD)/web $(BUILD)/render
 $(BUILD):
 	mkdir -p $(BUILD)
 
-LIBS = util.bend xml.bend css.bend bin.bend img.bend png.bend jpeg.bend font.bend cover.bend effs/bytes_read.c effs/bytes_read.js
-
-$(BUILD)/native: native.bend inspect.bend effs/inspector_step.c effs/canvas.c state.bend svg.bend $(LIBS) | $(BUILD)
+$(BUILD)/native: native.bend inspect.bend effs/inspector_step.c effs/canvas.c state.bend | $(BUILD)
 	$(BEND) native.bend -o $@.c
 	CLANG_MODULE_CACHE_PATH=$(CURDIR)/$(BUILD)/clang-cache $(CC) -DBEND_METAL=1 -x objective-c -fobjc-arc -fmodules -std=c11 -O3 $@.c -lpthread -lm -o $@
 
-$(BUILD)/web: web.bend inspect.bend state.bend svg.bend effs/frame_send.c $(LIBS) | $(BUILD)
+$(BUILD)/web: web.bend inspect.bend state.bend effs/frame_send.c | $(BUILD)
 	$(BEND) web.bend -o $@.c
 	$(CC) -std=c11 -O3 $@.c -lpthread -lm -lz -o $@
 
-$(BUILD)/render: render.bend state.bend svg.bend $(LIBS) | $(BUILD)
+$(BUILD)/render: render.bend state.bend | $(BUILD)
 	CLANG_MODULE_CACHE_PATH=$(CURDIR)/$(BUILD)/clang-cache $(BEND) render.bend -o $@
 
 native: $(BUILD)/native

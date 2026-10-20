@@ -16,5 +16,7 @@ function pixels_write(a, w, h) {
   } catch (e) {
     return io_tup(a, io_fail(Math.abs(e.errno ?? 5)));
   }
-  return io_tup(a, io_done({ $: "Unit" }));
+  return io_tup(a, io_done({$: CID(Unit)}));
 }
+
+io_eff(CID(pixels.write), pixels_write);

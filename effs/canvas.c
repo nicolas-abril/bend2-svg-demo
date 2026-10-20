@@ -89,7 +89,7 @@ Term canvas_present_run(Env e, Term* f, IoWork* work) {
     if (w && h && w <= 4096 && h <= 4096) {
       NSMutableData* data = [NSMutableData dataWithLength:(NSUInteger)w*h*4];
       uint8_t* bytes = data.mutableBytes;
-      Loc loc = term_peek(e, f[0]);
+      u64 loc = blk_loc(e.mem, f[0]);
       for (u32 i = 0; i < w*h; i++) {
         u32 pixel = (u32)blk_read(e.mem, 0, loc, i);
         bytes[4*i] = pixel >> 16; bytes[4*i+1] = pixel >> 8; bytes[4*i+2] = pixel; bytes[4*i+3] = 255;
@@ -102,7 +102,7 @@ Term canvas_present_run(Env e, Term* f, IoWork* work) {
   }
 #endif
   term_drop(e, f[0]);
-  return term_pak(CID_UNIT, 0);
+  return term_pak(CID(Unit), 0);
 }
 Term canvas_poll_run(Env e, Term* f, IoWork* work) {
 #if BEND_METAL
@@ -132,6 +132,6 @@ Term canvas_poll_run(Env e, Term* f, IoWork* work) {
 #endif
 }
 static void __attribute__((constructor)) canvas_use(void) {
-  io_eff(CID_CANVAS_PRESENT, canvas_present_run, 0);
-  io_eff(CID_CANVAS_POLL, canvas_poll_run, 0);
+  io_eff(CID(canvas.present), canvas_present_run);
+  io_eff(CID(canvas.poll), canvas_poll_run);
 }

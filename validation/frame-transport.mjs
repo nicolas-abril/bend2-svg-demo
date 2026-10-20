@@ -3,14 +3,14 @@
 import assert from 'node:assert/strict';
 import {createConnection,createServer} from 'node:net';
 import {spawn,spawnSync} from 'node:child_process';
-import {mkdtempSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
+import {mkdtempSync,readFileSync,realpathSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,dirname,relative} from 'node:path';
 import {setTimeout as pause} from 'node:timers/promises';
 import {PNG} from 'pngjs';
 const root=resolve(dirname(import.meta.filename),'..');
 const bend=process.env.BEND_MAIN||resolve(root,'../bend2-core/bend2/main.ts');
-const temp=mkdtempSync(resolve(tmpdir(),'svg-frame-transport-'));
+const temp=realpathSync(mkdtempSync(resolve(tmpdir(),'svg-frame-transport-')));
 function command(cmd,args){const r=spawnSync(cmd,args,{encoding:'utf8'});assert.equal(r.status,0,r.stderr||r.stdout);}
 async function freePort(){const s=createServer();await new Promise(r=>s.listen(0,'127.0.0.1',r));const p=s.address().port;await new Promise(r=>s.close(r));return p;}
 async function response(port){for(let i=0;i<100;i++){try{return await new Promise((done,fail)=>{const parts=[],socket=createConnection({host:'127.0.0.1',port});socket.on('data',d=>parts.push(d));socket.on('error',fail);socket.on('end',()=>done(Buffer.concat(parts)));socket.setTimeout(10000,()=>socket.destroy(Error('Frame timeout')));});}catch(e){if(e.code!=='ECONNREFUSED')throw e;await pause(50);}}throw Error('Server did not start');}
@@ -47,7 +47,7 @@ def accepted(got: Listener & Result<&1, &1, U32 & String, Socket>) -> IO(Unit):
 
 def main() -> IO(Unit):
   do IO<Unit>:
-    listener : Listener <- IO.try(Listener, TCP.listen(${port}))
+    listener : Listener <- IO.try(Listener, TCP.listen("127.0.0.1", ${port}))
     got : Listener & Result<&1, &1, U32 & String, Socket> <- TCP.accept(listener)
     accepted(got)
 `);

@@ -1,7 +1,7 @@
 # Resizing changes only the view and its picking transform, never saved edits.
 import Base
 import ./state.bend as E
-import ./util.bend as U
+import gralha-text-scan@0.1.0.0/scan.bend as U
 
 def drawing() -> String:
   "<svg width='64' height='64'><rect id='box' x='8' y='8' width='24' height='24'/></svg>"

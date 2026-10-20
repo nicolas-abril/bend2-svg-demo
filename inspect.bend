@@ -1,10 +1,10 @@
 # One property catalogue and selection snapshot for the web and native editors.
 import Base
 import ./state.bend as Editor
-import ./svg.bend as SVG
-import ./xml.bend as XML
-import ./css.bend as CSS
-import ./util.bend as U
+import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-xml-doc@0.1.0.0/xml.bend as XML
+import gralha-css-style@0.1.0.0/css.bend as CSS
+import gralha-text-scan@0.1.0.0/scan.bend as U
 
 type Property is Data:
   Property{key: String, initial: String, example: String, inherited: Bool, options: String}

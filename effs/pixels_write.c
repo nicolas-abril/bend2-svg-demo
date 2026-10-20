@@ -18,7 +18,7 @@ Term pixels_write_run(Env e, Term* f, IoWork* io) {
   Term arr = f[0];
   u64 w = (u64)(uint32_t)f[1];
   u64 h = (u64)(uint32_t)f[2];
-  Loc loc = term_loc(arr);
+  u64 loc = blk_loc(e.mem, arr);
   u64 n = w * h;
   u64 cap = 32 + n * 12;
   char* buf = io_mem(malloc(cap));
@@ -38,9 +38,9 @@ Term pixels_write_run(Env e, Term* f, IoWork* io) {
   if (bad) {
     return io_tup(e, arr, io_fail(e, errno != 0 ? (u32)errno : EIO, NULL));
   }
-  return io_tup(e, arr, io_done(e, term_pak(CID_UNIT, 0)));
+  return io_tup(e, arr, io_done(e, term_pak(CID(Unit), 0)));
 }
 
 static void __attribute__((constructor)) pixels_write_use(void) {
-  io_eff(CID_PIXELS_WRITE, pixels_write_run, 0);
+  io_eff(CID(pixels.write), pixels_write_run);
 }

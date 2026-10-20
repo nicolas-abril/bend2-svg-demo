@@ -18,30 +18,32 @@ unfinished: **108 of 117 reference fixtures pass**, with all failures retained.
 
 | File | Responsibility |
 | --- | --- |
-| `svg.bend` | The SVG library: geometry, styles, layout, paint servers, filters, rasterization |
-| `xml.bend` | XML tokens, element tree, entities, attributes and serialization |
-| `css.bend` | Stylesheets, selectors, specificity, media queries and the cascade |
-| `font.bend` | Font book (outlines, advances, kerning, metrics) and the TrueType reader |
-| `cover.bend` | Scan-converted area coverage of line lists into sparse masks |
-| `png.bend`, `jpeg.bend` | PNG and JPEG decoders producing `img.bend` pictures |
-| `bin.bend`, `img.bend`, `util.bend` | Bytes/DEFLATE/base64 and the `effs/` raw file read, colors and pixel quadtrees, text scanning helpers |
 | `state.bend` | Shared document, view, input reducer, picking, edits, undo and file IO |
 | `inspect.bend` | Shared selection, property values, defaults and finite choices |
 | `native.bend` | Native canvas and AppKit property inspector |
-| `web.bend` | HTTP server forwarding requests to the shared reducer |
+| `web.bend` | Routes HTTP requests to the shared reducer, on `gralha-http-server` |
 | `web.html` | Browser controls, input transport and matrix presentation |
 | `render.bend` | Headless matrix export |
-| `fonts/` | The four Noto Sans TrueType files, read on demand by `font.bend` |
-| `check*.bend`, `validation/` | Regression checks, comparisons and recorded evidence |
+| `fonts/` | The four Noto Sans TrueType files, read on demand by `gralha-truetype` |
+| `check*.bend`, `validation/` | Editor regression checks, comparisons and recorded evidence |
+
+The SVG library and everything under it are BendHub packages, built in
+[bend2-libs](https://github.com/nicolas-abril/bend2-libs) and imported by name:
+`gralha-svg-render` (geometry, styles, layout, paint servers, filters,
+rasterization) over `gralha-xml-doc`, `gralha-css-style`, `gralha-truetype`,
+`gralha-coverage`, `gralha-png-decode`, `gralha-jpeg-decode`, `gralha-image`,
+`gralha-bytes` and `gralha-text-scan`; the web server runs on
+`gralha-http-server` and `gralha-http-core`. Their own checks live with them; the
+checks here cover the editor.
 
 ## Run
 
-Requires Bun, the neighboring `bend2-core` checkout and a C toolchain. The C web
-server also links zlib (`-lz`, included in the macOS SDK). The native
-window requires a macOS graphical session. Rendering runs on the CPU. The
-libraries import each other by relative path (`import ./xml.bend as XML`); each
-of `util`, `xml`, `css`, `bin`, `img`, `png`, `jpeg` and `font` depends only on
-the ones listed before it, never on `svg.bend`.
+Requires Bun, the neighboring `bend2-core` checkout (Bend 2.0.37 or later) and
+a C toolchain; the first build fetches the `gralha-*` packages from BendHub.
+The effects under `effs/` use the `CID(Name)` form of the effect API
+(`bend guide effects`). The C web server also links zlib (`-lz`, included in
+the macOS SDK). The native window requires a macOS graphical session.
+Rendering runs on the CPU.
 
 ```sh
 cd bend2-svg-demo

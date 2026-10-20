@@ -169,5 +169,5 @@ Term inspector_step_run(Env e, Term* f, IoWork* work) {
 }
 
 static void __attribute__((constructor)) inspector_step_use(void) {
-  io_eff(CID_INSPECTOR_STEP, inspector_step_run, 0);
+  io_eff(CID(inspector.step), inspector_step_run);
 }

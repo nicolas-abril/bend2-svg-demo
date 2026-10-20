@@ -36,7 +36,7 @@ static void frame_send_call(IoWork* w) {
 
 static Term frame_send_pack(Env e, IoWork* w) {
   Term result = w->code ? io_fail(e, w->code, NULL)
-    : io_done(e, term_pak(CID_UNIT, 0));
+    : io_done(e, term_pak(CID(Unit), 0));
   free(w->data);
   return io_tup(e, io_hand(w->hand), result);
 }
@@ -50,7 +50,7 @@ Term frame_send_run(Env e, Term* f, IoWork* work) {
   }
   u64 stride = 1 + (u64)w * 3, size = stride * h;
   uint8_t* raw = io_mem(malloc(size));
-  Loc loc = term_peek(e, pixels);
+  u64 loc = blk_loc(e.mem, pixels);
   for (u32 y = 0; y < h; y++) {
     uint8_t* row = raw + y * stride;
     row[0] = 1; // PNG Sub filter.
@@ -96,5 +96,5 @@ Term frame_send_run(Env e, Term* f, IoWork* work) {
 }
 
 static void __attribute__((constructor)) frame_send_use(void) {
-  io_eff(CID_FRAME_SEND, frame_send_run, 0);
+  io_eff(CID(frame.send), frame_send_run);
 }

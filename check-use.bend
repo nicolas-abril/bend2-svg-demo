@@ -1,6 +1,6 @@
 import Base
 import ./state.bend as Editor
-import ./svg.bend as SVG
+import gralha-svg-render@0.1.0.0/svg.bend as SVG
 
 def main() -> IO(Unit):
   +start = Editor.load("<svg><defs><g id='tile' transform='scale(2)'><rect width='5' height='5'/></g></defs><use href='#tile' x='4' y='4' fill='red'/><use href='#tile' x='24' y='4' fill='blue'/></svg>", 64, 64)

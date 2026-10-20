@@ -1385,7 +1385,9 @@ constructor of every datatype an effect's type reaches, and the anchor is
 gone. Third, importing `bin.bend` from another directory named its
 constructors with the path walked to it (`CID_______BIN_...`), so the
 effect's C did not compile; a module's C and JS names are now its file's
-from every importer. The parser rewrite is still not worth keeping for
-its own sake (see the measurements above), but the road to reading the
+from every importer. Bend 2.0.37 replaced the `CID_`/`HOT_` macros with
+`CID(Name)`, which reads the name in the effect's own file, and lets
+`io_node` and `io_seal` take the hotness from the constructor id.
+The parser rewrite is still not worth keeping for its own sake (see the measurements above), but the road to reading the
 file straight into an array is open.
 

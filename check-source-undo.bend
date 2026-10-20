@@ -1,7 +1,7 @@
 import Base
 import ./state.bend as Editor
-import ./svg.bend as SVG
-import ./util.bend as U
+import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-text-scan@0.1.0.0/scan.bend as U
 
 def ok(value: Bool) -> String:
   U.choose(String, value, "PASS", "FAIL")

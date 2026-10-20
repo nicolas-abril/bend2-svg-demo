@@ -1,8 +1,8 @@
 import Base
-import ./svg.bend as SVG
-import ./util.bend as U
-import ./xml.bend as XML
-import ./font.bend as Font
+import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-text-scan@0.1.0.0/scan.bend as U
+import gralha-xml-doc@0.1.0.0/xml.bend as XML
+import gralha-truetype@0.1.0.0/font.bend as Font
 import ./state.bend as Editor
 
 def metric(matrix: SVG.Matrix) -> String:
