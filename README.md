@@ -38,8 +38,10 @@ checks here cover the editor.
 
 ## Run
 
-Requires Bun, the neighboring `bend2-core` checkout (Bend 2.0.37 or later) and
-a C toolchain; the first build fetches the `gralha-*` packages from BendHub.
+Requires Bun, the neighboring `bend2-core` checkout and a C toolchain; the
+first build fetches the `gralha-*` packages from BendHub. The checkout must
+include bendlang/bend#1765 (newer than 2.0.37): the editor reads Base's `Text`
+event and `gralha-http-server` takes `TCP.send`'s byte residue.
 The effects under `effs/` use the `CID(Name)` form of the effect API
 (`bend guide effects`). The C web server also links zlib (`-lz`, included in
 the macOS SDK). The native window requires a macOS graphical session.
