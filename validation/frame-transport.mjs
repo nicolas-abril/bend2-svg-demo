@@ -54,7 +54,7 @@ def main() -> IO(Unit):
   command('bun',[bend,path,'-o',binary+'.c']);
   command(process.env.CC||'clang',['-std=c11','-O2',binary+'.c','-lpthread','-lm','-lz','-o',binary]);
   for(const backend of ['c','javascript']){
-   const child=spawn(backend==='c'?binary:'bun',backend==='c'?['--gpu','off']:[bend,path],{stdio:['ignore','pipe','pipe']});
+   const child=spawn(backend==='c'?binary:'bun',backend==='c'?['+RTS','--gpu','off']:[bend,path],{stdio:['ignore','pipe','pipe']});
    let stderr='';child.stderr.on('data',d=>stderr+=d);
    const exited=new Promise(r=>child.on('exit',(code,signal)=>r({code,signal})));
    try {

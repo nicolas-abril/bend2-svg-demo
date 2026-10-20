@@ -27,7 +27,7 @@ def main() -> IO(Unit):
 `);
  await run('bun',[bend,entry,'-o',binary+'.c'],{});
  await run('clang',['-DBEND_METAL=1','-x','objective-c','-fobjc-arc','-fmodules','-std=c11','-O3',binary+'.c','-lpthread','-lm','-o',binary],{CLANG_MODULE_CACHE_PATH:resolve(temp,'clang-cache')});
- await run(binary,['--gpu','off'],{SVG_INPUT:input,SVG_OUTPUT:output,SVG_FONTS:resolve(root,'fonts')});
+ await run(binary,['+RTS','--gpu','off'],{SVG_INPUT:input,SVG_OUTPUT:output,SVG_FONTS:resolve(root,'fonts')});
  assert.equal(readFileSync(output+'.test','utf8'),'PASS');
  if(process.env.SVG_TEST_ARTIFACTS){const {copyFileSync,mkdirSync}=await import('node:fs');mkdirSync(process.env.SVG_TEST_ARTIFACTS,{recursive:true});copyFileSync(output+'.panel.png',resolve(process.env.SVG_TEST_ARTIFACTS,'native-inspector.png'));}
 } finally {rmSync(temp,{recursive:true,force:true});}

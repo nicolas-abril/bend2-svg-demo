@@ -12,7 +12,7 @@ const results = [];
 {
   for (const f of readdirSync(resolve(root, 'fixtures')).filter(x => x.endsWith('.svg') && readFileSync(resolve(root, 'fixtures', x), 'utf8').includes('<text')).sort()) {
     const name = f.slice(0, -4);
-    const got = spawnSync(resolve(root, 'build/render'), ['--gpu', 'off'], { env: { ...process.env, SVG_FONTS: paths.join(','), SVG_INPUT: resolve(root, 'fixtures', f), SVG_WIDTH: '64', SVG_HEIGHT: '64', SVG_AA: '8' }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    const got = spawnSync(resolve(root, 'build/render'), ['+RTS', '--gpu', 'off'], { env: { ...process.env, SVG_FONTS: paths.join(','), SVG_INPUT: resolve(root, 'fixtures', f), SVG_WIDTH: '64', SVG_HEIGHT: '64', SVG_AA: '8' }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     if (got.status !== 0) throw Error(got.stderr || got.stdout);
     const saved = readFileSync(resolve(here, `${name}.ppm`), 'utf8');
     const identical = got.stdout === saved;

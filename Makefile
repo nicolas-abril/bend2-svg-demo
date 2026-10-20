@@ -23,10 +23,10 @@ $(BUILD)/render: render.bend state.bend svg.bend $(LIBS) | $(BUILD)
 	CLANG_MODULE_CACHE_PATH=$(CURDIR)/$(BUILD)/clang-cache $(BEND) render.bend -o $@
 
 native: $(BUILD)/native
-	./$(BUILD)/native --gpu off
+	./$(BUILD)/native +RTS --gpu off
 
 web: $(BUILD)/web
-	./$(BUILD)/web --gpu off
+	./$(BUILD)/web +RTS --gpu off
 
 web-js:
 	$(BEND) web.bend

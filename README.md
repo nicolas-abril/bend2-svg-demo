@@ -115,7 +115,7 @@ fractional filter-region edges; coverage is exact along x at any setting:
 
 ```sh
 SVG_INPUT=fixtures/basic.svg SVG_WIDTH=64 SVG_HEIGHT=64 SVG_AA=8 \
-  ./build/render --gpu off > drawing.ppm
+  ./build/render +RTS --gpu off > drawing.ppm
 ```
 
 The output fits the natural SVG viewport into a white-backed RGB PPM matrix,

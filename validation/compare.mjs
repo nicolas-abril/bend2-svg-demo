@@ -18,7 +18,7 @@ const aa = Number(process.env.SVG_COMPARE_AA || 8);
 if (!Number.isInteger(aa) || aa<1 || aa>8) throw Error("SVG_COMPARE_AA must be 1–8");
 for (const file of readdirSync(resolve(root, 'fixtures')).filter(x => x.endsWith('.svg') && (!filter || x.startsWith(filter)))) {
   const name = file.slice(0, -4), input = resolve(root, 'fixtures', file);
-  const [cmd, args] = binary ? [binary, ['--gpu', 'off']] : ['bun', [bend, resolve(root, 'render.bend')]];
+  const [cmd, args] = binary ? [binary, ['+RTS', '--gpu', 'off']] : ['bun', [bend, resolve(root, 'render.bend')]];
   const result = spawnSync(cmd, args, {
     env: {...process.env, SVG_FONTS:resolve(root,'fonts'), SVG_INPUT: input, SVG_WIDTH:'64', SVG_HEIGHT:'64', SVG_AA:String(aa)}, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
   });

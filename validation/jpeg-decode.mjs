@@ -15,7 +15,7 @@ for(const c of cases.filter(c=>!process.env.JPEG_CASE_FILTER||c.name.includes(pr
  const actual=words.map(Number),expected=Buffer.from(c.expected,'base64');let sum=0,sq=0,max=0,bad=0;
  for(let i=0;i<expected.length;i++){const d=Math.abs((actual[i]??-10000)-expected[i]);sum+=d;sq+=d*d;max=Math.max(max,d);if(d>3)bad++;}
  let nativeEqual=null;
- if(process.env.JPEG_NATIVE){const native=spawnSync(process.env.JPEG_NATIVE,['--gpu','off'],{env:{...process.env,JPEG_INPUT:input},encoding:'utf8',maxBuffer:16*1024*1024,timeout:120000});if(native.status!==0)throw Error(native.stderr||native.stdout||native.error);nativeEqual=native.stdout===result.stdout;}
+ if(process.env.JPEG_NATIVE){const native=spawnSync(process.env.JPEG_NATIVE,['+RTS','--gpu','off'],{env:{...process.env,JPEG_INPUT:input},encoding:'utf8',maxBuffer:16*1024*1024,timeout:120000});if(native.status!==0)throw Error(native.stderr||native.stdout||native.error);nativeEqual=native.stdout===result.stdout;}
  const r={nativeEqual,name:c.name,width:w,height:h,mae:sum/expected.length,rmse:Math.sqrt(sq/expected.length),max,channelsAbove3:bad,pass:w===c.width&&h===c.height&&max<=3};report.push(r);console.log(r);
  fs.writeFileSync(path.join(dir,`jpeg-${c.name}-actual.ppm`),result.stdout);
 }
