@@ -1,11 +1,11 @@
 # Shared application model and reducer. Frontends only deliver actions and pixels.
 import Base
-import gralha-svg-render@0.1.0.0/svg.bend as SVG
-import gralha-text-scan@0.1.0.0/scan.bend as U
-import gralha-xml-doc@0.1.0.0/xml.bend as XML
-import gralha-css-style@0.1.0.0/css.bend as CSS
-import gralha-truetype@0.1.0.0/font.bend as Font
-import gralha-bytes@0.1.0.0/bytes.bend as Bin
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
+import gralha-text-scan@0.1.0.1/scan.bend as U
+import gralha-xml-doc@0.1.0.1/xml.bend as XML
+import gralha-css-style@0.1.0.1/css.bend as CSS
+import gralha-truetype@0.1.0.1/font.bend as Font
+import gralha-bytes@0.1.0.1/bytes.bend as Bin
 
 type Camera is Data:
   Camera{matrix: SVG.Matrix}

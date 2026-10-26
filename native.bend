@@ -2,8 +2,8 @@
 import Base
 import ./state.bend as Editor
 import ./inspect.bend as Inspect
-import gralha-svg-render@0.1.0.0/svg.bend as SVG
-import gralha-text-scan@0.1.0.0/scan.bend as U
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
+import gralha-text-scan@0.1.0.1/scan.bend as U
 
 def canvas.present(pixels: Array<U32>, w: U32, h: U32) -> IO(Unit):
   import "./effs/canvas.c"

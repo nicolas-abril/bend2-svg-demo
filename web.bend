@@ -1,6 +1,6 @@
 # A local HTTP server for the same Bend editor. Frames are lossless PNGs.
 import Base
-import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
 import gralha-http-core@0.1.0.0/http.bend as Http
 import gralha-http-server@0.1.0.0/server.bend as Server
 import ./state.bend as Editor

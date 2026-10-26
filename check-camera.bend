@@ -1,9 +1,9 @@
 # View navigation is independent of document edits and their history.
 import Base
 import ./state.bend as Editor
-import gralha-svg-render@0.1.0.0/svg.bend as SVG
-import gralha-text-scan@0.1.0.0/scan.bend as U
-import gralha-xml-doc@0.1.0.0/xml.bend as XML
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
+import gralha-text-scan@0.1.0.1/scan.bend as U
+import gralha-xml-doc@0.1.0.1/xml.bend as XML
 
 def drawing() -> String:
   "<svg width='128' height='64'><rect x='32' y='16' width='32' height='32' fill='red'/></svg>"

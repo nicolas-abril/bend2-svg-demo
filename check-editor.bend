@@ -1,6 +1,6 @@
 import Base
 import ./state.bend as Editor
-import gralha-svg-render@0.1.0.0/svg.bend as SVG
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
 
 def main() -> IO(Unit):
   +start = Editor.load("<svg viewBox='0 0 64 64'><rect x='4' y='4' width='20' height='20' fill='red'/></svg>", 64, 64)
