@@ -1,9 +1,12 @@
 import Base
-import ../svg.bend as SVG
+import gralha-svg-render@0.1.0.1/svg.bend as SVG
+import gralha-bytes@0.1.0.1/bytes.bend as Bin
+import gralha-image@0.1.0.1/image.bend as Img
+import gralha-jpeg-decode@0.1.0.1/jpeg.bend as JPEG
 import ../state.bend as Editor
 
-def pixel(c: SVG.Color) -> String:
-  SVG.Color{r, g, b, a} = c
+def pixel(c: Img.Color) -> String:
+  Img.Color{r, g, b, a} = c
   U32.show(F32.to_u32(F32.floor((r * 255.0 + 0.5 : F32)))) ++ " " ++ U32.show(F32.to_u32(F32.floor((g * 255.0 + 0.5 : F32)))) ++ " " ++ U32.show(F32.to_u32(F32.floor((b * 255.0 + 0.5 : F32)))) ++ "\n"
 
 def pixels(n: Nat, +index: U32, +w: U32, +raster: SVG.Raster) -> String:
@@ -19,4 +22,4 @@ def main() -> IO(Unit):
   do IO<Unit>:
     path : String <- IO.try(String, IO.get_env("JPEG_INPUT"))
     encoded : String <- Editor.read(path)
-    IO.write(output(SVG.jpeg.decode(SVG.base64(encoded))))
+    IO.write(output(SVG.raster.image(JPEG.jpeg.decode(Bin.base64(encoded)))))
